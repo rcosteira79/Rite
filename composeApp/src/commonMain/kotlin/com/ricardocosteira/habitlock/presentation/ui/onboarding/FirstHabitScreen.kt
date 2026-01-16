@@ -2,13 +2,16 @@ package com.ricardocosteira.habitlock.presentation.ui.onboarding
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -16,14 +19,22 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.ricardocosteira.habitlock.domain.models.HabitType
 
 @Composable
 fun FirstHabitScreen(
     habitName: String,
+    habitType: HabitType,
+    targetValue: String,
+    unit: String,
     isLoading: Boolean,
     onHabitNameChange: (String) -> Unit,
+    onHabitTypeChange: (HabitType) -> Unit,
+    onTargetValueChange: (String) -> Unit,
+    onUnitChange: (String) -> Unit,
     onCreateHabit: () -> Unit,
     onSkip: () -> Unit,
     modifier: Modifier = Modifier
@@ -62,6 +73,58 @@ fun FirstHabitScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Habit type",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.align(Alignment.Start)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            FilterChip(
+                selected = habitType == HabitType.BINARY,
+                onClick = { onHabitTypeChange(HabitType.BINARY) },
+                label = { Text("Yes/No") }
+            )
+            FilterChip(
+                selected = habitType == HabitType.QUANTITATIVE,
+                onClick = { onHabitTypeChange(HabitType.QUANTITATIVE) },
+                label = { Text("Quantitative") }
+            )
+        }
+
+        if (habitType == HabitType.QUANTITATIVE) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = targetValue,
+                onValueChange = onTargetValueChange,
+                label = { Text("Target value") },
+                placeholder = { Text("E.g. 8") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = unit,
+                onValueChange = onUnitChange,
+                label = { Text("Unit (optional)") },
+                placeholder = { Text("E.g. glasses, pages, minutes") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
         Spacer(modifier = Modifier.height(32.dp))
 
         if (isLoading) {
@@ -70,7 +133,8 @@ fun FirstHabitScreen(
             Button(
                 onClick = onCreateHabit,
                 modifier = Modifier.fillMaxWidth(),
-                enabled = habitName.isNotBlank()
+                enabled = habitName.isNotBlank() &&
+                    (habitType == HabitType.BINARY || targetValue.isNotBlank())
             ) {
                 Text("Create habit")
             }

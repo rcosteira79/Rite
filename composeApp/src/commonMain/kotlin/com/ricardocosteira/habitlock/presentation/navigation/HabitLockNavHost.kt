@@ -70,7 +70,11 @@ fun HabitLockNavHost(
             when (event) {
                 OnboardingEvent.NavigateToStrictness -> currentRoute = Route.OnboardingStrictness
                 OnboardingEvent.NavigateToFirstHabit -> currentRoute = Route.OnboardingFirstHabit
-                OnboardingEvent.NavigateToToday -> currentRoute = Route.Today
+                OnboardingEvent.NavigateToToday -> {
+                    currentRoute = Route.Today
+                    // Reload habits after completing onboarding
+                    todayViewModel.loadTodayHabits()
+                }
                 is OnboardingEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
             }
         }
@@ -116,8 +120,14 @@ fun HabitLockNavHost(
             val state by onboardingViewModel.state.collectAsStateWithLifecycle()
             FirstHabitScreen(
                 habitName = state.habitName,
+                habitType = state.habitType,
+                targetValue = state.targetValue,
+                unit = state.unit,
                 isLoading = state.isCreatingHabit,
                 onHabitNameChange = { onboardingViewModel.updateHabitName(it) },
+                onHabitTypeChange = { onboardingViewModel.updateHabitType(it) },
+                onTargetValueChange = { onboardingViewModel.updateTargetValue(it) },
+                onUnitChange = { onboardingViewModel.updateUnit(it) },
                 onCreateHabit = { onboardingViewModel.createFirstHabit() },
                 onSkip = { onboardingViewModel.skipFirstHabit() }
             )
@@ -127,6 +137,13 @@ fun HabitLockNavHost(
         Route.Today -> {
             selectedDrawerDestination = DrawerDestination.TODAY
             val state by todayViewModel.state.collectAsStateWithLifecycle()
+
+            // Reload habits when Today screen becomes active
+            LaunchedEffect(currentRoute) {
+                if (currentRoute == Route.Today) {
+                    todayViewModel.loadTodayHabits()
+                }
+            }
 
             AppNavigationDrawer(
                 drawerState = drawerState,

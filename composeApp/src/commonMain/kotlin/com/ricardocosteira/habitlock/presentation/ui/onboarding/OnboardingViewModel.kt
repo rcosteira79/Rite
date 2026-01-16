@@ -7,6 +7,7 @@ import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import com.ricardocosteira.habitlock.domain.usecases.ApplyStrictnessPresetUseCase
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabitUseCase
+import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabitsUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -23,7 +24,8 @@ import kotlinx.datetime.toLocalDateTime
 class OnboardingViewModel(
     private val userRepository: UserRepository,
     private val applyStrictnessPresetUseCase: ApplyStrictnessPresetUseCase,
-    private val createHabitUseCase: CreateHabitUseCase
+    private val createHabitUseCase: CreateHabitUseCase,
+    private val generateDailyHabitsUseCase: GenerateDailyHabitsUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(OnboardingState())
@@ -38,6 +40,18 @@ class OnboardingViewModel(
 
     fun updateHabitName(name: String) {
         _state.update { it.copy(habitName = name) }
+    }
+
+    fun updateHabitType(type: HabitType) {
+        _state.update { it.copy(habitType = type) }
+    }
+
+    fun updateTargetValue(value: String) {
+        _state.update { it.copy(targetValue = value) }
+    }
+
+    fun updateUnit(unit: String) {
+        _state.update { it.copy(unit = unit) }
     }
 
     fun continueFromPhilosophy() {
@@ -84,18 +98,48 @@ class OnboardingViewModel(
             return
         }
 
+        val habitType = _state.value.habitType
+        if (habitType == HabitType.QUANTITATIVE) {
+            val targetValueStr = _state.value.targetValue.trim()
+            if (targetValueStr.isBlank()) {
+                viewModelScope.launch {
+                    _events.emit(OnboardingEvent.ShowError("Please enter a target value for quantitative habit"))
+                }
+                return
+            }
+            val targetValue = targetValueStr.toIntOrNull()
+            if (targetValue == null || targetValue <= 0) {
+                viewModelScope.launch {
+                    _events.emit(OnboardingEvent.ShowError("Target value must be a positive number"))
+                }
+                return
+            }
+        }
+
         viewModelScope.launch {
             _state.update { it.copy(isCreatingHabit = true) }
 
             val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
+            val targetValue = if (habitType == HabitType.QUANTITATIVE) {
+                _state.value.targetValue.trim().toIntOrNull()
+            } else {
+                null
+            }
+
+            val unit = if (habitType == HabitType.QUANTITATIVE && _state.value.unit.isNotBlank()) {
+                _state.value.unit.trim()
+            } else {
+                null
+            }
+
             val result = createHabitUseCase.execute(
                 params = CreateHabitUseCase.CreateHabitParams(
                     name = habitName,
                     description = null,
-                    type = HabitType.BINARY,
-                    targetValue = null,
-                    unit = null,
+                    type = habitType,
+                    targetValue = targetValue,
+                    unit = unit,
                     reminder = null
                 ),
                 startDate = today
@@ -103,6 +147,8 @@ class OnboardingViewModel(
 
             result.fold(
                 onSuccess = {
+                    // Generate habit instance for today
+                    generateDailyHabitsUseCase.execute()
                     completeOnboarding()
                 },
                 onFailure = { error ->

@@ -88,7 +88,7 @@ fun App() {
 
         // Create ViewModels
         val onboardingViewModel = remember {
-            OnboardingViewModel(userRepository, applyStrictnessPresetUseCase, createHabitUseCase)
+            OnboardingViewModel(userRepository, applyStrictnessPresetUseCase, createHabitUseCase, generateDailyHabitsUseCase)
         }
         val todayViewModel = remember {
             TodayViewModel(
