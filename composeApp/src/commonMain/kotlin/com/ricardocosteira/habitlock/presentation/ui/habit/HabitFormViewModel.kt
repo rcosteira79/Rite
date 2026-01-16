@@ -1,0 +1,232 @@
+package com.ricardocosteira.habitlock.presentation.ui.habit
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.ricardocosteira.habitlock.domain.models.Habit
+import com.ricardocosteira.habitlock.domain.models.HabitReminder
+import com.ricardocosteira.habitlock.domain.models.HabitType
+import com.ricardocosteira.habitlock.domain.models.ReminderType
+import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
+import com.ricardocosteira.habitlock.domain.usecases.CreateHabitUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlin.time.Clock
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+
+class HabitFormViewModel(
+    private val habitRepository: HabitRepository,
+    private val createHabitUseCase: CreateHabitUseCase,
+    private val habitIdToEdit: String? = null
+) : ViewModel() {
+
+    private val _state = MutableStateFlow(HabitFormState())
+    val state: StateFlow<HabitFormState> = _state.asStateFlow()
+
+    private val _events = MutableSharedFlow<HabitFormEvent>()
+    val events: SharedFlow<HabitFormEvent> = _events.asSharedFlow()
+
+    init {
+        if (habitIdToEdit != null) {
+            loadHabit(habitIdToEdit)
+        }
+    }
+
+    private fun loadHabit(habitId: String) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
+            try {
+                val habit = habitRepository.getHabitById(habitId)
+                val reminders = habitRepository.getRemindersForHabit(habitId)
+                val reminder = reminders.firstOrNull()
+
+                if (habit != null) {
+                    _state.update {
+                        it.copy(
+                            habitId = habit.id,
+                            name = habit.name,
+                            description = habit.description ?: "",
+                            type = habit.type,
+                            targetValue = habit.targetValue?.toString() ?: "",
+                            unit = habit.unit ?: "",
+                            hasReminder = reminder != null,
+                            reminderType = reminder?.reminderType ?: ReminderType.FIXED,
+                            reminderTime = reminder?.time,
+                            intervalMinutes = reminder?.intervalMinutes?.toString() ?: "60",
+                            startTime = reminder?.startTime,
+                            endTime = reminder?.endTime,
+                            isLoading = false
+                        )
+                    }
+                } else {
+                    _state.update { it.copy(isLoading = false, error = "Habit not found") }
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false, error = e.message) }
+            }
+        }
+    }
+
+    fun updateName(name: String) {
+        _state.update { it.copy(name = name) }
+    }
+
+    fun updateDescription(description: String) {
+        _state.update { it.copy(description = description) }
+    }
+
+    fun updateType(type: HabitType) {
+        _state.update {
+            it.copy(
+                type = type,
+                reminderType = if (type == HabitType.QUANTITATIVE) ReminderType.PERIODIC else ReminderType.FIXED
+            )
+        }
+    }
+
+    fun updateTargetValue(targetValue: String) {
+        _state.update { it.copy(targetValue = targetValue) }
+    }
+
+    fun updateUnit(unit: String) {
+        _state.update { it.copy(unit = unit) }
+    }
+
+    fun updateHasReminder(hasReminder: Boolean) {
+        _state.update { it.copy(hasReminder = hasReminder) }
+    }
+
+    fun updateReminderType(reminderType: ReminderType) {
+        _state.update { it.copy(reminderType = reminderType) }
+    }
+
+    fun updateReminderTime(time: LocalTime) {
+        _state.update { it.copy(reminderTime = time) }
+    }
+
+    fun updateIntervalMinutes(interval: String) {
+        _state.update { it.copy(intervalMinutes = interval) }
+    }
+
+    fun updateStartTime(time: LocalTime) {
+        _state.update { it.copy(startTime = time) }
+    }
+
+    fun updateEndTime(time: LocalTime) {
+        _state.update { it.copy(endTime = time) }
+    }
+
+    fun saveHabit() {
+        val currentState = _state.value
+
+        if (!currentState.isValid) {
+            viewModelScope.launch {
+                _events.emit(HabitFormEvent.ShowError("Please fill in all required fields"))
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            _state.update { it.copy(isSaving = true) }
+
+            try {
+                val reminder = if (currentState.hasReminder) {
+                    HabitReminder(
+                        id = "", // Will be generated
+                        habitId = "", // Will be set
+                        reminderType = currentState.reminderType,
+                        time = if (currentState.reminderType == ReminderType.FIXED) currentState.reminderTime else null,
+                        intervalMinutes = if (currentState.reminderType == ReminderType.PERIODIC) {
+                            currentState.intervalMinutes.toIntOrNull()
+                        } else null,
+                        startTime = if (currentState.reminderType == ReminderType.PERIODIC) currentState.startTime else null,
+                        endTime = if (currentState.reminderType == ReminderType.PERIODIC) currentState.endTime else null,
+                        isActive = true
+                    )
+                } else null
+
+                if (currentState.isEditing) {
+                    updateExistingHabit(currentState, reminder)
+                } else {
+                    createNewHabit(currentState, reminder)
+                }
+
+                _events.emit(HabitFormEvent.NavigateBack)
+            } catch (e: Exception) {
+                _state.update { it.copy(isSaving = false, error = e.message) }
+                _events.emit(HabitFormEvent.ShowError(e.message ?: "Failed to save habit"))
+            }
+        }
+    }
+
+    private suspend fun createNewHabit(state: HabitFormState, reminder: HabitReminder?) {
+        val today = Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
+
+        createHabitUseCase.execute(
+            params = CreateHabitUseCase.CreateHabitParams(
+                name = state.name.trim(),
+                description = state.description.trim().takeIf { it.isNotEmpty() },
+                type = state.type,
+                targetValue = if (state.type == HabitType.QUANTITATIVE) {
+                    state.targetValue.toIntOrNull()
+                } else null,
+                unit = state.unit.trim().takeIf { it.isNotEmpty() },
+                reminder = reminder
+            ),
+            startDate = today
+        ).getOrThrow()
+    }
+
+    private suspend fun updateExistingHabit(state: HabitFormState, reminder: HabitReminder?) {
+        val existingHabit = habitRepository.getHabitById(state.habitId!!)
+            ?: throw IllegalStateException("Habit not found")
+
+        val updatedHabit = existingHabit.copy(
+            name = state.name.trim(),
+            description = state.description.trim().takeIf { it.isNotEmpty() },
+            type = state.type,
+            targetValue = if (state.type == HabitType.QUANTITATIVE) {
+                state.targetValue.toIntOrNull()
+            } else null,
+            unit = state.unit.trim().takeIf { it.isNotEmpty() }
+        )
+
+        habitRepository.updateHabit(updatedHabit)
+
+        // Handle reminder update
+        val existingReminders = habitRepository.getRemindersForHabit(state.habitId)
+        existingReminders.forEach { habitRepository.deleteReminder(it.id) }
+
+        if (reminder != null) {
+            habitRepository.updateReminder(reminder.copy(habitId = state.habitId))
+        }
+    }
+
+    fun deleteHabit() {
+        val habitId = _state.value.habitId ?: return
+
+        viewModelScope.launch {
+            try {
+                habitRepository.deleteHabit(habitId)
+                _events.emit(HabitFormEvent.NavigateBack)
+            } catch (e: Exception) {
+                _events.emit(HabitFormEvent.ShowError(e.message ?: "Failed to delete habit"))
+            }
+        }
+    }
+
+    fun clearError() {
+        _state.update { it.copy(error = null) }
+    }
+}
+
+private fun kotlin.time.Instant.toLocalDate(timezone: TimeZone) =
+    this.toLocalDateTime(timezone).date

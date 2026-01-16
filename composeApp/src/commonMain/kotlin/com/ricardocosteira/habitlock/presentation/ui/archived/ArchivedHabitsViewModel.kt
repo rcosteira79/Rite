@@ -1,0 +1,69 @@
+package com.ricardocosteira.habitlock.presentation.ui.archived
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class ArchivedHabitsViewModel(
+    private val habitRepository: HabitRepository
+) : ViewModel() {
+
+    private val _state = MutableStateFlow(ArchivedHabitsState())
+    val state: StateFlow<ArchivedHabitsState> = _state.asStateFlow()
+    
+    private val _events = MutableSharedFlow<ArchivedHabitsEvent>()
+    val events: SharedFlow<ArchivedHabitsEvent> = _events.asSharedFlow()
+
+    init {
+        observeArchivedHabits()
+    }
+
+    private fun observeArchivedHabits() {
+        viewModelScope.launch {
+            habitRepository.observeArchivedHabits().collect { habits ->
+                _state.update {
+                    it.copy(
+                        habits = habits,
+                        isLoading = false
+                    )
+                }
+            }
+        }
+    }
+
+    fun unarchiveHabit(habitId: String) {
+        viewModelScope.launch {
+            try {
+                habitRepository.unarchiveHabit(habitId)
+                _events.emit(ArchivedHabitsEvent.ShowSuccess("Habit restored"))
+            } catch (e: Exception) {
+                _events.emit(ArchivedHabitsEvent.ShowError(e.message ?: "Failed to restore habit"))
+            }
+        }
+    }
+
+    fun deleteHabit(habitId: String) {
+        viewModelScope.launch {
+            try {
+                habitRepository.deleteHabit(habitId)
+                _events.emit(ArchivedHabitsEvent.ShowSuccess("Habit deleted permanently"))
+            } catch (e: Exception) {
+                _events.emit(ArchivedHabitsEvent.ShowError(e.message ?: "Failed to delete habit"))
+            }
+        }
+    }
+}
+
+sealed interface ArchivedHabitsEvent {
+    data class ShowSuccess(val message: String) : ArchivedHabitsEvent
+    data class ShowError(val message: String) : ArchivedHabitsEvent
+}
+

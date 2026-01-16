@@ -1,0 +1,257 @@
+-- User table: stores user settings and preferences
+CREATE TABLE User (
+    id TEXT NOT NULL PRIMARY KEY,
+    timezone TEXT NOT NULL,
+    previousTimezone TEXT,
+    undoPolicy TEXT NOT NULL DEFAULT 'TODAY_ONLY',
+    maxSnoozeDurationMinutes INTEGER NOT NULL DEFAULT 30,
+    maxSnoozesPerHabitPerDay INTEGER,
+    maxConsecutiveSkips INTEGER,
+    onboardingCompleted INTEGER NOT NULL DEFAULT 0,
+    dailySummaryTime TEXT,
+    createdAt TEXT NOT NULL
+);
+
+-- Habit table: habit definitions/templates
+CREATE TABLE Habit (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    type TEXT NOT NULL DEFAULT 'BINARY',
+    targetValue INTEGER,
+    unit TEXT,
+    isActive INTEGER NOT NULL DEFAULT 1,
+    isArchived INTEGER NOT NULL DEFAULT 0,
+    currentStreak INTEGER NOT NULL DEFAULT 0,
+    longestStreak INTEGER NOT NULL DEFAULT 0,
+    createdAt TEXT NOT NULL,
+    archivedAt TEXT
+);
+
+-- HabitSchedule table: defines when habits are expected
+CREATE TABLE HabitSchedule (
+    id TEXT NOT NULL PRIMARY KEY,
+    habitId TEXT NOT NULL,
+    scheduleType TEXT NOT NULL DEFAULT 'DAILY',
+    startDate TEXT NOT NULL,
+    endDate TEXT,
+    FOREIGN KEY (habitId) REFERENCES Habit(id) ON DELETE CASCADE
+);
+
+-- HabitReminder table: notification behavior
+CREATE TABLE HabitReminder (
+    id TEXT NOT NULL PRIMARY KEY,
+    habitId TEXT NOT NULL,
+    reminderType TEXT NOT NULL DEFAULT 'FIXED',
+    time TEXT,
+    intervalMinutes INTEGER,
+    startTime TEXT,
+    endTime TEXT,
+    isActive INTEGER NOT NULL DEFAULT 1,
+    FOREIGN KEY (habitId) REFERENCES Habit(id) ON DELETE CASCADE
+);
+
+-- HabitInstance table: one habit on one specific day
+CREATE TABLE HabitInstance (
+    id TEXT NOT NULL PRIMARY KEY,
+    habitId TEXT NOT NULL,
+    date TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'PENDING',
+    completedValue INTEGER,
+    targetValue INTEGER,
+    consecutiveSkipsAtCreation INTEGER NOT NULL DEFAULT 0,
+    createdAt TEXT NOT NULL,
+    FOREIGN KEY (habitId) REFERENCES Habit(id) ON DELETE CASCADE
+);
+
+-- HabitCompletionEvent table: user actions (event sourcing)
+CREATE TABLE HabitCompletionEvent (
+    id TEXT NOT NULL PRIMARY KEY,
+    habitInstanceId TEXT NOT NULL,
+    timestamp TEXT NOT NULL,
+    deltaValue INTEGER NOT NULL DEFAULT 1,
+    source TEXT NOT NULL DEFAULT 'IN_APP',
+    FOREIGN KEY (habitInstanceId) REFERENCES HabitInstance(id) ON DELETE CASCADE
+);
+
+-- SnoozeState table: persisted snooze state
+CREATE TABLE SnoozeState (
+    habitInstanceId TEXT NOT NULL PRIMARY KEY,
+    scheduledTime TEXT NOT NULL,
+    snoozeCount INTEGER NOT NULL DEFAULT 1,
+    FOREIGN KEY (habitInstanceId) REFERENCES HabitInstance(id) ON DELETE CASCADE
+);
+
+-- Indexes for performance
+CREATE INDEX idx_habit_instance_date ON HabitInstance(date);
+CREATE INDEX idx_habit_instance_habit_id ON HabitInstance(habitId);
+CREATE INDEX idx_habit_instance_status ON HabitInstance(status);
+CREATE INDEX idx_habit_completion_event_instance_id ON HabitCompletionEvent(habitInstanceId);
+CREATE INDEX idx_habit_schedule_habit_id ON HabitSchedule(habitId);
+CREATE INDEX idx_habit_reminder_habit_id ON HabitReminder(habitId);
+
+-- User queries
+getUser:
+SELECT * FROM User LIMIT 1;
+
+insertUser:
+INSERT INTO User (id, timezone, previousTimezone, undoPolicy, maxSnoozeDurationMinutes, maxSnoozesPerHabitPerDay, maxConsecutiveSkips, onboardingCompleted, dailySummaryTime, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateUser:
+UPDATE User SET
+    timezone = ?,
+    previousTimezone = ?,
+    undoPolicy = ?,
+    maxSnoozeDurationMinutes = ?,
+    maxSnoozesPerHabitPerDay = ?,
+    maxConsecutiveSkips = ?,
+    onboardingCompleted = ?,
+    dailySummaryTime = ?
+WHERE id = ?;
+
+updateUserTimezone:
+UPDATE User SET timezone = ?, previousTimezone = ? WHERE id = ?;
+
+updateUserOnboardingCompleted:
+UPDATE User SET onboardingCompleted = ? WHERE id = ?;
+
+-- Habit queries
+getAllHabits:
+SELECT * FROM Habit ORDER BY createdAt DESC;
+
+getActiveHabits:
+SELECT * FROM Habit WHERE isActive = 1 AND isArchived = 0 ORDER BY createdAt DESC;
+
+getArchivedHabits:
+SELECT * FROM Habit WHERE isArchived = 1 ORDER BY archivedAt DESC;
+
+getHabitById:
+SELECT * FROM Habit WHERE id = ?;
+
+insertHabit:
+INSERT INTO Habit (id, name, description, type, targetValue, unit, isActive, isArchived, currentStreak, longestStreak, createdAt, archivedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateHabit:
+UPDATE Habit SET
+    name = ?,
+    description = ?,
+    type = ?,
+    targetValue = ?,
+    unit = ?,
+    isActive = ?,
+    isArchived = ?,
+    archivedAt = ?
+WHERE id = ?;
+
+updateHabitStreak:
+UPDATE Habit SET currentStreak = ?, longestStreak = ? WHERE id = ?;
+
+archiveHabit:
+UPDATE Habit SET isArchived = 1, archivedAt = ? WHERE id = ?;
+
+unarchiveHabit:
+UPDATE Habit SET isArchived = 0, archivedAt = NULL WHERE id = ?;
+
+deleteHabit:
+DELETE FROM Habit WHERE id = ?;
+
+-- HabitSchedule queries
+getScheduleForHabit:
+SELECT * FROM HabitSchedule WHERE habitId = ?;
+
+insertSchedule:
+INSERT INTO HabitSchedule (id, habitId, scheduleType, startDate, endDate)
+VALUES (?, ?, ?, ?, ?);
+
+updateSchedule:
+UPDATE HabitSchedule SET scheduleType = ?, startDate = ?, endDate = ? WHERE id = ?;
+
+deleteScheduleForHabit:
+DELETE FROM HabitSchedule WHERE habitId = ?;
+
+-- HabitReminder queries
+getRemindersForHabit:
+SELECT * FROM HabitReminder WHERE habitId = ?;
+
+getActiveReminders:
+SELECT * FROM HabitReminder WHERE isActive = 1;
+
+insertReminder:
+INSERT INTO HabitReminder (id, habitId, reminderType, time, intervalMinutes, startTime, endTime, isActive)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+updateReminder:
+UPDATE HabitReminder SET
+    reminderType = ?,
+    time = ?,
+    intervalMinutes = ?,
+    startTime = ?,
+    endTime = ?,
+    isActive = ?
+WHERE id = ?;
+
+deleteReminder:
+DELETE FROM HabitReminder WHERE id = ?;
+
+deleteRemindersForHabit:
+DELETE FROM HabitReminder WHERE habitId = ?;
+
+-- HabitInstance queries
+getInstancesForDate:
+SELECT * FROM HabitInstance WHERE date = ?;
+
+getInstancesForHabit:
+SELECT * FROM HabitInstance WHERE habitId = ? ORDER BY date DESC;
+
+getInstanceById:
+SELECT * FROM HabitInstance WHERE id = ?;
+
+getInstanceForHabitAndDate:
+SELECT * FROM HabitInstance WHERE habitId = ? AND date = ?;
+
+getPendingInstancesForDate:
+SELECT * FROM HabitInstance WHERE date = ? AND status = 'PENDING';
+
+getInstancesInDateRange:
+SELECT * FROM HabitInstance WHERE date >= ? AND date <= ?;
+
+insertInstance:
+INSERT INTO HabitInstance (id, habitId, date, status, completedValue, targetValue, consecutiveSkipsAtCreation, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+updateInstanceStatus:
+UPDATE HabitInstance SET status = ?, completedValue = ? WHERE id = ?;
+
+updateInstanceCompletedValue:
+UPDATE HabitInstance SET completedValue = ? WHERE id = ?;
+
+-- HabitCompletionEvent queries
+getEventsForInstance:
+SELECT * FROM HabitCompletionEvent WHERE habitInstanceId = ? ORDER BY timestamp ASC;
+
+insertEvent:
+INSERT INTO HabitCompletionEvent (id, habitInstanceId, timestamp, deltaValue, source)
+VALUES (?, ?, ?, ?, ?);
+
+deleteEvent:
+DELETE FROM HabitCompletionEvent WHERE id = ?;
+
+deleteEventsForInstance:
+DELETE FROM HabitCompletionEvent WHERE habitInstanceId = ?;
+
+-- SnoozeState queries
+getSnoozeState:
+SELECT * FROM SnoozeState WHERE habitInstanceId = ?;
+
+insertOrReplaceSnoozeState:
+INSERT OR REPLACE INTO SnoozeState (habitInstanceId, scheduledTime, snoozeCount)
+VALUES (?, ?, ?);
+
+deleteSnoozeState:
+DELETE FROM SnoozeState WHERE habitInstanceId = ?;
+
+getAllSnoozeStates:
+SELECT * FROM SnoozeState;
+

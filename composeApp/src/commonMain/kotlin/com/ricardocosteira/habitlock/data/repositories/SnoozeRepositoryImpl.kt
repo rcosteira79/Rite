@@ -1,0 +1,43 @@
+package com.ricardocosteira.habitlock.data.repositories
+
+import com.ricardocosteira.habitlock.data.database.HabitLockDatabase
+import com.ricardocosteira.habitlock.data.mappers.EntityMappers.toDomain
+import com.ricardocosteira.habitlock.domain.models.SnoozeState
+import com.ricardocosteira.habitlock.domain.repositories.SnoozeRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
+import kotlin.time.Instant
+
+class SnoozeRepositoryImpl(
+    private val database: HabitLockDatabase
+) : SnoozeRepository {
+
+    private val queries = database.habitLockQueries
+
+    override suspend fun getSnoozeState(instanceId: String): SnoozeState? =
+        withContext(Dispatchers.IO) {
+            queries.getSnoozeState(instanceId).executeAsOneOrNull()?.toDomain()
+        }
+
+    override suspend fun saveSnoozeState(
+        instanceId: String,
+        scheduledTime: Instant,
+        snoozeCount: Int
+    ): Unit = withContext(Dispatchers.IO) {
+        queries.insertOrReplaceSnoozeState(
+            habitInstanceId = instanceId,
+            scheduledTime = scheduledTime.toString(),
+            snoozeCount = snoozeCount.toLong()
+        )
+    }
+
+    override suspend fun clearSnoozeState(instanceId: String): Unit = withContext(Dispatchers.IO) {
+        queries.deleteSnoozeState(instanceId)
+    }
+
+    override suspend fun getAllSnoozeStates(): List<SnoozeState> = withContext(Dispatchers.IO) {
+        queries.getAllSnoozeStates().executeAsList().map { it.toDomain() }
+    }
+}
+

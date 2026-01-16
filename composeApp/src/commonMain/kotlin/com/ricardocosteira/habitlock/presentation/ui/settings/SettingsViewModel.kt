@@ -1,0 +1,129 @@
+package com.ricardocosteira.habitlock.presentation.ui.settings
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.ricardocosteira.habitlock.domain.models.UndoPolicy
+import com.ricardocosteira.habitlock.domain.repositories.UserRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalTime
+
+class SettingsViewModel(
+    private val userRepository: UserRepository
+) : ViewModel() {
+
+    private val _state = MutableStateFlow(SettingsState())
+    val state: StateFlow<SettingsState> = _state.asStateFlow()
+    
+    private val _events = MutableSharedFlow<SettingsEvent>()
+    val events: SharedFlow<SettingsEvent> = _events.asSharedFlow()
+
+    init {
+        loadSettings()
+    }
+
+    private fun loadSettings() {
+        viewModelScope.launch {
+            userRepository.observeUser().collect { user ->
+                if (user != null) {
+                    _state.update {
+                        it.copy(
+                            undoPolicy = user.undoPolicy,
+                            maxSnoozeDurationMinutes = user.maxSnoozeDurationMinutes,
+                            maxSnoozesPerHabitPerDay = user.maxSnoozesPerHabitPerDay,
+                            maxConsecutiveSkips = user.maxConsecutiveSkips,
+                            dailySummaryTime = user.dailySummaryTime,
+                            currentTimezone = user.timezone.id,
+                            isLoading = false
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateUndoPolicy(policy: UndoPolicy) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSaving = true) }
+            try {
+                val user = userRepository.getUser() ?: return@launch
+                userRepository.updateUser(user.copy(undoPolicy = policy))
+                _events.emit(SettingsEvent.ShowSuccess("Settings saved"))
+            } catch (e: Exception) {
+                _events.emit(SettingsEvent.ShowError(e.message ?: "Failed to save"))
+            } finally {
+                _state.update { it.copy(isSaving = false) }
+            }
+        }
+    }
+
+    fun updateMaxSnoozeDuration(minutes: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSaving = true) }
+            try {
+                val user = userRepository.getUser() ?: return@launch
+                val cappedMinutes = minutes.coerceIn(5, 60)
+                userRepository.updateUser(user.copy(maxSnoozeDurationMinutes = cappedMinutes))
+            } catch (e: Exception) {
+                _events.emit(SettingsEvent.ShowError(e.message ?: "Failed to save"))
+            } finally {
+                _state.update { it.copy(isSaving = false) }
+            }
+        }
+    }
+
+    fun updateMaxSnoozesPerDay(count: Int?) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSaving = true) }
+            try {
+                val user = userRepository.getUser() ?: return@launch
+                userRepository.updateUser(user.copy(maxSnoozesPerHabitPerDay = count))
+            } catch (e: Exception) {
+                _events.emit(SettingsEvent.ShowError(e.message ?: "Failed to save"))
+            } finally {
+                _state.update { it.copy(isSaving = false) }
+            }
+        }
+    }
+
+    fun updateMaxConsecutiveSkips(count: Int?) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSaving = true) }
+            try {
+                val user = userRepository.getUser() ?: return@launch
+                userRepository.updateUser(user.copy(maxConsecutiveSkips = count))
+            } catch (e: Exception) {
+                _events.emit(SettingsEvent.ShowError(e.message ?: "Failed to save"))
+            } finally {
+                _state.update { it.copy(isSaving = false) }
+            }
+        }
+    }
+
+    fun updateDailySummaryTime(time: LocalTime?) {
+        viewModelScope.launch {
+            _state.update { it.copy(isSaving = true) }
+            try {
+                val user = userRepository.getUser() ?: return@launch
+                userRepository.updateUser(user.copy(dailySummaryTime = time))
+                _events.emit(SettingsEvent.ShowSuccess("Daily summary time updated"))
+            } catch (e: Exception) {
+                _events.emit(SettingsEvent.ShowError(e.message ?: "Failed to save"))
+            } finally {
+                _state.update { it.copy(isSaving = false) }
+            }
+        }
+    }
+}
+
+sealed interface SettingsEvent {
+    data class ShowSuccess(val message: String) : SettingsEvent
+    data class ShowError(val message: String) : SettingsEvent
+}
+
