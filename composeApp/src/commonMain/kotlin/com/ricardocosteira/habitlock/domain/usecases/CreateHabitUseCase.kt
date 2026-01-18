@@ -7,6 +7,7 @@ import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import kotlin.time.Clock
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 
 /**
@@ -23,6 +24,10 @@ class CreateHabitUseCase(
         val type: HabitType,
         val targetValue: Int?,
         val unit: String?,
+        val scheduleType: ScheduleType = ScheduleType.DAILY,
+        val quota: Int = 1,
+        val weekStartDay: DayOfWeek = DayOfWeek.MONDAY,
+        val specificDays: Set<DayOfWeek>? = null,
         val reminder: HabitReminder?
     )
 
@@ -31,6 +36,14 @@ class CreateHabitUseCase(
             return Result.failure(IllegalArgumentException("Habit name cannot be empty"))
         }
         
+        if (params.quota <= 0) {
+            return Result.failure(IllegalArgumentException("Quota must be greater than 0"))
+        }
+
+        if (params.scheduleType == ScheduleType.WEEKLY && params.specificDays != null && params.specificDays.isEmpty()) {
+            return Result.failure(IllegalArgumentException("Specific days cannot be empty for weekly schedules"))
+        }
+
         val habitId = uuidProvider.generate()
         val now = Clock.System.now()
         
@@ -52,9 +65,12 @@ class CreateHabitUseCase(
         val schedule = HabitSchedule(
             id = uuidProvider.generate(),
             habitId = habitId,
-            scheduleType = ScheduleType.DAILY,
+            scheduleType = params.scheduleType,
             startDate = startDate,
-            endDate = null
+            endDate = null,
+            quota = params.quota,
+            weekStartDay = params.weekStartDay,
+            specificDays = params.specificDays
         )
         
         val reminder = params.reminder?.copy(

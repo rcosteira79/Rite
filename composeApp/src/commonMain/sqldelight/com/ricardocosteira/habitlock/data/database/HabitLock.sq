@@ -35,6 +35,9 @@ CREATE TABLE HabitSchedule (
     scheduleType TEXT NOT NULL DEFAULT 'DAILY',
     startDate TEXT NOT NULL,
     endDate TEXT,
+    quota INTEGER NOT NULL DEFAULT 1,
+    weekStartDay TEXT NOT NULL DEFAULT 'MONDAY',
+    specificDays TEXT,
     FOREIGN KEY (habitId) REFERENCES Habit(id) ON DELETE CASCADE
 );
 
@@ -162,11 +165,11 @@ getScheduleForHabit:
 SELECT * FROM HabitSchedule WHERE habitId = ?;
 
 insertSchedule:
-INSERT INTO HabitSchedule (id, habitId, scheduleType, startDate, endDate)
-VALUES (?, ?, ?, ?, ?);
+INSERT INTO HabitSchedule (id, habitId, scheduleType, startDate, endDate, quota, weekStartDay, specificDays)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 updateSchedule:
-UPDATE HabitSchedule SET scheduleType = ?, startDate = ?, endDate = ? WHERE id = ?;
+UPDATE HabitSchedule SET scheduleType = ?, startDate = ?, endDate = ?, quota = ?, weekStartDay = ?, specificDays = ? WHERE id = ?;
 
 deleteScheduleForHabit:
 DELETE FROM HabitSchedule WHERE habitId = ?;
@@ -254,4 +257,3 @@ DELETE FROM SnoozeState WHERE habitInstanceId = ?;
 
 getAllSnoozeStates:
 SELECT * FROM SnoozeState;
-

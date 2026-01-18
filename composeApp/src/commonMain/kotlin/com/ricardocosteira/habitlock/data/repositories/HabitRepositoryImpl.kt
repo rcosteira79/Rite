@@ -69,7 +69,10 @@ class HabitRepositoryImpl(
                 habitId = schedule.habitId,
                 scheduleType = schedule.scheduleType.name,
                 startDate = schedule.startDate.toString(),
-                endDate = schedule.endDate?.toString()
+                endDate = schedule.endDate?.toString(),
+                quota = schedule.quota.toLong(),
+                weekStartDay = schedule.weekStartDay.name,
+                specificDays = schedule.specificDays?.joinToString(",") { it.name }
             )
 
             reminder?.let {
@@ -155,4 +158,3 @@ class HabitRepositoryImpl(
         queries.deleteReminder(reminderId)
     }
 }
-

@@ -13,6 +13,7 @@ import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.models.SnoozeState
 import com.ricardocosteira.habitlock.domain.models.UndoPolicy
 import com.ricardocosteira.habitlock.domain.models.User
+import kotlinx.datetime.DayOfWeek
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -66,7 +67,13 @@ object EntityMappers {
         habitId = habitId,
         scheduleType = ScheduleType.valueOf(scheduleType),
         startDate = LocalDate.parse(startDate),
-        endDate = endDate?.let { LocalDate.parse(it) }
+        endDate = endDate?.let { LocalDate.parse(it) },
+        quota = quota.toInt(),
+        weekStartDay = DayOfWeek.valueOf(weekStartDay),
+        specificDays = specificDays?.split(",")
+            ?.filter { it.isNotBlank() }
+            ?.map { DayOfWeek.valueOf(it.trim()) }
+            ?.toSet()
     )
 
     // HabitReminder mappers
@@ -109,4 +116,3 @@ object EntityMappers {
         snoozeCount = snoozeCount.toInt()
     )
 }
-
