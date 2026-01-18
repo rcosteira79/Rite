@@ -111,24 +111,92 @@ fun TodayScreen(
                     EmptyHabitsMessage(onAddHabitClick = onAddHabitClick)
                 }
                 else -> {
+                    // Group habits by cadence and status
+                    val dailyHabits = state.habits.filter { it.isDaily && !it.isSuspended }
+                    val weeklyHabits = state.habits.filter { it.isWeekly && !it.isSuspended }
+                    val suspendedHabits = state.habits.filter { it.isSuspended }
+                    
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        items(
-                            items = state.habits,
-                            key = { it.instanceId }
-                        ) { habit ->
-                            HabitCard(
-                                habit = habit,
-                                onClick = { onHabitClick(habit.instanceId) },
-                                onCompleteClick = { onCompleteClick(habit.instanceId) },
-                                onSkipClick = { onSkipClick(habit.instanceId) },
-                                onUndoClick = { onUndoClick(habit.instanceId) },
-                                onEditClick = { onEditClick(habit.habitId) },
-                                onArchiveClick = { onArchiveClick(habit.habitId) }
-                            )
+                        // Daily Habits Section
+                        if (dailyHabits.isNotEmpty()) {
+                            item {
+                                Text(
+                                    text = "Daily Habits",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
+                            items(
+                                items = dailyHabits,
+                                key = { it.instanceId }
+                            ) { habit ->
+                                HabitCard(
+                                    habit = habit,
+                                    onClick = { onHabitClick(habit.instanceId) },
+                                    onCompleteClick = { onCompleteClick(habit.instanceId) },
+                                    onSkipClick = { onSkipClick(habit.instanceId) },
+                                    onUndoClick = { onUndoClick(habit.instanceId) },
+                                    onEditClick = { onEditClick(habit.habitId) },
+                                    onArchiveClick = { onArchiveClick(habit.habitId) }
+                                )
+                            }
+                        }
+                        
+                        // Weekly Habits Section
+                        if (weeklyHabits.isNotEmpty()) {
+                            item {
+                                Text(
+                                    text = "Weekly Habits",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
+                            items(
+                                items = weeklyHabits,
+                                key = { it.instanceId }
+                            ) { habit ->
+                                HabitCard(
+                                    habit = habit,
+                                    onClick = { onHabitClick(habit.instanceId) },
+                                    onCompleteClick = { onCompleteClick(habit.instanceId) },
+                                    onSkipClick = { onSkipClick(habit.instanceId) },
+                                    onUndoClick = { onUndoClick(habit.instanceId) },
+                                    onEditClick = { onEditClick(habit.habitId) },
+                                    onArchiveClick = { onArchiveClick(habit.habitId) }
+                                )
+                            }
+                        }
+                        
+                        // Suspended Habits Section
+                        if (suspendedHabits.isNotEmpty()) {
+                            item {
+                                Text(
+                                    text = "Suspended Habits",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
+                            items(
+                                items = suspendedHabits,
+                                key = { it.instanceId }
+                            ) { habit ->
+                                HabitCard(
+                                    habit = habit,
+                                    onClick = { onHabitClick(habit.instanceId) },
+                                    onCompleteClick = { onCompleteClick(habit.instanceId) },
+                                    onSkipClick = { onSkipClick(habit.instanceId) },
+                                    onUndoClick = { onUndoClick(habit.instanceId) },
+                                    onEditClick = { onEditClick(habit.habitId) },
+                                    onArchiveClick = { onArchiveClick(habit.habitId) }
+                                )
+                            }
                         }
                     }
                 }
@@ -266,12 +334,27 @@ private fun HabitCard(
                             )
                         }
                         
-                        // Streak info
-                        if (habit.currentStreak > 0) {
+                        // Streak and Score info
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (habit.currentStreak > 0) {
+                                Text(
+                                    text = "🔥 ${habit.currentStreak} day streak",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            
                             Text(
-                                text = "🔥 ${habit.currentStreak} day streak",
+                                text = "📊 Score: ${habit.scoreText}",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.primary
+                                color = when {
+                                    habit.scorePercentage >= 100 -> MaterialTheme.colorScheme.primary
+                                    habit.scorePercentage >= 75 -> MaterialTheme.colorScheme.tertiary
+                                    else -> MaterialTheme.colorScheme.onSurfaceVariant
+                                }
                             )
                         }
                     }

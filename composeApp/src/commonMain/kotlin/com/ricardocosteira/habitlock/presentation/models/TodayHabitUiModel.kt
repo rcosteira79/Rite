@@ -21,12 +21,15 @@ data class TodayHabitUiModel(
     val progressPercentage: Float,
     val isSkipLocked: Boolean,
     val currentStreak: Int,
-    val longestStreak: Int
+    val longestStreak: Int,
+    val scorePercentage: Int,
+    val cadence: String
 ) {
     val isCompleted: Boolean get() = status == HabitStatus.COMPLETED
     val isSkipped: Boolean get() = status == HabitStatus.SKIPPED
     val isFailed: Boolean get() = status == HabitStatus.FAILED
     val isPending: Boolean get() = status == HabitStatus.PENDING
+    val isSuspended: Boolean get() = status == HabitStatus.SUSPENDED
     
     val progressText: String get() {
         return if (type == HabitType.QUANTITATIVE && targetValue != null) {
@@ -35,6 +38,11 @@ data class TodayHabitUiModel(
             ""
         }
     }
+    
+    val scoreText: String get() = "$scorePercentage%"
+    
+    val isDaily: Boolean get() = cadence == "DAILY"
+    val isWeekly: Boolean get() = cadence == "WEEKLY"
 }
 
 /**
@@ -45,6 +53,7 @@ fun mapToTodayHabitUiModel(
     habit: Habit,
     maxConsecutiveSkips: Int?
 ): TodayHabitUiModel {
+    val score = habit.calculateScore()
     return TodayHabitUiModel(
         instanceId = instance.id,
         habitId = habit.id,
@@ -58,6 +67,8 @@ fun mapToTodayHabitUiModel(
         progressPercentage = instance.progressPercentage(),
         isSkipLocked = instance.isSkipLocked(maxConsecutiveSkips),
         currentStreak = habit.currentStreak,
-        longestStreak = habit.longestStreak
+        longestStreak = habit.longestStreak,
+        scorePercentage = score.percentage,
+        cadence = habit.schedule.cadence.name
     )
 }

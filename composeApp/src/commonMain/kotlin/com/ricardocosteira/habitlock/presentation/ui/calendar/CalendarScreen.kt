@@ -181,13 +181,26 @@ fun CalendarScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Legend
-            Row(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                LegendItem(color = MaterialTheme.colorScheme.primary, label = "Perfect")
-                LegendItem(color = MaterialTheme.colorScheme.tertiary, label = "Partial")
-                LegendItem(color = MaterialTheme.colorScheme.error, label = "Failed")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    LegendItem(color = MaterialTheme.colorScheme.primary, label = "Perfect")
+                    LegendItem(color = MaterialTheme.colorScheme.tertiary, label = "Best Effort")
+                    LegendItem(color = MaterialTheme.colorScheme.secondary, label = "Partial")
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    LegendItem(color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f), label = "Rough Day")
+                    LegendItem(color = MaterialTheme.colorScheme.error, label = "Failed")
+                    LegendItem(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), label = "Future")
+                }
             }
         }
     }
@@ -200,24 +213,32 @@ private fun CalendarDayCell(
 ) {
     val backgroundColor = when (day.classification) {
         DayClassification.PERFECT -> MaterialTheme.colorScheme.primary
-        DayClassification.PARTIAL -> MaterialTheme.colorScheme.tertiary
+        DayClassification.BEST_EFFORT -> MaterialTheme.colorScheme.tertiary
+        DayClassification.PARTIAL -> MaterialTheme.colorScheme.secondary
+        DayClassification.ROUGH_DAY -> MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
         DayClassification.FAILED -> MaterialTheme.colorScheme.error
+        DayClassification.FUTURE -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         DayClassification.NONE -> MaterialTheme.colorScheme.surfaceVariant
     }
 
     val textColor = when (day.classification) {
         DayClassification.PERFECT -> MaterialTheme.colorScheme.onPrimary
-        DayClassification.PARTIAL -> MaterialTheme.colorScheme.onTertiary
+        DayClassification.BEST_EFFORT -> MaterialTheme.colorScheme.onTertiary
+        DayClassification.PARTIAL -> MaterialTheme.colorScheme.onSecondary
+        DayClassification.ROUGH_DAY -> MaterialTheme.colorScheme.onError
         DayClassification.FAILED -> MaterialTheme.colorScheme.onError
+        DayClassification.FUTURE -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
         DayClassification.NONE -> MaterialTheme.colorScheme.onSurfaceVariant
     }
+
+    val isClickable = day.classification !in listOf(DayClassification.NONE, DayClassification.FUTURE)
 
     Box(
         modifier = Modifier
             .aspectRatio(1f)
             .clip(CircleShape)
             .background(backgroundColor)
-            .clickable(enabled = day.classification != DayClassification.NONE, onClick = onClick),
+            .clickable(enabled = isClickable, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Text(
