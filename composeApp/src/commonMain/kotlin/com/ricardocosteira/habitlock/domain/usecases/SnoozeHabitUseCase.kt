@@ -1,5 +1,6 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.SnoozeState
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.SnoozeRepository
@@ -9,6 +10,9 @@ import kotlin.time.Duration.Companion.minutes
 
 /**
  * Snoozes a habit reminder.
+ * 
+ * Snoozing delays the notification for a habit without marking it as skipped or completed.
+ * The habit remains in PENDING status and can be completed later.
  */
 class SnoozeHabitUseCase(
     private val habitInstanceRepository: HabitInstanceRepository,
@@ -24,6 +28,11 @@ class SnoozeHabitUseCase(
     suspend fun execute(instanceId: String, durationMinutes: Int): Result<SnoozeState> {
         val instance = habitInstanceRepository.getInstanceById(instanceId)
             ?: return Result.failure(IllegalArgumentException("Instance not found"))
+        
+        // Only PENDING instances can be snoozed
+        if (instance.status != HabitStatus.PENDING) {
+            return Result.failure(IllegalStateException("Only pending habits can be snoozed"))
+        }
         
         val user = userRepository.getUser()
             ?: return Result.failure(IllegalStateException("User not found"))

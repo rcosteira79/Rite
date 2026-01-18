@@ -247,44 +247,52 @@ HabitScore = min(150, (TotalCompletions / ExpectedCompletions) * 100)
 ### 2.4 Snooze Implementation
 
 **Tasks:**
-- [ ] Create `SnoozeHabitUseCase` implementation
-- [ ] Integrate snooze limits from user preferences
-- [ ] Handle snooze expiration and re-notification
+- [x] Create `SnoozeHabitUseCase` implementation
+- [x] Integrate snooze limits from user preferences
+- [x] Create `ClearSnoozeStateUseCase` for cleanup
+
+**Status:** ✅ COMPLETE (Completed on January 18, 2026)
 
 **Current State:**
-- `SnoozeState` table exists
-- `SnoozeRepository` exists
-- Missing use case implementation
+- `SnoozeState` table exists (from Phase 1)
+- `SnoozeRepository` exists (from Phase 1)
+- Use cases now implemented
 
 **Implementation:**
-```kotlin
-class SnoozeHabitUseCase(
-    private val snoozeRepository: SnoozeRepository,
-    private val userRepository: UserRepository
-) {
-    suspend fun execute(instanceId: String, durationMinutes: Int): Result<SnoozeState> {
-        val user = userRepository.getUser() ?: return Result.failure(...)
-        val currentSnooze = snoozeRepository.getSnoozeState(instanceId)
-        
-        // Check snooze limits
-        if (user.maxSnoozesPerHabitPerDay != null && 
-            currentSnooze?.snoozeCount ?: 0 >= user.maxSnoozesPerHabitPerDay) {
-            return Result.failure(SnoozeLimitReachedException())
-        }
-        
-        // Create/update snooze state
-        // Schedule re-notification
-    }
-}
-```
+- Completed SnoozeHabitUseCase with validation
+- Only PENDING instances can be snoozed
+- Enforces user's max snoozes per day limit
+- Caps duration to user's max snooze duration
+- Tracks snooze count per instance
+- Created ClearSnoozeStateUseCase for cleanup
+- Added both use cases to DI container
+
+**Files Modified:**
+- `domain/usecases/SnoozeHabitUseCase.kt` - Completed implementation
+- `domain/usecases/ClearSnoozeStateUseCase.kt` - NEW
+- `di/AppModule.kt` - Added snooze use cases
+
+**Note:** Snooze expiration and re-notification will be handled in Phase 3 (Background Processing & Notifications) when WorkManager and notification scheduling are implemented.
 
 ### 2.5 Over-Completion Handling
 
 **Tasks:**
-- [ ] Allow completing beyond quota
-- [ ] Track over-completion in HabitCompletionEvent
-- [ ] Add over-completion to score calculation
-- [ ] Optional: Prompt to update quota after consistent over-completion
+- [x] Allow completing beyond quota
+- [x] Track over-completion in HabitCompletionEvent
+- [x] Add over-completion to score calculation
+- [ ] Optional: Prompt to update quota after consistent over-completion (UI feature for Phase 4)
+
+**Status:** ✅ COMPLETE (Core functionality implemented in Phase 2.2)
+
+**Implementation:**
+- `executeQuantitative` allows adding progress beyond quota
+- All completions tracked as HabitCompletionEvents
+- HabitScore supports over-completion up to 150% (configurable)
+- HabitScore provides `overCompletionCount` property
+- Score calculation automatically handles over-completion
+- UI prompt for quota adjustment deferred to Phase 4
+
+**Note:** The core over-completion functionality was already implemented as part of Phase 2.2 (Habit Score Calculation). The only remaining task is the optional UI prompt to suggest quota updates, which will be implemented in Phase 4 (UI Completion).
 
 ---
 

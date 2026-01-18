@@ -16,12 +16,14 @@ import com.ricardocosteira.habitlock.domain.repositories.SnoozeRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import com.ricardocosteira.habitlock.domain.usecases.ApplyStrictnessPresetUseCase
 import com.ricardocosteira.habitlock.domain.usecases.CalculateHabitScoreUseCase
+import com.ricardocosteira.habitlock.domain.usecases.ClearSnoozeStateUseCase
 import com.ricardocosteira.habitlock.domain.usecases.CompleteHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabitsUseCase
 import com.ricardocosteira.habitlock.domain.usecases.GetWeeklyInstancesUseCase
 import com.ricardocosteira.habitlock.domain.usecases.ProcessEndOfDayUseCase
 import com.ricardocosteira.habitlock.domain.usecases.SkipHabitUseCase
+import com.ricardocosteira.habitlock.domain.usecases.SnoozeHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.SuspendHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.UndoHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.UnsuspendHabitUseCase
@@ -139,6 +141,14 @@ class AppModule(
         UnsuspendHabitUseCase(leavePeriodRepository, userRepository)
     }
 
+    private val snoozeHabitUseCase: SnoozeHabitUseCase by lazy {
+        SnoozeHabitUseCase(habitInstanceRepository, snoozeRepository, userRepository)
+    }
+
+    private val clearSnoozeStateUseCase: ClearSnoozeStateUseCase by lazy {
+        ClearSnoozeStateUseCase(snoozeRepository)
+    }
+
     // Public provider methods
     fun provideUserRepository(): UserRepository = userRepository
     
@@ -149,6 +159,10 @@ class AppModule(
     fun provideUnsuspendHabitUseCase(): UnsuspendHabitUseCase = unsuspendHabitUseCase
     
     fun provideLeavePeriodRepository(): LeavePeriodRepository = leavePeriodRepository
+    
+    fun provideSnoozeHabitUseCase(): SnoozeHabitUseCase = snoozeHabitUseCase
+    
+    fun provideClearSnoozeStateUseCase(): ClearSnoozeStateUseCase = clearSnoozeStateUseCase
 
     fun provideOnboardingViewModel(): OnboardingViewModel {
         return OnboardingViewModel(
