@@ -274,6 +274,14 @@ HabitScore = min(150, (TotalCompletions / ExpectedCompletions) * 100)
 
 **Note:** Snooze expiration and re-notification will be handled in Phase 3 (Background Processing & Notifications) when WorkManager and notification scheduling are implemented.
 
+**Tests Created:**
+- `CalculateHabitScoreUseCaseTest` - 7 tests
+- `SuspendHabitUseCaseTest` - 7 tests
+- `UnsuspendHabitUseCaseTest` - 8 tests
+- `SnoozeHabitUseCaseTest` - 9 tests
+- `ClearSnoozeStateUseCaseTest` - 7 tests
+- Total: 38 new tests, all passing
+
 ### 2.5 Over-Completion Handling
 
 **Tasks:**
