@@ -39,6 +39,14 @@ class HabitFormViewModel(
         }
     }
 
+    /**
+     * Factory interface for creating HabitFormViewModel instances.
+     * Used by dependency injection to allow dynamic habit ID parameter.
+     */
+    interface Factory {
+        fun create(habitIdToEdit: String? = null): HabitFormViewModel
+    }
+
     private fun loadHabit(habitId: String) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }

@@ -101,17 +101,41 @@ data class LeavePeriod(
 **Files modified:**
 - `HabitRepositoryImpl.kt` - Updated to handle HabitSchedule with new fields
 
-### 1.4 Dependency Injection Setup (Metro)
+### 1.4 Dependency Injection Setup (Manual DI)
 
 **Tasks:**
-- [ ] Add Metro plugin and dependencies to build.gradle.kts
-- [ ] Create app-level Metro graph
-- [ ] Migrate manual dependency creation in `App.kt` to Metro
+- [x] Create clean DI container with `HabitLockAppComponent`
+- [x] Create `AppModule` with lazy initialization for singletons
+- [x] Migrate manual dependency creation in `App.kt` to use DI container
+- [x] Add Factory pattern for HabitFormViewModel dynamic creation
 
-**Implementation Considerations:**
-- Metro uses KSP for code generation
-- Define @Provides functions for repositories and use cases
-- Consider feature-scoped graphs for better memory management
+**Status:** ✅ COMPLETE (Completed on January 18, 2026)
+
+**Implementation Approach:**
+- Manual DI with lazy initialization instead of code generation frameworks
+- Clean, testable architecture with proper scoping
+- Single source of truth for all dependencies
+- Factory pattern for ViewModels that need dynamic parameters
+
+**Files created:**
+- `di/HabitLockAppComponent.kt` - Main DI container
+- `di/AppModule.kt` - Dependency providers with lazy singletons
+
+**Files modified:**
+- `App.kt` - Migrated to use DI container
+- `presentation/ui/habit/HabitFormViewModel.kt` - Added Factory interface
+- `presentation/navigation/HabitLockNavHost.kt` - Updated to use factory with habitId parameter
+- `build.gradle.kts` - Cleaned up unnecessary plugin dependencies
+
+**DI Framework Research:**
+- **Metro DI:** Evaluated but has limited KMP support with KSP
+- **kotlin-inject:** Thoroughly researched - excellent KMP DI framework but not needed yet
+  - Full analysis in `KOTLIN_INJECT_ASSESSMENT.md`
+  - Mature, production-ready, used by Cash App
+  - Compile-time safety, minimal overhead
+  - Decision: Manual DI is sufficient for current project size (15 repos, 10 use cases)
+  - Reconsider when: 30+ dependencies, team grows, or circular dependency issues arise
+- **Manual DI:** Chosen for simplicity, full KMP support, and adequate for current scale
 
 ---
 

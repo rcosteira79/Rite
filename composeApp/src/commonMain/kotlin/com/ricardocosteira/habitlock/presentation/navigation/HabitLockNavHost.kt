@@ -49,7 +49,7 @@ fun HabitLockNavHost(
     calendarViewModel: CalendarViewModel,
     settingsViewModel: SettingsViewModel,
     archivedHabitsViewModel: ArchivedHabitsViewModel,
-    createHabitFormViewModel: () -> HabitFormViewModel,
+    createHabitFormViewModel: (String?) -> HabitFormViewModel,
     modifier: Modifier = Modifier
 ) {
     var currentRoute by remember {
@@ -246,7 +246,7 @@ fun HabitLockNavHost(
         }
 
         Route.CreateHabit -> {
-            val viewModel = remember { createHabitFormViewModel() }
+            val viewModel = remember { createHabitFormViewModel(null) }
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             LaunchedEffect(Unit) {
@@ -279,7 +279,7 @@ fun HabitLockNavHost(
 
         is Route.EditHabit -> {
             // Similar to CreateHabit but with habitId
-            val viewModel = remember { createHabitFormViewModel() }
+            val viewModel = remember { createHabitFormViewModel(currentRoute.habitId) }
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             HabitFormScreen(
