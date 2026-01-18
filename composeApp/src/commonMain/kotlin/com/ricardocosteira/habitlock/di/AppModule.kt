@@ -152,6 +152,12 @@ class AppModule(
     // Public provider methods
     fun provideUserRepository(): UserRepository = userRepository
     
+    fun provideHabitRepository(): HabitRepository = habitRepository
+    
+    fun provideHabitInstanceRepository(): HabitInstanceRepository = habitInstanceRepository
+    
+    fun provideHabitCompletionEventRepository(): HabitCompletionEventRepository = habitCompletionEventRepository
+    
     fun provideCalculateHabitScoreUseCase(): CalculateHabitScoreUseCase = calculateHabitScoreUseCase
     
     fun provideSuspendHabitUseCase(): SuspendHabitUseCase = suspendHabitUseCase
@@ -163,6 +169,16 @@ class AppModule(
     fun provideSnoozeHabitUseCase(): SnoozeHabitUseCase = snoozeHabitUseCase
     
     fun provideClearSnoozeStateUseCase(): ClearSnoozeStateUseCase = clearSnoozeStateUseCase
+    
+    fun provideGenerateDailyHabitsUseCase(): GenerateDailyHabitsUseCase = generateDailyHabitsUseCase
+    
+    fun provideProcessEndOfDayUseCase(): ProcessEndOfDayUseCase = processEndOfDayUseCase
+    
+    fun provideCompleteHabitUseCase(): CompleteHabitUseCase = completeHabitUseCase
+    
+    fun provideSkipHabitUseCase(): SkipHabitUseCase = skipHabitUseCase
+    
+    fun provideUndoHabitUseCase(): UndoHabitUseCase = undoHabitUseCase
 
     fun provideOnboardingViewModel(): OnboardingViewModel {
         return OnboardingViewModel(
