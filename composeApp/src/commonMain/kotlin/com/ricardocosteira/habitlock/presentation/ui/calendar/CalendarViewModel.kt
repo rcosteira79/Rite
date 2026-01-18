@@ -7,6 +7,7 @@ import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import com.ricardocosteira.habitlock.presentation.models.CalendarDayUiModel
 import com.ricardocosteira.habitlock.presentation.models.DayClassification
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +21,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
 
 class CalendarViewModel(
     private val userRepository: UserRepository,
@@ -141,7 +143,7 @@ class CalendarViewModel(
 
                 _state.update {
                     it.copy(
-                        days = days,
+                        days = days.toImmutableList(),
                         isLoading = false,
                         perfectDaysCount = perfectCount,
                         totalDaysTracked = trackedCount
@@ -154,5 +156,4 @@ class CalendarViewModel(
     }
 }
 
-private fun kotlin.time.Instant.toLocalDate(timezone: TimeZone) =
-    this.toLocalDateTime(timezone).date
+private fun Instant.toLocalDate(timezone: TimeZone) = this.toLocalDateTime(timezone).date
