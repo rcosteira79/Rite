@@ -43,8 +43,10 @@ This roadmap outlines the development plan for HabitLock, a habit enforcing app 
 **Tasks:**
 - [x] Add `HabitSchedule` domain model with proper cadence (DAILY/WEEKLY) support
 - [x] Add `HabitScore` computation model
-- [ ] Add `LeavePeriod` model for suspension tracking
-- [ ] Ensure `StrictnessPreset` enum properly maps to undo/skip/snooze limits
+- [x] Add `LeavePeriod` model for suspension tracking
+- [x] Ensure `StrictnessPreset` enum properly maps to undo/skip/snooze limits
+
+**Status:** ✅ COMPLETE (All tasks completed on January 18, 2026)
 
 **Files to modify/create:**
 - `domain/models/HabitSchedule.kt` - Add scheduleType field mapping
@@ -74,23 +76,30 @@ data class LeavePeriod(
 ### 1.2 Database Schema Updates
 
 **Tasks:**
-- [ ] Add `LeavePeriod` table for tracking suspension periods
-- [ ] Update HabitSchedule to support WEEKLY cadence properly
-- [ ] Add indexes for leave period queries
+- [x] Add `LeavePeriod` table for tracking suspension periods
+- [x] Update HabitSchedule to support WEEKLY cadence properly
+- [x] Add indexes for leave period queries
 
-**Files to modify:**
-- `HabitLock.sq` - Add LeavePeriod table and queries
+**Status:** ✅ COMPLETE (Completed on January 18, 2026)
+
+**Files modified:**
+- `HabitLock.sq` - Added LeavePeriod table, updated HabitSchedule table, added all necessary indexes and queries
 
 ### 1.3 Repository Layer Completion
 
 **Tasks:**
-- [ ] Create `LeavePeriodRepository` interface and implementation
-- [ ] Add leave period queries to existing repositories
-- [ ] Update `HabitRepository` to support weekly habits filtering
+- [x] Create `LeavePeriodRepository` interface and implementation
+- [x] Add leave period queries to existing repositories
+- [x] Update `HabitRepository` to support weekly habits filtering
 
-**Files to create:**
+**Status:** ✅ COMPLETE (Completed on January 18, 2026)
+
+**Files created:**
 - `domain/repositories/LeavePeriodRepository.kt`
 - `data/repositories/LeavePeriodRepositoryImpl.kt`
+
+**Files modified:**
+- `HabitRepositoryImpl.kt` - Updated to handle HabitSchedule with new fields
 
 ### 1.4 Dependency Injection Setup (Metro)
 

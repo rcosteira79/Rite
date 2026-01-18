@@ -85,6 +85,17 @@ CREATE TABLE SnoozeState (
     FOREIGN KEY (habitInstanceId) REFERENCES HabitInstance(id) ON DELETE CASCADE
 );
 
+-- LeavePeriod table: tracks habit suspension periods
+CREATE TABLE LeavePeriod (
+    id TEXT NOT NULL PRIMARY KEY,
+    habitId TEXT NOT NULL,
+    startDate TEXT NOT NULL,
+    endDate TEXT,
+    reason TEXT,
+    createdAt TEXT NOT NULL,
+    FOREIGN KEY (habitId) REFERENCES Habit(id) ON DELETE CASCADE
+);
+
 -- Indexes for performance
 CREATE INDEX idx_habit_instance_date ON HabitInstance(date);
 CREATE INDEX idx_habit_instance_habit_id ON HabitInstance(habitId);
@@ -92,6 +103,8 @@ CREATE INDEX idx_habit_instance_status ON HabitInstance(status);
 CREATE INDEX idx_habit_completion_event_instance_id ON HabitCompletionEvent(habitInstanceId);
 CREATE INDEX idx_habit_schedule_habit_id ON HabitSchedule(habitId);
 CREATE INDEX idx_habit_reminder_habit_id ON HabitReminder(habitId);
+CREATE INDEX idx_leave_period_habit_id ON LeavePeriod(habitId);
+CREATE INDEX idx_leave_period_dates ON LeavePeriod(startDate, endDate);
 
 -- User queries
 getUser:
@@ -257,3 +270,39 @@ DELETE FROM SnoozeState WHERE habitInstanceId = ?;
 
 getAllSnoozeStates:
 SELECT * FROM SnoozeState;
+
+-- LeavePeriod queries
+getLeavePeriodById:
+SELECT * FROM LeavePeriod WHERE id = ?;
+
+getLeavePeriodsByHabit:
+SELECT * FROM LeavePeriod WHERE habitId = ? ORDER BY startDate DESC;
+
+getActiveLeavePeriod:
+SELECT * FROM LeavePeriod
+WHERE habitId = ?
+  AND startDate <= ?
+  AND (endDate IS NULL OR endDate >= ?)
+LIMIT 1;
+
+getAllActiveLeavePeriods:
+SELECT * FROM LeavePeriod
+WHERE startDate <= ?
+  AND (endDate IS NULL OR endDate >= ?);
+
+insertLeavePeriod:
+INSERT INTO LeavePeriod (id, habitId, startDate, endDate, reason, createdAt)
+VALUES (?, ?, ?, ?, ?, ?);
+
+updateLeavePeriod:
+UPDATE LeavePeriod SET startDate = ?, endDate = ?, reason = ? WHERE id = ?;
+
+updateLeavePeriodEndDate:
+UPDATE LeavePeriod SET endDate = ? WHERE id = ?;
+
+deleteLeavePeriod:
+DELETE FROM LeavePeriod WHERE id = ?;
+
+deleteLeavePeriodsForHabit:
+DELETE FROM LeavePeriod WHERE habitId = ?;
+

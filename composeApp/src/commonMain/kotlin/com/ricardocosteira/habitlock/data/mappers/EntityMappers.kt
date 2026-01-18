@@ -8,6 +8,7 @@ import com.ricardocosteira.habitlock.domain.models.HabitReminder
 import com.ricardocosteira.habitlock.domain.models.HabitSchedule
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
+import com.ricardocosteira.habitlock.domain.models.LeavePeriod
 import com.ricardocosteira.habitlock.domain.models.ReminderType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.models.SnoozeState
@@ -23,6 +24,7 @@ import com.ricardocosteira.habitlock.data.database.HabitCompletionEvent as DbHab
 import com.ricardocosteira.habitlock.data.database.HabitInstance as DbHabitInstance
 import com.ricardocosteira.habitlock.data.database.HabitReminder as DbHabitReminder
 import com.ricardocosteira.habitlock.data.database.HabitSchedule as DbHabitSchedule
+import com.ricardocosteira.habitlock.data.database.LeavePeriod as DbLeavePeriod
 import com.ricardocosteira.habitlock.data.database.SnoozeState as DbSnoozeState
 import com.ricardocosteira.habitlock.data.database.User as DbUser
 
@@ -114,5 +116,15 @@ object EntityMappers {
         habitInstanceId = habitInstanceId,
         scheduledTime = Instant.parse(scheduledTime),
         snoozeCount = snoozeCount.toInt()
+    )
+
+    // LeavePeriod mappers
+    fun DbLeavePeriod.toDomain(): LeavePeriod = LeavePeriod(
+        id = id,
+        habitId = habitId,
+        startDate = LocalDate.parse(startDate),
+        endDate = endDate?.let { LocalDate.parse(it) },
+        reason = reason,
+        createdAt = Instant.parse(createdAt)
     )
 }

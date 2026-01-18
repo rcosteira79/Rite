@@ -1,7 +1,6 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
-import com.ricardocosteira.habitlock.domain.models.UndoPolicy
 import com.ricardocosteira.habitlock.domain.models.User
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 
@@ -16,26 +15,14 @@ class ApplyStrictnessPresetUseCase(
         val user = userRepository.getUser()
             ?: return Result.failure(IllegalStateException("User not found"))
 
-        val updatedUser = when (preset) {
-            StrictnessPreset.FLEXIBLE -> user.copy(
-                undoPolicy = UndoPolicy.ALL_HISTORY,
-                maxSnoozesPerHabitPerDay = null, // unlimited
-                maxSnoozeDurationMinutes = 60,
-                maxConsecutiveSkips = null // no skip limit
-            )
-            StrictnessPreset.BALANCED -> user.copy(
-                undoPolicy = UndoPolicy.TODAY_ONLY,
-                maxSnoozesPerHabitPerDay = 3,
-                maxSnoozeDurationMinutes = 30,
-                maxConsecutiveSkips = 2
-            )
-            StrictnessPreset.LOCKED -> user.copy(
-                undoPolicy = UndoPolicy.NONE,
-                maxSnoozesPerHabitPerDay = 1,
-                maxSnoozeDurationMinutes = 15,
-                maxConsecutiveSkips = 2
-            )
-        }
+        val settings = preset.toUserSettings()
+
+        val updatedUser = user.copy(
+            undoPolicy = settings.undoPolicy,
+            maxSnoozesPerHabitPerDay = settings.maxSnoozesPerHabitPerDay,
+            maxSnoozeDurationMinutes = settings.maxSnoozeDurationMinutes,
+            maxConsecutiveSkips = settings.maxConsecutiveSkips
+        )
 
         userRepository.updateUser(updatedUser)
 
