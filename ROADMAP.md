@@ -486,15 +486,18 @@ PendingIntent for "Skip" -> SkipHabitUseCase.execute()
 ## Phase 4: UI Completion
 **Duration: 2-3 weeks**
 **Goal: Complete all screens and UI interactions**
+**Status:** 🔄 PARTIALLY COMPLETE (Critical features completed on January 18, 2026)
 
 ### 4.1 Today Screen Enhancements
 
 **Tasks:**
-- [ ] Display Habit Score alongside streak
-- [ ] Show daily vs. weekly habits in separate sections
-- [ ] Implement suspended habits section with early unsuspend
-- [ ] Add swipe actions (complete, skip, snooze)
-- [ ] Show progress bars for quantitative habits
+- [x] Display Habit Score alongside streak
+- [x] Show daily vs. weekly habits in separate sections
+- [x] Implement suspended habits section with early unsuspend
+- [ ] Add swipe actions (complete, skip, snooze) - DEFERRED (nice-to-have)
+- [x] Show progress bars for quantitative habits
+
+**Status:** ✅ COMPLETE (Completed on January 18, 2026, swipe actions deferred)
 
 **UI Components to create/modify:**
 - `HabitCard.kt` - Enhanced card with score display
@@ -504,10 +507,12 @@ PendingIntent for "Skip" -> SkipHabitUseCase.execute()
 ### 4.2 Calendar Screen Implementation
 
 **Tasks:**
-- [ ] Implement day classification logic
-- [ ] Color-code days (PERFECT, BEST_EFFORT, PARTIAL, ROUGH_DAY, FAILED, FUTURE)
-- [ ] Show day detail on tap (list of habits for that day)
-- [ ] Month navigation
+- [x] Implement day classification logic
+- [x] Color-code days (PERFECT, BEST_EFFORT, PARTIAL, ROUGH_DAY, FAILED, FUTURE)
+- [ ] Show day detail on tap (list of habits for that day) - DEFERRED (requires new screen)
+- [x] Month navigation
+
+**Status:** ✅ COMPLETE (Core features completed on January 18, 2026, day detail deferred)
 
 **Day Classification Logic:**
 ```kotlin
@@ -545,11 +550,13 @@ fun classifyDay(instances: List<HabitInstance>): DayClassification {
 ### 4.3 Settings Screen Completion
 
 **Tasks:**
-- [ ] Implement strictness preset switching
-- [ ] Add undo policy configuration
-- [ ] Add snooze settings (max count, duration)
-- [ ] Add skip settings (max consecutive)
-- [ ] Add notification toggle per habit
+- [ ] Implement strictness preset switching - DEFERRED (backend ready, needs UI)
+- [ ] Add undo policy configuration - DEFERRED (backend ready, needs UI)
+- [ ] Add snooze settings (max count, duration) - DEFERRED (backend ready, needs UI)
+- [ ] Add skip settings (max consecutive) - DEFERRED (backend ready, needs UI)
+- [ ] Add notification toggle per habit - DEFERRED (future enhancement)
+
+**Status:** ⏸ DEFERRED (Backend logic complete, UI enhancements can be added later)
 
 **Sections:**
 1. Strictness Level (Flexible/Balanced/Locked)
@@ -562,19 +569,23 @@ fun classifyDay(instances: List<HabitInstance>): DayClassification {
 ### 4.4 Habit Form Improvements
 
 **Tasks:**
-- [ ] Add cadence selection (Daily/Weekly)
-- [ ] Add quota input for quantitative habits
-- [ ] Add notification time picker
-- [ ] Add leave mode scheduling
-- [ ] Validation and error states
+- [ ] Add cadence selection (Daily/Weekly) - DEFERRED (backend supports, needs UI dropdown)
+- [ ] Add quota input for quantitative habits - DEFERRED (currently defaults to 1)
+- [ ] Add notification time picker - DEFERRED (uses default 9 AM)
+- [ ] Add leave mode scheduling - DEFERRED (can use separate leave UI)
+- [ ] Validation and error states - PARTIALLY (basic validation exists)
+
+**Status:** ⏸ DEFERRED (Basic form functional, backend supports all features, UI polish needed)
 
 ### 4.5 Leave Mode UI
 
 **Tasks:**
-- [ ] Add "Set Leave" action in habit menu
-- [ ] Date picker for start/end dates
-- [ ] Early unsuspend via swipe action
-- [ ] Visual indicator in habit list
+- [ ] Add "Set Leave" action in habit menu - DEFERRED (backend ready, needs UI integration)
+- [ ] Date picker for start/end dates - DEFERRED (backend ready, needs date picker component)
+- [ ] Early unsuspend via swipe action - DEFERRED (manual unsuspend can be added)
+- [x] Visual indicator in habit list - COMPLETE (suspended habits shown in separate section)
+
+**Status:** ⏸ DEFERRED (Backend logic complete, visual indicators done, full UI can be added later)
 
 ---
 
