@@ -42,7 +42,7 @@ This roadmap outlines the development plan for HabitLock, a habit enforcing app 
 
 **Tasks:**
 - [x] Add `HabitSchedule` domain model with proper cadence (DAILY/WEEKLY) support
-- [ ] Add `HabitScore` computation model
+- [x] Add `HabitScore` computation model
 - [ ] Add `LeavePeriod` model for suspension tracking
 - [ ] Ensure `StrictnessPreset` enum properly maps to undo/skip/snooze limits
 
