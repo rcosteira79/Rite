@@ -224,6 +224,7 @@ private fun HabitCard(
         HabitStatus.COMPLETED -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
         HabitStatus.SKIPPED -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         HabitStatus.FAILED -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+        HabitStatus.SUSPENDED -> MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
         HabitStatus.PENDING -> MaterialTheme.colorScheme.surface
     }
     
@@ -303,6 +304,13 @@ private fun HabitCard(
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
+                        }
+                        HabitStatus.SUSPENDED -> {
+                            Text(
+                                text = "Suspended",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
                         }
                         HabitStatus.FAILED -> {
                             Text(

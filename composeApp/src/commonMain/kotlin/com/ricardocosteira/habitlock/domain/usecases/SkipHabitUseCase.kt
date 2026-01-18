@@ -21,6 +21,10 @@ class SkipHabitUseCase(
         val instance = habitInstanceRepository.getInstanceById(instanceId)
             ?: return Result.failure(IllegalArgumentException("Instance not found"))
         
+        if (instance.status == HabitStatus.SUSPENDED) {
+            return Result.failure(IllegalStateException("Cannot skip suspended habit"))
+        }
+        
         if (instance.status != HabitStatus.PENDING) {
             return Result.failure(IllegalStateException("Instance is not pending"))
         }

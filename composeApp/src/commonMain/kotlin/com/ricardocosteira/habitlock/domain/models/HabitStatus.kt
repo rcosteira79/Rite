@@ -7,7 +7,8 @@ enum class HabitStatus {
     PENDING,
     COMPLETED,
     SKIPPED,
-    FAILED
+    FAILED,
+    SUSPENDED
 }
 
 

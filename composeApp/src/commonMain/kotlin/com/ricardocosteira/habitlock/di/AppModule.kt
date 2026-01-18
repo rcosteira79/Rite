@@ -22,7 +22,9 @@ import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabitsUseCase
 import com.ricardocosteira.habitlock.domain.usecases.GetWeeklyInstancesUseCase
 import com.ricardocosteira.habitlock.domain.usecases.ProcessEndOfDayUseCase
 import com.ricardocosteira.habitlock.domain.usecases.SkipHabitUseCase
+import com.ricardocosteira.habitlock.domain.usecases.SuspendHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.UndoHabitUseCase
+import com.ricardocosteira.habitlock.domain.usecases.UnsuspendHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.UuidProvider
 import com.ricardocosteira.habitlock.generateUuid
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsViewModel
@@ -83,6 +85,7 @@ class AppModule(
             userRepository,
             habitRepository,
             habitInstanceRepository,
+            leavePeriodRepository,
             uuidProvider
         )
     }
@@ -128,10 +131,24 @@ class AppModule(
         CalculateHabitScoreUseCase(habitRepository)
     }
 
+    private val suspendHabitUseCase: SuspendHabitUseCase by lazy {
+        SuspendHabitUseCase(habitRepository, leavePeriodRepository, uuidProvider)
+    }
+
+    private val unsuspendHabitUseCase: UnsuspendHabitUseCase by lazy {
+        UnsuspendHabitUseCase(leavePeriodRepository, userRepository)
+    }
+
     // Public provider methods
     fun provideUserRepository(): UserRepository = userRepository
     
     fun provideCalculateHabitScoreUseCase(): CalculateHabitScoreUseCase = calculateHabitScoreUseCase
+    
+    fun provideSuspendHabitUseCase(): SuspendHabitUseCase = suspendHabitUseCase
+    
+    fun provideUnsuspendHabitUseCase(): UnsuspendHabitUseCase = unsuspendHabitUseCase
+    
+    fun provideLeavePeriodRepository(): LeavePeriodRepository = leavePeriodRepository
 
     fun provideOnboardingViewModel(): OnboardingViewModel {
         return OnboardingViewModel(

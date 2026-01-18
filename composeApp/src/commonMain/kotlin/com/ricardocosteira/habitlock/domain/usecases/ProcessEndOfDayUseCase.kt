@@ -40,13 +40,17 @@ class ProcessEndOfDayUseCase(
 
     /**
      * Process daily habits from yesterday.
+     * SUSPENDED instances are not marked as FAILED.
      */
     private suspend fun processDailyHabits(today: LocalDate): Int {
         val yesterday = today.minus(DatePeriod(days = 1))
-        val pendingInstances = habitInstanceRepository.getPendingInstancesForDate(yesterday)
+        val yesterdayInstances = habitInstanceRepository.getInstancesForDate(yesterday)
 
         var failedCount = 0
-        for (instance in pendingInstances) {
+        for (instance in yesterdayInstances) {
+            // Skip if not PENDING (includes SUSPENDED)
+            if (instance.status != HabitStatus.PENDING) continue
+            
             // Check if this is a daily habit
             val habit = habitRepository.getHabitById(instance.habitId) ?: continue
             val schedule = habitRepository.getScheduleForHabit(habit.id) ?: continue
@@ -75,6 +79,7 @@ class ProcessEndOfDayUseCase(
     /**
      * Process weekly habits if we're at the start of a new week.
      * Checks if any weekly habit from last week is still PENDING and marks it as FAILED.
+     * SUSPENDED instances are not marked as FAILED.
      */
     private suspend fun processWeeklyHabits(today: LocalDate): Int {
         val activeHabits = habitRepository.getActiveHabits()
@@ -89,12 +94,13 @@ class ProcessEndOfDayUseCase(
                     // Get last week's start date
                     val lastWeekStart = today.minus(7, DateTimeUnit.DAY)
 
-                    // Check if there's a pending instance from last week
+                    // Check if there's an instance from last week
                     val lastWeekInstance = habitInstanceRepository.getInstanceForHabitAndDate(
                         habitId = habit.id,
                         date = lastWeekStart
                     )
 
+                    // Only process PENDING instances (skip SUSPENDED)
                     if (lastWeekInstance != null && lastWeekInstance.status == HabitStatus.PENDING) {
                         // Check if quota was not met
                         val completedValue = lastWeekInstance.completedValue ?: 0

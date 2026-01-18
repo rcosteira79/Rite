@@ -6,6 +6,7 @@ import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
+import com.ricardocosteira.habitlock.domain.repositories.LeavePeriodRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
@@ -18,12 +19,14 @@ import kotlinx.datetime.toLocalDateTime
 /**
  * Generates habit instances for all active, non-archived habits.
  * Handles both DAILY and WEEKLY schedules.
+ * Creates SUSPENDED instances for habits with active leave periods.
  * Called on app launch and by daily background job.
  */
 class GenerateDailyHabitsUseCase(
     private val userRepository: UserRepository,
     private val habitRepository: HabitRepository,
     private val habitInstanceRepository: HabitInstanceRepository,
+    private val leavePeriodRepository: LeavePeriodRepository,
     private val uuidProvider: UuidProvider
 ) {
 
@@ -49,18 +52,29 @@ class GenerateDailyHabitsUseCase(
             // Check if schedule is active today
             if (!schedule.isActiveOn(today)) continue
 
+            // Check if habit is on leave (suspended)
+            val activeLeavePeriod = leavePeriodRepository.getActiveLeavePeriod(habit.id, today)
+            val isSuspended = activeLeavePeriod != null
+
             when (schedule.scheduleType) {
                 ScheduleType.DAILY -> {
                     // Check if instance already exists for today
                     val existingInstance = habitInstanceRepository.getInstanceForHabitAndDate(habit.id, today)
                     if (existingInstance != null) continue
 
-                    val instance = createDailyInstance(habit.id, habit.type, habit.targetValue, today)
+                    val instance = if (isSuspended) {
+                        createSuspendedDailyInstance(habit.id, habit.type, habit.targetValue, today)
+                    } else {
+                        createDailyInstance(habit.id, habit.type, habit.targetValue, today)
+                    }
+                    
                     habitInstanceRepository.createInstance(instance)
                     newInstances.add(instance)
                     
-                    // Increment expected completions for daily habits
-                    habitRepository.incrementHabitExpectedCompletions(habit.id, amount = 1)
+                    // Only increment expected completions for non-suspended habits
+                    if (!isSuspended) {
+                        habitRepository.incrementHabitExpectedCompletions(habit.id, amount = 1)
+                    }
                 }
                 ScheduleType.WEEKLY -> {
                     // Check if we're at the start of a new week
@@ -70,12 +84,19 @@ class GenerateDailyHabitsUseCase(
                         val existingInstance = habitInstanceRepository.getInstanceForHabitAndDate(habit.id, weekStart)
                         if (existingInstance != null) continue
 
-                        val instance = createWeeklyInstance(habit.id, habit.type, habit.targetValue, weekStart, schedule.quota)
+                        val instance = if (isSuspended) {
+                            createSuspendedWeeklyInstance(habit.id, habit.type, habit.targetValue, weekStart, schedule.quota)
+                        } else {
+                            createWeeklyInstance(habit.id, habit.type, habit.targetValue, weekStart, schedule.quota)
+                        }
+                        
                         habitInstanceRepository.createInstance(instance)
                         newInstances.add(instance)
                         
-                        // Increment expected completions for weekly habits (by quota)
-                        habitRepository.incrementHabitExpectedCompletions(habit.id, amount = schedule.quota)
+                        // Only increment expected completions for non-suspended habits
+                        if (!isSuspended) {
+                            habitRepository.incrementHabitExpectedCompletions(habit.id, amount = schedule.quota)
+                        }
                     }
                 }
             }
@@ -108,6 +129,27 @@ class GenerateDailyHabitsUseCase(
     }
 
     /**
+     * Creates a suspended daily habit instance.
+     */
+    private fun createSuspendedDailyInstance(
+        habitId: String,
+        habitType: HabitType,
+        targetValue: Int?,
+        date: LocalDate
+    ): HabitInstance {
+        return HabitInstance(
+            id = uuidProvider.generate(),
+            habitId = habitId,
+            date = date,
+            status = HabitStatus.SUSPENDED,
+            completedValue = if (habitType == HabitType.QUANTITATIVE) 0 else null,
+            targetValue = targetValue,
+            consecutiveSkipsAtCreation = 0, // Suspended habits don't track skips
+            createdAt = Clock.System.now()
+        )
+    }
+
+    /**
      * Creates a weekly habit instance.
      * For weekly habits, the targetValue is the quota (completions per week).
      */
@@ -128,6 +170,28 @@ class GenerateDailyHabitsUseCase(
             completedValue = if (habitType == HabitType.QUANTITATIVE) 0 else null,
             targetValue = quota, // For weekly habits, target is the quota
             consecutiveSkipsAtCreation = consecutiveSkips,
+            createdAt = Clock.System.now()
+        )
+    }
+
+    /**
+     * Creates a suspended weekly habit instance.
+     */
+    private fun createSuspendedWeeklyInstance(
+        habitId: String,
+        habitType: HabitType,
+        targetValue: Int?,
+        weekStartDate: LocalDate,
+        quota: Int
+    ): HabitInstance {
+        return HabitInstance(
+            id = uuidProvider.generate(),
+            habitId = habitId,
+            date = weekStartDate,
+            status = HabitStatus.SUSPENDED,
+            completedValue = if (habitType == HabitType.QUANTITATIVE) 0 else null,
+            targetValue = quota,
+            consecutiveSkipsAtCreation = 0, // Suspended habits don't track skips
             createdAt = Clock.System.now()
         )
     }

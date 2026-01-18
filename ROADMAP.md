@@ -211,15 +211,38 @@ HabitScore = min(150, (TotalCompletions / ExpectedCompletions) * 100)
 ### 2.3 Leave/Suspension Mode
 
 **Tasks:**
-- [ ] Create `SuspendHabitUseCase`
-- [ ] Create `UnsuspendHabitUseCase`
-- [ ] Update instance generation to skip suspended habits
-- [ ] Exclude suspended habits from streak calculations
+- [x] Create `SuspendHabitUseCase`
+- [x] Create `UnsuspendHabitUseCase`
+- [x] Update instance generation to skip suspended habits
+- [x] Exclude suspended habits from streak calculations
+
+**Status:** ✅ COMPLETE (Completed on January 18, 2026)
 
 **Business Rules:**
 - Suspended habits generate SUSPENDED status instances
 - No notifications during suspension
 - Suspension end date auto-unsuspends
+
+**Implementation:**
+- Added SUSPENDED status to HabitStatus enum
+- SuspendHabitUseCase creates leave periods with overlap validation
+- UnsuspendHabitUseCase ends leave periods early or deletes future ones
+- GenerateDailyHabitsUseCase creates SUSPENDED instances during leave periods
+- SUSPENDED instances don't increment expectedCompletions (no score impact)
+- CompleteHabitUseCase, SkipHabitUseCase reject SUSPENDED instances
+- ProcessEndOfDayUseCase skips SUSPENDED instances (no failures)
+- Updated TodayScreen UI to display SUSPENDED status
+
+**Files Modified:**
+- `domain/models/HabitStatus.kt` - Added SUSPENDED status
+- `domain/usecases/SuspendHabitUseCase.kt` - NEW
+- `domain/usecases/UnsuspendHabitUseCase.kt` - NEW
+- `domain/usecases/GenerateDailyHabitsUseCase.kt` - Updated
+- `domain/usecases/CompleteHabitUseCase.kt` - Updated
+- `domain/usecases/SkipHabitUseCase.kt` - Updated
+- `domain/usecases/ProcessEndOfDayUseCase.kt` - Updated
+- `di/AppModule.kt` - Added new use cases
+- `presentation/ui/today/TodayScreen.kt` - Updated UI
 
 ### 2.4 Snooze Implementation
 
