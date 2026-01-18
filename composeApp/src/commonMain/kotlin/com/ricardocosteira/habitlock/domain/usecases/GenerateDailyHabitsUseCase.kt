@@ -3,16 +3,21 @@ package com.ricardocosteira.habitlock.domain.usecases
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
+import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.minus
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 /**
- * Generates daily habit instances for all active, non-archived habits.
+ * Generates habit instances for all active, non-archived habits.
+ * Handles both DAILY and WEEKLY schedules.
  * Called on app launch and by daily background job.
  */
 class GenerateDailyHabitsUseCase(
@@ -24,6 +29,8 @@ class GenerateDailyHabitsUseCase(
 
     /**
      * Generate habit instances for today if they don't already exist.
+     * For DAILY habits: Creates one instance per day
+     * For WEEKLY habits: Creates one instance at start of week (per weekStartDay)
      * @return List of newly created instances, empty if already generated.
      */
     suspend fun execute(): List<HabitInstance> {
@@ -34,33 +41,107 @@ class GenerateDailyHabitsUseCase(
         checkTimezoneChange(user.timezone)
 
         val activeHabits = habitRepository.getActiveHabits()
-        val existingInstances = habitInstanceRepository.getInstancesForDate(today)
-        val existingHabitIds = existingInstances.map { it.habitId }.toSet()
-
         val newInstances = mutableListOf<HabitInstance>()
 
         for (habit in activeHabits) {
-            if (habit.id in existingHabitIds) continue
+            val schedule = habitRepository.getScheduleForHabit(habit.id) ?: continue
 
-            // Calculate consecutive skips from previous instances
-            val consecutiveSkips = calculateConsecutiveSkips(habit.id)
+            // Check if schedule is active today
+            if (!schedule.isActiveOn(today)) continue
 
-            val instance = HabitInstance(
-                id = uuidProvider.generate(),
-                habitId = habit.id,
-                date = today,
-                status = HabitStatus.PENDING,
-                completedValue = if (habit.type == HabitType.QUANTITATIVE) 0 else null,
-                targetValue = habit.targetValue,
-                consecutiveSkipsAtCreation = consecutiveSkips,
-                createdAt = Clock.System.now()
-            )
+            when (schedule.scheduleType) {
+                ScheduleType.DAILY -> {
+                    // Check if instance already exists for today
+                    val existingInstance = habitInstanceRepository.getInstanceForHabitAndDate(habit.id, today)
+                    if (existingInstance != null) continue
 
-            habitInstanceRepository.createInstance(instance)
-            newInstances.add(instance)
+                    val instance = createDailyInstance(habit.id, habit.type, habit.targetValue, today)
+                    habitInstanceRepository.createInstance(instance)
+                    newInstances.add(instance)
+                }
+                ScheduleType.WEEKLY -> {
+                    // Check if we're at the start of a new week
+                    if (isStartOfWeek(today, schedule.weekStartDay)) {
+                        // Check if instance already exists for this week
+                        val weekStart = getWeekStart(today, schedule.weekStartDay)
+                        val existingInstance = habitInstanceRepository.getInstanceForHabitAndDate(habit.id, weekStart)
+                        if (existingInstance != null) continue
+
+                        val instance = createWeeklyInstance(habit.id, habit.type, habit.targetValue, weekStart, schedule.quota)
+                        habitInstanceRepository.createInstance(instance)
+                        newInstances.add(instance)
+                    }
+                }
+            }
         }
 
         return newInstances
+    }
+
+    /**
+     * Creates a daily habit instance.
+     */
+    private suspend fun createDailyInstance(
+        habitId: String,
+        habitType: HabitType,
+        targetValue: Int?,
+        date: LocalDate
+    ): HabitInstance {
+        val consecutiveSkips = calculateConsecutiveSkips(habitId)
+
+        return HabitInstance(
+            id = uuidProvider.generate(),
+            habitId = habitId,
+            date = date,
+            status = HabitStatus.PENDING,
+            completedValue = if (habitType == HabitType.QUANTITATIVE) 0 else null,
+            targetValue = targetValue,
+            consecutiveSkipsAtCreation = consecutiveSkips,
+            createdAt = Clock.System.now()
+        )
+    }
+
+    /**
+     * Creates a weekly habit instance.
+     * For weekly habits, the targetValue is the quota (completions per week).
+     */
+    private suspend fun createWeeklyInstance(
+        habitId: String,
+        habitType: HabitType,
+        targetValue: Int?,
+        weekStartDate: LocalDate,
+        quota: Int
+    ): HabitInstance {
+        val consecutiveSkips = calculateConsecutiveSkips(habitId)
+
+        return HabitInstance(
+            id = uuidProvider.generate(),
+            habitId = habitId,
+            date = weekStartDate,
+            status = HabitStatus.PENDING,
+            completedValue = if (habitType == HabitType.QUANTITATIVE) 0 else null,
+            targetValue = quota, // For weekly habits, target is the quota
+            consecutiveSkipsAtCreation = consecutiveSkips,
+            createdAt = Clock.System.now()
+        )
+    }
+
+    /**
+     * Checks if the given date is the start of a week based on weekStartDay.
+     */
+    private fun isStartOfWeek(date: LocalDate, weekStartDay: DayOfWeek): Boolean {
+        return date.dayOfWeek == weekStartDay
+    }
+
+    /**
+     * Gets the start date of the week containing the given date.
+     */
+    private fun getWeekStart(date: LocalDate, weekStartDay: DayOfWeek): LocalDate {
+        var current = date
+        while (current.dayOfWeek != weekStartDay) {
+            current = current.minus(1, DateTimeUnit.DAY)
+        }
+        return current
     }
 
     private suspend fun checkTimezoneChange(currentTimezone: TimeZone) {

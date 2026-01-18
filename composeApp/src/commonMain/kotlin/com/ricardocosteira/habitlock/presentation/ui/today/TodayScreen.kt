@@ -59,6 +59,7 @@ fun TodayScreen(
     onCompleteClick: (String) -> Unit,
     onSkipClick: (String) -> Unit,
     onUndoClick: (String) -> Unit,
+    onEditClick: (String) -> Unit,
     onArchiveClick: (String) -> Unit,
     onAddHabitClick: () -> Unit,
     onDismissTimezoneWarning: () -> Unit,
@@ -125,6 +126,7 @@ fun TodayScreen(
                                 onCompleteClick = { onCompleteClick(habit.instanceId) },
                                 onSkipClick = { onSkipClick(habit.instanceId) },
                                 onUndoClick = { onUndoClick(habit.instanceId) },
+                                onEditClick = { onEditClick(habit.habitId) },
                                 onArchiveClick = { onArchiveClick(habit.habitId) }
                             )
                         }
@@ -213,6 +215,7 @@ private fun HabitCard(
     onCompleteClick: () -> Unit,
     onSkipClick: () -> Unit,
     onUndoClick: () -> Unit,
+    onEditClick: () -> Unit,
     onArchiveClick: () -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -331,6 +334,13 @@ private fun HabitCard(
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false }
             ) {
+                DropdownMenuItem(
+                    text = { Text("Edit") },
+                    onClick = {
+                        showMenu = false
+                        onEditClick()
+                    }
+                )
                 DropdownMenuItem(
                     text = { Text("Archive") },
                     onClick = {

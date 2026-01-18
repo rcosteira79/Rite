@@ -18,6 +18,7 @@ import com.ricardocosteira.habitlock.domain.usecases.ApplyStrictnessPresetUseCas
 import com.ricardocosteira.habitlock.domain.usecases.CompleteHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabitsUseCase
+import com.ricardocosteira.habitlock.domain.usecases.GetWeeklyInstancesUseCase
 import com.ricardocosteira.habitlock.domain.usecases.ProcessEndOfDayUseCase
 import com.ricardocosteira.habitlock.domain.usecases.SkipHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.UndoHabitUseCase
@@ -82,6 +83,14 @@ class AppModule(
             habitRepository,
             habitInstanceRepository,
             uuidProvider
+        )
+    }
+
+    private val getWeeklyInstancesUseCase: GetWeeklyInstancesUseCase by lazy {
+        GetWeeklyInstancesUseCase(
+            userRepository,
+            habitRepository,
+            habitInstanceRepository
         )
     }
 

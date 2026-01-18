@@ -146,14 +146,32 @@ data class LeavePeriod(
 ### 2.1 Weekly Habits Support
 
 **Tasks:**
-- [ ] Update `GenerateDailyHabitsUseCase` to handle weekly instances
-- [ ] Create `GetWeeklyInstancesUseCase`
-- [ ] Modify instance generation logic to respect cadence windows
+- [x] Update `GenerateDailyHabitsUseCase` to handle weekly instances
+- [x] Create `GetWeeklyInstancesUseCase`
+- [x] Modify instance generation logic to respect cadence windows
+
+**Status:** ✅ COMPLETE (Completed on January 18, 2026)
 
 **Implementation Details:**
-- Weekly instances should be created at start of week (configurable: Sunday/Monday)
-- Track weekly quota fulfillment across the week
-- End-of-week processing similar to end-of-day
+- Weekly instances are created at start of week (based on schedule's weekStartDay)
+- Weekly habits track quota fulfillment across the week in single instance
+- End-of-week processing marks pending weekly instances as FAILED if quota not met
+- Daily habits continue to work as before with per-day instances
+
+**Files Modified:**
+- `GenerateDailyHabitsUseCase.kt` - Now handles both DAILY and WEEKLY schedules
+- `ProcessEndOfDayUseCase.kt` - Extended to handle end-of-week processing
+- `AppModule.kt` - Added GetWeeklyInstancesUseCase to DI
+
+**Files Created:**
+- `GetWeeklyInstancesUseCase.kt` - Retrieves instances for current/specific week
+
+**Key Features:**
+- Weekly instances created on weekStartDay (configurable per habit)
+- Single instance per week tracks quota (e.g., "3 workouts per week")
+- Weekly instances date = week start date
+- End-of-week automatically marks incomplete as FAILED or COMPLETED based on quota
+- GetWeeklyInstancesUseCase provides week-specific views for UI
 
 ### 2.2 Habit Score Calculation
 
@@ -233,6 +251,40 @@ class SnoozeHabitUseCase(
 **Duration: 2-3 weeks**
 **Goal: Implement notification system and background jobs**
 
+### 3.0 Migrate to kotlin-inject DI (Recommended)
+
+**Rationale:**
+Phase 3 introduces significant complexity that makes DI framework beneficial:
+- Workers need dependency injection (WorkManager + kotlin-inject integration)
+- BroadcastReceivers need dependency injection
+- Multiple Android-specific components (NotificationManager, schedulers)
+- Project will exceed 25+ dependencies (threshold for DI framework value)
+- Scoped injection becomes important (app-scope vs worker-scope)
+
+**Tasks:**
+- [ ] Add kotlin-inject dependencies and KSP plugin to build.gradle.kts
+- [ ] Convert `HabitLockAppComponent` to `@Component` annotation
+- [ ] Add `@Inject` to repository, use case, and ViewModel constructors
+- [ ] Remove manual wiring from `AppModule` (let kotlin-inject generate)
+- [ ] Create `WorkerComponent` for Worker-scoped dependencies
+- [ ] Update `App.kt` to use generated component factory
+- [ ] Add compile-time circular dependency detection
+
+**Benefits at this stage:**
+- Workers integrate cleanly with dependency injection
+- Android-specific components (BroadcastReceivers) can be injected
+- Reduced boilerplate for 25+ dependencies
+- Compile-time validation of dependency graph
+- Multiple scopes for different lifecycle requirements
+
+**Migration time:** 3-4 hours
+
+**Reference:** See `KOTLIN_INJECT_ASSESSMENT.md` for detailed implementation guide
+
+**Alternative:** Can defer to Phase 6 if time-constrained, but will require more manual wiring in Phase 3-5
+
+---
+
 ### 3.1 WorkManager Integration
 
 **Tasks:**
@@ -240,6 +292,7 @@ class SnoozeHabitUseCase(
 - [ ] Create `EndOfDayProcessingWorker`
 - [ ] Create `NotificationScheduler` service
 - [ ] Schedule workers on app startup
+- [ ] Integrate Workers with DI (if kotlin-inject adopted in 3.0)
 
 **Files to create:**
 - `androidMain/.../workers/DailyHabitGenerationWorker.kt`
@@ -481,6 +534,8 @@ class CompleteHabitUseCaseTest {
 ## Phase 6: Polish & Production Readiness
 **Duration: 1-2 weeks**
 **Goal: App ready for release**
+
+**Note:** If kotlin-inject migration was deferred from Phase 3.0, consider implementing it now before production release for better maintainability and testability of the codebase going forward.
 
 ### 6.1 Error Handling
 

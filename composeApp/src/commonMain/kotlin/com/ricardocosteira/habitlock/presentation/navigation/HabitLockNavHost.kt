@@ -164,6 +164,7 @@ fun HabitLockNavHost(
                     onCompleteClick = { todayViewModel.completeHabit(it) },
                     onSkipClick = { todayViewModel.skipHabit(it) },
                     onUndoClick = { todayViewModel.undoHabit(it) },
+                    onEditClick = { habitId -> currentRoute = Route.EditHabit(habitId) },
                     onArchiveClick = { todayViewModel.archiveHabit(it) },
                     onAddHabitClick = { todayViewModel.navigateToCreateHabit() },
                     onDismissTimezoneWarning = { todayViewModel.dismissTimezoneWarning() },
@@ -279,7 +280,7 @@ fun HabitLockNavHost(
 
         is Route.EditHabit -> {
             // Similar to CreateHabit but with habitId
-            val viewModel = remember { createHabitFormViewModel(currentRoute.habitId) }
+            val viewModel = remember { createHabitFormViewModel(route.habitId) }
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             HabitFormScreen(
