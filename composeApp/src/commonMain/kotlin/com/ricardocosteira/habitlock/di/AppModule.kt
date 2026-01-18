@@ -15,6 +15,7 @@ import com.ricardocosteira.habitlock.domain.repositories.LeavePeriodRepository
 import com.ricardocosteira.habitlock.domain.repositories.SnoozeRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import com.ricardocosteira.habitlock.domain.usecases.ApplyStrictnessPresetUseCase
+import com.ricardocosteira.habitlock.domain.usecases.CalculateHabitScoreUseCase
 import com.ricardocosteira.habitlock.domain.usecases.CompleteHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabitsUseCase
@@ -123,8 +124,14 @@ class AppModule(
         ApplyStrictnessPresetUseCase(userRepository)
     }
 
+    private val calculateHabitScoreUseCase: CalculateHabitScoreUseCase by lazy {
+        CalculateHabitScoreUseCase(habitRepository)
+    }
+
     // Public provider methods
     fun provideUserRepository(): UserRepository = userRepository
+    
+    fun provideCalculateHabitScoreUseCase(): CalculateHabitScoreUseCase = calculateHabitScoreUseCase
 
     fun provideOnboardingViewModel(): OnboardingViewModel {
         return OnboardingViewModel(

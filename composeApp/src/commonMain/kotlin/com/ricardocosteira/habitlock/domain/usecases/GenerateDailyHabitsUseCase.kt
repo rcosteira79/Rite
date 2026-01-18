@@ -58,6 +58,9 @@ class GenerateDailyHabitsUseCase(
                     val instance = createDailyInstance(habit.id, habit.type, habit.targetValue, today)
                     habitInstanceRepository.createInstance(instance)
                     newInstances.add(instance)
+                    
+                    // Increment expected completions for daily habits
+                    habitRepository.incrementHabitExpectedCompletions(habit.id, amount = 1)
                 }
                 ScheduleType.WEEKLY -> {
                     // Check if we're at the start of a new week
@@ -70,6 +73,9 @@ class GenerateDailyHabitsUseCase(
                         val instance = createWeeklyInstance(habit.id, habit.type, habit.targetValue, weekStart, schedule.quota)
                         habitInstanceRepository.createInstance(instance)
                         newInstances.add(instance)
+                        
+                        // Increment expected completions for weekly habits (by quota)
+                        habitRepository.incrementHabitExpectedCompletions(habit.id, amount = schedule.quota)
                     }
                 }
             }

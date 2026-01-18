@@ -59,6 +59,8 @@ object EntityMappers {
         isArchived = isArchived == 1L,
         currentStreak = currentStreak.toInt(),
         longestStreak = longestStreak.toInt(),
+        totalCompletions = totalCompletions.toInt(),
+        expectedCompletions = expectedCompletions.toInt(),
         createdAt = Instant.parse(createdAt),
         archivedAt = archivedAt?.let { Instant.parse(it) }
     )

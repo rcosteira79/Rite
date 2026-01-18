@@ -24,6 +24,8 @@ CREATE TABLE Habit (
     isArchived INTEGER NOT NULL DEFAULT 0,
     currentStreak INTEGER NOT NULL DEFAULT 0,
     longestStreak INTEGER NOT NULL DEFAULT 0,
+    totalCompletions INTEGER NOT NULL DEFAULT 0,
+    expectedCompletions INTEGER NOT NULL DEFAULT 0,
     createdAt TEXT NOT NULL,
     archivedAt TEXT
 );
@@ -146,8 +148,8 @@ getHabitById:
 SELECT * FROM Habit WHERE id = ?;
 
 insertHabit:
-INSERT INTO Habit (id, name, description, type, targetValue, unit, isActive, isArchived, currentStreak, longestStreak, createdAt, archivedAt)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO Habit (id, name, description, type, targetValue, unit, isActive, isArchived, currentStreak, longestStreak, totalCompletions, expectedCompletions, createdAt, archivedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 updateHabit:
 UPDATE Habit SET
@@ -163,6 +165,18 @@ WHERE id = ?;
 
 updateHabitStreak:
 UPDATE Habit SET currentStreak = ?, longestStreak = ? WHERE id = ?;
+
+updateHabitScore:
+UPDATE Habit SET totalCompletions = ?, expectedCompletions = ? WHERE id = ?;
+
+incrementHabitTotalCompletions:
+UPDATE Habit SET totalCompletions = totalCompletions + ? WHERE id = ?;
+
+decrementHabitTotalCompletions:
+UPDATE Habit SET totalCompletions = totalCompletions - ? WHERE id = ? AND totalCompletions >= ?;
+
+incrementHabitExpectedCompletions:
+UPDATE Habit SET expectedCompletions = expectedCompletions + ? WHERE id = ?;
 
 archiveHabit:
 UPDATE Habit SET isArchived = 1, archivedAt = ? WHERE id = ?;

@@ -176,19 +176,37 @@ data class LeavePeriod(
 ### 2.2 Habit Score Calculation
 
 **Tasks:**
-- [ ] Create `CalculateHabitScoreUseCase`
-- [ ] Integrate score calculation into completion/undo flows
-- [ ] Add score to HabitInstance or create separate score tracking table
+- [x] Create `CalculateHabitScoreUseCase`
+- [x] Integrate score calculation into completion/undo flows
+- [x] Add score to Habit table with totalCompletions and expectedCompletions fields
+
+**Status:** ✅ COMPLETE (Completed on January 18, 2026)
 
 **Formula:**
 ```
 HabitScore = min(150, (TotalCompletions / ExpectedCompletions) * 100)
 ```
 
-**Considerations:**
-- Calculate incrementally vs. on-demand
-- Cache scores for performance
-- Handle archived habits in historical score
+**Implementation:**
+- Score fields stored in Habit table (totalCompletions, expectedCompletions)
+- Incremental updates via repository methods
+- CompleteHabitUseCase increments totalCompletions
+- UndoHabitUseCase decrements totalCompletions
+- GenerateDailyHabitsUseCase increments expectedCompletions
+- CalculateHabitScoreUseCase provides on-demand calculation
+- Habit model has calculateScore() convenience method
+
+**Files Modified:**
+- `HabitLock.sq` - Added score fields and queries
+- `domain/models/Habit.kt` - Added score fields
+- `domain/repositories/HabitRepository.kt` - Added score methods
+- `data/repositories/HabitRepositoryImpl.kt` - Implemented score methods
+- `domain/usecases/CalculateHabitScoreUseCase.kt` - NEW
+- `domain/usecases/CompleteHabitUseCase.kt` - Updated
+- `domain/usecases/UndoHabitUseCase.kt` - Updated
+- `domain/usecases/GenerateDailyHabitsUseCase.kt` - Updated
+- `domain/usecases/CreateHabitUseCase.kt` - Updated
+- `di/AppModule.kt` - Added CalculateHabitScoreUseCase
 
 ### 2.3 Leave/Suspension Mode
 

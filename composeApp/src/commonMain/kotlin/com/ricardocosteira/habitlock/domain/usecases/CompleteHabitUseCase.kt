@@ -42,8 +42,9 @@ class CompleteHabitUseCase(
             completedValue = 1
         )
         
-        // Update streak
+        // Update streak and score
         updateStreak(instance.habitId)
+        incrementTotalCompletions(instance.habitId, amount = 1)
         
         val updatedInstance = habitInstanceRepository.getInstanceById(instanceId)
             ?: return Result.failure(IllegalStateException("Failed to retrieve updated instance"))
@@ -91,6 +92,9 @@ class CompleteHabitUseCase(
             completedValue = newCompletedValue
         )
         
+        // Update score (always increment, even for partial progress)
+        incrementTotalCompletions(instance.habitId, amount = deltaValue)
+        
         if (isComplete) {
             updateStreak(instance.habitId)
         }
@@ -119,6 +123,10 @@ class CompleteHabitUseCase(
             currentStreak = newCurrentStreak,
             longestStreak = newLongestStreak
         )
+    }
+    
+    private suspend fun incrementTotalCompletions(habitId: String, amount: Int) {
+        habitRepository.incrementHabitTotalCompletions(habitId, amount)
     }
 }
 

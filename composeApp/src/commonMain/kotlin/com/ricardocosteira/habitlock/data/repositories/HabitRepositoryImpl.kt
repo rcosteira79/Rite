@@ -60,6 +60,8 @@ class HabitRepositoryImpl(
                 isArchived = if (habit.isArchived) 1 else 0,
                 currentStreak = habit.currentStreak.toLong(),
                 longestStreak = habit.longestStreak.toLong(),
+                totalCompletions = habit.totalCompletions.toLong(),
+                expectedCompletions = habit.expectedCompletions.toLong(),
                 createdAt = habit.createdAt.toString(),
                 archivedAt = habit.archivedAt?.toString()
             )
@@ -112,6 +114,49 @@ class HabitRepositoryImpl(
         queries.updateHabitStreak(
             currentStreak = currentStreak.toLong(),
             longestStreak = longestStreak.toLong(),
+            id = habitId
+        )
+    }
+
+    override suspend fun updateHabitScore(
+        habitId: String,
+        totalCompletions: Int,
+        expectedCompletions: Int
+    ): Unit = withContext(Dispatchers.IO) {
+        queries.updateHabitScore(
+            totalCompletions = totalCompletions.toLong(),
+            expectedCompletions = expectedCompletions.toLong(),
+            id = habitId
+        )
+    }
+
+    override suspend fun incrementHabitTotalCompletions(
+        habitId: String,
+        amount: Int
+    ): Unit = withContext(Dispatchers.IO) {
+        queries.incrementHabitTotalCompletions(
+            totalCompletions = amount.toLong(),
+            id = habitId
+        )
+    }
+
+    override suspend fun decrementHabitTotalCompletions(
+        habitId: String,
+        amount: Int
+    ): Unit = withContext(Dispatchers.IO) {
+        queries.decrementHabitTotalCompletions(
+            totalCompletions = amount.toLong(),
+            id = habitId,
+            totalCompletions_ = amount.toLong()
+        )
+    }
+
+    override suspend fun incrementHabitExpectedCompletions(
+        habitId: String,
+        amount: Int
+    ): Unit = withContext(Dispatchers.IO) {
+        queries.incrementHabitExpectedCompletions(
+            expectedCompletions = amount.toLong(),
             id = habitId
         )
     }

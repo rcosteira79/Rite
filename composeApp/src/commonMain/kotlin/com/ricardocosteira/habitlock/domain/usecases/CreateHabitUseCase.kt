@@ -58,6 +58,8 @@ class CreateHabitUseCase(
             isArchived = false,
             currentStreak = 0,
             longestStreak = 0,
+            totalCompletions = 0,
+            expectedCompletions = 0,
             createdAt = now,
             archivedAt = null
         )

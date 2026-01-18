@@ -58,6 +58,9 @@ class UndoHabitUseCase(
             return Result.failure(IllegalStateException("Cannot undo failed habits"))
         }
 
+        // Get the completed value before undoing (for score decrement)
+        val completedValueToUndo = instance.completedValue ?: 0
+        
         // Delete all completion events
         habitCompletionEventRepository.deleteEventsForInstance(instanceId)
 
@@ -68,7 +71,7 @@ class UndoHabitUseCase(
             completedValue = 0
         )
 
-        // Recalculate streak (decrement if was completed)
+        // Recalculate streak and score (decrement if was completed)
         if (instance.status == HabitStatus.COMPLETED) {
             val habit = habitRepository.getHabitById(instance.habitId)
             if (habit != null && habit.currentStreak > 0) {
@@ -78,6 +81,14 @@ class UndoHabitUseCase(
                     longestStreak = habit.longestStreak
                 )
             }
+        }
+        
+        // Decrement total completions by the completed value
+        if (completedValueToUndo > 0) {
+            habitRepository.decrementHabitTotalCompletions(
+                habitId = instance.habitId,
+                amount = completedValueToUndo
+            )
         }
 
         val updatedInstance = habitInstanceRepository.getInstanceById(instanceId)

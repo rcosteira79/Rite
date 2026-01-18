@@ -50,6 +50,26 @@ interface HabitRepository {
     suspend fun updateHabitStreak(habitId: String, currentStreak: Int, longestStreak: Int)
     
     /**
+     * Update habit score values.
+     */
+    suspend fun updateHabitScore(habitId: String, totalCompletions: Int, expectedCompletions: Int)
+    
+    /**
+     * Increment habit total completions.
+     */
+    suspend fun incrementHabitTotalCompletions(habitId: String, amount: Int = 1)
+    
+    /**
+     * Decrement habit total completions.
+     */
+    suspend fun decrementHabitTotalCompletions(habitId: String, amount: Int = 1)
+    
+    /**
+     * Increment habit expected completions.
+     */
+    suspend fun incrementHabitExpectedCompletions(habitId: String, amount: Int = 1)
+    
+    /**
      * Archive a habit. It will no longer generate daily instances.
      */
     suspend fun archiveHabit(habitId: String)
