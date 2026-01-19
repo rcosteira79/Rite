@@ -36,6 +36,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.ReminderType
+import com.ricardocosteira.habitlock.domain.models.ScheduleType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +48,8 @@ fun HabitFormScreen(
     onTypeChange: (HabitType) -> Unit,
     onTargetValueChange: (String) -> Unit,
     onUnitChange: (String) -> Unit,
+    onScheduleTypeChange: (ScheduleType) -> Unit,
+    onQuotaChange: (String) -> Unit,
     onHasReminderChange: (Boolean) -> Unit,
     onReminderTypeChange: (ReminderType) -> Unit,
     onIntervalChange: (String) -> Unit,
@@ -213,6 +216,90 @@ fun HabitFormScreen(
                                 )
                             }
                         }
+                    }
+                }
+
+                // Schedule/Cadence selection
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Schedule",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Column(modifier = Modifier.selectableGroup()) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .selectable(
+                                        selected = state.scheduleType == ScheduleType.DAILY,
+                                        onClick = { onScheduleTypeChange(ScheduleType.DAILY) },
+                                        role = Role.RadioButton
+                                    )
+                                    .padding(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = state.scheduleType == ScheduleType.DAILY,
+                                    onClick = null
+                                )
+                                Column(modifier = Modifier.padding(start = 16.dp)) {
+                                    Text("Daily", style = MaterialTheme.typography.bodyLarge)
+                                    Text(
+                                        "Resets every day",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .selectable(
+                                        selected = state.scheduleType == ScheduleType.WEEKLY,
+                                        onClick = { onScheduleTypeChange(ScheduleType.WEEKLY) },
+                                        role = Role.RadioButton
+                                    )
+                                    .padding(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = state.scheduleType == ScheduleType.WEEKLY,
+                                    onClick = null
+                                )
+                                Column(modifier = Modifier.padding(start = 16.dp)) {
+                                    Text("Weekly", style = MaterialTheme.typography.bodyLarge)
+                                    Text(
+                                        "Resets every week",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        OutlinedTextField(
+                            value = state.quota,
+                            onValueChange = onQuotaChange,
+                            label = { Text("Quota *") },
+                            placeholder = { Text("E.g. 1") },
+                            supportingText = {
+                                Text(
+                                    if (state.scheduleType == ScheduleType.DAILY) {
+                                        "Number of completions required per day"
+                                    } else {
+                                        "Number of completions required per week"
+                                    }
+                                )
+                            },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
 

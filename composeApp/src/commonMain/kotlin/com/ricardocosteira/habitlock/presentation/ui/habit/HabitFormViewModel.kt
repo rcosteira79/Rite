@@ -6,6 +6,7 @@ import com.ricardocosteira.habitlock.domain.models.Habit
 import com.ricardocosteira.habitlock.domain.models.HabitReminder
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.ReminderType
+import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabitUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -108,6 +109,14 @@ class HabitFormViewModel(
         _state.update { it.copy(unit = unit) }
     }
 
+    fun updateScheduleType(scheduleType: ScheduleType) {
+        _state.update { it.copy(scheduleType = scheduleType) }
+    }
+
+    fun updateQuota(quota: String) {
+        _state.update { it.copy(quota = quota) }
+    }
+
     fun updateHasReminder(hasReminder: Boolean) {
         _state.update { it.copy(hasReminder = hasReminder) }
     }
@@ -187,6 +196,8 @@ class HabitFormViewModel(
                     state.targetValue.toIntOrNull()
                 } else null,
                 unit = state.unit.trim().takeIf { it.isNotEmpty() },
+                scheduleType = state.scheduleType,
+                quota = state.quota.toIntOrNull() ?: 1,
                 reminder = reminder
             ),
             startDate = today
