@@ -486,7 +486,7 @@ PendingIntent for "Skip" -> SkipHabitUseCase.execute()
 ## Phase 4: UI Completion
 **Duration: 2-3 weeks**
 **Goal: Complete all screens and UI interactions**
-**Status:** 🔄 PARTIALLY COMPLETE (Critical features completed on January 18, 2026)
+**Status:** ✅ CORE COMPLETE (Core features completed on January 18, 2026, polish items remain)
 
 ### 4.1 Today Screen Enhancements
 
@@ -569,13 +569,13 @@ fun classifyDay(instances: List<HabitInstance>): DayClassification {
 ### 4.4 Habit Form Improvements
 
 **Tasks:**
-- [ ] Add cadence selection (Daily/Weekly) - DEFERRED (backend supports, needs UI dropdown)
-- [ ] Add quota input for quantitative habits - DEFERRED (currently defaults to 1)
+- [x] Add cadence selection (Daily/Weekly)
+- [x] Add quota input for quantitative habits
 - [ ] Add notification time picker - DEFERRED (uses default 9 AM)
 - [ ] Add leave mode scheduling - DEFERRED (can use separate leave UI)
 - [ ] Validation and error states - PARTIALLY (basic validation exists)
 
-**Status:** ⏸ DEFERRED (Basic form functional, backend supports all features, UI polish needed)
+**Status:** ✅ CORE COMPLETE (Cadence and quota implemented on January 18, 2026)
 
 ### 4.5 Leave Mode UI
 
