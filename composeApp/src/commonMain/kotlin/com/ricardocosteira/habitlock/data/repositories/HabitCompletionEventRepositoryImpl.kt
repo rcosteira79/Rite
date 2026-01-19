@@ -8,8 +8,10 @@ import com.ricardocosteira.habitlock.domain.repositories.HabitCompletionEventRep
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import me.tatarka.inject.annotations.Inject
 import kotlin.time.Clock
 
+@Inject
 class HabitCompletionEventRepositoryImpl(
     private val database: HabitLockDatabase
 ) : HabitCompletionEventRepository {

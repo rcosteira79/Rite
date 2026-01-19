@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import me.tatarka.inject.annotations.Inject
+
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.UndoPolicy
@@ -14,6 +16,7 @@ import kotlinx.datetime.toLocalDateTime
 /**
  * Undoes a habit completion or skip.
  */
+@Inject
 class UndoHabitUseCase(
     private val habitInstanceRepository: HabitInstanceRepository,
     private val habitCompletionEventRepository: HabitCompletionEventRepository,

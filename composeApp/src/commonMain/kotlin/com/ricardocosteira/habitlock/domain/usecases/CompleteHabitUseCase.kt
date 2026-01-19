@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import me.tatarka.inject.annotations.Inject
+
 import com.ricardocosteira.habitlock.domain.models.CompletionSource
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
@@ -11,6 +13,7 @@ import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 /**
  * Completes a habit instance (binary or quantitative).
  */
+@Inject
 class CompleteHabitUseCase(
     private val habitInstanceRepository: HabitInstanceRepository,
     private val habitRepository: HabitRepository,

@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.presentation.ui.today
 
+import me.tatarka.inject.annotations.Inject
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.domain.models.CompletionSource
@@ -26,6 +28,7 @@ import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
+@Inject
 class TodayViewModel(
     private val userRepository: UserRepository,
     private val habitRepository: HabitRepository,
@@ -78,9 +81,11 @@ class TodayViewModel(
                 // Map to UI models
                 val habits = instances.mapNotNull { instance ->
                     val habit = habitRepository.getHabitById(instance.habitId) ?: return@mapNotNull null
+                    val schedule = habitRepository.getScheduleForHabit(habit.id) ?: return@mapNotNull null
                     mapToTodayHabitUiModel(
                         instance = instance,
                         habit = habit,
+                        schedule = schedule,
                         maxConsecutiveSkips = user?.maxConsecutiveSkips
                     )
                 }

@@ -7,9 +7,12 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
+    jvmToolchain(17)
+    
     sourceSets.all {
         languageSettings.optIn("kotlin.time.ExperimentalTime")
     }
@@ -46,6 +49,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.collections.immutable)
             implementation(libs.sqldelight.coroutines.extensions)
+            implementation(libs.kotlin.inject.runtime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -109,4 +113,12 @@ sqldelight {
             packageName.set("com.ricardocosteira.habitlock.data.database")
         }
     }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", libs.kotlin.inject.compiler)
+    add("kspAndroid", libs.kotlin.inject.compiler)
+    add("kspIosArm64", libs.kotlin.inject.compiler)
+    add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
+    add("kspJvm", libs.kotlin.inject.compiler)
 }

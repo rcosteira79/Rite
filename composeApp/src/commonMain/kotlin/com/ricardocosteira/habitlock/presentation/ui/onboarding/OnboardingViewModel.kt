@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.presentation.ui.onboarding
 
+import me.tatarka.inject.annotations.Inject
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.domain.models.HabitType
@@ -21,6 +23,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import kotlinx.datetime.toLocalDateTime
 
+@Inject
 class OnboardingViewModel(
     private val userRepository: UserRepository,
     private val applyStrictnessPresetUseCase: ApplyStrictnessPresetUseCase,

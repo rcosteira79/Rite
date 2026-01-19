@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.presentation.ui.habit
 
+import me.tatarka.inject.annotations.Inject
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.domain.models.Habit
@@ -22,6 +24,7 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
+@Inject
 class HabitFormViewModel(
     private val habitRepository: HabitRepository,
     private val createHabitUseCase: CreateHabitUseCase,

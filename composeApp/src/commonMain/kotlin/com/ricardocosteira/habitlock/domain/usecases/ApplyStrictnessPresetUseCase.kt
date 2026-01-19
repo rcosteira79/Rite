@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import me.tatarka.inject.annotations.Inject
+
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
 import com.ricardocosteira.habitlock.domain.models.User
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
@@ -7,6 +9,7 @@ import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 /**
  * Applies a strictness preset to the user settings during onboarding.
  */
+@Inject
 class ApplyStrictnessPresetUseCase(
     private val userRepository: UserRepository
 ) {

@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import me.tatarka.inject.annotations.Inject
+
 import com.ricardocosteira.habitlock.domain.models.LeavePeriod
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.repositories.LeavePeriodRepository
@@ -15,6 +17,7 @@ import kotlinx.datetime.LocalDate
  * - Streaks are not affected
  * - Failures are not counted
  */
+@Inject
 class SuspendHabitUseCase(
     private val habitRepository: HabitRepository,
     private val leavePeriodRepository: LeavePeriodRepository,

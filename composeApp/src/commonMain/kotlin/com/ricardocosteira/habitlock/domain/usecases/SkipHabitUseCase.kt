@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import me.tatarka.inject.annotations.Inject
+
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
@@ -8,6 +10,7 @@ import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 /**
  * Skips a habit instance.
  */
+@Inject
 class SkipHabitUseCase(
     private val habitInstanceRepository: HabitInstanceRepository,
     private val userRepository: UserRepository

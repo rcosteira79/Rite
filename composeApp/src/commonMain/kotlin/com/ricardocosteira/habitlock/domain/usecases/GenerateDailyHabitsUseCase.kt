@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import me.tatarka.inject.annotations.Inject
+
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
@@ -22,6 +24,7 @@ import kotlinx.datetime.toLocalDateTime
  * Creates SUSPENDED instances for habits with active leave periods.
  * Called on app launch and by daily background job.
  */
+@Inject
 class GenerateDailyHabitsUseCase(
     private val userRepository: UserRepository,
     private val habitRepository: HabitRepository,

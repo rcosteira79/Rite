@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import me.tatarka.inject.annotations.Inject
+
 import com.ricardocosteira.habitlock.domain.repositories.SnoozeRepository
 
 /**
@@ -11,6 +13,7 @@ import com.ricardocosteira.habitlock.domain.repositories.SnoozeRepository
  * - A habit fails (end of day)
  * - User manually cancels the snooze
  */
+@Inject
 class ClearSnoozeStateUseCase(
     private val snoozeRepository: SnoozeRepository
 ) {

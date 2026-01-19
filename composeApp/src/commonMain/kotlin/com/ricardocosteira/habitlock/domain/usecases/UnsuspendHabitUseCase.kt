@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import me.tatarka.inject.annotations.Inject
+
 import com.ricardocosteira.habitlock.domain.models.LeavePeriod
 import com.ricardocosteira.habitlock.domain.repositories.LeavePeriodRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
@@ -14,6 +16,7 @@ import kotlinx.datetime.toLocalDateTime
  * - End an ongoing suspension early (sets end date to today)
  * - Remove a future suspension (deletes the leave period)
  */
+@Inject
 class UnsuspendHabitUseCase(
     private val leavePeriodRepository: LeavePeriodRepository,
     private val userRepository: UserRepository

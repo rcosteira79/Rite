@@ -8,7 +8,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class LeavePeriodRepositoryImpl(
     private val database: HabitLockDatabase
 ) : LeavePeriodRepository {

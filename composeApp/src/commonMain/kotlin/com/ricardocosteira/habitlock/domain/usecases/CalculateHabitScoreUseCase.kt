@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import me.tatarka.inject.annotations.Inject
+
 import com.ricardocosteira.habitlock.domain.models.Habit
 import com.ricardocosteira.habitlock.domain.models.HabitScore
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
@@ -14,6 +16,7 @@ import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
  * - >100% = over-completion (exceeding expectations)
  * - <100% = some completions were missed
  */
+@Inject
 class CalculateHabitScoreUseCase(
     private val habitRepository: HabitRepository
 ) {

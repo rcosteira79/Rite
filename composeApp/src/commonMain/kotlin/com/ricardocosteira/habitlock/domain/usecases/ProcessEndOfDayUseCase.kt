@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import me.tatarka.inject.annotations.Inject
+
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
@@ -18,6 +20,7 @@ import kotlinx.datetime.toLocalDateTime
  * - For DAILY habits: Marks PENDING instances from yesterday as FAILED
  * - For WEEKLY habits: Marks PENDING instances from last week as FAILED (if week ended)
  */
+@Inject
 class ProcessEndOfDayUseCase(
     private val userRepository: UserRepository,
     private val habitInstanceRepository: HabitInstanceRepository,

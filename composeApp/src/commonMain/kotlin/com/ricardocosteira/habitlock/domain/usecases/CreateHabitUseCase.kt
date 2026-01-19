@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import me.tatarka.inject.annotations.Inject
+
 import com.ricardocosteira.habitlock.domain.models.Habit
 import com.ricardocosteira.habitlock.domain.models.HabitReminder
 import com.ricardocosteira.habitlock.domain.models.HabitSchedule
@@ -13,6 +15,7 @@ import kotlinx.datetime.LocalDate
 /**
  * Creates a new habit with schedule and optional reminder.
  */
+@Inject
 class CreateHabitUseCase(
     private val habitRepository: HabitRepository,
     private val uuidProvider: UuidProvider

@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.presentation.ui.calendar
 
+import me.tatarka.inject.annotations.Inject
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
@@ -23,6 +25,7 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
 
+@Inject
 class CalendarViewModel(
     private val userRepository: UserRepository,
     private val habitInstanceRepository: HabitInstanceRepository

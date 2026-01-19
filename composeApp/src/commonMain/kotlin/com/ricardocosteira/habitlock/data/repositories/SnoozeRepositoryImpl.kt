@@ -7,8 +7,10 @@ import com.ricardocosteira.habitlock.domain.repositories.SnoozeRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import me.tatarka.inject.annotations.Inject
 import kotlin.time.Instant
 
+@Inject
 class SnoozeRepositoryImpl(
     private val database: HabitLockDatabase
 ) : SnoozeRepository {

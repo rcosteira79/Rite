@@ -13,8 +13,10 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import me.tatarka.inject.annotations.Inject
 import kotlin.time.Clock
 
+@Inject
 class HabitRepositoryImpl(
     private val database: HabitLockDatabase
 ) : HabitRepository {

@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.presentation.ui.settings
 
+import me.tatarka.inject.annotations.Inject
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.domain.models.UndoPolicy
@@ -14,6 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalTime
 
+@Inject
 class SettingsViewModel(
     private val userRepository: UserRepository
 ) : ViewModel() {

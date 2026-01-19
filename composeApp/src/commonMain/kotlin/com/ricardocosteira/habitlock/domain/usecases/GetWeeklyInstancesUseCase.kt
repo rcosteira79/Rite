@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import me.tatarka.inject.annotations.Inject
+
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
@@ -19,6 +21,7 @@ import kotlin.time.Clock
  * For DAILY habits: Returns all instances from the week
  * For WEEKLY habits: Returns the single instance for the week
  */
+@Inject
 class GetWeeklyInstancesUseCase(
     private val userRepository: UserRepository,
     private val habitRepository: HabitRepository,

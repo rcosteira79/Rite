@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
+import me.tatarka.inject.annotations.Inject
+
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.SnoozeState
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
@@ -14,6 +16,7 @@ import kotlin.time.Duration.Companion.minutes
  * Snoozing delays the notification for a habit without marking it as skipped or completed.
  * The habit remains in PENDING status and can be completed later.
  */
+@Inject
 class SnoozeHabitUseCase(
     private val habitInstanceRepository: HabitInstanceRepository,
     private val snoozeRepository: SnoozeRepository,

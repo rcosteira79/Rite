@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.presentation.ui.archived
 
+import me.tatarka.inject.annotations.Inject
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
@@ -12,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@Inject
 class ArchivedHabitsViewModel(
     private val habitRepository: HabitRepository
 ) : ViewModel() {

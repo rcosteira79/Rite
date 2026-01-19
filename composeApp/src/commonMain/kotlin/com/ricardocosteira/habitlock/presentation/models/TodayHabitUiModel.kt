@@ -2,6 +2,7 @@ package com.ricardocosteira.habitlock.presentation.models
 
 import com.ricardocosteira.habitlock.domain.models.Habit
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
+import com.ricardocosteira.habitlock.domain.models.HabitSchedule
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
 
@@ -51,6 +52,7 @@ data class TodayHabitUiModel(
 fun mapToTodayHabitUiModel(
     instance: HabitInstance,
     habit: Habit,
+    schedule: HabitSchedule,
     maxConsecutiveSkips: Int?
 ): TodayHabitUiModel {
     val score = habit.calculateScore()
@@ -69,6 +71,6 @@ fun mapToTodayHabitUiModel(
         currentStreak = habit.currentStreak,
         longestStreak = habit.longestStreak,
         scorePercentage = score.percentage,
-        cadence = habit.schedule.cadence.name
+        cadence = schedule.scheduleType.name
     )
 }
