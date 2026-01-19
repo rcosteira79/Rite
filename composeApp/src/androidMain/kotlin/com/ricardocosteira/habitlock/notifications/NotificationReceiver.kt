@@ -41,20 +41,23 @@ class NotificationReceiver : BroadcastReceiver() {
 
                 // Fetch the habit instance and habit
                 val instance = habitInstanceRepository.getInstanceById(instanceId)
-                val habit = instance?.let { habitRepository.getHabitById(it.habitId) }
 
-                if (instance != null && habit != null) {
-                    val notificationManager = HabitNotificationManager(context)
+                if (instance != null) {
+                    val habit = habitRepository.getHabitById(instance.habitId)
 
-                    when (NotificationScheduler.NotificationType.valueOf(notificationType)) {
-                        NotificationScheduler.NotificationType.HABIT_REMINDER -> {
-                            notificationManager.showHabitReminder(instance, habit)
-                        }
-                        NotificationScheduler.NotificationType.GRACE_PERIOD -> {
-                            notificationManager.showGracePeriodNotification(instance, habit)
-                        }
-                        NotificationScheduler.NotificationType.SNOOZE_REMINDER -> {
-                            notificationManager.showHabitReminder(instance, habit)
+                    if (habit != null) {
+                        val notificationManager = HabitNotificationManager(context)
+
+                        when (NotificationScheduler.NotificationType.valueOf(notificationType)) {
+                            NotificationScheduler.NotificationType.HABIT_REMINDER -> {
+                                notificationManager.showHabitReminder(instance, habit)
+                            }
+                            NotificationScheduler.NotificationType.GRACE_PERIOD -> {
+                                notificationManager.showGracePeriodNotification(instance, habit)
+                            }
+                            NotificationScheduler.NotificationType.SNOOZE_REMINDER -> {
+                                notificationManager.showHabitReminder(instance, habit)
+                            }
                         }
                     }
                 }

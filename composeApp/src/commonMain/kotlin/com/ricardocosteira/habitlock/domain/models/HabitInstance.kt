@@ -42,5 +42,12 @@ data class HabitInstance(
         if (target <= 0) return 0f
         return ((completedValue ?: 0).toFloat() / target).coerceIn(0f, 1f)
     }
+
+    /**
+     * Current progress for quantitative habits.
+     * Returns 0 if no completions have been recorded.
+     */
+    val currentProgress: Int
+        get() = completedValue ?: 0
 }
 

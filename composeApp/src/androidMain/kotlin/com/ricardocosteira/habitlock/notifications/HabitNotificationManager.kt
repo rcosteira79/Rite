@@ -123,7 +123,7 @@ class HabitNotificationManager(
             HabitType.BINARY -> "Time to complete your habit"
             HabitType.QUANTITATIVE -> {
                 val progress = instance.currentProgress
-                val quota = habit.quota
+                val quota = instance.targetValue ?: 1
                 "Progress: $progress / $quota"
             }
         }

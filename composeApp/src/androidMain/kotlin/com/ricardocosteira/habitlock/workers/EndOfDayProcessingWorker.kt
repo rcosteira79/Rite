@@ -5,6 +5,12 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.ricardocosteira.habitlock.data.DatabaseDriverFactory
 import com.ricardocosteira.habitlock.di.AppModule
+import com.ricardocosteira.habitlock.domain.models.HabitStatus
+import com.ricardocosteira.habitlock.notifications.NotificationScheduler
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
 
 /**
  * Worker responsible for end-of-day processing.
@@ -30,14 +36,15 @@ class EndOfDayProcessingWorker(
             // Get required repository and create notification scheduler
             val habitInstanceRepository = appModule.provideHabitInstanceRepository()
             val habitRepository = appModule.provideHabitRepository()
-            val notificationScheduler = com.ricardocosteira.habitlock.notifications.NotificationScheduler(applicationContext)
+            val notificationScheduler = NotificationScheduler(applicationContext)
 
             // Get all pending habits for today
-            val pendingInstances = habitInstanceRepository.getTodayInstances()
-                .filter { it.status == com.ricardocosteira.habitlock.domain.models.HabitStatus.PENDING }
+            val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+            val pendingInstances = habitInstanceRepository.getInstancesForDate(today)
+                .filter { it.status == HabitStatus.PENDING }
 
             // Send grace period notifications for pending habits
-            pendingInstances.forEach { instance ->
+            for (instance in pendingInstances) {
                 val habit = habitRepository.getHabitById(instance.habitId)
                 if (habit != null) {
                     notificationScheduler.scheduleGracePeriodNotification(instance, habit)
@@ -52,3 +59,5 @@ class EndOfDayProcessingWorker(
         }
     }
 }
+
+private fun Clock.System.todayIn(timezone: TimeZone): LocalDate = now().toLocalDateTime(timezone).date

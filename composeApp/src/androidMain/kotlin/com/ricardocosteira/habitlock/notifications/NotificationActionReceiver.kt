@@ -92,15 +92,17 @@ class NotificationActionReceiver : BroadcastReceiver() {
                 val habitInstanceRepository = appModule.provideHabitInstanceRepository()
                 val habitRepository = appModule.provideHabitRepository()
                 val instance = habitInstanceRepository.getInstanceById(instanceId)
-                val habit = instance?.let { habitRepository.getHabitById(it.habitId) }
 
-                if (instance != null && habit != null) {
-                    val notificationScheduler = NotificationScheduler(context)
-                    notificationScheduler.scheduleSnoozeReminder(
-                        instance,
-                        habit,
-                        snoozeState.snoozeUntil.toEpochMilliseconds()
-                    )
+                if (instance != null) {
+                    val habit = habitRepository.getHabitById(instance.habitId)
+                    if (habit != null) {
+                        val notificationScheduler = NotificationScheduler(context)
+                        notificationScheduler.scheduleSnoozeReminder(
+                            instance,
+                            habit,
+                            snoozeState.scheduledTime.toEpochMilliseconds()
+                        )
+                    }
                 }
             }
         }

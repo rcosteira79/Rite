@@ -9,6 +9,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
 
 /**
  * BroadcastReceiver that handles timezone changes.
@@ -50,15 +54,14 @@ class TimezoneChangeReceiver : BroadcastReceiver() {
             val habitInstanceRepository = appModule.provideHabitInstanceRepository()
 
             // Get all active habits
-            val habits = habitRepository.getAllHabits()
+            val habits = habitRepository.getActiveHabits()
+            val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+            val todayInstances = habitInstanceRepository.getInstancesForDate(today)
 
             // For each active habit, reschedule its reminders
             for (habit in habits) {
-                if (habit.isArchived) continue
-
                 // Get today's instance for this habit
-                val instance = habitInstanceRepository.getTodayInstances()
-                    .firstOrNull { it.habitId == habit.id }
+                val instance = todayInstances.firstOrNull { it.habitId == habit.id }
 
                 if (instance != null) {
                     // TODO: Reschedule based on habit's reminder settings
@@ -77,3 +80,6 @@ class TimezoneChangeReceiver : BroadcastReceiver() {
         }
     }
 }
+
+private fun Clock.System.todayIn(timezone: TimeZone): LocalDate = now().toLocalDateTime(timezone).date
+

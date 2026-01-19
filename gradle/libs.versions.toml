@@ -1,5 +1,5 @@
 [versions]
-agp = "8.11.2"
+agp = "8.13.2"
 android-compileSdk = "36"
 android-minSdk = "26"
 android-targetSdk = "36"
@@ -11,18 +11,17 @@ androidx-lifecycle = "2.9.6"
 androidx-testExt = "1.3.0"
 androidx-work = "2.11.0"
 composeHotReload = "1.0.0"
-composeMultiplatform = "1.7.0"
+composeMultiplatform = "1.10.0"
 junit = "4.13.2"
-kotlin = "2.1.0"
-kotlin-inject = "0.7.2"
+kotlin = "2.3.0"
+kotlin-inject = "0.9.0"
 kotlinx-collections-immutable = "0.4.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
-ksp = "2.1.0-1.0.29"
-metro = "0.3.1"
-mockk = "1.13.13"
-sqldelight = "2.0.2"
-turbine = "1.2.0"
+ksp = "2.3.4"
+mockk = "1.14.7"
+sqldelight = "2.2.1"
+turbine = "1.2.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
@@ -42,7 +41,6 @@ kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collec
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
-metro-runtime = { module = "dev.zacsweers.metro:metro-runtime", version.ref = "metro" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
@@ -58,5 +56,4 @@ composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "com
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

@@ -11,35 +11,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.ricardocosteira.habitlock.data.DatabaseDriverFactory
 import com.ricardocosteira.habitlock.di.HabitLockAppComponent
-import com.ricardocosteira.habitlock.di.create
 import com.ricardocosteira.habitlock.presentation.navigation.HabitLockNavHost
 import com.ricardocosteira.habitlock.presentation.ui.theme.HabitLockTheme
 import kotlinx.datetime.TimeZone
 
 @Composable
-expect fun rememberDatabaseDriverFactory(): DatabaseDriverFactory
-
-@Composable
-fun App() {
+fun App(appComponent: () -> HabitLockAppComponent) {
     HabitLockTheme {
-        val driverFactory = rememberDatabaseDriverFactory()
-
         var isInitialized by remember { mutableStateOf(false) }
         var isOnboardingCompleted by remember { mutableStateOf(false) }
 
-        // Create DI component using generated kotlin-inject component
-        val appComponent = remember { HabitLockAppComponent::class.create(driverFactory) }
 
         // Get repositories and ViewModels from DI
-        val userRepository = remember { appComponent.userRepository }
-        val onboardingViewModel = remember { appComponent.onboardingViewModel }
-        val todayViewModel = remember { appComponent.todayViewModel }
-        val calendarViewModel = remember { appComponent.calendarViewModel }
-        val settingsViewModel = remember { appComponent.settingsViewModel }
-        val archivedHabitsViewModel = remember { appComponent.archivedHabitsViewModel }
-        val habitFormViewModelFactory = remember { appComponent.habitFormViewModelFactory }
+        val userRepository = remember { appComponent().userRepository }
+        val onboardingViewModel = remember { appComponent().onboardingViewModel }
+        val todayViewModel = remember { appComponent().todayViewModel }
+        val calendarViewModel = remember { appComponent().calendarViewModel }
+        val settingsViewModel = remember { appComponent().settingsViewModel }
+        val archivedHabitsViewModel = remember { appComponent().archivedHabitsViewModel }
+        val habitFormViewModelFactory = remember { appComponent().habitFormViewModelFactory }
 
         // Initialize user on first launch
         LaunchedEffect(Unit) {
