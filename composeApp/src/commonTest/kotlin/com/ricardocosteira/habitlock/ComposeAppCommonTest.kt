@@ -1,12 +1,5 @@
 package com.ricardocosteira.habitlock
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
+// Placeholder for future cross-cutting integration tests.
+// Use-case and ViewModel unit tests live in domain/usecases/ and presentation/.
 
-class ComposeAppCommonTest {
-
-    @Test
-    fun example() {
-        assertEquals(3, 1 + 2)
-    }
-}

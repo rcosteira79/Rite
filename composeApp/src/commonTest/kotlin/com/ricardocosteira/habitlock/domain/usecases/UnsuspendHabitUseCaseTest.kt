@@ -39,24 +39,23 @@ class UnsuspendHabitUseCaseTest {
     @Test
     fun `given active leave period when unsuspending then ends it today`() = runTest {
         // Given
+        // NOTE: dates must straddle the real current date since Clock.System is not injected yet.
+        // TODO: inject Clock into UnsuspendHabitUseCase for proper time-controlled testing.
         val inputLeavePeriodId = "leave-1"
-        val today = LocalDate(2026, 1, 20)
         val mockLeavePeriod = LeavePeriod(
             id = inputLeavePeriodId,
             habitId = "habit-1",
-            startDate = LocalDate(2026, 1, 15),  // Started 5 days ago
-            endDate = LocalDate(2026, 1, 30),    // Would end in 10 days
+            startDate = LocalDate(2026, 3, 1),   // Started before today
+            endDate = LocalDate(2099, 12, 31),   // Far-future end date
             reason = "Vacation",
             createdAt = Clock.System.now()
         )
-        val updatedLeavePeriod = mockLeavePeriod.copy(endDate = today)
 
-        coEvery { mockLeavePeriodRepository.getLeavePeriodById(inputLeavePeriodId) } returns mockLeavePeriod
-        coEvery { mockUserRepository.getUser() } returns mockUser.copy(timezone = TimeZone.UTC)
         coEvery { mockLeavePeriodRepository.getLeavePeriodById(inputLeavePeriodId) } returnsMany listOf(
             mockLeavePeriod,
-            updatedLeavePeriod
+            mockLeavePeriod.copy(endDate = LocalDate(2099, 12, 31))
         )
+        coEvery { mockUserRepository.getUser() } returns mockUser.copy(timezone = TimeZone.UTC)
 
         // When
         val actualResult = useCase.execute(inputLeavePeriodId)
@@ -69,13 +68,14 @@ class UnsuspendHabitUseCaseTest {
     @Test
     fun `given future leave period when unsuspending then deletes it`() = runTest {
         // Given
+        // NOTE: startDate must be in the future relative to the real clock.
+        // TODO: inject Clock into UnsuspendHabitUseCase for proper time-controlled testing.
         val inputLeavePeriodId = "leave-1"
-        val today = LocalDate(2026, 1, 20)
         val mockLeavePeriod = LeavePeriod(
             id = inputLeavePeriodId,
             habitId = "habit-1",
-            startDate = LocalDate(2026, 1, 25),  // Starts in future
-            endDate = LocalDate(2026, 1, 30),
+            startDate = LocalDate(2099, 6, 1),   // Far-future start date
+            endDate = LocalDate(2099, 12, 31),
             reason = "Future vacation",
             createdAt = Clock.System.now()
         )

@@ -10,6 +10,7 @@ import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import com.ricardocosteira.habitlock.domain.usecases.ApplyStrictnessPresetUseCase
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabitsUseCase
+import com.ricardocosteira.habitlock.util.todayIn
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -20,8 +21,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.todayIn
-import kotlinx.datetime.toLocalDateTime
 
 @Inject
 class OnboardingViewModel(
@@ -194,4 +193,3 @@ class OnboardingViewModel(
     }
 }
 
-private fun Clock.System.todayIn(timezone: TimeZone) = now().toLocalDateTime(timezone).date

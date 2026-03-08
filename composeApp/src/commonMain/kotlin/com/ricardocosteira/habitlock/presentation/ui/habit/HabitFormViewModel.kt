@@ -11,6 +11,7 @@ import com.ricardocosteira.habitlock.domain.models.ReminderType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabitUseCase
+import com.ricardocosteira.habitlock.util.toLocalDate
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,7 +23,6 @@ import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 @Inject
 class HabitFormViewModel(
@@ -250,5 +250,3 @@ class HabitFormViewModel(
     }
 }
 
-private fun kotlin.time.Instant.toLocalDate(timezone: TimeZone) =
-    this.toLocalDateTime(timezone).date

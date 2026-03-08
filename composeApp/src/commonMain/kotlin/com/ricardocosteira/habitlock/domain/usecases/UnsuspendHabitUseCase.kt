@@ -2,12 +2,12 @@ package com.ricardocosteira.habitlock.domain.usecases
 
 import me.tatarka.inject.annotations.Inject
 
+import com.ricardocosteira.habitlock.util.toLocalDate
 import com.ricardocosteira.habitlock.domain.models.LeavePeriod
 import com.ricardocosteira.habitlock.domain.repositories.LeavePeriodRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 /**
  * Ends a habit suspension (Leave Mode) early or removes it entirely.
@@ -75,5 +75,3 @@ class UnsuspendHabitUseCase(
     }
 }
 
-private fun kotlin.time.Instant.toLocalDate(timezone: TimeZone) =
-    this.toLocalDateTime(timezone).date

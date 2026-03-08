@@ -5,6 +5,7 @@ import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitSchedule
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
+import com.ricardocosteira.habitlock.domain.models.ScheduleType
 
 /**
  * UI model for displaying a habit on the Today screen.
@@ -24,7 +25,7 @@ data class TodayHabitUiModel(
     val currentStreak: Int,
     val longestStreak: Int,
     val scorePercentage: Int,
-    val cadence: String
+    val cadence: ScheduleType
 ) {
     val isCompleted: Boolean get() = status == HabitStatus.COMPLETED
     val isSkipped: Boolean get() = status == HabitStatus.SKIPPED
@@ -42,8 +43,8 @@ data class TodayHabitUiModel(
     
     val scoreText: String get() = "$scorePercentage%"
     
-    val isDaily: Boolean get() = cadence == "DAILY"
-    val isWeekly: Boolean get() = cadence == "WEEKLY"
+    val isDaily: Boolean get() = cadence == ScheduleType.DAILY
+    val isWeekly: Boolean get() = cadence == ScheduleType.WEEKLY
 }
 
 /**
@@ -71,6 +72,6 @@ fun mapToTodayHabitUiModel(
         currentStreak = habit.currentStreak,
         longestStreak = habit.longestStreak,
         scorePercentage = score.percentage,
-        cadence = schedule.scheduleType.name
+        cadence = schedule.scheduleType
     )
 }

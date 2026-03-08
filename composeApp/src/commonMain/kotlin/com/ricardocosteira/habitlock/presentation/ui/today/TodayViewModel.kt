@@ -16,6 +16,7 @@ import com.ricardocosteira.habitlock.domain.usecases.SkipHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.SkipLockedException
 import com.ricardocosteira.habitlock.domain.usecases.UndoHabitUseCase
 import com.ricardocosteira.habitlock.presentation.models.mapToTodayHabitUiModel
+import com.ricardocosteira.habitlock.util.toLocalDate
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -26,7 +27,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 @Inject
 class TodayViewModel(
@@ -229,5 +229,3 @@ class TodayViewModel(
     }
 }
 
-private fun kotlin.time.Instant.toLocalDate(timezone: TimeZone): kotlinx.datetime.LocalDate =
-    this.toLocalDateTime(timezone).date

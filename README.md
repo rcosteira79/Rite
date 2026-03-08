@@ -57,7 +57,7 @@ This is a **Kotlin Multiplatform** project targeting Android, iOS, and Desktop (
 - **Clean Architecture** with vertical feature packages (domain/data/presentation)
 - **MVVM/MVI** pattern with single state classes for UI state management
 - **Repository Pattern** for data persistence
-- **Dependency Injection** using Metro
+- **Dependency Injection** using kotlin-inject (compile-time, KSP-generated)
 - **Material 3** design system
 - **Jetpack Compose** for UI (including Compose Multiplatform)
 
@@ -65,10 +65,10 @@ This is a **Kotlin Multiplatform** project targeting Android, iOS, and Desktop (
 
 - Kotlin Multiplatform
 - Jetpack Compose / Compose Multiplatform
-- Room (local database)
+- SQLDelight 2.x (local database — type-safe, KMP-native)
 - Kotlin Coroutines & StateFlow
-- Metro (dependency injection)
-- Navigation Component 3
+- kotlin-inject (compile-time dependency injection)
+- Manual navigation (`Route` sealed interface — Navigation Component 3 deferred)
 - Material 3
 
 ## Getting Started

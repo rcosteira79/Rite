@@ -9,6 +9,7 @@ import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import com.ricardocosteira.habitlock.presentation.models.CalendarDayUiModel
 import com.ricardocosteira.habitlock.presentation.models.DayClassification
+import com.ricardocosteira.habitlock.util.toLocalDate
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,8 +23,6 @@ import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Instant
 
 @Inject
 class CalendarViewModel(
@@ -159,4 +158,3 @@ class CalendarViewModel(
     }
 }
 
-private fun Instant.toLocalDate(timezone: TimeZone) = this.toLocalDateTime(timezone).date

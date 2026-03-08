@@ -3,9 +3,9 @@ package com.ricardocosteira.habitlock.notifications
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.ricardocosteira.habitlock.data.DatabaseDriverFactory
-import com.ricardocosteira.habitlock.di.AppModule
+import com.ricardocosteira.habitlock.di.HabitLockAppComponent
 import com.ricardocosteira.habitlock.domain.models.CompletionSource
+import com.ricardocosteira.habitlock.habitLockApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -31,26 +31,20 @@ class NotificationActionReceiver : BroadcastReceiver() {
             return
         }
 
-        // Use goAsync to allow for coroutine work
         val pendingResult = goAsync()
 
         scope.launch {
             try {
-                // Create AppModule to access use cases
-                val driverFactory = DatabaseDriverFactory(context)
-                val appModule = AppModule(driverFactory)
+                val appComponent = context.habitLockApplication.appComponent
 
                 when (action) {
-                    ACTION_COMPLETE -> handleComplete(context, appModule, instanceId)
-                    ACTION_ADD_ONE -> handleAddOne(context, appModule, instanceId)
-                    ACTION_SNOOZE -> handleSnooze(context, appModule, instanceId)
-                    ACTION_SKIP -> handleSkip(context, appModule, instanceId)
+                    ACTION_COMPLETE -> handleComplete(appComponent, instanceId)
+                    ACTION_ADD_ONE -> handleAddOne(appComponent, instanceId)
+                    ACTION_SNOOZE -> handleSnooze(context, appComponent, instanceId)
+                    ACTION_SKIP -> handleSkip(appComponent, instanceId)
                 }
 
-                // Cancel the notification after action is taken
-                val notificationManager = HabitNotificationManager(context)
-                notificationManager.cancelAllNotificationsForInstance(instanceId)
-
+                HabitNotificationManager(context).cancelAllNotificationsForInstance(instanceId)
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
@@ -59,58 +53,48 @@ class NotificationActionReceiver : BroadcastReceiver() {
         }
     }
 
-    private suspend fun handleComplete(context: Context, appModule: AppModule, instanceId: String) {
-        val completeHabitUseCase = appModule.provideCompleteHabitUseCase()
-        val habitInstanceRepository = appModule.provideHabitInstanceRepository()
-
-        val instance = habitInstanceRepository.getInstanceById(instanceId)
+    private suspend fun handleComplete(appComponent: HabitLockAppComponent, instanceId: String) {
+        val instance = appComponent.habitInstanceRepository.getInstanceById(instanceId)
         if (instance != null) {
-            completeHabitUseCase.executeBinary(instanceId, CompletionSource.NOTIFICATION)
+            appComponent.completeHabitUseCase.executeBinary(instanceId, CompletionSource.NOTIFICATION)
         }
     }
 
-    private suspend fun handleAddOne(context: Context, appModule: AppModule, instanceId: String) {
-        val completeHabitUseCase = appModule.provideCompleteHabitUseCase()
-        val habitInstanceRepository = appModule.provideHabitInstanceRepository()
-
-        val instance = habitInstanceRepository.getInstanceById(instanceId)
+    private suspend fun handleAddOne(appComponent: HabitLockAppComponent, instanceId: String) {
+        val instance = appComponent.habitInstanceRepository.getInstanceById(instanceId)
         if (instance != null) {
-            completeHabitUseCase.executeQuantitative(instanceId, 1, CompletionSource.NOTIFICATION)
+            appComponent.completeHabitUseCase.executeQuantitative(
+                instanceId,
+                deltaValue = 1,
+                source = CompletionSource.NOTIFICATION
+            )
         }
     }
 
-    private suspend fun handleSnooze(context: Context, appModule: AppModule, instanceId: String) {
-        val snoozeHabitUseCase = appModule.provideSnoozeHabitUseCase()
-        
-        // Snooze for 15 minutes by default
-        val result = snoozeHabitUseCase.execute(instanceId, durationMinutes = 15)
-
+    private suspend fun handleSnooze(
+        context: Context,
+        appComponent: HabitLockAppComponent,
+        instanceId: String
+    ) {
+        val result = appComponent.snoozeHabitUseCase.execute(instanceId, durationMinutes = 15)
         if (result.isSuccess) {
             val snoozeState = result.getOrNull()
             if (snoozeState != null) {
-                // Reschedule notification for when snooze expires
-                val habitInstanceRepository = appModule.provideHabitInstanceRepository()
-                val habitRepository = appModule.provideHabitRepository()
-                val instance = habitInstanceRepository.getInstanceById(instanceId)
-
-                if (instance != null) {
-                    val habit = habitRepository.getHabitById(instance.habitId)
-                    if (habit != null) {
-                        val notificationScheduler = NotificationScheduler(context)
-                        notificationScheduler.scheduleSnoozeReminder(
-                            instance,
-                            habit,
-                            snoozeState.scheduledTime.toEpochMilliseconds()
-                        )
-                    }
+                val instance = appComponent.habitInstanceRepository.getInstanceById(instanceId)
+                val habit = instance?.let { appComponent.habitRepository.getHabitById(it.habitId) }
+                if (instance != null && habit != null) {
+                    NotificationScheduler(context).scheduleSnoozeReminder(
+                        instance,
+                        habit,
+                        snoozeState.scheduledTime.toEpochMilliseconds()
+                    )
                 }
             }
         }
     }
 
-    private suspend fun handleSkip(context: Context, appModule: AppModule, instanceId: String) {
-        val skipHabitUseCase = appModule.provideSkipHabitUseCase()
-        skipHabitUseCase.execute(instanceId)
+    private suspend fun handleSkip(appComponent: HabitLockAppComponent, instanceId: String) {
+        appComponent.skipHabitUseCase.execute(instanceId)
     }
 
     companion object {

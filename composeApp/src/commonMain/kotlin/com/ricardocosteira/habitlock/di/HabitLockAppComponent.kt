@@ -14,7 +14,12 @@ import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.repositories.LeavePeriodRepository
 import com.ricardocosteira.habitlock.domain.repositories.SnoozeRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
+import com.ricardocosteira.habitlock.domain.usecases.CompleteHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabitUseCase
+import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabitsUseCase
+import com.ricardocosteira.habitlock.domain.usecases.ProcessEndOfDayUseCase
+import com.ricardocosteira.habitlock.domain.usecases.SkipHabitUseCase
+import com.ricardocosteira.habitlock.domain.usecases.SnoozeHabitUseCase
 import com.ricardocosteira.habitlock.domain.usecases.UuidProvider
 import com.ricardocosteira.habitlock.generateUuid
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsViewModel
@@ -95,12 +100,21 @@ abstract class HabitLockAppComponent(
 
     // Public accessors for App initialization
     abstract val userRepository: UserRepository
+    abstract val habitRepository: HabitRepository
+    abstract val habitInstanceRepository: HabitInstanceRepository
     abstract val onboardingViewModel: OnboardingViewModel
     abstract val todayViewModel: TodayViewModel
     abstract val calendarViewModel: CalendarViewModel
     abstract val settingsViewModel: SettingsViewModel
     abstract val archivedHabitsViewModel: ArchivedHabitsViewModel
     abstract val habitFormViewModelFactory: HabitFormViewModel.Factory
+
+    // Accessors for workers and receivers
+    abstract val generateDailyHabitsUseCase: GenerateDailyHabitsUseCase
+    abstract val processEndOfDayUseCase: ProcessEndOfDayUseCase
+    abstract val completeHabitUseCase: CompleteHabitUseCase
+    abstract val snoozeHabitUseCase: SnoozeHabitUseCase
+    abstract val skipHabitUseCase: SkipHabitUseCase
 
     companion object
 }

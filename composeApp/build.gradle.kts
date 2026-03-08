@@ -12,7 +12,7 @@ plugins {
 
 kotlin {
     jvmToolchain(17)
-    
+
     sourceSets.all {
         languageSettings.optIn("kotlin.time.ExperimentalTime")
     }
@@ -28,9 +28,9 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     jvm()
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
@@ -66,6 +66,24 @@ kotlin {
             implementation(libs.sqldelight.sqlite.driver)
         }
     }
+}
+
+// Wire KSP-generated Kotlin sources into each iOS Kotlin/Native compile task.
+// The KSP Gradle plugin registers only the java output directory automatically;
+// the kotlin directory must be added explicitly so kotlin-inject's generated
+// `create` extension is visible at compile time.
+tasks.matching { it.name.startsWith("compileKotlinIos") }.configureEach {
+    val targetName = name.removePrefix("compileKotlin")
+        .replaceFirstChar { it.lowercaseChar() }
+    val kspDir = layout.buildDirectory
+        .dir("generated/ksp/$targetName/${targetName}Main/kotlin")
+        .get().asFile
+    (this as? org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>)
+        ?.compilerOptions
+        ?: return@configureEach
+    inputs.dir(kspDir).optional()
+    (this as org.jetbrains.kotlin.gradle.tasks.AbstractKotlinNativeCompile<*, *>)
+        .source(kspDir)
 }
 
 android {

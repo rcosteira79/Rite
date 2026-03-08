@@ -23,14 +23,17 @@ fun App(appComponent: () -> HabitLockAppComponent) {
         var isOnboardingCompleted by remember { mutableStateOf(false) }
 
 
+        // Resolve the DI component once so we don't invoke the factory repeatedly
+        val component = remember { appComponent() }
+
         // Get repositories and ViewModels from DI
-        val userRepository = remember { appComponent().userRepository }
-        val onboardingViewModel = remember { appComponent().onboardingViewModel }
-        val todayViewModel = remember { appComponent().todayViewModel }
-        val calendarViewModel = remember { appComponent().calendarViewModel }
-        val settingsViewModel = remember { appComponent().settingsViewModel }
-        val archivedHabitsViewModel = remember { appComponent().archivedHabitsViewModel }
-        val habitFormViewModelFactory = remember { appComponent().habitFormViewModelFactory }
+        val userRepository = remember { component.userRepository }
+        val onboardingViewModel = remember { component.onboardingViewModel }
+        val todayViewModel = remember { component.todayViewModel }
+        val calendarViewModel = remember { component.calendarViewModel }
+        val settingsViewModel = remember { component.settingsViewModel }
+        val archivedHabitsViewModel = remember { component.archivedHabitsViewModel }
+        val habitFormViewModelFactory = remember { component.habitFormViewModelFactory }
 
         // Initialize user on first launch
         LaunchedEffect(Unit) {

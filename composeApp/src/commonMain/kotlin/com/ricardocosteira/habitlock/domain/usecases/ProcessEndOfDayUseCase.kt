@@ -7,13 +7,13 @@ import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
+import com.ricardocosteira.habitlock.util.toLocalDate
 import kotlin.time.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
-import kotlinx.datetime.toLocalDateTime
 
 /**
  * Processes end-of-day/end-of-week failure for habits.
@@ -141,5 +141,5 @@ class ProcessEndOfDayUseCase(
     }
 }
 
-private fun kotlin.time.Instant.toLocalDate(timezone: TimeZone) =
-    this.toLocalDateTime(timezone).date
+
+
