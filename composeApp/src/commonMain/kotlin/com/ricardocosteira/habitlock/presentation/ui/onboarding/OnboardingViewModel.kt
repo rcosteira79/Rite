@@ -7,9 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
-import com.ricardocosteira.habitlock.domain.usecases.ApplyStrictnessPresetUseCase
-import com.ricardocosteira.habitlock.domain.usecases.CreateHabitUseCase
-import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabitsUseCase
+import com.ricardocosteira.habitlock.domain.usecases.ApplyStrictnessPreset
+import com.ricardocosteira.habitlock.domain.usecases.CreateHabit
+import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabits
 import com.ricardocosteira.habitlock.util.todayIn
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,9 +25,9 @@ import kotlinx.datetime.TimeZone
 @Inject
 class OnboardingViewModel(
     private val userRepository: UserRepository,
-    private val applyStrictnessPresetUseCase: ApplyStrictnessPresetUseCase,
-    private val createHabitUseCase: CreateHabitUseCase,
-    private val generateDailyHabitsUseCase: GenerateDailyHabitsUseCase
+    private val applyStrictnessPreset: ApplyStrictnessPreset,
+    private val createHabit: CreateHabit,
+    private val generateDailyHabits: GenerateDailyHabits
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(OnboardingState())
@@ -72,7 +72,7 @@ class OnboardingViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isApplyingPreset = true) }
 
-            val result = applyStrictnessPresetUseCase.execute(_state.value.selectedPreset)
+            val result = applyStrictnessPreset.execute(_state.value.selectedPreset)
 
             result.fold(
                 onSuccess = {
@@ -135,8 +135,8 @@ class OnboardingViewModel(
                 null
             }
 
-            val result = createHabitUseCase.execute(
-                params = CreateHabitUseCase.CreateHabitParams(
+            val result = createHabit.execute(
+                params = CreateHabit.CreateHabitParams(
                     name = habitName,
                     description = null,
                     type = habitType,
@@ -150,7 +150,7 @@ class OnboardingViewModel(
             result.fold(
                 onSuccess = {
                     // Generate habit instance for today
-                    generateDailyHabitsUseCase.execute()
+                    generateDailyHabits.execute()
                     completeOnboarding()
                 },
                 onFailure = { error ->
@@ -174,7 +174,7 @@ class OnboardingViewModel(
     private suspend fun applyPresetAndComplete(preset: StrictnessPreset) {
         _state.update { it.copy(isApplyingPreset = true) }
 
-        applyStrictnessPresetUseCase.execute(preset)
+        applyStrictnessPreset.execute(preset)
         completeOnboarding()
     }
 

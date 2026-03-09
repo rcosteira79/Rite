@@ -10,7 +10,7 @@ import com.ricardocosteira.habitlock.domain.repositories.UserRepository
  * Applies a strictness preset to the user settings during onboarding.
  */
 @Inject
-class ApplyStrictnessPresetUseCase(
+class ApplyStrictnessPreset(
     private val userRepository: UserRepository
 ) {
 

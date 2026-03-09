@@ -16,7 +16,7 @@ import kotlinx.datetime.LocalDate
  * Creates a new habit with schedule and optional reminder.
  */
 @Inject
-class CreateHabitUseCase(
+class CreateHabit(
     private val habitRepository: HabitRepository,
     private val uuidProvider: UuidProvider
 ) {

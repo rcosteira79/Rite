@@ -18,7 +18,7 @@ import kotlinx.datetime.LocalDate
  * - Failures are not counted
  */
 @Inject
-class SuspendHabitUseCase(
+class SuspendHabit(
     private val habitRepository: HabitRepository,
     private val leavePeriodRepository: LeavePeriodRepository,
     private val uuidProvider: UuidProvider

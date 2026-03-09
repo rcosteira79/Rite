@@ -17,7 +17,7 @@ import kotlinx.datetime.toLocalDateTime
  * Undoes a habit completion or skip.
  */
 @Inject
-class UndoHabitUseCase(
+class UndoHabit(
     private val habitInstanceRepository: HabitInstanceRepository,
     private val habitCompletionEventRepository: HabitCompletionEventRepository,
     private val habitRepository: HabitRepository,

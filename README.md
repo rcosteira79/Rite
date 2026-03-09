@@ -1,114 +1,162 @@
 # 🔒 HabitLock
 
-**HabitLock** is a habit tracking app that enforces commitments through user-defined strictness levels. Unlike typical habit trackers focused on motivation and reminders, HabitLock helps users keep promises to themselves by providing accountability mechanisms with configurable enforcement rules.
+**HabitLock** is an open-source habit tracker that enforces commitments through user-defined strictness levels. Unlike typical habit trackers focused on motivation and gentle reminders, HabitLock helps you keep promises to yourself by providing real accountability with configurable enforcement rules.
 
-## About the Project
-
-HabitLock is built on the principle that meaningful behavior change requires more than gentle nudges—it requires commitment and accountability. Users consciously choose their level of strictness, from flexible to fully locked, and the app enforces those rules consistently.
-
-### Core Features
-
-- **Customizable Strictness Levels**: Choose between Flexible, Balanced, or Locked enforcement modes
-- **Daily Habit Tracking**: Binary (yes/no) and quantitative habit types
-- **Smart Notifications**: Actionable notifications with snooze/skip/complete options
-- **Streak Tracking**: Per-habit streaks and "perfect days" when all habits are completed
-- **Undo Policies**: Configurable undo permissions (none, today only, or full history)
-- **Skip Management**: Limited skips to prevent streak loss with progressive consequences
-- **Timezone Awareness**: Intelligent handling of timezone changes with user notifications
-- **Calendar History**: Visual historical accuracy of habit completion
-
-### What Makes HabitLock Different
-
-- **Enforcement-based design**: The app actively prevents you from breaking your own rules
-- **Conscious control**: You choose the strictness level that works for you
-- **No gamification clutter**: Focuses on actual habit completion rather than XP/achievements (MVP)
-- **Privacy-first**: Local-only storage, no backend sync (MVP)
-
-### MVP Scope
-
-This initial version includes:
-- Core habit creation and tracking
-- Daily habit instances with status management
-- Notification system with inline actions
-- Streak calculation and display
-- Basic undo/skip/snooze mechanics
-- Onboarding flow with strictness selection
-
-Not included in MVP:
-- Backend/cloud sync
-- Social features
-- XP, leveling, or achievement systems
-- Advanced notification escalation
-
-## Technical Stack
-
-This is a **Kotlin Multiplatform** project targeting Android, iOS, and Desktop (JVM).
-
-### Project Structure
-
-* [/composeApp](./composeApp/src) contains code shared across all Compose Multiplatform applications:
-  - [commonMain](./composeApp/src/commonMain/kotlin) – Code common for all targets
-  - Platform-specific folders ([iosMain](./composeApp/src/iosMain/kotlin), [jvmMain](./composeApp/src/jvmMain/kotlin)) – Platform-specific implementations
-
-* [/iosApp](./iosApp/iosApp) contains the iOS application entry point and SwiftUI code
-
-### Architecture
-
-- **Clean Architecture** with vertical feature packages (domain/data/presentation)
-- **MVVM/MVI** pattern with single state classes for UI state management
-- **Repository Pattern** for data persistence
-- **Dependency Injection** using kotlin-inject (compile-time, KSP-generated)
-- **Material 3** design system
-- **Jetpack Compose** for UI (including Compose Multiplatform)
-
-### Key Technologies
-
-- Kotlin Multiplatform
-- Jetpack Compose / Compose Multiplatform
-- SQLDelight 2.x (local database — type-safe, KMP-native)
-- Kotlin Coroutines & StateFlow
-- kotlin-inject (compile-time dependency injection)
-- Manual navigation (`Route` sealed interface — Navigation Component 3 deferred)
-- Material 3
-
-## Getting Started
-
-### Build and Run Android Application
-
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
-
-### Build and Run Desktop (JVM) Application
-
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
-
-### Build and Run iOS Application
-
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE's toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
-
-## Documentation
-
-- [SPEC.md](./SPEC.md) – Complete business logic and domain specification
-- [onboarding_spec.md](./onboarding_spec.md) – Onboarding flow specification and copy
+> ⚠️ **Work in progress.** Core business logic and Android notifications are implemented. UI polish, full iOS support, and comprehensive testing are ongoing — see [ROADMAP.md](./ROADMAP.md).
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## Screenshots
+
+| Today | (more coming) |
+|-------|--------------|
+| ![Today Screen](./todayScreen.png) | |
+
+---
+
+## What Makes HabitLock Different
+
+- **Enforcement-based design** — the app actively prevents you from breaking your own rules
+- **Conscious strictness** — choose between Flexible, Balanced, or Locked modes; change anytime
+- **No gamification clutter** — focused on actual habit completion, not XP or achievements
+- **Privacy-first** — local-only storage, no backend sync required
+
+---
+
+## Features
+
+### Implemented
+- ✅ Daily and weekly habit tracking (binary and quantitative)
+- ✅ Configurable strictness presets (Flexible / Balanced / Locked)
+- ✅ Streak tracking per habit and perfect-day streaks
+- ✅ Habit Score — cumulative long-term performance metric
+- ✅ Skip management with configurable limits
+- ✅ Undo policies (none / today only / full history)
+- ✅ Snooze functionality with configurable limits and duration
+- ✅ Leave / Suspension mode for planned breaks
+- ✅ Over-completion tracking (reflected in Habit Score)
+- ✅ Timezone-aware day boundaries
+- ✅ Notification system with inline actions (+1, Snooze, Skip)
+- ✅ Background scheduling (WorkManager + AlarmManager)
+- ✅ Calendar screen with day classification (Perfect, Partial, Failed, etc.)
+- ✅ Onboarding flow (Philosophy → Strictness → First Habit)
+- ✅ Habit creation / editing form
+
+### In Progress / Deferred
+- 🔲 iOS activation
+- 🔲 Settings screen (strictness switching, snooze/skip limits UI)
+- 🔲 Leave mode UI (date picker, swipe actions)
+- 🔲 Day-detail calendar view
+- 🔲 Multiple notification times per habit
+- 🔲 Comprehensive test coverage
+
+---
+
+## Technical Stack
+
+**Platform:** Kotlin Multiplatform targeting Android, iOS, and Desktop (JVM)
+
+| Layer | Technology |
+|-------|-----------|
+| UI | Compose Multiplatform (Material 3) |
+| State | MVVM with `StateFlow` |
+| DI | [kotlin-inject](https://github.com/evant/kotlin-inject) (compile-time, KSP) |
+| Database | [SQLDelight 2.x](https://cashapp.github.io/sqldelight/) |
+| Background | WorkManager + AlarmManager (Android) |
+| Async | Kotlin Coroutines & Flow |
+| Navigation | Manual `Route` sealed interface (Navigation Component 3 migration planned) |
+
+---
+
+## Architecture
+
+Clean Architecture with vertical feature slices:
+
+```
+commonMain/
+└── com.ricardocosteira.habitlock/
+    ├── di/                  # kotlin-inject component & modules
+    ├── domain/
+    │   ├── models/          # Pure Kotlin data classes
+    │   ├── repositories/    # Repository interfaces
+    │   └── usecases/        # Business logic
+    ├── data/
+    │   ├── database/        # SQLDelight generated sources
+    │   ├── mappers/         # DB entity ↔ domain model
+    │   └── repositories/    # Repository implementations
+    └── presentation/
+        ├── navigation/      # Route definitions & NavHost
+        └── ui/              # Screen composables & ViewModels
+
+androidMain/
+└── com.ricardocosteira.habitlock/
+    ├── notifications/       # Channels, manager, receivers
+    └── workers/             # WorkManager workers
+```
+
+**Data flow:** `Composable → ViewModel → Use Case → Repository → SQLDelight`
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Android Studio Meerkat (2024.3.1) or later
+- JDK 17+
+- Xcode 16+ (for iOS)
+
+### Build and Run — Android
+
+```shell
+./gradlew :composeApp:assembleDebug
+```
+
+Or use the **Run** configuration in Android Studio / IntelliJ IDEA.
+
+### Build and Run — Desktop (JVM)
+
+```shell
+./gradlew :composeApp:run
+```
+
+### Build and Run — iOS
+
+Open `iosApp/iosApp.xcodeproj` in Xcode and run on a simulator or device.
+
+Alternatively, use the **iosApp** run configuration in Fleet or Android Studio.
+
+---
+
+## Project Documentation
+
+| Document | Description |
+|----------|-------------|
+| [ROADMAP.md](./ROADMAP.md) | Phase-by-phase development plan with status |
+| [docs/specs/SPEC_v2.md](./docs/specs/SPEC_v2.md) | Complete MVP specification (authoritative) |
+| [docs/specs/SPEC_CADENCE_AND_LEAVE.md](./docs/specs/SPEC_CADENCE_AND_LEAVE.md) | Cadence and leave mode details |
+| [docs/specs/onboarding_spec.md](./docs/specs/onboarding_spec.md) | Onboarding flow copy and logic |
+
+---
+
+## Contributing
+
+Contributions are welcome! The project is still reaching MVP, so the best ways to help are:
+
+1. **Pick up a task from the roadmap** — anything marked `🔲` or `[ ]` in [ROADMAP.md](./ROADMAP.md)
+2. **Write tests** — Phase 5 in the roadmap has a full list of untested use cases
+3. **iOS support** — activating the iOS target and wiring the entry point is a good first task
+4. **File issues** — bug reports and feature suggestions via GitHub Issues
+
+### Code Style
+
+- Kotlin with strict typing (no `Any`, no wildcard imports)
+- Clean Architecture boundaries (domain layer has zero Android/platform imports)
+- Given-When-Then test convention
+- See the inline Kotlin guidelines in the codebase for naming conventions
+
+---
+
+## License
+
+[MIT License](./LICENSE) — © 2026 Ricardo Costeira

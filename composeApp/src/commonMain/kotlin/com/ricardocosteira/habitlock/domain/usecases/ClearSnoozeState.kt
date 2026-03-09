@@ -14,7 +14,7 @@ import com.ricardocosteira.habitlock.domain.repositories.SnoozeRepository
  * - User manually cancels the snooze
  */
 @Inject
-class ClearSnoozeStateUseCase(
+class ClearSnoozeState(
     private val snoozeRepository: SnoozeRepository
 ) {
 

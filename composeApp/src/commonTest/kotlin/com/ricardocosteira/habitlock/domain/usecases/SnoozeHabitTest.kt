@@ -20,12 +20,12 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 
-class SnoozeHabitUseCaseTest {
+class SnoozeHabitTest {
 
     private val mockHabitInstanceRepository = mockk<HabitInstanceRepository>()
     private val mockSnoozeRepository = mockk<SnoozeRepository>(relaxed = true)
     private val mockUserRepository = mockk<UserRepository>()
-    private val useCase = SnoozeHabitUseCase(
+    private val useCase = SnoozeHabit(
         mockHabitInstanceRepository,
         mockSnoozeRepository,
         mockUserRepository

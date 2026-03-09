@@ -11,7 +11,7 @@ import com.ricardocosteira.habitlock.domain.repositories.UserRepository
  * Skips a habit instance.
  */
 @Inject
-class SkipHabitUseCase(
+class SkipHabit(
     private val habitInstanceRepository: HabitInstanceRepository,
     private val userRepository: UserRepository
 ) {

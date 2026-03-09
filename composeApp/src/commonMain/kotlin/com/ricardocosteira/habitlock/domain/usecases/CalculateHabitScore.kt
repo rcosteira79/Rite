@@ -17,7 +17,7 @@ import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
  * - <100% = some completions were missed
  */
 @Inject
-class CalculateHabitScoreUseCase(
+class CalculateHabitScore(
     private val habitRepository: HabitRepository
 ) {
 

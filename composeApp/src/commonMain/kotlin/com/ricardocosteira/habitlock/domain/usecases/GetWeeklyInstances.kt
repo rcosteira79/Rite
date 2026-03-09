@@ -22,7 +22,7 @@ import kotlin.time.Clock
  * For WEEKLY habits: Returns the single instance for the week
  */
 @Inject
-class GetWeeklyInstancesUseCase(
+class GetWeeklyInstances(
     private val userRepository: UserRepository,
     private val habitRepository: HabitRepository,
     private val habitInstanceRepository: HabitInstanceRepository

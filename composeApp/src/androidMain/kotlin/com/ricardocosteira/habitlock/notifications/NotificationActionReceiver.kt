@@ -56,14 +56,14 @@ class NotificationActionReceiver : BroadcastReceiver() {
     private suspend fun handleComplete(appComponent: HabitLockAppComponent, instanceId: String) {
         val instance = appComponent.habitInstanceRepository.getInstanceById(instanceId)
         if (instance != null) {
-            appComponent.completeHabitUseCase.executeBinary(instanceId, CompletionSource.NOTIFICATION)
+            appComponent.completeHabit.executeBinary(instanceId, CompletionSource.NOTIFICATION)
         }
     }
 
     private suspend fun handleAddOne(appComponent: HabitLockAppComponent, instanceId: String) {
         val instance = appComponent.habitInstanceRepository.getInstanceById(instanceId)
         if (instance != null) {
-            appComponent.completeHabitUseCase.executeQuantitative(
+            appComponent.completeHabit.executeQuantitative(
                 instanceId,
                 deltaValue = 1,
                 source = CompletionSource.NOTIFICATION
@@ -76,7 +76,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
         appComponent: HabitLockAppComponent,
         instanceId: String
     ) {
-        val result = appComponent.snoozeHabitUseCase.execute(instanceId, durationMinutes = 15)
+        val result = appComponent.snoozeHabit.execute(instanceId, durationMinutes = 15)
         if (result.isSuccess) {
             val snoozeState = result.getOrNull()
             if (snoozeState != null) {
@@ -94,7 +94,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
     }
 
     private suspend fun handleSkip(appComponent: HabitLockAppComponent, instanceId: String) {
-        appComponent.skipHabitUseCase.execute(instanceId)
+        appComponent.skipHabit.execute(instanceId)
     }
 
     companion object {

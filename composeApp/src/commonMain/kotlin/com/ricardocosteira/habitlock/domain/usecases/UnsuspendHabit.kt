@@ -17,7 +17,7 @@ import kotlinx.datetime.TimeZone
  * - Remove a future suspension (deletes the leave period)
  */
 @Inject
-class UnsuspendHabitUseCase(
+class UnsuspendHabit(
     private val leavePeriodRepository: LeavePeriodRepository,
     private val userRepository: UserRepository
 ) {

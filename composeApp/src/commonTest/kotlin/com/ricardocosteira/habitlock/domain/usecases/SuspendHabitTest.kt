@@ -16,12 +16,12 @@ import kotlin.time.Clock
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 
-class SuspendHabitUseCaseTest {
+class SuspendHabitTest {
 
     private val mockHabitRepository = mockk<HabitRepository>()
     private val mockLeavePeriodRepository = mockk<LeavePeriodRepository>(relaxed = true)
     private val mockUuidProvider = mockk<UuidProvider>()
-    private val useCase = SuspendHabitUseCase(
+    private val useCase = SuspendHabit(
         mockHabitRepository,
         mockLeavePeriodRepository,
         mockUuidProvider

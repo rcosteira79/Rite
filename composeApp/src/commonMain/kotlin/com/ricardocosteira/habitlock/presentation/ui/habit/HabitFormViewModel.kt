@@ -10,7 +10,7 @@ import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.ReminderType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
-import com.ricardocosteira.habitlock.domain.usecases.CreateHabitUseCase
+import com.ricardocosteira.habitlock.domain.usecases.CreateHabit
 import com.ricardocosteira.habitlock.util.toLocalDate
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +27,7 @@ import kotlinx.datetime.TimeZone
 @Inject
 class HabitFormViewModel(
     private val habitRepository: HabitRepository,
-    private val createHabitUseCase: CreateHabitUseCase,
+    private val createHabit: CreateHabit,
     private val habitIdToEdit: String? = null
 ) : ViewModel() {
 
@@ -190,8 +190,8 @@ class HabitFormViewModel(
     private suspend fun createNewHabit(state: HabitFormState, reminder: HabitReminder?) {
         val today = Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
 
-        createHabitUseCase.execute(
-            params = CreateHabitUseCase.CreateHabitParams(
+        createHabit.execute(
+            params = CreateHabit.CreateHabitParams(
                 name = state.name.trim(),
                 description = state.description.trim().takeIf { it.isNotEmpty() },
                 type = state.type,

@@ -6,31 +6,30 @@ This roadmap outlines the development plan for HabitLock, a habit enforcing app 
 
 ### Current State Assessment
 
-**Existing Implementation:**
+**Implemented (Phases 1–4 core complete):**
 - ✅ Project structure with KMP setup (Android, iOS, JVM)
 - ✅ SQLDelight database schema with all core tables
-- ✅ Domain models (Habit, HabitInstance, User, etc.)
+- ✅ Domain models (Habit, HabitInstance, User, LeavePeriod, HabitScore, etc.)
 - ✅ Repository interfaces and implementations
-- ✅ Core use cases (Complete, Skip, Undo, GenerateDailyHabits, ProcessEndOfDay)
-- ✅ Basic navigation infrastructure
-- ✅ Today screen with ViewModel and basic UI
+- ✅ Core use cases (Complete, Skip, Undo, Snooze, GenerateDailyHabits, ProcessEndOfDay, CalculateHabitScore, Suspend/Unsuspend)
+- ✅ kotlin-inject DI (compile-time, KSP-powered)
+- ✅ Notification system with inline actions (+1, Snooze, Skip) — Android
+- ✅ Background scheduling via WorkManager + AlarmManager — Android
+- ✅ Leave / Suspension mode
+- ✅ Weekly habits + over-completion
+- ✅ Today screen with Habit Score and progress bars
+- ✅ Calendar screen with day classification
 - ✅ Onboarding screens (Philosophy, Strictness, FirstHabit)
-- ✅ Calendar screen structure
-- ✅ Settings screen structure
 - ✅ Habit form for creation/editing
-- ✅ Archived habits screen
 
-**Missing/Incomplete:**
-- ❌ Notifications system (Android-specific)
-- ❌ Background job scheduling (WorkManager integration)
-- ❌ Leave/Suspension mode
-- ❌ Snooze functionality implementation
-- ❌ Habit Score calculation and display
-- ❌ Weekly habits support
-- ❌ Over-completion handling
-- ❌ Calendar day classification logic
-- ❌ Comprehensive testing
-- ❌ Metro dependency injection setup
+**Remaining / In Progress:**
+- 🔲 iOS activation (entry point wiring)
+- 🔲 Settings screen (strictness switching, snooze/skip limits UI)
+- 🔲 Leave mode UI (date picker, swipe actions)
+- 🔲 Day-detail calendar view
+- 🔲 Multiple notification times per habit
+- 🔲 Comprehensive test coverage (Phase 5)
+- 🔲 Polish & production readiness (Phase 6)
 
 ---
 
@@ -128,14 +127,8 @@ data class LeavePeriod(
 - `build.gradle.kts` - Cleaned up unnecessary plugin dependencies
 
 **DI Framework Research:**
-- **Metro DI:** Evaluated but has limited KMP support with KSP
-- **kotlin-inject:** Thoroughly researched - excellent KMP DI framework but not needed yet
-  - Full analysis in `KOTLIN_INJECT_ASSESSMENT.md`
-  - Mature, production-ready, used by Cash App
-  - Compile-time safety, minimal overhead
-  - Decision: Manual DI is sufficient for current project size (15 repos, 10 use cases)
-  - Reconsider when: 30+ dependencies, team grows, or circular dependency issues arise
-- **Manual DI:** Chosen for simplicity, full KMP support, and adequate for current scale
+- **kotlin-inject:** Compile-time, KSP-powered DI framework — mature, production-ready (used by Cash App); currently in use
+- **Manual DI:** Used initially; migrated to kotlin-inject in Phase 3.0
 
 ---
 
@@ -146,8 +139,8 @@ data class LeavePeriod(
 ### 2.1 Weekly Habits Support
 
 **Tasks:**
-- [x] Update `GenerateDailyHabitsUseCase` to handle weekly instances
-- [x] Create `GetWeeklyInstancesUseCase`
+- [x] Update `GenerateDailyHabits` to handle weekly instances
+- [x] Create `GetWeeklyInstances`
 - [x] Modify instance generation logic to respect cadence windows
 
 **Status:** ✅ COMPLETE (Completed on January 18, 2026)
@@ -159,24 +152,24 @@ data class LeavePeriod(
 - Daily habits continue to work as before with per-day instances
 
 **Files Modified:**
-- `GenerateDailyHabitsUseCase.kt` - Now handles both DAILY and WEEKLY schedules
-- `ProcessEndOfDayUseCase.kt` - Extended to handle end-of-week processing
-- `AppModule.kt` - Added GetWeeklyInstancesUseCase to DI
+- `GenerateDailyHabits.kt` - Now handles both DAILY and WEEKLY schedules
+- `ProcessEndOfDay.kt` - Extended to handle end-of-week processing
+- `AppModule.kt` - Added GetWeeklyInstances to DI
 
 **Files Created:**
-- `GetWeeklyInstancesUseCase.kt` - Retrieves instances for current/specific week
+- `GetWeeklyInstances.kt` - Retrieves instances for current/specific week
 
 **Key Features:**
 - Weekly instances created on weekStartDay (configurable per habit)
 - Single instance per week tracks quota (e.g., "3 workouts per week")
 - Weekly instances date = week start date
 - End-of-week automatically marks incomplete as FAILED or COMPLETED based on quota
-- GetWeeklyInstancesUseCase provides week-specific views for UI
+- GetWeeklyInstances provides week-specific views for UI
 
 ### 2.2 Habit Score Calculation
 
 **Tasks:**
-- [x] Create `CalculateHabitScoreUseCase`
+- [x] Create `CalculateHabitScore`
 - [x] Integrate score calculation into completion/undo flows
 - [x] Add score to Habit table with totalCompletions and expectedCompletions fields
 
@@ -190,10 +183,10 @@ HabitScore = min(150, (TotalCompletions / ExpectedCompletions) * 100)
 **Implementation:**
 - Score fields stored in Habit table (totalCompletions, expectedCompletions)
 - Incremental updates via repository methods
-- CompleteHabitUseCase increments totalCompletions
-- UndoHabitUseCase decrements totalCompletions
-- GenerateDailyHabitsUseCase increments expectedCompletions
-- CalculateHabitScoreUseCase provides on-demand calculation
+- CompleteHabit increments totalCompletions
+- UndoHabit decrements totalCompletions
+- GenerateDailyHabits increments expectedCompletions
+- CalculateHabitScore provides on-demand calculation
 - Habit model has calculateScore() convenience method
 
 **Files Modified:**
@@ -201,18 +194,18 @@ HabitScore = min(150, (TotalCompletions / ExpectedCompletions) * 100)
 - `domain/models/Habit.kt` - Added score fields
 - `domain/repositories/HabitRepository.kt` - Added score methods
 - `data/repositories/HabitRepositoryImpl.kt` - Implemented score methods
-- `domain/usecases/CalculateHabitScoreUseCase.kt` - NEW
-- `domain/usecases/CompleteHabitUseCase.kt` - Updated
-- `domain/usecases/UndoHabitUseCase.kt` - Updated
-- `domain/usecases/GenerateDailyHabitsUseCase.kt` - Updated
-- `domain/usecases/CreateHabitUseCase.kt` - Updated
-- `di/AppModule.kt` - Added CalculateHabitScoreUseCase
+- `domain/usecases/CalculateHabitScore.kt` - NEW
+- `domain/usecases/CompleteHabit.kt` - Updated
+- `domain/usecases/UndoHabit.kt` - Updated
+- `domain/usecases/GenerateDailyHabits.kt` - Updated
+- `domain/usecases/CreateHabit.kt` - Updated
+- `di/AppModule.kt` - Added CalculateHabitScore
 
 ### 2.3 Leave/Suspension Mode
 
 **Tasks:**
-- [x] Create `SuspendHabitUseCase`
-- [x] Create `UnsuspendHabitUseCase`
+- [x] Create `SuspendHabit`
+- [x] Create `UnsuspendHabit`
 - [x] Update instance generation to skip suspended habits
 - [x] Exclude suspended habits from streak calculations
 
@@ -225,31 +218,31 @@ HabitScore = min(150, (TotalCompletions / ExpectedCompletions) * 100)
 
 **Implementation:**
 - Added SUSPENDED status to HabitStatus enum
-- SuspendHabitUseCase creates leave periods with overlap validation
-- UnsuspendHabitUseCase ends leave periods early or deletes future ones
-- GenerateDailyHabitsUseCase creates SUSPENDED instances during leave periods
+- SuspendHabit creates leave periods with overlap validation
+- UnsuspendHabit ends leave periods early or deletes future ones
+- GenerateDailyHabits creates SUSPENDED instances during leave periods
 - SUSPENDED instances don't increment expectedCompletions (no score impact)
-- CompleteHabitUseCase, SkipHabitUseCase reject SUSPENDED instances
-- ProcessEndOfDayUseCase skips SUSPENDED instances (no failures)
+- CompleteHabit, SkipHabit reject SUSPENDED instances
+- ProcessEndOfDay skips SUSPENDED instances (no failures)
 - Updated TodayScreen UI to display SUSPENDED status
 
 **Files Modified:**
 - `domain/models/HabitStatus.kt` - Added SUSPENDED status
-- `domain/usecases/SuspendHabitUseCase.kt` - NEW
-- `domain/usecases/UnsuspendHabitUseCase.kt` - NEW
-- `domain/usecases/GenerateDailyHabitsUseCase.kt` - Updated
-- `domain/usecases/CompleteHabitUseCase.kt` - Updated
-- `domain/usecases/SkipHabitUseCase.kt` - Updated
-- `domain/usecases/ProcessEndOfDayUseCase.kt` - Updated
+- `domain/usecases/SuspendHabit.kt` - NEW
+- `domain/usecases/UnsuspendHabit.kt` - NEW
+- `domain/usecases/GenerateDailyHabits.kt` - Updated
+- `domain/usecases/CompleteHabit.kt` - Updated
+- `domain/usecases/SkipHabit.kt` - Updated
+- `domain/usecases/ProcessEndOfDay.kt` - Updated
 - `di/AppModule.kt` - Added new use cases
 - `presentation/ui/today/TodayScreen.kt` - Updated UI
 
 ### 2.4 Snooze Implementation
 
 **Tasks:**
-- [x] Create `SnoozeHabitUseCase` implementation
+- [x] Create `SnoozeHabit` implementation
 - [x] Integrate snooze limits from user preferences
-- [x] Create `ClearSnoozeStateUseCase` for cleanup
+- [x] Create `ClearSnoozeState` for cleanup
 
 **Status:** ✅ COMPLETE (Completed on January 18, 2026)
 
@@ -259,27 +252,27 @@ HabitScore = min(150, (TotalCompletions / ExpectedCompletions) * 100)
 - Use cases now implemented
 
 **Implementation:**
-- Completed SnoozeHabitUseCase with validation
+- Completed SnoozeHabit with validation
 - Only PENDING instances can be snoozed
 - Enforces user's max snoozes per day limit
 - Caps duration to user's max snooze duration
 - Tracks snooze count per instance
-- Created ClearSnoozeStateUseCase for cleanup
+- Created ClearSnoozeState for cleanup
 - Added both use cases to DI container
 
 **Files Modified:**
-- `domain/usecases/SnoozeHabitUseCase.kt` - Completed implementation
-- `domain/usecases/ClearSnoozeStateUseCase.kt` - NEW
+- `domain/usecases/SnoozeHabit.kt` - Completed implementation
+- `domain/usecases/ClearSnoozeState.kt` - NEW
 - `di/AppModule.kt` - Added snooze use cases
 
 **Note:** Snooze expiration and re-notification will be handled in Phase 3 (Background Processing & Notifications) when WorkManager and notification scheduling are implemented.
 
 **Tests Created:**
-- `CalculateHabitScoreUseCaseTest` - 7 tests
-- `SuspendHabitUseCaseTest` - 7 tests
-- `UnsuspendHabitUseCaseTest` - 8 tests
-- `SnoozeHabitUseCaseTest` - 9 tests
-- `ClearSnoozeStateUseCaseTest` - 7 tests
+- `CalculateHabitScoreTest` - 7 tests
+- `SuspendHabitTest` - 7 tests
+- `UnsuspendHabitTest` - 8 tests
+- `SnoozeHabitTest` - 9 tests
+- `ClearSnoozeStateTest` - 7 tests
 - Total: 38 new tests, all passing
 
 ### 2.5 Over-Completion Handling
@@ -342,7 +335,6 @@ Phase 3 introduces significant complexity that makes DI framework beneficial:
 - Created @AppScope annotation for singletons
 - Workers and BroadcastReceivers use manual DI (intentional, requires Android Context)
 
-**Reference:** See `KOTLIN_INJECT_ASSESSMENT.md` for detailed implementation guide
 
 ---
 
@@ -375,13 +367,13 @@ Phase 3 introduces significant complexity that makes DI framework beneficial:
 class DailyHabitGenerationWorker(
     context: Context,
     params: WorkerParameters,
-    private val generateDailyHabitsUseCase: GenerateDailyHabitsUseCase,
-    private val processEndOfDayUseCase: ProcessEndOfDayUseCase
+    private val generateDailyHabits: GenerateDailyHabits,
+    private val processEndOfDay: ProcessEndOfDay
 ) : CoroutineWorker(context, params) {
     
     override suspend fun doWork(): Result {
-        processEndOfDayUseCase.execute() // Mark yesterday's pending as failed
-        generateDailyHabitsUseCase.execute() // Generate today's instances
+        processEndOfDay.execute() // Mark yesterday's pending as failed
+        generateDailyHabits.execute() // Generate today's instances
         return Result.success()
     }
 }
@@ -421,9 +413,9 @@ class DailyHabitGenerationWorker(
 **Action Buttons:**
 ```kotlin
 // For daily/quantitative habits
-PendingIntent for "+1" -> CompleteHabitUseCase.executeQuantitative(1)
-PendingIntent for "Snooze" -> SnoozeHabitUseCase.execute()
-PendingIntent for "Skip" -> SkipHabitUseCase.execute()
+PendingIntent for "+1" -> CompleteHabit.executeQuantitative(1)
+PendingIntent for "Snooze" -> SnoozeHabit.execute()
+PendingIntent for "Skip" -> SkipHabit.execute()
 ```
 
 ### 3.3 Notification Scheduling
@@ -599,18 +591,18 @@ fun classifyDay(instances: List<HabitInstance>): DayClassification {
 ### 5.1 Unit Tests
 
 **Use Cases to test:**
-- [ ] `CompleteHabitUseCase` - binary and quantitative completion
-- [ ] `SkipHabitUseCase` - skip limits enforcement
-- [ ] `UndoHabitUseCase` - undo policy enforcement
-- [ ] `SnoozeHabitUseCase` - snooze limits
-- [ ] `GenerateDailyHabitsUseCase` - daily and weekly generation
-- [ ] `ProcessEndOfDayUseCase` - failure marking
-- [ ] `CalculateHabitScoreUseCase` - score calculation
-- [ ] `SuspendHabitUseCase` / `UnsuspendHabitUseCase`
+- [ ] `CompleteHabit` - binary and quantitative completion
+- [ ] `SkipHabit` - skip limits enforcement
+- [ ] `UndoHabit` - undo policy enforcement
+- [ ] `SnoozeHabit` - snooze limits
+- [ ] `GenerateDailyHabits` - daily and weekly generation
+- [ ] `ProcessEndOfDay` - failure marking
+- [ ] `CalculateHabitScore` - score calculation
+- [ ] `SuspendHabit` / `UnsuspendHabit`
 
 **Test Structure:**
 ```kotlin
-class CompleteHabitUseCaseTest {
+class CompleteHabitTest {
     // Given-When-Then convention
     
     @Test
@@ -653,8 +645,6 @@ class CompleteHabitUseCaseTest {
 ## Phase 6: Polish & Production Readiness
 **Duration: 1-2 weeks**
 **Goal: App ready for release**
-
-**Note:** If kotlin-inject migration was deferred from Phase 3.0, consider implementing it now before production release for better maintainability and testability of the codebase going forward.
 
 ### 6.1 Error Handling
 
@@ -712,25 +702,16 @@ class CompleteHabitUseCaseTest {
 ## Appendix: Technical Debt & Notes
 
 ### Current Issues to Address:
-1. **Typo in package name**: `repositoriHamkdir` in domain folder should be cleaned
-2. **Missing Metro integration**: Currently using manual DI in App.kt
-3. **Incomplete test coverage**: Only one test file exists
-4. **No error boundary**: App may crash on unhandled exceptions
-
-### Dependencies to Add:
-```toml
-# For notifications (Android)
-androidx-core = { module = "androidx.core:core-ktx" }  # Already present
-
-# For testing
-mockk = { module = "io.mockk:mockk", version = "1.13.9" }
-robolectric = { module = "org.robolectric:robolectric", version = "4.11.1" }
-```
+1. **Incomplete test coverage**: Only a handful of use case tests exist; ViewModels and repositories untested
+2. **No error boundary**: App may crash on unhandled exceptions
+3. **Workers use manual DI**: Android Workers and BroadcastReceivers bypass kotlin-inject (requires Context); acceptable for now but worth revisiting with Application-level component
+4. **Navigation**: Custom `Route` sealed interface — plan to migrate to `org.jetbrains.androidx.navigation:navigation-compose`
 
 ### Architecture Decisions:
 - **State Management**: Single state class per screen (MVVM)
-- **Navigation**: Custom Route sealed interface (consider migrating to Navigation 3)
-- **Data Flow**: Compose → ViewModel → UseCase → Repository → SQLDelight
+- **DI**: kotlin-inject (compile-time, KSP) — Workers/Receivers use manual DI via Application context
+- **Navigation**: Custom Route sealed interface (Navigation Component 3 migration planned)
+- **Data Flow**: Compose → ViewModel →  → Repository → SQLDelight
 - **Platform Code**: Use expect/actual for platform-specific implementations
 
 ---

@@ -25,7 +25,7 @@ import kotlinx.datetime.TimeZone
  * Called on app launch and by daily background job.
  */
 @Inject
-class GenerateDailyHabitsUseCase(
+class GenerateDailyHabits(
     private val userRepository: UserRepository,
     private val habitRepository: HabitRepository,
     private val habitInstanceRepository: HabitInstanceRepository,

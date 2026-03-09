@@ -10,10 +10,10 @@ import kotlin.test.assertTrue
 import kotlin.time.Clock
 import kotlinx.coroutines.test.runTest
 
-class ClearSnoozeStateUseCaseTest {
+class ClearSnoozeStateTest {
 
     private val mockSnoozeRepository = mockk<SnoozeRepository>(relaxed = true)
-    private val useCase = ClearSnoozeStateUseCase(mockSnoozeRepository)
+    private val useCase = ClearSnoozeState(mockSnoozeRepository)
 
     @Test
     fun `given instance id when clearing snooze then calls repository`() = runTest {

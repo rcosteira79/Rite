@@ -21,7 +21,7 @@ import kotlinx.datetime.minus
  * - For WEEKLY habits: Marks PENDING instances from last week as FAILED (if week ended)
  */
 @Inject
-class ProcessEndOfDayUseCase(
+class ProcessEndOfDay(
     private val userRepository: UserRepository,
     private val habitInstanceRepository: HabitInstanceRepository,
     private val habitRepository: HabitRepository

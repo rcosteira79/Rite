@@ -14,12 +14,12 @@ import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.repositories.LeavePeriodRepository
 import com.ricardocosteira.habitlock.domain.repositories.SnoozeRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
-import com.ricardocosteira.habitlock.domain.usecases.CompleteHabitUseCase
-import com.ricardocosteira.habitlock.domain.usecases.CreateHabitUseCase
-import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabitsUseCase
-import com.ricardocosteira.habitlock.domain.usecases.ProcessEndOfDayUseCase
-import com.ricardocosteira.habitlock.domain.usecases.SkipHabitUseCase
-import com.ricardocosteira.habitlock.domain.usecases.SnoozeHabitUseCase
+import com.ricardocosteira.habitlock.domain.usecases.CompleteHabit
+import com.ricardocosteira.habitlock.domain.usecases.CreateHabit
+import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabits
+import com.ricardocosteira.habitlock.domain.usecases.ProcessEndOfDay
+import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
+import com.ricardocosteira.habitlock.domain.usecases.SnoozeHabit
 import com.ricardocosteira.habitlock.domain.usecases.UuidProvider
 import com.ricardocosteira.habitlock.generateUuid
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsViewModel
@@ -89,11 +89,11 @@ abstract class HabitLockAppComponent(
     @Provides
     fun provideHabitFormViewModelFactory(
         habitRepository: HabitRepository,
-        createHabitUseCase: CreateHabitUseCase
+        createHabit: CreateHabit
     ): HabitFormViewModel.Factory {
         return object : HabitFormViewModel.Factory {
             override fun create(habitIdToEdit: String?): HabitFormViewModel {
-                return HabitFormViewModel(habitRepository, createHabitUseCase, habitIdToEdit)
+                return HabitFormViewModel(habitRepository, createHabit, habitIdToEdit)
             }
         }
     }
@@ -110,11 +110,11 @@ abstract class HabitLockAppComponent(
     abstract val habitFormViewModelFactory: HabitFormViewModel.Factory
 
     // Accessors for workers and receivers
-    abstract val generateDailyHabitsUseCase: GenerateDailyHabitsUseCase
-    abstract val processEndOfDayUseCase: ProcessEndOfDayUseCase
-    abstract val completeHabitUseCase: CompleteHabitUseCase
-    abstract val snoozeHabitUseCase: SnoozeHabitUseCase
-    abstract val skipHabitUseCase: SkipHabitUseCase
+    abstract val generateDailyHabits: GenerateDailyHabits
+    abstract val processEndOfDay: ProcessEndOfDay
+    abstract val completeHabit: CompleteHabit
+    abstract val snoozeHabit: SnoozeHabit
+    abstract val skipHabit: SkipHabit
 
     companion object
 }

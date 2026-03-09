@@ -17,11 +17,11 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 
-class UnsuspendHabitUseCaseTest {
+class UnsuspendHabitTest {
 
     private val mockLeavePeriodRepository = mockk<LeavePeriodRepository>(relaxed = true)
     private val mockUserRepository = mockk<UserRepository>()
-    private val useCase = UnsuspendHabitUseCase(mockLeavePeriodRepository, mockUserRepository)
+    private val useCase = UnsuspendHabit(mockLeavePeriodRepository, mockUserRepository)
 
     private val mockUser = User(
         id = "user-1",
@@ -40,7 +40,7 @@ class UnsuspendHabitUseCaseTest {
     fun `given active leave period when unsuspending then ends it today`() = runTest {
         // Given
         // NOTE: dates must straddle the real current date since Clock.System is not injected yet.
-        // TODO: inject Clock into UnsuspendHabitUseCase for proper time-controlled testing.
+        // TODO: inject Clock into UnsuspendHabit for proper time-controlled testing.
         val inputLeavePeriodId = "leave-1"
         val mockLeavePeriod = LeavePeriod(
             id = inputLeavePeriodId,
@@ -69,7 +69,7 @@ class UnsuspendHabitUseCaseTest {
     fun `given future leave period when unsuspending then deletes it`() = runTest {
         // Given
         // NOTE: startDate must be in the future relative to the real clock.
-        // TODO: inject Clock into UnsuspendHabitUseCase for proper time-controlled testing.
+        // TODO: inject Clock into UnsuspendHabit for proper time-controlled testing.
         val inputLeavePeriodId = "leave-1"
         val mockLeavePeriod = LeavePeriod(
             id = inputLeavePeriodId,

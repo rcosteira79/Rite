@@ -12,10 +12,10 @@ import kotlin.test.assertNull
 import kotlin.time.Clock
 import kotlinx.coroutines.test.runTest
 
-class CalculateHabitScoreUseCaseTest {
+class CalculateHabitScoreTest {
 
     private val mockHabitRepository = mockk<HabitRepository>()
-    private val useCase = CalculateHabitScoreUseCase(mockHabitRepository)
+    private val useCase = CalculateHabitScore(mockHabitRepository)
 
     @Test
     fun `given habit exists when calculating score then returns correct score`() = runTest {

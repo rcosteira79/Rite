@@ -17,7 +17,7 @@ import kotlin.time.Duration.Companion.minutes
  * The habit remains in PENDING status and can be completed later.
  */
 @Inject
-class SnoozeHabitUseCase(
+class SnoozeHabit(
     private val habitInstanceRepository: HabitInstanceRepository,
     private val snoozeRepository: SnoozeRepository,
     private val userRepository: UserRepository

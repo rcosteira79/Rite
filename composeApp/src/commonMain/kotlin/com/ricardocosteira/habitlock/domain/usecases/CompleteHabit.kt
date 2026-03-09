@@ -14,7 +14,7 @@ import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
  * Completes a habit instance (binary or quantitative).
  */
 @Inject
-class CompleteHabitUseCase(
+class CompleteHabit(
     private val habitInstanceRepository: HabitInstanceRepository,
     private val habitRepository: HabitRepository,
     private val habitCompletionEventRepository: HabitCompletionEventRepository

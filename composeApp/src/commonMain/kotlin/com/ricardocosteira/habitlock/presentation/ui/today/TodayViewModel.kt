@@ -9,12 +9,12 @@ import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
-import com.ricardocosteira.habitlock.domain.usecases.CompleteHabitUseCase
-import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabitsUseCase
-import com.ricardocosteira.habitlock.domain.usecases.ProcessEndOfDayUseCase
-import com.ricardocosteira.habitlock.domain.usecases.SkipHabitUseCase
+import com.ricardocosteira.habitlock.domain.usecases.CompleteHabit
+import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabits
+import com.ricardocosteira.habitlock.domain.usecases.ProcessEndOfDay
+import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
 import com.ricardocosteira.habitlock.domain.usecases.SkipLockedException
-import com.ricardocosteira.habitlock.domain.usecases.UndoHabitUseCase
+import com.ricardocosteira.habitlock.domain.usecases.UndoHabit
 import com.ricardocosteira.habitlock.presentation.models.mapToTodayHabitUiModel
 import com.ricardocosteira.habitlock.util.toLocalDate
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,11 +33,11 @@ class TodayViewModel(
     private val userRepository: UserRepository,
     private val habitRepository: HabitRepository,
     private val habitInstanceRepository: HabitInstanceRepository,
-    private val generateDailyHabitsUseCase: GenerateDailyHabitsUseCase,
-    private val processEndOfDayUseCase: ProcessEndOfDayUseCase,
-    private val completeHabitUseCase: CompleteHabitUseCase,
-    private val skipHabitUseCase: SkipHabitUseCase,
-    private val undoHabitUseCase: UndoHabitUseCase
+    private val generateDailyHabits: GenerateDailyHabits,
+    private val processEndOfDay: ProcessEndOfDay,
+    private val completeHabit: CompleteHabit,
+    private val skipHabit: SkipHabit,
+    private val undoHabit: UndoHabit
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TodayState())
@@ -56,10 +56,10 @@ class TodayViewModel(
 
             try {
                 // Process end of day first
-                processEndOfDayUseCase.execute()
+                processEndOfDay.execute()
 
                 // Generate today's habits
-                generateDailyHabitsUseCase.execute()
+                generateDailyHabits.execute()
 
                 // Load user for settings
                 val user = userRepository.getUser()
@@ -116,7 +116,7 @@ class TodayViewModel(
                 return@launch
             }
 
-            val result = completeHabitUseCase.executeBinary(instanceId, CompletionSource.IN_APP)
+            val result = completeHabit.executeBinary(instanceId, CompletionSource.IN_APP)
 
             result.fold(
                 onSuccess = {
@@ -134,7 +134,7 @@ class TodayViewModel(
         viewModelScope.launch {
             _state.update { it.copy(showQuantitativeInputFor = null) }
 
-            val result = completeHabitUseCase.executeQuantitative(
+            val result = completeHabit.executeQuantitative(
                 instanceId = instanceId,
                 deltaValue = value,
                 source = CompletionSource.IN_APP
@@ -162,7 +162,7 @@ class TodayViewModel(
 
     fun skipHabit(instanceId: String) {
         viewModelScope.launch {
-            val result = skipHabitUseCase.execute(instanceId)
+            val result = skipHabit.execute(instanceId)
 
             result.fold(
                 onSuccess = {
@@ -182,7 +182,7 @@ class TodayViewModel(
 
     fun undoHabit(instanceId: String) {
         viewModelScope.launch {
-            val result = undoHabitUseCase.execute(instanceId)
+            val result = undoHabit.execute(instanceId)
 
             result.fold(
                 onSuccess = {
