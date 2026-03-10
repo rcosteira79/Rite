@@ -22,6 +22,7 @@ import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
 import com.ricardocosteira.habitlock.domain.usecases.SnoozeHabit
 import com.ricardocosteira.habitlock.domain.usecases.UuidProvider
 import com.ricardocosteira.habitlock.generateUuid
+import com.ricardocosteira.habitlock.presentation.ui.startup.StartupViewModel
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsViewModel
 import com.ricardocosteira.habitlock.presentation.ui.calendar.CalendarViewModel
 import com.ricardocosteira.habitlock.presentation.ui.habit.HabitFormViewModel
@@ -99,6 +100,7 @@ abstract class HabitLockAppComponent(
     }
 
     // Public accessors for App initialization
+    abstract val startupViewModel: StartupViewModel
     abstract val userRepository: UserRepository
     abstract val habitRepository: HabitRepository
     abstract val habitInstanceRepository: HabitInstanceRepository
