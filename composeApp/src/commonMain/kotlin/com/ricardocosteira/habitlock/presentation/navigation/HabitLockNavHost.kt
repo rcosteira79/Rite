@@ -62,32 +62,30 @@ fun HabitLockNavHost(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var selectedDrawerDestination by remember { mutableStateOf(DrawerDestination.TODAY) }
+    // Derive drawer selection from route — never mutate during composition
+    val selectedDrawerDestination = when (currentRoute) {
+        Route.Calendar -> DrawerDestination.CALENDAR
+        Route.Settings -> DrawerDestination.SETTINGS
+        else -> DrawerDestination.TODAY
+    }
 
-    // Handle onboarding events
+    // Collect all VM events at the top level so they are never missed due to route changes
     LaunchedEffect(Unit) {
         onboardingViewModel.events.collect { event ->
             when (event) {
                 OnboardingEvent.NavigateToStrictness -> currentRoute = Route.OnboardingStrictness
                 OnboardingEvent.NavigateToFirstHabit -> currentRoute = Route.OnboardingFirstHabit
-                OnboardingEvent.NavigateToToday -> {
-                    currentRoute = Route.Today
-                    // Reload habits after completing onboarding
-                    todayViewModel.loadTodayHabits()
-                }
+                OnboardingEvent.NavigateToToday -> currentRoute = Route.Today
                 is OnboardingEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
             }
         }
     }
 
-    // Handle today events
     LaunchedEffect(Unit) {
         todayViewModel.events.collect { event ->
             when (event) {
-                is TodayEvent.NavigateToHabitDetail -> {
-                    // For now, just show a message. Detail screen can be added later.
+                is TodayEvent.NavigateToHabitDetail ->
                     snackbarHostState.showSnackbar("Habit detail view coming soon")
-                }
                 TodayEvent.NavigateToCreateHabit -> currentRoute = Route.CreateHabit
                 is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
                 is TodayEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
@@ -95,10 +93,27 @@ fun HabitLockNavHost(
         }
     }
 
+    LaunchedEffect(Unit) {
+        settingsViewModel.events.collect { event ->
+            when (event) {
+                is SettingsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
+                is SettingsEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        archivedHabitsViewModel.events.collect { event ->
+            when (event) {
+                is ArchivedHabitsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
+                is ArchivedHabitsEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
     when (val route = currentRoute) {
         // Onboarding screens
         Route.OnboardingPhilosophy, Route.Onboarding -> {
-            val state by onboardingViewModel.state.collectAsStateWithLifecycle()
             PhilosophyScreen(
                 onContinue = { onboardingViewModel.continueFromPhilosophy() },
                 onSkip = { onboardingViewModel.skipToToday() }
@@ -135,25 +150,17 @@ fun HabitLockNavHost(
 
         // Main screens with drawer
         Route.Today -> {
-            selectedDrawerDestination = DrawerDestination.TODAY
             val state by todayViewModel.state.collectAsStateWithLifecycle()
-
-            // Reload habits when Today screen becomes active
-            LaunchedEffect(currentRoute) {
-                if (currentRoute == Route.Today) {
-                    todayViewModel.loadTodayHabits()
-                }
-            }
 
             AppNavigationDrawer(
                 drawerState = drawerState,
                 selectedDestination = selectedDrawerDestination,
                 onDestinationClick = { destination ->
                     scope.launch { drawerState.close() }
-                    when (destination) {
-                        DrawerDestination.TODAY -> currentRoute = Route.Today
-                        DrawerDestination.CALENDAR -> currentRoute = Route.Calendar
-                        DrawerDestination.SETTINGS -> currentRoute = Route.Settings
+                    currentRoute = when (destination) {
+                        DrawerDestination.TODAY -> Route.Today
+                        DrawerDestination.CALENDAR -> Route.Calendar
+                        DrawerDestination.SETTINGS -> Route.Settings
                     }
                 }
             ) {
@@ -188,7 +195,6 @@ fun HabitLockNavHost(
         }
 
         Route.Calendar -> {
-            selectedDrawerDestination = DrawerDestination.CALENDAR
             val state by calendarViewModel.state.collectAsStateWithLifecycle()
 
             CalendarScreen(
@@ -201,17 +207,7 @@ fun HabitLockNavHost(
         }
 
         Route.Settings -> {
-            selectedDrawerDestination = DrawerDestination.SETTINGS
             val state by settingsViewModel.state.collectAsStateWithLifecycle()
-
-            LaunchedEffect(Unit) {
-                settingsViewModel.events.collect { event ->
-                    when (event) {
-                        is SettingsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
-                        is SettingsEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
-                    }
-                }
-            }
 
             SettingsScreen(
                 state = state,
@@ -228,15 +224,6 @@ fun HabitLockNavHost(
         Route.ArchivedHabits -> {
             val state by archivedHabitsViewModel.state.collectAsStateWithLifecycle()
 
-            LaunchedEffect(Unit) {
-                archivedHabitsViewModel.events.collect { event ->
-                    when (event) {
-                        is ArchivedHabitsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
-                        is ArchivedHabitsEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
-                    }
-                }
-            }
-
             ArchivedHabitsScreen(
                 state = state,
                 snackbarHostState = snackbarHostState,
@@ -250,7 +237,7 @@ fun HabitLockNavHost(
             val viewModel = remember { createHabitFormViewModel(null) }
             val state by viewModel.state.collectAsStateWithLifecycle()
 
-            LaunchedEffect(Unit) {
+            LaunchedEffect(viewModel) {
                 viewModel.events.collect { event ->
                     when (event) {
                         HabitFormEvent.NavigateBack -> {
@@ -281,9 +268,20 @@ fun HabitLockNavHost(
         }
 
         is Route.EditHabit -> {
-            // Similar to CreateHabit but with habitId
-            val viewModel = remember { createHabitFormViewModel(route.habitId) }
+            val viewModel = remember(route.habitId) { createHabitFormViewModel(route.habitId) }
             val state by viewModel.state.collectAsStateWithLifecycle()
+
+            LaunchedEffect(viewModel) {
+                viewModel.events.collect { event ->
+                    when (event) {
+                        HabitFormEvent.NavigateBack -> {
+                            currentRoute = Route.Today
+                            todayViewModel.loadTodayHabits()
+                        }
+                        is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                    }
+                }
+            }
 
             HabitFormScreen(
                 state = state,
@@ -305,7 +303,9 @@ fun HabitLockNavHost(
 
         is Route.HabitDetail -> {
             // TODO: Implement habit detail screen
-            currentRoute = Route.Today
+            LaunchedEffect(route) {
+                currentRoute = Route.Today
+            }
         }
     }
 }
