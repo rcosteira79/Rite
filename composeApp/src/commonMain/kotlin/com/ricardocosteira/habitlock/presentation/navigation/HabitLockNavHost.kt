@@ -8,10 +8,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsEvent
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsScreen
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsViewModel
@@ -33,9 +37,22 @@ import com.ricardocosteira.habitlock.presentation.ui.today.TodayEvent
 import com.ricardocosteira.habitlock.presentation.ui.today.TodayScreen
 import com.ricardocosteira.habitlock.presentation.ui.today.TodayViewModel
 
-// DEFAULT relies on the kotlinx-serialization plugin generating polymorphic serializers
-// for the @Serializable sealed Route interface. A custom SerializersModule is not needed.
-private val navConfig: SavedStateConfiguration = SavedStateConfiguration.DEFAULT
+private val navConfig: SavedStateConfiguration = SavedStateConfiguration {
+    serializersModule = SerializersModule {
+        polymorphic(NavKey::class) {
+            subclass(Route.OnboardingPhilosophy::class)
+            subclass(Route.OnboardingStrictness::class)
+            subclass(Route.OnboardingFirstHabit::class)
+            subclass(Route.Today::class)
+            subclass(Route.HabitDetail::class)
+            subclass(Route.CreateHabit::class)
+            subclass(Route.EditHabit::class)
+            subclass(Route.Calendar::class)
+            subclass(Route.ArchivedHabits::class)
+            subclass(Route.Settings::class)
+        }
+    }
+}
 
 /**
  * Main navigation host for the app using Navigation 3 (org.jetbrains.androidx.navigation3).
