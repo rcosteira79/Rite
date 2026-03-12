@@ -1,14 +1,11 @@
 package com.ricardocosteira.habitlock.presentation.navigation
 
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -17,8 +14,6 @@ import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsScre
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsViewModel
 import com.ricardocosteira.habitlock.presentation.ui.calendar.CalendarScreen
 import com.ricardocosteira.habitlock.presentation.ui.calendar.CalendarViewModel
-import com.ricardocosteira.habitlock.presentation.ui.components.AppNavigationDrawer
-import com.ricardocosteira.habitlock.presentation.ui.components.DrawerDestination
 import com.ricardocosteira.habitlock.presentation.ui.habit.HabitFormEvent
 import com.ricardocosteira.habitlock.presentation.ui.habit.HabitFormScreen
 import com.ricardocosteira.habitlock.presentation.ui.habit.HabitFormViewModel
@@ -34,7 +29,6 @@ import com.ricardocosteira.habitlock.presentation.ui.today.QuantitativeInputBott
 import com.ricardocosteira.habitlock.presentation.ui.today.TodayEvent
 import com.ricardocosteira.habitlock.presentation.ui.today.TodayScreen
 import com.ricardocosteira.habitlock.presentation.ui.today.TodayViewModel
-import kotlinx.coroutines.launch
 
 /**
  * Main navigation host for the app.
@@ -58,16 +52,7 @@ fun HabitLockNavHost(
         )
     }
 
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    // Derive drawer selection from route — never mutate during composition
-    val selectedDrawerDestination = when (currentRoute) {
-        Route.Calendar -> DrawerDestination.CALENDAR
-        Route.Settings -> DrawerDestination.SETTINGS
-        else -> DrawerDestination.TODAY
-    }
 
     // Collect all VM events at the top level so they are never missed due to route changes
     LaunchedEffect(Unit) {
@@ -148,48 +133,35 @@ fun HabitLockNavHost(
             )
         }
 
-        // Main screens with drawer
         Route.Today -> {
             val state by todayViewModel.state.collectAsStateWithLifecycle()
 
-            AppNavigationDrawer(
-                drawerState = drawerState,
-                selectedDestination = selectedDrawerDestination,
-                onDestinationClick = { destination ->
-                    scope.launch { drawerState.close() }
-                    currentRoute = when (destination) {
-                        DrawerDestination.TODAY -> Route.Today
-                        DrawerDestination.CALENDAR -> Route.Calendar
-                        DrawerDestination.SETTINGS -> Route.Settings
-                    }
-                }
-            ) {
-                TodayScreen(
-                    state = state,
-                    onMenuClick = { scope.launch { drawerState.open() } },
-                    onHabitClick = { todayViewModel.navigateToHabitDetail(it) },
-                    onCompleteClick = { todayViewModel.completeHabit(it) },
-                    onSkipClick = { todayViewModel.skipHabit(it) },
-                    onUndoClick = { todayViewModel.undoHabit(it) },
-                    onEditClick = { habitId -> currentRoute = Route.EditHabit(habitId) },
-                    onArchiveClick = { todayViewModel.archiveHabit(it) },
-                    onAddHabitClick = { todayViewModel.navigateToCreateHabit() },
-                    onDismissTimezoneWarning = { todayViewModel.dismissTimezoneWarning() },
-                    snackbarHostState = snackbarHostState
-                )
+            TodayScreen(
+                state = state,
+                onCalendarClick = { currentRoute = Route.Calendar },
+                onSettingsClick = { currentRoute = Route.Settings },
+                onHabitClick = { todayViewModel.navigateToHabitDetail(it) },
+                onCompleteClick = { todayViewModel.completeHabit(it) },
+                onSkipClick = { todayViewModel.skipHabit(it) },
+                onUndoClick = { todayViewModel.undoHabit(it) },
+                onEditClick = { habitId -> currentRoute = Route.EditHabit(habitId) },
+                onArchiveClick = { todayViewModel.archiveHabit(it) },
+                onAddHabitClick = { todayViewModel.navigateToCreateHabit() },
+                onDismissTimezoneWarning = { todayViewModel.dismissTimezoneWarning() },
+                snackbarHostState = snackbarHostState
+            )
 
-                // Show quantitative input bottom sheet if needed
-                state.showQuantitativeInputFor?.let { instanceId ->
-                    val habit = state.habits.find { it.instanceId == instanceId }
-                    if (habit != null) {
-                        QuantitativeInputBottomSheet(
-                            habit = habit,
-                            onConfirm = { value ->
-                                todayViewModel.completeQuantitativeHabit(instanceId, value)
-                            },
-                            onDismiss = { todayViewModel.dismissQuantitativeInput() }
-                        )
-                    }
+            // Show quantitative input bottom sheet if needed
+            state.showQuantitativeInputFor?.let { instanceId ->
+                val habit = state.habits.find { it.instanceId == instanceId }
+                if (habit != null) {
+                    QuantitativeInputBottomSheet(
+                        habit = habit,
+                        onConfirm = { value ->
+                            todayViewModel.completeQuantitativeHabit(instanceId, value)
+                        },
+                        onDismiss = { todayViewModel.dismissQuantitativeInput() }
+                    )
                 }
             }
         }

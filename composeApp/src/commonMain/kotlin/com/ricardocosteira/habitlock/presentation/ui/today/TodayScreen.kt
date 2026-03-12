@@ -17,7 +17,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -54,7 +55,8 @@ import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 @Composable
 fun TodayScreen(
     state: TodayState,
-    onMenuClick: () -> Unit,
+    onCalendarClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onHabitClick: (String) -> Unit,
     onCompleteClick: (String) -> Unit,
     onSkipClick: (String) -> Unit,
@@ -71,9 +73,12 @@ fun TodayScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Today") },
-                navigationIcon = {
-                    IconButton(onClick = onMenuClick) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu")
+                actions = {
+                    IconButton(onClick = onCalendarClick) {
+                        Icon(Icons.Default.DateRange, contentDescription = "Calendar")
+                    }
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
                 }
             )
