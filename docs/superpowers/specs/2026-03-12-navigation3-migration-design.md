@@ -1,7 +1,7 @@
 # Navigation 3 Migration Design
 
 **Date:** 2026-03-12
-**Status:** Approved
+**Status:** Draft
 
 ## Overview
 
@@ -20,11 +20,13 @@ val backStack = remember {
 - **Current screen** = `backStack.last()`
 - **Navigate forward** = `backStack.add(route)`
 - **Navigate back** = `backStack.removeLastOrNull()`
-- **Replace root** = `backStack.clear(); backStack.add(route)` (used after onboarding completes)
+- **Replace root** (onboarding completion) = `backStack.clear(); backStack.add(Route.Today)`
 
 The `when (backStack.last())` block acts as the `NavDisplay` equivalent.
 
-All VM event collectors remain at the top level of `HabitLockNavHost` (no structural change). They now call `backStack.add(route)` instead of `currentRoute = route`.
+**VM event collectors:** The top-level `LaunchedEffect(Unit)` collectors for `OnboardingViewModel`, `TodayViewModel`, `SettingsViewModel`, `ArchivedHabitsViewModel`, and `CalendarViewModel` remain at the top level of `HabitLockNavHost`. The `HabitFormViewModel` collectors are intentionally kept inside the `CreateHabit` and `EditHabit` branches (inside the `when` block), scoped to the lifetime of those route entries — this is safe because both branches create a fresh VM on each entry via `remember { createHabitFormViewModel(...) }`, ensuring no stale collector is left running after the entry is popped.
+
+**`rememberCoroutineScope`:** The existing `scope` variable is only used for drawer open/close operations, which are removed. It must be deleted. `SnackbarHostState.showSnackbar` is called inside `LaunchedEffect` coroutines, which have their own scope and do not need an external `CoroutineScope`.
 
 ## Route Changes
 
@@ -36,33 +38,34 @@ All VM event collectors remain at the top level of `HabitLockNavHost` (no struct
 | Destination | Behaviour |
 |---|---|
 | `OnboardingPhilosophy` | Initial root when onboarding not completed |
-| `OnboardingStrictness`, `OnboardingFirstHabit` | Pushed linearly |
+| `OnboardingStrictness`, `OnboardingFirstHabit` | Pushed linearly (`backStack.add`) |
 | Onboarding → Today | `backStack.clear()` + `backStack.add(Route.Today)` so back cannot return to onboarding |
 | `Today` | Root when onboarding completed; never popped |
-| `Calendar`, `Settings`, `CreateHabit`, `EditHabit`, `ArchivedHabits` | Pushed on top; popped by back |
+| `Calendar`, `Settings`, `CreateHabit`, `EditHabit`, `ArchivedHabits` | Pushed on top; popped by `backStack.removeLastOrNull()` |
+| `HabitDetail` | Currently redirects immediately back to `Today` via `LaunchedEffect`. Behaviour preserved as-is — placeholder until the screen is implemented. |
 
 ## Navigation Structure
 
 The navigation drawer is removed. Calendar and Settings are reached via icon buttons in `TodayScreen`'s top bar.
 
 - `TodayScreen` top bar: replace hamburger menu icon with **Calendar icon** (`onCalendarClick`) and **Settings icon** (`onSettingsClick`)
-- `CalendarScreen` and `SettingsScreen`: no changes — back arrow already calls `onBackClick`, which pops the stack
+- `CalendarScreen`, `SettingsScreen`, `ArchivedHabitsScreen`: the `onBackClick` wire-up inside `HabitLockNavHost` must be changed from hardcoded route assignments (`currentRoute = Route.Today`, `currentRoute = Route.Settings`) to `backStack.removeLastOrNull()`. The screen composables themselves do not change.
 
 ## Files Changed
 
 | File | Change |
 |---|---|
 | `navigation/Route.kt` | Remove `Route.Onboarding` |
-| `navigation/HabitLockNavHost.kt` | Replace `currentRoute` with `backStack`; remove drawer state/scope; remove `Route.Onboarding` branch |
+| `navigation/HabitLockNavHost.kt` | Replace `currentRoute` with `backStack`; remove `drawerState`, `scope`, `selectedDrawerDestination`, `DrawerDestination` import, `AppNavigationDrawer` import and wrapper; update all `onBackClick` lambdas to `backStack.removeLastOrNull()`; remove `Route.Onboarding` branch |
 | `ui/components/AppNavigationDrawer.kt` | **Delete** |
 | `ui/today/TodayScreen.kt` | Replace `onMenuClick` with `onCalendarClick` + `onSettingsClick`; update top bar icons |
 
 ## What Does Not Change
 
-- `HabitLockNavHost` signature (all ViewModels passed as parameters from `App.kt`)
-- `HabitFormViewModel` factory pattern (`createHabitFormViewModel: (String?) -> HabitFormViewModel`)
-- `CalendarScreen`, `SettingsScreen`, `ArchivedHabitsScreen`, `HabitFormScreen` — no changes
-- `rememberCoroutineScope` retained for `SnackbarHostState.showSnackbar`
+- `HabitLockNavHost` composable signature (all ViewModels passed as parameters from `App.kt`)
+- `HabitFormViewModel` factory pattern (`createHabitFormViewModel: (String?) -> HabitFormViewModel`); `remember(route.habitId)` in `EditHabit` branch ensures a fresh VM per entry. `CreateHabit` uses `remember` without a key — this is safe because `Route.CreateHabit` is a `data object`; navigating away always pops it off the back stack, so re-entering always starts a new composition scope with a fresh `remember` cell
+- `CalendarScreen`, `SettingsScreen`, `ArchivedHabitsScreen`, `HabitFormScreen` composable implementations
+- `SnackbarHostState` and top-level `LaunchedEffect` event collectors for all non-form ViewModels
 - No changes to `libs.versions.toml` or `build.gradle.kts` — no new dependency
 
 ## Migration Path to Official Navigation 3
