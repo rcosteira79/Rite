@@ -5,8 +5,6 @@ package com.ricardocosteira.habitlock.presentation.navigation
  */
 sealed interface Route {
 
-    data object Onboarding : Route
-
     data object OnboardingPhilosophy : Route
 
     data object OnboardingStrictness : Route

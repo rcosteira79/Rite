@@ -113,7 +113,7 @@ fun HabitLockNavHost(
 
     when (val route = currentRoute) {
         // Onboarding screens
-        Route.OnboardingPhilosophy, Route.Onboarding -> {
+        Route.OnboardingPhilosophy -> {
             PhilosophyScreen(
                 onContinue = { onboardingViewModel.continueFromPhilosophy() },
                 onSkip = { onboardingViewModel.skipToToday() }
