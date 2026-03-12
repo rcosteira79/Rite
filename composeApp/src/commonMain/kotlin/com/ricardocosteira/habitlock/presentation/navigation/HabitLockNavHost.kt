@@ -1,14 +1,17 @@
 package com.ricardocosteira.habitlock.presentation.navigation
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
+import androidx.savedstate.serialization.SavedStateConfiguration
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsEvent
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsScreen
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsViewModel
@@ -30,10 +33,12 @@ import com.ricardocosteira.habitlock.presentation.ui.today.TodayEvent
 import com.ricardocosteira.habitlock.presentation.ui.today.TodayScreen
 import com.ricardocosteira.habitlock.presentation.ui.today.TodayViewModel
 
+// DEFAULT relies on the kotlinx-serialization plugin generating polymorphic serializers
+// for the @Serializable sealed Route interface. A custom SerializersModule is not needed.
+private val navConfig: SavedStateConfiguration = SavedStateConfiguration.DEFAULT
+
 /**
- * Main navigation host for the app.
- * For now, this uses manual navigation state since Navigation 3 setup with Metro DI
- * requires additional configuration. This can be refactored to use Navigation 3 NavHost.
+ * Main navigation host for the app using Navigation 3 (org.jetbrains.androidx.navigation3).
  */
 @Composable
 fun HabitLockNavHost(
@@ -43,14 +48,10 @@ fun HabitLockNavHost(
     calendarViewModel: CalendarViewModel,
     settingsViewModel: SettingsViewModel,
     archivedHabitsViewModel: ArchivedHabitsViewModel,
-    createHabitFormViewModel: (String?) -> HabitFormViewModel,
-    modifier: Modifier = Modifier
+    createHabitFormViewModel: (String?) -> HabitFormViewModel
 ) {
-    var currentRoute by remember {
-        mutableStateOf<Route>(
-            if (isOnboardingCompleted) Route.Today else Route.OnboardingPhilosophy
-        )
-    }
+    val initialRoute: Route = if (isOnboardingCompleted) Route.Today else Route.OnboardingPhilosophy
+    val backStack = rememberNavBackStack(navConfig, initialRoute)
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -58,9 +59,12 @@ fun HabitLockNavHost(
     LaunchedEffect(Unit) {
         onboardingViewModel.events.collect { event ->
             when (event) {
-                OnboardingEvent.NavigateToStrictness -> currentRoute = Route.OnboardingStrictness
-                OnboardingEvent.NavigateToFirstHabit -> currentRoute = Route.OnboardingFirstHabit
-                OnboardingEvent.NavigateToToday -> currentRoute = Route.Today
+                OnboardingEvent.NavigateToStrictness -> backStack.add(Route.OnboardingStrictness)
+                OnboardingEvent.NavigateToFirstHabit -> backStack.add(Route.OnboardingFirstHabit)
+                OnboardingEvent.NavigateToToday -> {
+                    backStack.clear()
+                    backStack.add(Route.Today)
+                }
                 is OnboardingEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
             }
         }
@@ -71,7 +75,7 @@ fun HabitLockNavHost(
             when (event) {
                 is TodayEvent.NavigateToHabitDetail ->
                     snackbarHostState.showSnackbar("Habit detail view coming soon")
-                TodayEvent.NavigateToCreateHabit -> currentRoute = Route.CreateHabit
+                TodayEvent.NavigateToCreateHabit -> backStack.add(Route.CreateHabit)
                 is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
                 is TodayEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
             }
@@ -96,189 +100,191 @@ fun HabitLockNavHost(
         }
     }
 
-    when (val route = currentRoute) {
-        // Onboarding screens
-        Route.OnboardingPhilosophy -> {
-            PhilosophyScreen(
-                onContinue = { onboardingViewModel.continueFromPhilosophy() },
-                onSkip = { onboardingViewModel.skipToToday() }
-            )
-        }
-
-        Route.OnboardingStrictness -> {
-            val state by onboardingViewModel.state.collectAsStateWithLifecycle()
-            StrictnessScreen(
-                selectedPreset = state.selectedPreset,
-                isLoading = state.isApplyingPreset,
-                onPresetSelected = { onboardingViewModel.selectPreset(it) },
-                onContinue = { onboardingViewModel.continueFromStrictness() },
-                onSkip = { onboardingViewModel.skipToToday() }
-            )
-        }
-
-        Route.OnboardingFirstHabit -> {
-            val state by onboardingViewModel.state.collectAsStateWithLifecycle()
-            FirstHabitScreen(
-                habitName = state.habitName,
-                habitType = state.habitType,
-                targetValue = state.targetValue,
-                unit = state.unit,
-                isLoading = state.isCreatingHabit,
-                onHabitNameChange = { onboardingViewModel.updateHabitName(it) },
-                onHabitTypeChange = { onboardingViewModel.updateHabitType(it) },
-                onTargetValueChange = { onboardingViewModel.updateTargetValue(it) },
-                onUnitChange = { onboardingViewModel.updateUnit(it) },
-                onCreateHabit = { onboardingViewModel.createFirstHabit() },
-                onSkip = { onboardingViewModel.skipFirstHabit() }
-            )
-        }
-
-        Route.Today -> {
-            val state by todayViewModel.state.collectAsStateWithLifecycle()
-
-            TodayScreen(
-                state = state,
-                onCalendarClick = { currentRoute = Route.Calendar },
-                onSettingsClick = { currentRoute = Route.Settings },
-                onHabitClick = { todayViewModel.navigateToHabitDetail(it) },
-                onCompleteClick = { todayViewModel.completeHabit(it) },
-                onSkipClick = { todayViewModel.skipHabit(it) },
-                onUndoClick = { todayViewModel.undoHabit(it) },
-                onEditClick = { habitId -> currentRoute = Route.EditHabit(habitId) },
-                onArchiveClick = { todayViewModel.archiveHabit(it) },
-                onAddHabitClick = { todayViewModel.navigateToCreateHabit() },
-                onDismissTimezoneWarning = { todayViewModel.dismissTimezoneWarning() },
-                snackbarHostState = snackbarHostState
-            )
-
-            // Show quantitative input bottom sheet if needed
-            state.showQuantitativeInputFor?.let { instanceId ->
-                val habit = state.habits.find { it.instanceId == instanceId }
-                if (habit != null) {
-                    QuantitativeInputBottomSheet(
-                        habit = habit,
-                        onConfirm = { value ->
-                            todayViewModel.completeQuantitativeHabit(instanceId, value)
-                        },
-                        onDismiss = { todayViewModel.dismissQuantitativeInput() }
-                    )
-                }
+    NavDisplay(
+        backStack = backStack,
+        onBack = { backStack.removeLastOrNull() },
+        modifier = Modifier.fillMaxSize(),
+        entryProvider = entryProvider {
+            entry<Route.OnboardingPhilosophy> {
+                PhilosophyScreen(
+                    onContinue = { onboardingViewModel.continueFromPhilosophy() },
+                    onSkip = { onboardingViewModel.skipToToday() }
+                )
             }
-        }
 
-        Route.Calendar -> {
-            val state by calendarViewModel.state.collectAsStateWithLifecycle()
+            entry<Route.OnboardingStrictness> {
+                val state by onboardingViewModel.state.collectAsStateWithLifecycle()
+                StrictnessScreen(
+                    selectedPreset = state.selectedPreset,
+                    isLoading = state.isApplyingPreset,
+                    onPresetSelected = { onboardingViewModel.selectPreset(it) },
+                    onContinue = { onboardingViewModel.continueFromStrictness() },
+                    onSkip = { onboardingViewModel.skipToToday() }
+                )
+            }
 
-            CalendarScreen(
-                state = state,
-                onBackClick = { currentRoute = Route.Today },
-                onPreviousMonth = { calendarViewModel.previousMonth() },
-                onNextMonth = { calendarViewModel.nextMonth() },
-                onDayClick = { calendarViewModel.selectDay(it.date) }
-            )
-        }
+            entry<Route.OnboardingFirstHabit> {
+                val state by onboardingViewModel.state.collectAsStateWithLifecycle()
+                FirstHabitScreen(
+                    habitName = state.habitName,
+                    habitType = state.habitType,
+                    targetValue = state.targetValue,
+                    unit = state.unit,
+                    isLoading = state.isCreatingHabit,
+                    onHabitNameChange = { onboardingViewModel.updateHabitName(it) },
+                    onHabitTypeChange = { onboardingViewModel.updateHabitType(it) },
+                    onTargetValueChange = { onboardingViewModel.updateTargetValue(it) },
+                    onUnitChange = { onboardingViewModel.updateUnit(it) },
+                    onCreateHabit = { onboardingViewModel.createFirstHabit() },
+                    onSkip = { onboardingViewModel.skipFirstHabit() }
+                )
+            }
 
-        Route.Settings -> {
-            val state by settingsViewModel.state.collectAsStateWithLifecycle()
+            entry<Route.Today> {
+                val state by todayViewModel.state.collectAsStateWithLifecycle()
 
-            SettingsScreen(
-                state = state,
-                snackbarHostState = snackbarHostState,
-                onBackClick = { currentRoute = Route.Today },
-                onUndoPolicyChange = { settingsViewModel.updateUndoPolicy(it) },
-                onMaxSnoozeDurationChange = { settingsViewModel.updateMaxSnoozeDuration(it) },
-                onMaxSnoozesPerDayChange = { settingsViewModel.updateMaxSnoozesPerDay(it) },
-                onMaxConsecutiveSkipsChange = { settingsViewModel.updateMaxConsecutiveSkips(it) },
-                onArchivedHabitsClick = { currentRoute = Route.ArchivedHabits }
-            )
-        }
+                TodayScreen(
+                    state = state,
+                    onCalendarClick = { backStack.add(Route.Calendar) },
+                    onSettingsClick = { backStack.add(Route.Settings) },
+                    onHabitClick = { todayViewModel.navigateToHabitDetail(it) },
+                    onCompleteClick = { todayViewModel.completeHabit(it) },
+                    onSkipClick = { todayViewModel.skipHabit(it) },
+                    onUndoClick = { todayViewModel.undoHabit(it) },
+                    onEditClick = { habitId -> backStack.add(Route.EditHabit(habitId)) },
+                    onArchiveClick = { todayViewModel.archiveHabit(it) },
+                    onAddHabitClick = { todayViewModel.navigateToCreateHabit() },
+                    onDismissTimezoneWarning = { todayViewModel.dismissTimezoneWarning() },
+                    snackbarHostState = snackbarHostState
+                )
 
-        Route.ArchivedHabits -> {
-            val state by archivedHabitsViewModel.state.collectAsStateWithLifecycle()
-
-            ArchivedHabitsScreen(
-                state = state,
-                snackbarHostState = snackbarHostState,
-                onBackClick = { currentRoute = Route.Settings },
-                onUnarchiveClick = { archivedHabitsViewModel.unarchiveHabit(it) },
-                onDeleteClick = { archivedHabitsViewModel.deleteHabit(it) }
-            )
-        }
-
-        Route.CreateHabit -> {
-            val viewModel = remember { createHabitFormViewModel(null) }
-            val state by viewModel.state.collectAsStateWithLifecycle()
-
-            LaunchedEffect(viewModel) {
-                viewModel.events.collect { event ->
-                    when (event) {
-                        HabitFormEvent.NavigateBack -> {
-                            currentRoute = Route.Today
-                            todayViewModel.loadTodayHabits()
-                        }
-                        is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                state.showQuantitativeInputFor?.let { instanceId ->
+                    val habit = state.habits.find { it.instanceId == instanceId }
+                    if (habit != null) {
+                        QuantitativeInputBottomSheet(
+                            habit = habit,
+                            onConfirm = { value ->
+                                todayViewModel.completeQuantitativeHabit(instanceId, value)
+                            },
+                            onDismiss = { todayViewModel.dismissQuantitativeInput() }
+                        )
                     }
                 }
             }
 
-            HabitFormScreen(
-                state = state,
-                onBackClick = { currentRoute = Route.Today },
-                onNameChange = { viewModel.updateName(it) },
-                onDescriptionChange = { viewModel.updateDescription(it) },
-                onTypeChange = { viewModel.updateType(it) },
-                onTargetValueChange = { viewModel.updateTargetValue(it) },
-                onUnitChange = { viewModel.updateUnit(it) },
-                onScheduleTypeChange = { viewModel.updateScheduleType(it) },
-                onQuotaChange = { viewModel.updateQuota(it) },
-                onHasReminderChange = { viewModel.updateHasReminder(it) },
-                onReminderTypeChange = { viewModel.updateReminderType(it) },
-                onIntervalChange = { viewModel.updateIntervalMinutes(it) },
-                onSaveClick = { viewModel.saveHabit() },
-                onDeleteClick = { viewModel.deleteHabit() }
-            )
-        }
+            entry<Route.Calendar> {
+                val state by calendarViewModel.state.collectAsStateWithLifecycle()
 
-        is Route.EditHabit -> {
-            val viewModel = remember(route.habitId) { createHabitFormViewModel(route.habitId) }
-            val state by viewModel.state.collectAsStateWithLifecycle()
+                CalendarScreen(
+                    state = state,
+                    onBackClick = { backStack.removeLastOrNull() },
+                    onPreviousMonth = { calendarViewModel.previousMonth() },
+                    onNextMonth = { calendarViewModel.nextMonth() },
+                    onDayClick = { calendarViewModel.selectDay(it.date) }
+                )
+            }
 
-            LaunchedEffect(viewModel) {
-                viewModel.events.collect { event ->
-                    when (event) {
-                        HabitFormEvent.NavigateBack -> {
-                            currentRoute = Route.Today
-                            todayViewModel.loadTodayHabits()
+            entry<Route.Settings> {
+                val state by settingsViewModel.state.collectAsStateWithLifecycle()
+
+                SettingsScreen(
+                    state = state,
+                    snackbarHostState = snackbarHostState,
+                    onBackClick = { backStack.removeLastOrNull() },
+                    onUndoPolicyChange = { settingsViewModel.updateUndoPolicy(it) },
+                    onMaxSnoozeDurationChange = { settingsViewModel.updateMaxSnoozeDuration(it) },
+                    onMaxSnoozesPerDayChange = { settingsViewModel.updateMaxSnoozesPerDay(it) },
+                    onMaxConsecutiveSkipsChange = { settingsViewModel.updateMaxConsecutiveSkips(it) },
+                    onArchivedHabitsClick = { backStack.add(Route.ArchivedHabits) }
+                )
+            }
+
+            entry<Route.ArchivedHabits> {
+                val state by archivedHabitsViewModel.state.collectAsStateWithLifecycle()
+
+                ArchivedHabitsScreen(
+                    state = state,
+                    snackbarHostState = snackbarHostState,
+                    onBackClick = { backStack.removeLastOrNull() },
+                    onUnarchiveClick = { archivedHabitsViewModel.unarchiveHabit(it) },
+                    onDeleteClick = { archivedHabitsViewModel.deleteHabit(it) }
+                )
+            }
+
+            entry<Route.CreateHabit> {
+                val viewModel = remember { createHabitFormViewModel(null) }
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                LaunchedEffect(viewModel) {
+                    viewModel.events.collect { event ->
+                        when (event) {
+                            HabitFormEvent.NavigateBack -> {
+                                backStack.removeLastOrNull()
+                                todayViewModel.loadTodayHabits()
+                            }
+                            is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
                         }
-                        is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
                     }
                 }
+
+                HabitFormScreen(
+                    state = state,
+                    onBackClick = { backStack.removeLastOrNull() },
+                    onNameChange = { viewModel.updateName(it) },
+                    onDescriptionChange = { viewModel.updateDescription(it) },
+                    onTypeChange = { viewModel.updateType(it) },
+                    onTargetValueChange = { viewModel.updateTargetValue(it) },
+                    onUnitChange = { viewModel.updateUnit(it) },
+                    onScheduleTypeChange = { viewModel.updateScheduleType(it) },
+                    onQuotaChange = { viewModel.updateQuota(it) },
+                    onHasReminderChange = { viewModel.updateHasReminder(it) },
+                    onReminderTypeChange = { viewModel.updateReminderType(it) },
+                    onIntervalChange = { viewModel.updateIntervalMinutes(it) },
+                    onSaveClick = { viewModel.saveHabit() },
+                    onDeleteClick = { viewModel.deleteHabit() }
+                )
             }
 
-            HabitFormScreen(
-                state = state,
-                onBackClick = { currentRoute = Route.Today },
-                onNameChange = { viewModel.updateName(it) },
-                onDescriptionChange = { viewModel.updateDescription(it) },
-                onTypeChange = { viewModel.updateType(it) },
-                onTargetValueChange = { viewModel.updateTargetValue(it) },
-                onUnitChange = { viewModel.updateUnit(it) },
-                onScheduleTypeChange = { viewModel.updateScheduleType(it) },
-                onQuotaChange = { viewModel.updateQuota(it) },
-                onHasReminderChange = { viewModel.updateHasReminder(it) },
-                onReminderTypeChange = { viewModel.updateReminderType(it) },
-                onIntervalChange = { viewModel.updateIntervalMinutes(it) },
-                onSaveClick = { viewModel.saveHabit() },
-                onDeleteClick = { viewModel.deleteHabit() }
-            )
-        }
+            entry<Route.EditHabit> { route ->
+                val viewModel = remember(route.habitId) { createHabitFormViewModel(route.habitId) }
+                val state by viewModel.state.collectAsStateWithLifecycle()
 
-        is Route.HabitDetail -> {
-            // TODO: Implement habit detail screen
-            LaunchedEffect(route) {
-                currentRoute = Route.Today
+                LaunchedEffect(viewModel) {
+                    viewModel.events.collect { event ->
+                        when (event) {
+                            HabitFormEvent.NavigateBack -> {
+                                backStack.removeLastOrNull()
+                                todayViewModel.loadTodayHabits()
+                            }
+                            is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                        }
+                    }
+                }
+
+                HabitFormScreen(
+                    state = state,
+                    onBackClick = { backStack.removeLastOrNull() },
+                    onNameChange = { viewModel.updateName(it) },
+                    onDescriptionChange = { viewModel.updateDescription(it) },
+                    onTypeChange = { viewModel.updateType(it) },
+                    onTargetValueChange = { viewModel.updateTargetValue(it) },
+                    onUnitChange = { viewModel.updateUnit(it) },
+                    onScheduleTypeChange = { viewModel.updateScheduleType(it) },
+                    onQuotaChange = { viewModel.updateQuota(it) },
+                    onHasReminderChange = { viewModel.updateHasReminder(it) },
+                    onReminderTypeChange = { viewModel.updateReminderType(it) },
+                    onIntervalChange = { viewModel.updateIntervalMinutes(it) },
+                    onSaveClick = { viewModel.saveHabit() },
+                    onDeleteClick = { viewModel.deleteHabit() }
+                )
+            }
+
+            entry<Route.HabitDetail> {
+                // TODO: Implement habit detail screen
+                LaunchedEffect(Unit) {
+                    backStack.removeLastOrNull()
+                }
             }
         }
-    }
+    )
 }
-
