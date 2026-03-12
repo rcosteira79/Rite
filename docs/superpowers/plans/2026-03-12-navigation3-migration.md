@@ -2,49 +2,132 @@
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace the single `mutableStateOf<Route>` in `HabitLockNavHost` with a `SnapshotStateList<Route>` back stack (the Navigation 3 pattern), remove the navigation drawer, and replace it with Calendar/Settings icon buttons in `TodayScreen`'s top bar.
+**Goal:** Wire the existing back stack infrastructure in `HabitLockNavHost` to the official Navigation 3 KMP library (`org.jetbrains.androidx.navigation3:navigation3-ui`), making routes `@Serializable + NavKey` and replacing the manual `when` renderer with `NavDisplay + entryProvider`.
 
-**Architecture:** The back stack is a `mutableStateListOf<Route>` owned in `HabitLockNavHost`. The current screen is `backStack.last()`; navigating forward calls `backStack.add(route)`, and going back calls `backStack.removeLastOrNull()`. Onboarding completion calls `backStack.clear()` then `backStack.add(Route.Today)` to prevent returning to the onboarding flow. No new library dependency.
+**Architecture:** `rememberNavBackStack(navConfig, initialRoute)` replaces `remember { mutableStateListOf(...) }`. `NavDisplay` with `entryProvider { entry<Route.X> { ... } }` replaces the manual `when (backStack.last())` block. A top-level `SavedStateConfiguration` registers all `Route` subclasses via `subclassesOfSealed<Route>()` for KMP-safe state saving. The back stack manipulation calls (`backStack.add`, `backStack.removeLastOrNull`, `backStack.clear`) remain unchanged.
 
-**Tech Stack:** Kotlin Multiplatform, Compose Multiplatform 1.10.0, kotlin-inject 0.9.0, commonMain (shared across Android + iOS + JVM)
+**Tech Stack:** Kotlin Multiplatform, Compose Multiplatform 1.10.0, `org.jetbrains.androidx.navigation3:navigation3-ui 1.0.0-alpha05`, `kotlinx-serialization` (Kotlin plugin 2.3.0, runtime transitive)
 
 **Spec:** `docs/superpowers/specs/2026-03-12-navigation3-migration-design.md`
 
+**Branch:** `feature/navigation3-migration`
+
+**Already committed (do not redo):**
+- Task 1: `Route.Onboarding` removed
+- Task 2: Drawer replaced with icon buttons; back stack already using `mutableStateListOf`
+
 ---
 
-## Chunk 1: Route cleanup and TodayScreen top bar update
+## Chunk 1: Dependencies and route types
 
-### Task 1: Remove `Route.Onboarding`
+### Task 3: Add Navigation 3 and serialization dependencies
+
+**Files:**
+- Modify: `gradle/libs.versions.toml`
+- Modify: `composeApp/build.gradle.kts`
+
+- [ ] **Step 1: Add version, library, and plugin entries to `libs.versions.toml`**
+
+Add to the `[versions]` section:
+```toml
+navigation3 = "1.0.0-alpha05"
+```
+
+Add to the `[libraries]` section:
+```toml
+jetbrains-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
+```
+
+Add to the `[plugins]` section:
+```toml
+kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+```
+
+- [ ] **Step 2: Apply serialization plugin and add `navigation3-ui` dependency in `build.gradle.kts`**
+
+In the `plugins { }` block, add after the existing aliases:
+```kotlin
+alias(libs.plugins.kotlinxSerialization)
+```
+
+In `commonMain.dependencies { }`, add:
+```kotlin
+implementation(libs.jetbrains.navigation3.ui)
+```
+
+- [ ] **Step 3: Verify the build resolves the new dependency**
+
+```bash
+./gradlew :composeApp:compileKotlinAndroid
+```
+
+Expected: `BUILD SUCCESSFUL` (dependency resolved, no compile errors yet)
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add gradle/libs.versions.toml composeApp/build.gradle.kts
+git commit -m "build: add navigation3-ui and kotlinx-serialization dependencies"
+```
+
+---
+
+### Task 4: Make `Route` `@Serializable` and implement `NavKey`
 
 **Files:**
 - Modify: `composeApp/src/commonMain/kotlin/com/ricardocosteira/habitlock/presentation/navigation/Route.kt`
-- Modify: `composeApp/src/commonMain/kotlin/com/ricardocosteira/habitlock/presentation/navigation/HabitLockNavHost.kt`
 
-`Route.Onboarding` is a dead `data object` — it was never routed to anywhere other than `PhilosophyScreen`, which `Route.OnboardingPhilosophy` already handles. Remove it from the sealed interface and drop its branch from the `when` block.
+Navigation 3 requires every route type to be `@Serializable` and implement `NavKey`. The `subclassesOfSealed<Route>()` helper used in the next task relies on this.
 
-- [ ] **Step 1: Remove `Route.Onboarding` from `Route.kt`**
+- [ ] **Step 1: Update `Route.kt`**
 
-Delete this line from `Route.kt`:
-
-```kotlin
-data object Onboarding : Route
-```
-
-- [ ] **Step 2: Remove the `Route.Onboarding` branch from `HabitLockNavHost.kt`**
-
-In the `when` block, change:
+Replace the entire file content with:
 
 ```kotlin
-Route.OnboardingPhilosophy, Route.Onboarding -> {
+package com.ricardocosteira.habitlock.presentation.navigation
+
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
+
+/**
+ * Navigation routes for the app.
+ */
+@Serializable
+sealed interface Route : NavKey {
+
+    @Serializable
+    data object OnboardingPhilosophy : Route
+
+    @Serializable
+    data object OnboardingStrictness : Route
+
+    @Serializable
+    data object OnboardingFirstHabit : Route
+
+    @Serializable
+    data object Today : Route
+
+    @Serializable
+    data class HabitDetail(val instanceId: String) : Route
+
+    @Serializable
+    data object CreateHabit : Route
+
+    @Serializable
+    data class EditHabit(val habitId: String) : Route
+
+    @Serializable
+    data object Calendar : Route
+
+    @Serializable
+    data object ArchivedHabits : Route
+
+    @Serializable
+    data object Settings : Route
+}
 ```
 
-to:
-
-```kotlin
-Route.OnboardingPhilosophy -> {
-```
-
-- [ ] **Step 3: Verify compilation**
+- [ ] **Step 2: Verify compilation**
 
 ```bash
 ./gradlew :composeApp:compileKotlinAndroid
@@ -52,7 +135,7 @@ Route.OnboardingPhilosophy -> {
 
 Expected: `BUILD SUCCESSFUL`
 
-- [ ] **Step 4: Run existing tests**
+- [ ] **Step 3: Run tests**
 
 ```bash
 ./gradlew :composeApp:jvmTest
@@ -60,244 +143,41 @@ Expected: `BUILD SUCCESSFUL`
 
 Expected: `BUILD SUCCESSFUL`, all tests pass
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-git add composeApp/src/commonMain/kotlin/com/ricardocosteira/habitlock/presentation/navigation/Route.kt \
-        composeApp/src/commonMain/kotlin/com/ricardocosteira/habitlock/presentation/navigation/HabitLockNavHost.kt
-git commit -m "refactor(nav): remove unused Route.Onboarding"
+git add composeApp/src/commonMain/kotlin/com/ricardocosteira/habitlock/presentation/navigation/Route.kt
+git commit -m "refactor(nav): make Route @Serializable and implement NavKey"
 ```
 
 ---
 
-### Task 2: Replace drawer with Calendar/Settings icon buttons
+## Chunk 2: NavDisplay migration and cleanup
+
+### Task 5: Migrate `HabitLockNavHost` to `NavDisplay`
 
 **Files:**
-- Modify: `composeApp/src/commonMain/kotlin/com/ricardocosteira/habitlock/presentation/ui/today/TodayScreen.kt`
 - Modify: `composeApp/src/commonMain/kotlin/com/ricardocosteira/habitlock/presentation/navigation/HabitLockNavHost.kt`
 
-Replace the hamburger menu icon with two `IconButton`s (Calendar and Settings) in `TodayScreen`'s `TopAppBar`. Simultaneously remove the `AppNavigationDrawer` wrapper and all drawer-related state from `HabitLockNavHost`'s `Today` branch (the scope and drawerState are only used for drawer open/close and become dead code).
+Replace `remember { mutableStateListOf(...) }` with `rememberNavBackStack`, and replace the `when (backStack.last())` block with `NavDisplay + entryProvider`. All back stack mutation calls (`backStack.add`, `backStack.removeLastOrNull`, `backStack.clear`) are unchanged.
 
-Note: after Task 1, the `when` branch in `HabitLockNavHost.kt` already reads `Route.OnboardingPhilosophy ->` (the `Route.Onboarding` part was removed in Task 1). The "old" snippets below reflect the **post-Task-1** state of the file.
+- [ ] **Step 1: Add the top-level `navConfig` constant**
 
-- [ ] **Step 1: Update `TodayScreen` signature and top bar**
-
-In `TodayScreen.kt`:
-
-**Replace** the import:
-```kotlin
-import androidx.compose.material.icons.filled.Menu
-```
-**With:**
-```kotlin
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Settings
-```
-
-**Replace** the parameter:
-```kotlin
-onMenuClick: () -> Unit,
-```
-**With:**
-```kotlin
-onCalendarClick: () -> Unit,
-onSettingsClick: () -> Unit,
-```
-
-**Replace** the `TopAppBar` navigation icon block:
-```kotlin
-topBar = {
-    TopAppBar(
-        title = { Text("Today") },
-        navigationIcon = {
-            IconButton(onClick = onMenuClick) {
-                Icon(Icons.Default.Menu, contentDescription = "Menu")
-            }
-        }
-    )
-},
-```
-**With:**
-```kotlin
-topBar = {
-    TopAppBar(
-        title = { Text("Today") },
-        actions = {
-            IconButton(onClick = onCalendarClick) {
-                Icon(Icons.Default.DateRange, contentDescription = "Calendar")
-            }
-            IconButton(onClick = onSettingsClick) {
-                Icon(Icons.Default.Settings, contentDescription = "Settings")
-            }
-        }
-    )
-},
-```
-
-- [ ] **Step 2: Update `HabitLockNavHost` Today branch**
-
-In `HabitLockNavHost.kt`, remove the three drawer-related declarations. `drawerState` and `scope` appear **before** `snackbarHostState`; `selectedDrawerDestination` appears **after** it. `snackbarHostState` itself must remain.
+Above the `@Composable` annotation for `HabitLockNavHost`, add this private top-level val:
 
 ```kotlin
-val drawerState = rememberDrawerState(DrawerValue.Closed)
-val scope = rememberCoroutineScope()
-```
-
-and the derived val:
-
-```kotlin
-// Derive drawer selection from route — never mutate during composition
-val selectedDrawerDestination = when (currentRoute) {
-    Route.Calendar -> DrawerDestination.CALENDAR
-    Route.Settings -> DrawerDestination.SETTINGS
-    else -> DrawerDestination.TODAY
-}
-```
-
-In the `Route.Today` branch, **replace** the entire `AppNavigationDrawer` wrapper:
-
-```kotlin
-Route.Today -> {
-    val state by todayViewModel.state.collectAsStateWithLifecycle()
-
-    AppNavigationDrawer(
-        drawerState = drawerState,
-        selectedDestination = selectedDrawerDestination,
-        onDestinationClick = { destination ->
-            scope.launch { drawerState.close() }
-            currentRoute = when (destination) {
-                DrawerDestination.TODAY -> Route.Today
-                DrawerDestination.CALENDAR -> Route.Calendar
-                DrawerDestination.SETTINGS -> Route.Settings
-            }
-        }
-    ) {
-        TodayScreen(
-            state = state,
-            onMenuClick = { scope.launch { drawerState.open() } },
-            onHabitClick = { todayViewModel.navigateToHabitDetail(it) },
-            onCompleteClick = { todayViewModel.completeHabit(it) },
-            onSkipClick = { todayViewModel.skipHabit(it) },
-            onUndoClick = { todayViewModel.undoHabit(it) },
-            onEditClick = { habitId -> currentRoute = Route.EditHabit(habitId) },
-            onArchiveClick = { todayViewModel.archiveHabit(it) },
-            onAddHabitClick = { todayViewModel.navigateToCreateHabit() },
-            onDismissTimezoneWarning = { todayViewModel.dismissTimezoneWarning() },
-            snackbarHostState = snackbarHostState
-        )
-
-        // Show quantitative input bottom sheet if needed
-        state.showQuantitativeInputFor?.let { instanceId ->
-            val habit = state.habits.find { it.instanceId == instanceId }
-            if (habit != null) {
-                QuantitativeInputBottomSheet(
-                    habit = habit,
-                    onConfirm = { value ->
-                        todayViewModel.completeQuantitativeHabit(instanceId, value)
-                    },
-                    onDismiss = { todayViewModel.dismissQuantitativeInput() }
-                )
-            }
+private val navConfig = SavedStateConfiguration {
+    serializersModule = SerializersModule {
+        polymorphic(NavKey::class) {
+            subclassesOfSealed<Route>()
         }
     }
 }
 ```
 
-**With** (no drawer wrapper, updated TodayScreen params, `currentRoute` assignments preserved for now):
-
-```kotlin
-Route.Today -> {
-    val state by todayViewModel.state.collectAsStateWithLifecycle()
-
-    TodayScreen(
-        state = state,
-        onCalendarClick = { currentRoute = Route.Calendar },
-        onSettingsClick = { currentRoute = Route.Settings },
-        onHabitClick = { todayViewModel.navigateToHabitDetail(it) },
-        onCompleteClick = { todayViewModel.completeHabit(it) },
-        onSkipClick = { todayViewModel.skipHabit(it) },
-        onUndoClick = { todayViewModel.undoHabit(it) },
-        onEditClick = { habitId -> currentRoute = Route.EditHabit(habitId) },
-        onArchiveClick = { todayViewModel.archiveHabit(it) },
-        onAddHabitClick = { todayViewModel.navigateToCreateHabit() },
-        onDismissTimezoneWarning = { todayViewModel.dismissTimezoneWarning() },
-        snackbarHostState = snackbarHostState
-    )
-
-    // Show quantitative input bottom sheet if needed
-    state.showQuantitativeInputFor?.let { instanceId ->
-        val habit = state.habits.find { it.instanceId == instanceId }
-        if (habit != null) {
-            QuantitativeInputBottomSheet(
-                habit = habit,
-                onConfirm = { value ->
-                    todayViewModel.completeQuantitativeHabit(instanceId, value)
-                },
-                onDismiss = { todayViewModel.dismissQuantitativeInput() }
-            )
-        }
-    }
-}
-```
-
-Also remove the now-unused imports from `HabitLockNavHost.kt`:
-
-```kotlin
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.rememberCoroutineScope
-import com.ricardocosteira.habitlock.presentation.ui.components.AppNavigationDrawer
-import com.ricardocosteira.habitlock.presentation.ui.components.DrawerDestination
-import kotlinx.coroutines.launch
-```
-
-- [ ] **Step 3: Verify compilation**
-
-```bash
-./gradlew :composeApp:compileKotlinAndroid
-```
-
-Expected: `BUILD SUCCESSFUL`
-
-- [ ] **Step 4: Run existing tests**
-
-```bash
-./gradlew :composeApp:jvmTest
-```
-
-Expected: `BUILD SUCCESSFUL`, all tests pass
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add composeApp/src/commonMain/kotlin/com/ricardocosteira/habitlock/presentation/ui/today/TodayScreen.kt \
-        composeApp/src/commonMain/kotlin/com/ricardocosteira/habitlock/presentation/navigation/HabitLockNavHost.kt
-git commit -m "refactor(nav): replace drawer with Calendar/Settings icon buttons in TodayScreen"
-```
-
----
-
-## Chunk 2: Back stack migration and cleanup
-
-### Task 3: Migrate `HabitLockNavHost` to `SnapshotStateList` back stack
-
-**Files:**
-- Modify: `composeApp/src/commonMain/kotlin/com/ricardocosteira/habitlock/presentation/navigation/HabitLockNavHost.kt`
-
-This is the main migration step. Replace the `currentRoute` `mutableStateOf` with a `mutableStateListOf` back stack, update all navigation assignments to `backStack.add` / `backStack.removeLastOrNull()` / `backStack.clear()`, and change the rendering `when` to use `backStack.last()`.
-
-- [ ] **Step 1: Replace `currentRoute` declaration with `backStack`**
+- [ ] **Step 2: Replace `remember { mutableStateListOf(...) }` with `rememberNavBackStack`**
 
 **Replace:**
-```kotlin
-var currentRoute by remember {
-    mutableStateOf<Route>(
-        if (isOnboardingCompleted) Route.Today else Route.OnboardingPhilosophy
-    )
-}
-```
-
-**With:**
 ```kotlin
 val backStack = remember {
     mutableStateListOf<Route>(
@@ -306,320 +186,251 @@ val backStack = remember {
 }
 ```
 
-Also remove these now-unused imports:
+**With:**
 ```kotlin
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+val initialRoute: Route = if (isOnboardingCompleted) Route.Today else Route.OnboardingPhilosophy
+val backStack = rememberNavBackStack(navConfig, initialRoute)
 ```
 
-And add:
+- [ ] **Step 3: Replace the `when` block with `NavDisplay + entryProvider`**
+
+**Replace** the entire block starting from `when (val route = backStack.last()) {` through the closing `}` of the `when` expression.
+
+**With:**
+
+```kotlin
+NavDisplay(
+    backStack = backStack,
+    onBack = { backStack.removeLastOrNull() },
+    modifier = Modifier.fillMaxSize(),
+    entryProvider = entryProvider {
+        entry<Route.OnboardingPhilosophy> {
+            PhilosophyScreen(
+                onContinue = { onboardingViewModel.continueFromPhilosophy() },
+                onSkip = { onboardingViewModel.skipToToday() }
+            )
+        }
+
+        entry<Route.OnboardingStrictness> {
+            val state by onboardingViewModel.state.collectAsStateWithLifecycle()
+            StrictnessScreen(
+                selectedPreset = state.selectedPreset,
+                isLoading = state.isApplyingPreset,
+                onPresetSelected = { onboardingViewModel.selectPreset(it) },
+                onContinue = { onboardingViewModel.continueFromStrictness() },
+                onSkip = { onboardingViewModel.skipToToday() }
+            )
+        }
+
+        entry<Route.OnboardingFirstHabit> {
+            val state by onboardingViewModel.state.collectAsStateWithLifecycle()
+            FirstHabitScreen(
+                habitName = state.habitName,
+                habitType = state.habitType,
+                targetValue = state.targetValue,
+                unit = state.unit,
+                isLoading = state.isCreatingHabit,
+                onHabitNameChange = { onboardingViewModel.updateHabitName(it) },
+                onHabitTypeChange = { onboardingViewModel.updateHabitType(it) },
+                onTargetValueChange = { onboardingViewModel.updateTargetValue(it) },
+                onUnitChange = { onboardingViewModel.updateUnit(it) },
+                onCreateHabit = { onboardingViewModel.createFirstHabit() },
+                onSkip = { onboardingViewModel.skipFirstHabit() }
+            )
+        }
+
+        entry<Route.Today> {
+            val state by todayViewModel.state.collectAsStateWithLifecycle()
+
+            TodayScreen(
+                state = state,
+                onCalendarClick = { backStack.add(Route.Calendar) },
+                onSettingsClick = { backStack.add(Route.Settings) },
+                onHabitClick = { todayViewModel.navigateToHabitDetail(it) },
+                onCompleteClick = { todayViewModel.completeHabit(it) },
+                onSkipClick = { todayViewModel.skipHabit(it) },
+                onUndoClick = { todayViewModel.undoHabit(it) },
+                onEditClick = { habitId -> backStack.add(Route.EditHabit(habitId)) },
+                onArchiveClick = { todayViewModel.archiveHabit(it) },
+                onAddHabitClick = { todayViewModel.navigateToCreateHabit() },
+                onDismissTimezoneWarning = { todayViewModel.dismissTimezoneWarning() },
+                snackbarHostState = snackbarHostState
+            )
+
+            state.showQuantitativeInputFor?.let { instanceId ->
+                val habit = state.habits.find { it.instanceId == instanceId }
+                if (habit != null) {
+                    QuantitativeInputBottomSheet(
+                        habit = habit,
+                        onConfirm = { value ->
+                            todayViewModel.completeQuantitativeHabit(instanceId, value)
+                        },
+                        onDismiss = { todayViewModel.dismissQuantitativeInput() }
+                    )
+                }
+            }
+        }
+
+        entry<Route.Calendar> {
+            val state by calendarViewModel.state.collectAsStateWithLifecycle()
+
+            CalendarScreen(
+                state = state,
+                onBackClick = { backStack.removeLastOrNull() },
+                onPreviousMonth = { calendarViewModel.previousMonth() },
+                onNextMonth = { calendarViewModel.nextMonth() },
+                onDayClick = { calendarViewModel.selectDay(it.date) }
+            )
+        }
+
+        entry<Route.Settings> {
+            val state by settingsViewModel.state.collectAsStateWithLifecycle()
+
+            SettingsScreen(
+                state = state,
+                snackbarHostState = snackbarHostState,
+                onBackClick = { backStack.removeLastOrNull() },
+                onUndoPolicyChange = { settingsViewModel.updateUndoPolicy(it) },
+                onMaxSnoozeDurationChange = { settingsViewModel.updateMaxSnoozeDuration(it) },
+                onMaxSnoozesPerDayChange = { settingsViewModel.updateMaxSnoozesPerDay(it) },
+                onMaxConsecutiveSkipsChange = { settingsViewModel.updateMaxConsecutiveSkips(it) },
+                onArchivedHabitsClick = { backStack.add(Route.ArchivedHabits) }
+            )
+        }
+
+        entry<Route.ArchivedHabits> {
+            val state by archivedHabitsViewModel.state.collectAsStateWithLifecycle()
+
+            ArchivedHabitsScreen(
+                state = state,
+                snackbarHostState = snackbarHostState,
+                onBackClick = { backStack.removeLastOrNull() },
+                onUnarchiveClick = { archivedHabitsViewModel.unarchiveHabit(it) },
+                onDeleteClick = { archivedHabitsViewModel.deleteHabit(it) }
+            )
+        }
+
+        entry<Route.CreateHabit> {
+            val viewModel = remember { createHabitFormViewModel(null) }
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            LaunchedEffect(viewModel) {
+                viewModel.events.collect { event ->
+                    when (event) {
+                        HabitFormEvent.NavigateBack -> {
+                            backStack.removeLastOrNull()
+                            todayViewModel.loadTodayHabits()
+                        }
+                        is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                    }
+                }
+            }
+
+            HabitFormScreen(
+                state = state,
+                onBackClick = { backStack.removeLastOrNull() },
+                onNameChange = { viewModel.updateName(it) },
+                onDescriptionChange = { viewModel.updateDescription(it) },
+                onTypeChange = { viewModel.updateType(it) },
+                onTargetValueChange = { viewModel.updateTargetValue(it) },
+                onUnitChange = { viewModel.updateUnit(it) },
+                onScheduleTypeChange = { viewModel.updateScheduleType(it) },
+                onQuotaChange = { viewModel.updateQuota(it) },
+                onHasReminderChange = { viewModel.updateHasReminder(it) },
+                onReminderTypeChange = { viewModel.updateReminderType(it) },
+                onIntervalChange = { viewModel.updateIntervalMinutes(it) },
+                onSaveClick = { viewModel.saveHabit() },
+                onDeleteClick = { viewModel.deleteHabit() }
+            )
+        }
+
+        entry<Route.EditHabit> { route ->
+            val viewModel = remember(route.habitId) { createHabitFormViewModel(route.habitId) }
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            LaunchedEffect(viewModel) {
+                viewModel.events.collect { event ->
+                    when (event) {
+                        HabitFormEvent.NavigateBack -> {
+                            backStack.removeLastOrNull()
+                            todayViewModel.loadTodayHabits()
+                        }
+                        is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                    }
+                }
+            }
+
+            HabitFormScreen(
+                state = state,
+                onBackClick = { backStack.removeLastOrNull() },
+                onNameChange = { viewModel.updateName(it) },
+                onDescriptionChange = { viewModel.updateDescription(it) },
+                onTypeChange = { viewModel.updateType(it) },
+                onTargetValueChange = { viewModel.updateTargetValue(it) },
+                onUnitChange = { viewModel.updateUnit(it) },
+                onScheduleTypeChange = { viewModel.updateScheduleType(it) },
+                onQuotaChange = { viewModel.updateQuota(it) },
+                onHasReminderChange = { viewModel.updateHasReminder(it) },
+                onReminderTypeChange = { viewModel.updateReminderType(it) },
+                onIntervalChange = { viewModel.updateIntervalMinutes(it) },
+                onSaveClick = { viewModel.saveHabit() },
+                onDeleteClick = { viewModel.deleteHabit() }
+            )
+        }
+
+        entry<Route.HabitDetail> {
+            // TODO: Implement habit detail screen
+            LaunchedEffect(Unit) {
+                backStack.removeLastOrNull()
+            }
+        }
+    }
+)
+```
+
+- [ ] **Step 4: Update imports**
+
+**Remove:**
 ```kotlin
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 ```
 
-Note: `getValue` is still needed for `collectAsStateWithLifecycle` delegates further down — only remove `mutableStateOf` and `setValue`.
-
-- [ ] **Step 2: Update onboarding event collector**
-
-**Replace** the onboarding `LaunchedEffect` body:
+**Add:**
 ```kotlin
-LaunchedEffect(Unit) {
-    onboardingViewModel.events.collect { event ->
-        when (event) {
-            OnboardingEvent.NavigateToStrictness -> currentRoute = Route.OnboardingStrictness
-            OnboardingEvent.NavigateToFirstHabit -> currentRoute = Route.OnboardingFirstHabit
-            OnboardingEvent.NavigateToToday -> currentRoute = Route.Today
-            is OnboardingEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
-        }
-    }
-}
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.SavedStateConfiguration
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclassesOfSealed
 ```
 
-**With:**
-```kotlin
-LaunchedEffect(Unit) {
-    onboardingViewModel.events.collect { event ->
-        when (event) {
-            OnboardingEvent.NavigateToStrictness -> backStack.add(Route.OnboardingStrictness)
-            OnboardingEvent.NavigateToFirstHabit -> backStack.add(Route.OnboardingFirstHabit)
-            OnboardingEvent.NavigateToToday -> {
-                backStack.clear()
-                backStack.add(Route.Today)
-            }
-            is OnboardingEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
-        }
-    }
-}
-```
+Note: `remember` is still needed (for ViewModels inside entries) so re-add it. Remove `mutableStateListOf` — no longer used.
 
-- [ ] **Step 3: Update today event collector**
+- [ ] **Step 5: Update the doc comment**
 
 **Replace:**
 ```kotlin
-TodayEvent.NavigateToCreateHabit -> currentRoute = Route.CreateHabit
-```
-
-**With:**
-```kotlin
-TodayEvent.NavigateToCreateHabit -> backStack.add(Route.CreateHabit)
-```
-
-- [ ] **Step 4: Update the `when` renderer to use `backStack.last()`**
-
-**Replace:**
-```kotlin
-when (val route = currentRoute) {
-```
-
-**With:**
-```kotlin
-when (val route = backStack.last()) {
-```
-
-- [ ] **Step 5: Update Today branch navigation lambdas**
-
-**Replace** the two inline navigation assignments in the Today branch (from Task 2):
-```kotlin
-onCalendarClick = { currentRoute = Route.Calendar },
-onSettingsClick = { currentRoute = Route.Settings },
-```
-
-**With:**
-```kotlin
-onCalendarClick = { backStack.add(Route.Calendar) },
-onSettingsClick = { backStack.add(Route.Settings) },
-```
-
-And the edit click:
-```kotlin
-onEditClick = { habitId -> currentRoute = Route.EditHabit(habitId) },
+/**
+ * Main navigation host for the app.
+ * For now, this uses manual navigation state since Navigation 3 setup with Metro DI
+ * requires additional configuration. This can be refactored to use Navigation 3 NavHost.
+ */
 ```
 **With:**
 ```kotlin
-onEditClick = { habitId -> backStack.add(Route.EditHabit(habitId)) },
+/**
+ * Main navigation host for the app using Navigation 3 (org.jetbrains.androidx.navigation3).
+ */
 ```
 
-- [ ] **Step 6: Update Calendar branch**
-
-**Replace:**
-```kotlin
-Route.Calendar -> {
-    val state by calendarViewModel.state.collectAsStateWithLifecycle()
-
-    CalendarScreen(
-        state = state,
-        onBackClick = { currentRoute = Route.Today },
-        onPreviousMonth = { calendarViewModel.previousMonth() },
-        onNextMonth = { calendarViewModel.nextMonth() },
-        onDayClick = { calendarViewModel.selectDay(it.date) }
-    )
-}
-```
-
-**With:**
-```kotlin
-Route.Calendar -> {
-    val state by calendarViewModel.state.collectAsStateWithLifecycle()
-
-    CalendarScreen(
-        state = state,
-        onBackClick = { backStack.removeLastOrNull() },
-        onPreviousMonth = { calendarViewModel.previousMonth() },
-        onNextMonth = { calendarViewModel.nextMonth() },
-        onDayClick = { calendarViewModel.selectDay(it.date) }
-    )
-}
-```
-
-- [ ] **Step 7: Update Settings branch**
-
-**Replace:**
-```kotlin
-Route.Settings -> {
-    val state by settingsViewModel.state.collectAsStateWithLifecycle()
-
-    SettingsScreen(
-        state = state,
-        snackbarHostState = snackbarHostState,
-        onBackClick = { currentRoute = Route.Today },
-        onUndoPolicyChange = { settingsViewModel.updateUndoPolicy(it) },
-        onMaxSnoozeDurationChange = { settingsViewModel.updateMaxSnoozeDuration(it) },
-        onMaxSnoozesPerDayChange = { settingsViewModel.updateMaxSnoozesPerDay(it) },
-        onMaxConsecutiveSkipsChange = { settingsViewModel.updateMaxConsecutiveSkips(it) },
-        onArchivedHabitsClick = { currentRoute = Route.ArchivedHabits }
-    )
-}
-```
-
-**With:**
-```kotlin
-Route.Settings -> {
-    val state by settingsViewModel.state.collectAsStateWithLifecycle()
-
-    SettingsScreen(
-        state = state,
-        snackbarHostState = snackbarHostState,
-        onBackClick = { backStack.removeLastOrNull() },
-        onUndoPolicyChange = { settingsViewModel.updateUndoPolicy(it) },
-        onMaxSnoozeDurationChange = { settingsViewModel.updateMaxSnoozeDuration(it) },
-        onMaxSnoozesPerDayChange = { settingsViewModel.updateMaxSnoozesPerDay(it) },
-        onMaxConsecutiveSkipsChange = { settingsViewModel.updateMaxConsecutiveSkips(it) },
-        onArchivedHabitsClick = { backStack.add(Route.ArchivedHabits) }
-    )
-}
-```
-
-- [ ] **Step 8: Update ArchivedHabits branch**
-
-**Replace:**
-```kotlin
-Route.ArchivedHabits -> {
-    val state by archivedHabitsViewModel.state.collectAsStateWithLifecycle()
-
-    ArchivedHabitsScreen(
-        state = state,
-        snackbarHostState = snackbarHostState,
-        onBackClick = { currentRoute = Route.Settings },
-        onUnarchiveClick = { archivedHabitsViewModel.unarchiveHabit(it) },
-        onDeleteClick = { archivedHabitsViewModel.deleteHabit(it) }
-    )
-}
-```
-
-**With:**
-```kotlin
-Route.ArchivedHabits -> {
-    val state by archivedHabitsViewModel.state.collectAsStateWithLifecycle()
-
-    ArchivedHabitsScreen(
-        state = state,
-        snackbarHostState = snackbarHostState,
-        onBackClick = { backStack.removeLastOrNull() },
-        onUnarchiveClick = { archivedHabitsViewModel.unarchiveHabit(it) },
-        onDeleteClick = { archivedHabitsViewModel.deleteHabit(it) }
-    )
-}
-```
-
-- [ ] **Step 9: Update CreateHabit branch**
-
-**Replace:**
-```kotlin
-Route.CreateHabit -> {
-    val viewModel = remember { createHabitFormViewModel(null) }
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(viewModel) {
-        viewModel.events.collect { event ->
-            when (event) {
-                HabitFormEvent.NavigateBack -> {
-                    currentRoute = Route.Today
-                    todayViewModel.loadTodayHabits()
-                }
-                is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
-            }
-        }
-    }
-
-    HabitFormScreen(
-        state = state,
-        onBackClick = { currentRoute = Route.Today },
-        ...
-    )
-}
-```
-
-**With:**
-```kotlin
-Route.CreateHabit -> {
-    val viewModel = remember { createHabitFormViewModel(null) }
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(viewModel) {
-        viewModel.events.collect { event ->
-            when (event) {
-                HabitFormEvent.NavigateBack -> {
-                    backStack.removeLastOrNull()
-                    todayViewModel.loadTodayHabits()
-                }
-                is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
-            }
-        }
-    }
-
-    HabitFormScreen(
-        state = state,
-        onBackClick = { backStack.removeLastOrNull() },
-        onNameChange = { viewModel.updateName(it) },
-        onDescriptionChange = { viewModel.updateDescription(it) },
-        onTypeChange = { viewModel.updateType(it) },
-        onTargetValueChange = { viewModel.updateTargetValue(it) },
-        onUnitChange = { viewModel.updateUnit(it) },
-        onScheduleTypeChange = { viewModel.updateScheduleType(it) },
-        onQuotaChange = { viewModel.updateQuota(it) },
-        onHasReminderChange = { viewModel.updateHasReminder(it) },
-        onReminderTypeChange = { viewModel.updateReminderType(it) },
-        onIntervalChange = { viewModel.updateIntervalMinutes(it) },
-        onSaveClick = { viewModel.saveHabit() },
-        onDeleteClick = { viewModel.deleteHabit() }
-    )
-}
-```
-
-- [ ] **Step 10: Update EditHabit branch**
-
-**Replace** both `currentRoute` assignments in the `EditHabit` branch:
-```kotlin
-HabitFormEvent.NavigateBack -> {
-    currentRoute = Route.Today
-    todayViewModel.loadTodayHabits()
-}
-```
-and:
-```kotlin
-onBackClick = { currentRoute = Route.Today },
-```
-
-**With:**
-```kotlin
-HabitFormEvent.NavigateBack -> {
-    backStack.removeLastOrNull()
-    todayViewModel.loadTodayHabits()
-}
-```
-and:
-```kotlin
-onBackClick = { backStack.removeLastOrNull() },
-```
-
-- [ ] **Step 11: Update `HabitDetail` branch**
-
-**Replace:**
-```kotlin
-is Route.HabitDetail -> {
-    // TODO: Implement habit detail screen
-    LaunchedEffect(route) {
-        currentRoute = Route.Today
-    }
-}
-```
-
-**With:**
-```kotlin
-is Route.HabitDetail -> {
-    // TODO: Implement habit detail screen
-    LaunchedEffect(route) {
-        backStack.removeLastOrNull()
-    }
-}
-```
-
-- [ ] **Step 12: Remove unused `modifier` parameter**
-
-`HabitLockNavHost` has `modifier: Modifier = Modifier` in its signature, but after removing the `AppNavigationDrawer` wrapper it is never applied anywhere inside the composable body. Remove it from the signature. `App.kt` does not pass `modifier` at the call site, so the removal is safe. Also remove `import androidx.compose.ui.Modifier` — it is no longer referenced.
-
-- [ ] **Step 13: Verify compilation**
+- [ ] **Step 6: Verify compilation**
 
 ```bash
 ./gradlew :composeApp:compileKotlinAndroid
@@ -627,7 +438,7 @@ is Route.HabitDetail -> {
 
 Expected: `BUILD SUCCESSFUL`
 
-- [ ] **Step 14: Run existing tests**
+- [ ] **Step 7: Run tests**
 
 ```bash
 ./gradlew :composeApp:jvmTest
@@ -635,21 +446,21 @@ Expected: `BUILD SUCCESSFUL`
 
 Expected: `BUILD SUCCESSFUL`, all tests pass
 
-- [ ] **Step 15: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add composeApp/src/commonMain/kotlin/com/ricardocosteira/habitlock/presentation/navigation/HabitLockNavHost.kt
-git commit -m "refactor(nav): migrate HabitLockNavHost to SnapshotStateList back stack"
+git commit -m "refactor(nav): migrate HabitLockNavHost to NavDisplay + entryProvider"
 ```
 
 ---
 
-### Task 4: Delete `AppNavigationDrawer.kt`
+### Task 6: Delete `AppNavigationDrawer.kt`
 
 **Files:**
 - Delete: `composeApp/src/commonMain/kotlin/com/ricardocosteira/habitlock/presentation/ui/components/AppNavigationDrawer.kt`
 
-All usages of `AppNavigationDrawer` and `DrawerDestination` were removed in Tasks 2 and 3. The file can now be deleted.
+All usages of `AppNavigationDrawer` and `DrawerDestination` were removed in Task 2. The file is now dead code.
 
 - [ ] **Step 1: Confirm no remaining usages**
 
@@ -657,7 +468,7 @@ All usages of `AppNavigationDrawer` and `DrawerDestination` were removed in Task
 grep -r "AppNavigationDrawer\|DrawerDestination" composeApp/src
 ```
 
-Expected: no output (zero matches)
+Expected: no output
 
 - [ ] **Step 2: Delete the file**
 
@@ -673,7 +484,7 @@ rm composeApp/src/commonMain/kotlin/com/ricardocosteira/habitlock/presentation/u
 
 Expected: `BUILD SUCCESSFUL`
 
-- [ ] **Step 4: Run existing tests**
+- [ ] **Step 4: Run tests**
 
 ```bash
 ./gradlew :composeApp:jvmTest

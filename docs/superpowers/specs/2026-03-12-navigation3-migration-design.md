@@ -1,37 +1,58 @@
 # Navigation 3 Migration Design
 
 **Date:** 2026-03-12
-**Status:** Draft
+**Status:** Approved (revised to use official KMP library)
 
 ## Overview
 
-Migrate `HabitLockNavHost` from a single `mutableStateOf<Route>` variable to a proper back stack using `SnapshotStateList<Route>`, mirroring the Navigation 3 mental model (`rememberNavBackStack` + `NavDisplay`). Remove the navigation drawer in favour of icon buttons on Today's top bar. No new library dependency — the pattern is implemented in `commonMain` for full KMP compatibility (Android + iOS + JVM).
+Migrate `HabitLockNavHost` to use the official Jetpack Navigation 3 KMP library (`org.jetbrains.androidx.navigation3:navigation3-ui`). Remove the navigation drawer in favour of Calendar/Settings icon buttons in `TodayScreen`'s top bar. Works across Android, iOS, and JVM via Compose Multiplatform.
+
+**Note:** Tasks 1 and 2 are already committed to `feature/navigation3-migration`:
+- `Route.Onboarding` removed
+- Drawer replaced with icon buttons; `AppNavigationDrawer` wrapper removed from `HabitLockNavHost`
 
 ## Architecture
 
-The back stack is a `SnapshotStateList<Route>` owned in `HabitLockNavHost`:
+The back stack is a `SnapshotStateList<NavKey>` provided by `rememberNavBackStack(navConfig, initialRoute)`. `NavDisplay` renders the current entry via `entryProvider`. Navigation forward calls `backStack.add(route)`, back calls `backStack.removeLastOrNull()`, and onboarding completion calls `backStack.clear()` + `backStack.add(Route.Today)`.
 
 ```kotlin
-val backStack = remember {
-    mutableStateListOf(if (isOnboardingCompleted) Route.Today else Route.OnboardingPhilosophy)
-}
+val backStack = rememberNavBackStack(
+    navConfig,
+    if (isOnboardingCompleted) Route.Today else Route.OnboardingPhilosophy
+)
+
+NavDisplay(
+    backStack = backStack,
+    onBack = { backStack.removeLastOrNull() },
+    entryProvider = entryProvider {
+        entry<Route.Today> { ... }
+        entry<Route.Calendar> { ... }
+        // etc.
+    }
+)
 ```
 
-- **Current screen** = `backStack.last()`
-- **Navigate forward** = `backStack.add(route)`
-- **Navigate back** = `backStack.removeLastOrNull()`
-- **Replace root** (onboarding completion) = `backStack.clear(); backStack.add(Route.Today)`
+`rememberNavBackStack` saves and restores the back stack across process death (Android) via `SavedStateConfiguration` + polymorphic serialization.
 
-The `when (backStack.last())` block acts as the `NavDisplay` equivalent.
+**VM event collectors:** Top-level `LaunchedEffect(Unit)` collectors for all ViewModels remain outside `NavDisplay`, calling `backStack.add()`/`removeLastOrNull()`/`clear()` as before.
 
-**VM event collectors:** The top-level `LaunchedEffect(Unit)` collectors for `OnboardingViewModel`, `TodayViewModel`, `SettingsViewModel`, `ArchivedHabitsViewModel`, and `CalendarViewModel` remain at the top level of `HabitLockNavHost`. The `HabitFormViewModel` collectors are intentionally kept inside the `CreateHabit` and `EditHabit` branches (inside the `when` block), scoped to the lifetime of those route entries — this is safe because both branches create a fresh VM on each entry via `remember { createHabitFormViewModel(...) }`, ensuring no stale collector is left running after the entry is popped.
-
-**`rememberCoroutineScope`:** The existing `scope` variable is only used for drawer open/close operations, which are removed. It must be deleted. `SnackbarHostState.showSnackbar` is called inside `LaunchedEffect` coroutines, which have their own scope and do not need an external `CoroutineScope`.
+**`HabitFormViewModel` collectors:** Stay inside their respective `entry<Route.CreateHabit>` and `entry<Route.EditHabit>` lambdas, scoped to the entry's composition lifetime.
 
 ## Route Changes
 
-- Remove `Route.Onboarding` — unused duplicate of `Route.OnboardingPhilosophy`.
-- All other routes unchanged.
+`Route` sealed interface becomes `@Serializable` and implements `NavKey`. All subclasses get `@Serializable`. Required for the KMP polymorphic serialization that powers back stack state saving.
+
+A `SavedStateConfiguration` with `subclassesOfSealed<Route>()` is defined as a top-level constant in `HabitLockNavHost.kt`:
+
+```kotlin
+private val navConfig = SavedStateConfiguration {
+    serializersModule = SerializersModule {
+        polymorphic(NavKey::class) {
+            subclassesOfSealed<Route>()
+        }
+    }
+}
+```
 
 ### Back stack behaviour per destination
 
@@ -39,41 +60,44 @@ The `when (backStack.last())` block acts as the `NavDisplay` equivalent.
 |---|---|
 | `OnboardingPhilosophy` | Initial root when onboarding not completed |
 | `OnboardingStrictness`, `OnboardingFirstHabit` | Pushed linearly (`backStack.add`) |
-| Onboarding → Today | `backStack.clear()` + `backStack.add(Route.Today)` so back cannot return to onboarding |
+| Onboarding → Today | `backStack.clear()` + `backStack.add(Route.Today)` — cannot go back to onboarding |
 | `Today` | Root when onboarding completed; never popped |
 | `Calendar`, `Settings`, `CreateHabit`, `EditHabit`, `ArchivedHabits` | Pushed on top; popped by `backStack.removeLastOrNull()` |
-| `HabitDetail` | Currently redirects immediately back to `Today` via `LaunchedEffect`. Behaviour preserved as-is — placeholder until the screen is implemented. |
+| `HabitDetail` | Placeholder — immediately pops via `LaunchedEffect` |
 
 ## Navigation Structure
 
-The navigation drawer is removed. Calendar and Settings are reached via icon buttons in `TodayScreen`'s top bar.
+The drawer is removed (done in Task 2). Calendar and Settings are icon buttons in `TodayScreen`'s top bar. `onBack` in `NavDisplay` handles the system back button/gesture automatically.
 
-- `TodayScreen` top bar: replace hamburger menu icon with **Calendar icon** (`onCalendarClick`) and **Settings icon** (`onSettingsClick`)
-- `CalendarScreen`, `SettingsScreen`, `ArchivedHabitsScreen`: the `onBackClick` wire-up inside `HabitLockNavHost` must be changed from hardcoded route assignments (`currentRoute = Route.Today`, `currentRoute = Route.Settings`) to `backStack.removeLastOrNull()`. The screen composables themselves do not change.
+## Dependencies
+
+### New
+
+| Artifact | Version | Scope |
+|---|---|---|
+| `org.jetbrains.androidx.navigation3:navigation3-ui` | `1.0.0-alpha05` | `commonMain` |
+| `org.jetbrains.kotlin.plugin.serialization` plugin | same as Kotlin (`2.3.0`) | build |
+
+`kotlinx-serialization-core` comes transitively from `navigation3-ui` — no explicit runtime dependency needed.
 
 ## Files Changed
 
 | File | Change |
 |---|---|
-| `navigation/Route.kt` | Remove `Route.Onboarding` |
-| `navigation/HabitLockNavHost.kt` | Replace `currentRoute` with `backStack`; remove `drawerState`, `scope`, `selectedDrawerDestination`, `DrawerDestination` import, `AppNavigationDrawer` import and wrapper; update all `onBackClick` lambdas to `backStack.removeLastOrNull()`; remove `Route.Onboarding` branch |
-| `ui/components/AppNavigationDrawer.kt` | **Delete** |
-| `ui/today/TodayScreen.kt` | Replace `onMenuClick` with `onCalendarClick` + `onSettingsClick`; update top bar icons |
+| `gradle/libs.versions.toml` | Add `navigation3` version, `navigation3-ui` library, `kotlinxSerialization` plugin |
+| `composeApp/build.gradle.kts` | Apply `kotlinxSerialization` plugin; add `navigation3-ui` to `commonMain` |
+| `navigation/Route.kt` | Add `@Serializable` to sealed interface + all subclasses; implement `NavKey` |
+| `navigation/HabitLockNavHost.kt` | Add `navConfig`; replace `currentRoute` with `rememberNavBackStack`; replace `when` block with `NavDisplay + entryProvider`; remove `modifier` param |
+| `ui/components/AppNavigationDrawer.kt` | **Delete** (already unused after Task 2) |
 
 ## What Does Not Change
 
-- `HabitLockNavHost` composable signature (all ViewModels passed as parameters from `App.kt`)
-- `HabitFormViewModel` factory pattern (`createHabitFormViewModel: (String?) -> HabitFormViewModel`); `remember(route.habitId)` in `EditHabit` branch ensures a fresh VM per entry. `CreateHabit` uses `remember` without a key — this is safe because `Route.CreateHabit` is a `data object`; navigating away always pops it off the back stack, so re-entering always starts a new composition scope with a fresh `remember` cell
-- `CalendarScreen`, `SettingsScreen`, `ArchivedHabitsScreen`, `HabitFormScreen` composable implementations
-- `SnackbarHostState` and top-level `LaunchedEffect` event collectors for all non-form ViewModels
-- No changes to `libs.versions.toml` or `build.gradle.kts` — no new dependency
+- `HabitLockNavHost` composable parameters (all ViewModels from `App.kt`)
+- `HabitFormViewModel` factory pattern
+- `CalendarScreen`, `SettingsScreen`, `ArchivedHabitsScreen`, `HabitFormScreen` composables
+- Top-level `LaunchedEffect` VM event collectors structure
+- No changes to `App.kt`
 
-## Migration Path to Official Navigation 3
+## Migration Path (already complete)
 
-When JetBrains ships a KMP fork of `androidx.navigation3`:
-
-1. Replace `mutableStateListOf(...)` with `rememberNavBackStack(...)`
-2. Wrap the `when` block with `NavDisplay` + `entryProvider { entry<Route> { ... } }`
-3. Optionally add `rememberViewModelStoreNavEntryDecorator` if scoping VMs per entry is desired
-
-The route types (`sealed interface Route`) require no changes.
+This IS the Navigation 3 implementation. Future upgrades are version bumps only.
