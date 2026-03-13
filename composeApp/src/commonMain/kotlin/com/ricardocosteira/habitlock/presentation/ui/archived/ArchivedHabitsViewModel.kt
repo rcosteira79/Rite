@@ -1,6 +1,7 @@
 package com.ricardocosteira.habitlock.presentation.ui.archived
 
 import me.tatarka.inject.annotations.Inject
+import com.ricardocosteira.habitlock.di.AppScope
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+/**
+ * Scoped to the application lifetime via [AppScope] rather than a
+ * [androidx.lifecycle.ViewModelStoreOwner] because this app uses a single-activity
+ * architecture and all ViewModels are obtained directly from the DI component.
+ * Composable-scoped ViewModels (rememberViewModelStoreOwner) would be more
+ * semantically correct but require lifecycle 2.11.0-alpha02 and a custom
+ * ViewModelProvider.Factory bridge. Revisit when that API stabilises.
+ */
+@AppScope
 @Inject
 class ArchivedHabitsViewModel(
     private val habitRepository: HabitRepository
