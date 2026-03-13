@@ -1,30 +1,38 @@
 package com.ricardocosteira.habitlock.presentation.navigation
 
-/**
- * Navigation routes for the app.
- */
-sealed interface Route {
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
 
-    data object Onboarding : Route
+@Serializable
+sealed interface Route : NavKey
 
-    data object OnboardingPhilosophy : Route
+@Serializable
+data object OnboardingPhilosophy : Route
 
-    data object OnboardingStrictness : Route
+@Serializable
+data object OnboardingStrictness : Route
 
-    data object OnboardingFirstHabit : Route
+@Serializable
+data object OnboardingFirstHabit : Route
 
-    data object Today : Route
+@Serializable
+data object Today : Route
 
-    data class HabitDetail(val instanceId: String) : Route
+@Serializable
+data object CreateHabit : Route
 
-    data object CreateHabit : Route
+@Serializable
+data class EditHabit(val habitId: String) : Route
 
-    data class EditHabit(val habitId: String) : Route
+@Serializable
+data class HabitDetail(val instanceId: String) : Route
 
-    data object Calendar : Route
+@Serializable
+data object Calendar : Route
 
-    data object ArchivedHabits : Route
+@Serializable
+data object ArchivedHabits : Route
 
-    data object Settings : Route
-}
+@Serializable
+data object Settings : Route
 
