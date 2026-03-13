@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.HabitLockAppComponent
-import com.ricardocosteira.habitlock.presentation.navigation.HabitLockNavHost
+import com.ricardocosteira.habitlock.presentation.navigation.HabitLockNavigation
 import com.ricardocosteira.habitlock.presentation.ui.startup.StartupState
 import com.ricardocosteira.habitlock.presentation.ui.theme.HabitLockTheme
 
@@ -25,7 +25,7 @@ fun App(appComponent: HabitLockAppComponent) {
             ) {
                 CircularProgressIndicator()
             }
-            is StartupState.Ready -> HabitLockNavHost(
+            is StartupState.Ready -> HabitLockNavigation(
                 isOnboardingCompleted = currentState.isOnboardingCompleted,
                 onboardingViewModel = appComponent.onboardingViewModel,
                 todayViewModel = appComponent.todayViewModel,
