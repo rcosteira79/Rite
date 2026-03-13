@@ -88,7 +88,7 @@ fun HabitLockNavigation(
         todayViewModel.events.collect { event ->
             when (event) {
                 is TodayEvent.NavigateToHabitDetail ->
-                    snackbarHostState.showSnackbar("Habit detail view coming soon")
+                    backStack.add(HabitDetail(event.instanceId))
                 TodayEvent.NavigateToCreateHabit -> backStack.add(CreateHabit)
                 is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
                 is TodayEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
@@ -224,69 +224,21 @@ fun HabitLockNavigation(
 
             entry<CreateHabit> {
                 val viewModel = remember { createHabitFormViewModel(null) }
-                val state by viewModel.state.collectAsStateWithLifecycle()
-
-                LaunchedEffect(viewModel) {
-                    viewModel.events.collect { event ->
-                        when (event) {
-                            HabitFormEvent.NavigateBack -> {
-                                backStack.removeLastOrNull()
-                                todayViewModel.loadTodayHabits()
-                            }
-                            is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
-                        }
-                    }
-                }
-
-                HabitFormScreen(
-                    state = state,
-                    onBackClick = { backStack.removeLastOrNull() },
-                    onNameChange = { viewModel.updateName(it) },
-                    onDescriptionChange = { viewModel.updateDescription(it) },
-                    onTypeChange = { viewModel.updateType(it) },
-                    onTargetValueChange = { viewModel.updateTargetValue(it) },
-                    onUnitChange = { viewModel.updateUnit(it) },
-                    onScheduleTypeChange = { viewModel.updateScheduleType(it) },
-                    onQuotaChange = { viewModel.updateQuota(it) },
-                    onHasReminderChange = { viewModel.updateHasReminder(it) },
-                    onReminderTypeChange = { viewModel.updateReminderType(it) },
-                    onIntervalChange = { viewModel.updateIntervalMinutes(it) },
-                    onSaveClick = { viewModel.saveHabit() },
-                    onDeleteClick = { viewModel.deleteHabit() }
+                HabitFormEntry(
+                    viewModel = viewModel,
+                    backStack = backStack,
+                    todayViewModel = todayViewModel,
+                    snackbarHostState = snackbarHostState
                 )
             }
 
             entry<EditHabit> { route ->
                 val viewModel = remember(route.habitId) { createHabitFormViewModel(route.habitId) }
-                val state by viewModel.state.collectAsStateWithLifecycle()
-
-                LaunchedEffect(viewModel) {
-                    viewModel.events.collect { event ->
-                        when (event) {
-                            HabitFormEvent.NavigateBack -> {
-                                backStack.removeLastOrNull()
-                                todayViewModel.loadTodayHabits()
-                            }
-                            is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
-                        }
-                    }
-                }
-
-                HabitFormScreen(
-                    state = state,
-                    onBackClick = { backStack.removeLastOrNull() },
-                    onNameChange = { viewModel.updateName(it) },
-                    onDescriptionChange = { viewModel.updateDescription(it) },
-                    onTypeChange = { viewModel.updateType(it) },
-                    onTargetValueChange = { viewModel.updateTargetValue(it) },
-                    onUnitChange = { viewModel.updateUnit(it) },
-                    onScheduleTypeChange = { viewModel.updateScheduleType(it) },
-                    onQuotaChange = { viewModel.updateQuota(it) },
-                    onHasReminderChange = { viewModel.updateHasReminder(it) },
-                    onReminderTypeChange = { viewModel.updateReminderType(it) },
-                    onIntervalChange = { viewModel.updateIntervalMinutes(it) },
-                    onSaveClick = { viewModel.saveHabit() },
-                    onDeleteClick = { viewModel.deleteHabit() }
+                HabitFormEntry(
+                    viewModel = viewModel,
+                    backStack = backStack,
+                    todayViewModel = todayViewModel,
+                    snackbarHostState = snackbarHostState
                 )
             }
 
@@ -297,5 +249,44 @@ fun HabitLockNavigation(
                 }
             }
         }
+    )
+}
+
+@Composable
+private fun HabitFormEntry(
+    viewModel: HabitFormViewModel,
+    backStack: MutableList<NavKey>,
+    todayViewModel: TodayViewModel,
+    snackbarHostState: SnackbarHostState
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                HabitFormEvent.NavigateBack -> {
+                    backStack.removeLastOrNull()
+                    todayViewModel.loadTodayHabits()
+                }
+                is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
+    HabitFormScreen(
+        state = state,
+        onBackClick = { backStack.removeLastOrNull() },
+        onNameChange = { viewModel.updateName(it) },
+        onDescriptionChange = { viewModel.updateDescription(it) },
+        onTypeChange = { viewModel.updateType(it) },
+        onTargetValueChange = { viewModel.updateTargetValue(it) },
+        onUnitChange = { viewModel.updateUnit(it) },
+        onScheduleTypeChange = { viewModel.updateScheduleType(it) },
+        onQuotaChange = { viewModel.updateQuota(it) },
+        onHasReminderChange = { viewModel.updateHasReminder(it) },
+        onReminderTypeChange = { viewModel.updateReminderType(it) },
+        onIntervalChange = { viewModel.updateIntervalMinutes(it) },
+        onSaveClick = { viewModel.saveHabit() },
+        onDeleteClick = { viewModel.deleteHabit() }
     )
 }

@@ -1,10 +1,8 @@
 package com.ricardocosteira.habitlock.presentation.ui.calendar
 
-import me.tatarka.inject.annotations.Inject
-import com.ricardocosteira.habitlock.di.AppScope
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ricardocosteira.habitlock.di.AppScope
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
@@ -17,13 +15,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import kotlin.time.Clock
+import me.tatarka.inject.annotations.Inject
 
 /**
  * Scoped to the application lifetime via [AppScope] rather than a

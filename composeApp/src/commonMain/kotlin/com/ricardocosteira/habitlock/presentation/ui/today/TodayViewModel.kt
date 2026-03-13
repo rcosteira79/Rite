@@ -1,10 +1,8 @@
 package com.ricardocosteira.habitlock.presentation.ui.today
 
-import me.tatarka.inject.annotations.Inject
-import com.ricardocosteira.habitlock.di.AppScope
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ricardocosteira.habitlock.di.AppScope
 import com.ricardocosteira.habitlock.domain.models.CompletionSource
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
@@ -26,8 +24,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
+import kotlin.time.Clock
+import me.tatarka.inject.annotations.Inject
 
 /**
  * Scoped to the application lifetime via [AppScope] rather than a
