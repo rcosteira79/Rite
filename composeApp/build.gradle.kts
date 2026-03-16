@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
@@ -51,6 +52,8 @@ kotlin {
             implementation(libs.kotlinx.collections.immutable)
             implementation(libs.sqldelight.coroutines.extensions)
             implementation(libs.kotlin.inject.runtime)
+            implementation(libs.jetbrains.navigation3.ui)
+            implementation(libs.kotlinx.serialization.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
