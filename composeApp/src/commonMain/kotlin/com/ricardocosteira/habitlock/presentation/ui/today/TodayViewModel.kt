@@ -99,10 +99,17 @@ class TodayViewModel(
                     )
                 }
 
+                val counts = habits.computeCounts()
+
                 _state.update {
                     it.copy(
                         habits = habits,
-                        isLoading = false
+                        isLoading = false,
+                        pendingCount = counts.pendingCount,
+                        dailyCompleted = counts.dailyCompleted,
+                        dailyTotal = counts.dailyTotal,
+                        weeklyCompleted = counts.weeklyCompleted,
+                        weeklyTotal = counts.weeklyTotal
                     )
                 }
             } catch (e: Exception) {

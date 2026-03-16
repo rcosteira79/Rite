@@ -11,7 +11,12 @@ data class TodayState(
     val showTimezoneWarning: Boolean = false,
     val previousTimezone: String? = null,
     val error: String? = null,
-    val showQuantitativeInputFor: String? = null
+    val showQuantitativeInputFor: String? = null,
+    val pendingCount: Int = 0,
+    val dailyCompleted: Int = 0,
+    val dailyTotal: Int = 0,
+    val weeklyCompleted: Int = 0,
+    val weeklyTotal: Int = 0
 )
 
 /**
