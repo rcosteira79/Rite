@@ -70,6 +70,9 @@ private val SECTION_HEADER_LETTER_SPACING = 0.8.sp
 private val ACCENT_BAR_WIDTH = 3.dp
 private val ACCENT_BAR_CONTENT_START_PADDING = ACCENT_BAR_WIDTH + 16.dp // bar width + standard padding
 private const val PILL_CORNER_PERCENT = 50
+private val RING_CANVAS_SIZE = 28.dp
+private val RING_STROKE_WIDTH = 5.dp
+private val PROGRESS_ROW_CHIP_SPACING = 10.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -571,7 +574,7 @@ private fun ProgressRingRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(PROGRESS_ROW_CHIP_SPACING)
     ) {
         if (dailyTotal > 0) {
             RingChip(
@@ -617,8 +620,8 @@ private fun RingChip(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Canvas(modifier = Modifier.size(28.dp)) {
-                val strokeWidthPx: Float = 5.dp.toPx()
+            Canvas(modifier = Modifier.size(RING_CANVAS_SIZE)) {
+                val strokeWidthPx: Float = RING_STROKE_WIDTH.toPx()
                 val radius: Float = (size.minDimension - strokeWidthPx) / 2f
                 val topLeft = Offset(
                     x = center.x - radius,
