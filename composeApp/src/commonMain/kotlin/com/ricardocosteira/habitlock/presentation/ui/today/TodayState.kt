@@ -28,5 +28,3 @@ sealed interface TodayEvent {
     data class ShowError(val message: String) : TodayEvent
     data class ShowSuccess(val message: String) : TodayEvent
 }
-
-
