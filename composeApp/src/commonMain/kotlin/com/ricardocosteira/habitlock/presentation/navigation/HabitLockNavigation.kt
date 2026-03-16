@@ -121,8 +121,8 @@ fun HabitLockNavigation(
         entryProvider = entryProvider {
             entry<OnboardingPhilosophy> {
                 PhilosophyScreen(
-                    onContinue = { onboardingViewModel.continueFromPhilosophy() },
-                    onSkip = { onboardingViewModel.skipToToday() }
+                    onContinue = onboardingViewModel::continueFromPhilosophy,
+                    onSkip = onboardingViewModel::skipToToday
                 )
             }
 
@@ -131,9 +131,9 @@ fun HabitLockNavigation(
                 StrictnessScreen(
                     selectedPreset = state.selectedPreset,
                     isLoading = state.isApplyingPreset,
-                    onPresetSelected = { onboardingViewModel.selectPreset(it) },
-                    onContinue = { onboardingViewModel.continueFromStrictness() },
-                    onSkip = { onboardingViewModel.skipToToday() }
+                    onPresetSelected = onboardingViewModel::selectPreset,
+                    onContinue = onboardingViewModel::continueFromStrictness,
+                    onSkip = onboardingViewModel::skipToToday
                 )
             }
 
@@ -145,12 +145,12 @@ fun HabitLockNavigation(
                     targetValue = state.targetValue,
                     unit = state.unit,
                     isLoading = state.isCreatingHabit,
-                    onHabitNameChange = { onboardingViewModel.updateHabitName(it) },
-                    onHabitTypeChange = { onboardingViewModel.updateHabitType(it) },
-                    onTargetValueChange = { onboardingViewModel.updateTargetValue(it) },
-                    onUnitChange = { onboardingViewModel.updateUnit(it) },
-                    onCreateHabit = { onboardingViewModel.createFirstHabit() },
-                    onSkip = { onboardingViewModel.skipFirstHabit() }
+                    onHabitNameChange = onboardingViewModel::updateHabitName,
+                    onHabitTypeChange = onboardingViewModel::updateHabitType,
+                    onTargetValueChange = onboardingViewModel::updateTargetValue,
+                    onUnitChange = onboardingViewModel::updateUnit,
+                    onCreateHabit = onboardingViewModel::createFirstHabit,
+                    onSkip = onboardingViewModel::skipFirstHabit
                 )
             }
 
@@ -161,14 +161,14 @@ fun HabitLockNavigation(
                     state = state,
                     onCalendarClick = { backStack.add(Calendar) },
                     onSettingsClick = { backStack.add(Settings) },
-                    onHabitClick = { todayViewModel.navigateToHabitDetail(it) },
-                    onCompleteClick = { todayViewModel.completeHabit(it) },
-                    onSkipClick = { todayViewModel.skipHabit(it) },
-                    onUndoClick = { todayViewModel.undoHabit(it) },
+                    onHabitClick = todayViewModel::navigateToHabitDetail,
+                    onCompleteClick = todayViewModel::completeHabit,
+                    onSkipClick = todayViewModel::skipHabit,
+                    onUndoClick = todayViewModel::undoHabit,
                     onEditClick = { habitId -> backStack.add(EditHabit(habitId)) },
-                    onArchiveClick = { todayViewModel.archiveHabit(it) },
-                    onAddHabitClick = { todayViewModel.navigateToCreateHabit() },
-                    onDismissTimezoneWarning = { todayViewModel.dismissTimezoneWarning() },
+                    onArchiveClick = todayViewModel::archiveHabit,
+                    onAddHabitClick = todayViewModel::navigateToCreateHabit,
+                    onDismissTimezoneWarning = todayViewModel::dismissTimezoneWarning,
                     snackbarHostState = snackbarHostState
                 )
 
@@ -180,7 +180,7 @@ fun HabitLockNavigation(
                             onConfirm = { value ->
                                 todayViewModel.completeQuantitativeHabit(instanceId, value)
                             },
-                            onDismiss = { todayViewModel.dismissQuantitativeInput() }
+                            onDismiss = todayViewModel::dismissQuantitativeInput
                         )
                     }
                 }
@@ -190,9 +190,9 @@ fun HabitLockNavigation(
                 val state by calendarViewModel.state.collectAsStateWithLifecycle()
                 CalendarScreen(
                     state = state,
-                    onBackClick = { backStack.removeLastOrNull() },
-                    onPreviousMonth = { calendarViewModel.previousMonth() },
-                    onNextMonth = { calendarViewModel.nextMonth() },
+                    onBackClick = backStack::removeLastOrNull,
+                    onPreviousMonth = calendarViewModel::previousMonth,
+                    onNextMonth = calendarViewModel::nextMonth,
                     onDayClick = { calendarViewModel.selectDay(it.date) }
                 )
             }
@@ -202,11 +202,11 @@ fun HabitLockNavigation(
                 SettingsScreen(
                     state = state,
                     snackbarHostState = snackbarHostState,
-                    onBackClick = { backStack.removeLastOrNull() },
-                    onUndoPolicyChange = { settingsViewModel.updateUndoPolicy(it) },
-                    onMaxSnoozeDurationChange = { settingsViewModel.updateMaxSnoozeDuration(it) },
-                    onMaxSnoozesPerDayChange = { settingsViewModel.updateMaxSnoozesPerDay(it) },
-                    onMaxConsecutiveSkipsChange = { settingsViewModel.updateMaxConsecutiveSkips(it) },
+                    onBackClick = backStack::removeLastOrNull,
+                    onUndoPolicyChange = settingsViewModel::updateUndoPolicy,
+                    onMaxSnoozeDurationChange = settingsViewModel::updateMaxSnoozeDuration,
+                    onMaxSnoozesPerDayChange = settingsViewModel::updateMaxSnoozesPerDay,
+                    onMaxConsecutiveSkipsChange = settingsViewModel::updateMaxConsecutiveSkips,
                     onArchivedHabitsClick = { backStack.add(ArchivedHabits) }
                 )
             }
@@ -216,9 +216,9 @@ fun HabitLockNavigation(
                 ArchivedHabitsScreen(
                     state = state,
                     snackbarHostState = snackbarHostState,
-                    onBackClick = { backStack.removeLastOrNull() },
-                    onUnarchiveClick = { archivedHabitsViewModel.unarchiveHabit(it) },
-                    onDeleteClick = { archivedHabitsViewModel.deleteHabit(it) }
+                    onBackClick = backStack::removeLastOrNull,
+                    onUnarchiveClick = archivedHabitsViewModel::unarchiveHabit,
+                    onDeleteClick = archivedHabitsViewModel::deleteHabit
                 )
             }
 
@@ -275,18 +275,18 @@ private fun HabitFormEntry(
 
     HabitFormScreen(
         state = state,
-        onBackClick = { backStack.removeLastOrNull() },
-        onNameChange = { viewModel.updateName(it) },
-        onDescriptionChange = { viewModel.updateDescription(it) },
-        onTypeChange = { viewModel.updateType(it) },
-        onTargetValueChange = { viewModel.updateTargetValue(it) },
-        onUnitChange = { viewModel.updateUnit(it) },
-        onScheduleTypeChange = { viewModel.updateScheduleType(it) },
-        onQuotaChange = { viewModel.updateQuota(it) },
-        onHasReminderChange = { viewModel.updateHasReminder(it) },
-        onReminderTypeChange = { viewModel.updateReminderType(it) },
-        onIntervalChange = { viewModel.updateIntervalMinutes(it) },
-        onSaveClick = { viewModel.saveHabit() },
-        onDeleteClick = { viewModel.deleteHabit() }
+        onBackClick = backStack::removeLastOrNull,
+        onNameChange = viewModel::updateName,
+        onDescriptionChange = viewModel::updateDescription,
+        onTypeChange = viewModel::updateType,
+        onTargetValueChange = viewModel::updateTargetValue,
+        onUnitChange = viewModel::updateUnit,
+        onScheduleTypeChange = viewModel::updateScheduleType,
+        onQuotaChange = viewModel::updateQuota,
+        onHasReminderChange = viewModel::updateHasReminder,
+        onReminderTypeChange = viewModel::updateReminderType,
+        onIntervalChange = viewModel::updateIntervalMinutes,
+        onSaveClick = viewModel::saveHabit,
+        onDeleteClick = viewModel::deleteHabit
     )
 }
