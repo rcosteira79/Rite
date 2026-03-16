@@ -14,7 +14,7 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "HabitLock",
     ) {
-        App(appComponent = { appComponent })
+        App(appComponent = appComponent)
     }
 }
 
