@@ -66,6 +66,11 @@ import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 
+private val SECTION_HEADER_LETTER_SPACING = 0.8.sp
+private val ACCENT_BAR_WIDTH = 3.dp
+private val ACCENT_BAR_CONTENT_START_PADDING = ACCENT_BAR_WIDTH + 16.dp // bar width + standard padding
+private const val PILL_CORNER_PERCENT = 50
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayScreen(
@@ -167,7 +172,12 @@ fun TodayScreen(
                     val suspendedHabits = state.habits.filter { it.isSuspended }
 
                     if (state.dailyTotal > 0 || state.weeklyTotal > 0) {
-                        ProgressRingRow(state = state)
+                        ProgressRingRow(
+                            dailyCompleted = state.dailyCompleted,
+                            dailyTotal = state.dailyTotal,
+                            weeklyCompleted = state.weeklyCompleted,
+                            weeklyTotal = state.weeklyTotal
+                        )
                     }
 
                     LazyColumn(
@@ -188,7 +198,7 @@ fun TodayScreen(
                                         text = "DAILY HABITS",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
-                                        letterSpacing = 0.8.sp,
+                                        letterSpacing = SECTION_HEADER_LETTER_SPACING,
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                     Text(
@@ -227,7 +237,7 @@ fun TodayScreen(
                                         text = "WEEKLY HABITS",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
-                                        letterSpacing = 0.8.sp,
+                                        letterSpacing = SECTION_HEADER_LETTER_SPACING,
                                         color = MaterialTheme.colorScheme.secondary
                                     )
                                     Text(
@@ -260,7 +270,7 @@ fun TodayScreen(
                                     text = "SUSPENDED HABITS",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
-                                    letterSpacing = 0.8.sp,
+                                    letterSpacing = SECTION_HEADER_LETTER_SPACING,
                                     color = MaterialTheme.colorScheme.tertiary,
                                     modifier = Modifier.padding(vertical = 8.dp)
                                 )
@@ -368,7 +378,7 @@ private fun HabitCard(
     onEditClick: () -> Unit,
     onArchiveClick: () -> Unit
 ) {
-    var showMenu by remember { mutableStateOf(false) }
+    var showMenu: Boolean by remember { mutableStateOf(false) }
 
     val cardColor: Color = when (habit.status) {
         HabitStatus.COMPLETED -> MaterialTheme.colorScheme.primaryContainer
@@ -382,6 +392,17 @@ private fun HabitCard(
         || habit.status == HabitStatus.SKIPPED
         || habit.status == HabitStatus.FAILED
 
+    val accentColor: Color = when {
+        habit.isSuspended -> MaterialTheme.colorScheme.surfaceVariant
+        habit.isDaily && habit.isPending -> MaterialTheme.colorScheme.primary
+        habit.isDaily -> MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
+        habit.isWeekly && habit.isPending -> MaterialTheme.colorScheme.secondary
+        habit.isWeekly -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.35f)
+        else -> MaterialTheme.colorScheme.surfaceVariant
+    }
+
+    // Resolved cards (completed/skipped/failed) are visually dimmed but remain interactive
+    // so users can access the undo action via long-press or the card tap.
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -394,24 +415,16 @@ private fun HabitCard(
     ) {
         Box {
             // Accent bar — rendered first (behind content)
-            val accentColor: Color = when {
-                habit.isSuspended -> MaterialTheme.colorScheme.surfaceVariant
-                habit.isDaily && habit.isPending -> MaterialTheme.colorScheme.primary
-                habit.isDaily -> MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
-                habit.isWeekly && habit.isPending -> MaterialTheme.colorScheme.secondary
-                habit.isWeekly -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.35f)
-                else -> MaterialTheme.colorScheme.surfaceVariant
-            }
             Box(
                 modifier = Modifier
                     .matchParentSize() // fills Box height without crashing in LazyColumn (unlike fillMaxHeight)
-                    .width(3.dp)
+                    .width(ACCENT_BAR_WIDTH)
                     .align(Alignment.TopStart)
                     .background(accentColor)
             )
 
             Column(
-                modifier = Modifier.padding(start = 19.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
+                modifier = Modifier.padding(start = ACCENT_BAR_CONTENT_START_PADDING, top = 16.dp, end = 16.dp, bottom = 16.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -548,29 +561,34 @@ private fun HabitCard(
 }
 
 @Composable
-private fun ProgressRingRow(state: TodayState) {
+private fun ProgressRingRow(
+    dailyCompleted: Int,
+    dailyTotal: Int,
+    weeklyCompleted: Int,
+    weeklyTotal: Int
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        if (state.dailyTotal > 0) {
+        if (dailyTotal > 0) {
             RingChip(
-                completed = state.dailyCompleted,
-                total = state.dailyTotal,
+                completed = dailyCompleted,
+                total = dailyTotal,
                 label = "Daily",
                 incompleteColor = MaterialTheme.colorScheme.primary,
-                modifier = if (state.weeklyTotal > 0) Modifier.weight(1f) else Modifier
+                modifier = if (weeklyTotal > 0) Modifier.weight(1f) else Modifier
             )
         }
-        if (state.weeklyTotal > 0) {
+        if (weeklyTotal > 0) {
             RingChip(
-                completed = state.weeklyCompleted,
-                total = state.weeklyTotal,
+                completed = weeklyCompleted,
+                total = weeklyTotal,
                 label = "Weekly",
                 incompleteColor = MaterialTheme.colorScheme.secondary,
-                modifier = if (state.dailyTotal > 0) Modifier.weight(1f) else Modifier
+                modifier = if (dailyTotal > 0) Modifier.weight(1f) else Modifier
             )
         }
     }
@@ -590,7 +608,7 @@ private fun RingChip(
     val sweepAngle: Float = if (total > 0) 360f * completed / total else 0f
 
     Surface(
-        shape = RoundedCornerShape(50),
+        shape = RoundedCornerShape(PILL_CORNER_PERCENT),
         color = MaterialTheme.colorScheme.surfaceVariant,
         modifier = modifier
     ) {
