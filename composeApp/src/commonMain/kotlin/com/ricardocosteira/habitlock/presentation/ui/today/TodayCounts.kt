@@ -11,8 +11,13 @@ data class TodayCounts(
     val weeklyTotal: Int = 0
 )
 
+private val resolvedStatuses: Set<HabitStatus> = setOf(
+    HabitStatus.COMPLETED,
+    HabitStatus.SKIPPED,
+    HabitStatus.FAILED
+)
+
 fun List<TodayHabitUiModel>.computeCounts(): TodayCounts {
-    val resolvedStatuses = setOf(HabitStatus.COMPLETED, HabitStatus.SKIPPED, HabitStatus.FAILED)
     return TodayCounts(
         pendingCount = count { !it.isSuspended && it.isPending },
         dailyTotal = count { it.isDaily && !it.isSuspended },
