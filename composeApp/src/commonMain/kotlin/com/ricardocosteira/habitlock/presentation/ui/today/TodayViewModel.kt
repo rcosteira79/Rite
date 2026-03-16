@@ -244,4 +244,3 @@ class TodayViewModel(
         _state.update { it.copy(error = null) }
     }
 }
-
