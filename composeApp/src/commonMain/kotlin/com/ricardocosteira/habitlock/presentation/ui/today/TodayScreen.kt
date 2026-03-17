@@ -45,10 +45,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ricardocosteira.habitlock.di.LocalAppComponent
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -73,6 +76,57 @@ private const val PILL_CORNER_PERCENT = 50
 private val RING_CANVAS_SIZE = 28.dp
 private val RING_STROKE_WIDTH = 5.dp
 private val PROGRESS_ROW_CHIP_SPACING = 10.dp
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TodayScreen(
+    onCalendarClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onNavigateToHabitDetail: (String) -> Unit,
+    onNavigateToCreateHabit: () -> Unit,
+    onEditHabit: (String) -> Unit,
+    snackbarHostState: SnackbarHostState
+) {
+    val viewModel = LocalAppComponent.current.todayViewModel
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is TodayEvent.NavigateToHabitDetail -> onNavigateToHabitDetail(event.instanceId)
+                TodayEvent.NavigateToCreateHabit -> onNavigateToCreateHabit()
+                is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                is TodayEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
+    TodayScreen(
+        state = state,
+        onCalendarClick = onCalendarClick,
+        onSettingsClick = onSettingsClick,
+        onHabitClick = viewModel::navigateToHabitDetail,
+        onCompleteClick = viewModel::completeHabit,
+        onSkipClick = viewModel::skipHabit,
+        onUndoClick = viewModel::undoHabit,
+        onEditClick = onEditHabit,
+        onArchiveClick = viewModel::archiveHabit,
+        onAddHabitClick = viewModel::navigateToCreateHabit,
+        onDismissTimezoneWarning = viewModel::dismissTimezoneWarning,
+        snackbarHostState = snackbarHostState
+    )
+
+    state.showQuantitativeInputFor?.let { instanceId ->
+        val habit = state.habits.find { it.instanceId == instanceId }
+        if (habit != null) {
+            QuantitativeInputBottomSheet(
+                habit = habit,
+                onConfirm = { value -> viewModel.completeQuantitativeHabit(instanceId, value) },
+                onDismiss = viewModel::dismissQuantitativeInput
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
