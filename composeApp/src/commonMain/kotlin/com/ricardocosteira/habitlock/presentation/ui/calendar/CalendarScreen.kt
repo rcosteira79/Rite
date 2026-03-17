@@ -59,7 +59,7 @@ fun CalendarScreen(onBackClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarScreen(
+private fun CalendarScreen(
     state: CalendarState,
     onBackClick: () -> Unit,
     onPreviousMonth: () -> Unit,

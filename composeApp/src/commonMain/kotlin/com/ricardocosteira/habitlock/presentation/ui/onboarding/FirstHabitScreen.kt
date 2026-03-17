@@ -64,7 +64,7 @@ fun FirstHabitScreen(
 }
 
 @Composable
-fun FirstHabitScreen(
+private fun FirstHabitScreen(
     habitName: String,
     habitType: HabitType,
     targetValue: String,

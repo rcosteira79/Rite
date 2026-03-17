@@ -28,15 +28,7 @@ fun App(appComponent: HabitLockAppComponent) {
                 CircularProgressIndicator()
             }
             is StartupState.Ready -> CompositionLocalProvider(LocalAppComponent provides appComponent) {
-                HabitLockNavigation(
-                    isOnboardingCompleted = currentState.isOnboardingCompleted,
-                    onboardingViewModel = appComponent.onboardingViewModel,
-                    todayViewModel = appComponent.todayViewModel,
-                    calendarViewModel = appComponent.calendarViewModel,
-                    settingsViewModel = appComponent.settingsViewModel,
-                    archivedHabitsViewModel = appComponent.archivedHabitsViewModel,
-                    createHabitFormViewModel = appComponent.habitFormViewModelFactory::create
-                )
+                HabitLockNavigation(isOnboardingCompleted = currentState.isOnboardingCompleted)
             }
         }
     }

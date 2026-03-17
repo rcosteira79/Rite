@@ -130,7 +130,7 @@ fun TodayScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodayScreen(
+private fun TodayScreen(
     state: TodayState,
     onCalendarClick: () -> Unit,
     onSettingsClick: () -> Unit,

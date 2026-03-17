@@ -83,7 +83,7 @@ fun HabitFormScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HabitFormScreen(
+private fun HabitFormScreen(
     state: HabitFormState,
     onBackClick: () -> Unit,
     onNameChange: (String) -> Unit,

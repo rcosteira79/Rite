@@ -46,7 +46,7 @@ fun PhilosophyScreen(
 }
 
 @Composable
-fun PhilosophyScreen(
+private fun PhilosophyScreen(
     onContinue: () -> Unit,
     onSkip: () -> Unit,
     modifier: Modifier = Modifier

@@ -78,7 +78,7 @@ fun SettingsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(
+private fun SettingsScreen(
     state: SettingsState,
     snackbarHostState: SnackbarHostState,
     onBackClick: () -> Unit,

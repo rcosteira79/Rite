@@ -61,7 +61,7 @@ fun StrictnessScreen(
 }
 
 @Composable
-fun StrictnessScreen(
+private fun StrictnessScreen(
     selectedPreset: StrictnessPreset,
     isLoading: Boolean,
     onPresetSelected: (StrictnessPreset) -> Unit,

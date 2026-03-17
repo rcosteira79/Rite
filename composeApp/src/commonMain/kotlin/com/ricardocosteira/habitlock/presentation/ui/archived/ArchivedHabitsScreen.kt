@@ -66,7 +66,7 @@ fun ArchivedHabitsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArchivedHabitsScreen(
+private fun ArchivedHabitsScreen(
     state: ArchivedHabitsState,
     snackbarHostState: SnackbarHostState,
     onBackClick: () -> Unit,
