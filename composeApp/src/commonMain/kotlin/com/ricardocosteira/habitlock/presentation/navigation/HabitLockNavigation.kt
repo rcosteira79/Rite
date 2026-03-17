@@ -3,6 +3,7 @@ package com.ricardocosteira.habitlock.presentation.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavKey
@@ -141,7 +142,7 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
 
             entry<HabitDetail> {
                 // TODO: Implement habit detail screen
-                androidx.compose.runtime.LaunchedEffect(Unit) {
+                LaunchedEffect(Unit) {
                     backStack.removeLastOrNull()
                 }
             }
