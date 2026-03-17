@@ -176,9 +176,9 @@ fun TodayScreen(
 
                     if (state.dailyTotal > 0 || state.weeklyTotal > 0) {
                         ProgressRingRow(
-                            dailyCompleted = state.dailyCompleted,
+                            dailyResolved = state.dailyResolved,
                             dailyTotal = state.dailyTotal,
-                            weeklyCompleted = state.weeklyCompleted,
+                            weeklyResolved = state.weeklyResolved,
                             weeklyTotal = state.weeklyTotal
                         )
                     }
@@ -205,7 +205,7 @@ fun TodayScreen(
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                     Text(
-                                        text = "${state.dailyCompleted} / ${state.dailyTotal}",
+                                        text = "${state.dailyResolved} / ${state.dailyTotal}",
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -244,7 +244,7 @@ fun TodayScreen(
                                         color = MaterialTheme.colorScheme.secondary
                                     )
                                     Text(
-                                        text = "${state.weeklyCompleted} / ${state.weeklyTotal}",
+                                        text = "${state.weeklyResolved} / ${state.weeklyTotal}",
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -565,9 +565,9 @@ private fun HabitCard(
 
 @Composable
 private fun ProgressRingRow(
-    dailyCompleted: Int,
+    dailyResolved: Int,
     dailyTotal: Int,
-    weeklyCompleted: Int,
+    weeklyResolved: Int,
     weeklyTotal: Int
 ) {
     Row(
@@ -578,7 +578,7 @@ private fun ProgressRingRow(
     ) {
         if (dailyTotal > 0) {
             RingChip(
-                completed = dailyCompleted,
+                completed = dailyResolved,
                 total = dailyTotal,
                 label = "Daily",
                 incompleteColor = MaterialTheme.colorScheme.primary,
@@ -587,7 +587,7 @@ private fun ProgressRingRow(
         }
         if (weeklyTotal > 0) {
             RingChip(
-                completed = weeklyCompleted,
+                completed = weeklyResolved,
                 total = weeklyTotal,
                 label = "Weekly",
                 incompleteColor = MaterialTheme.colorScheme.secondary,

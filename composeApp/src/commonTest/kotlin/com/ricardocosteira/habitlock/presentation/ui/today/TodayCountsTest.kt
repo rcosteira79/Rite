@@ -56,16 +56,16 @@ class TodayCountsTest {
     }
 
     @Test
-    fun `given failed daily habit when computing counts then counted in dailyCompleted not pending`() {
+    fun `given failed daily habit when computing counts then counted in dailyResolved not pending`() {
         val inputHabits = listOf(buildInputHabit(HabitStatus.FAILED, ScheduleType.DAILY))
         val actualCounts = inputHabits.computeCounts()
         assertEquals(0, actualCounts.pendingCount)
-        assertEquals(1, actualCounts.dailyCompleted)
+        assertEquals(1, actualCounts.dailyResolved)
         assertEquals(1, actualCounts.dailyTotal)
     }
 
     @Test
-    fun `given mix of daily habits when computing counts then dailyCompleted matches completed skipped failed`() {
+    fun `given mix of daily habits when computing counts then dailyResolved matches completed skipped failed`() {
         val inputHabits = listOf(
             buildInputHabit(HabitStatus.PENDING, ScheduleType.DAILY),
             buildInputHabit(HabitStatus.COMPLETED, ScheduleType.DAILY),
@@ -75,7 +75,7 @@ class TodayCountsTest {
         )
         val actualCounts = inputHabits.computeCounts()
         assertEquals(1, actualCounts.pendingCount)
-        assertEquals(3, actualCounts.dailyCompleted)
+        assertEquals(3, actualCounts.dailyResolved)
         assertEquals(4, actualCounts.dailyTotal)
     }
 
@@ -88,7 +88,7 @@ class TodayCountsTest {
         )
         val actualCounts = inputHabits.computeCounts()
         assertEquals(1, actualCounts.pendingCount)
-        assertEquals(1, actualCounts.weeklyCompleted)
+        assertEquals(1, actualCounts.weeklyResolved)
         assertEquals(2, actualCounts.weeklyTotal)
         assertEquals(0, actualCounts.dailyTotal)
     }

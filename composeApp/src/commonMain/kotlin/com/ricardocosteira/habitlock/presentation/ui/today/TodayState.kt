@@ -13,9 +13,9 @@ data class TodayState(
     val error: String? = null,
     val showQuantitativeInputFor: String? = null,
     val pendingCount: Int = 0,
-    val dailyCompleted: Int = 0,
+    val dailyResolved: Int = 0,
     val dailyTotal: Int = 0,
-    val weeklyCompleted: Int = 0,
+    val weeklyResolved: Int = 0,
     val weeklyTotal: Int = 0
 )
 

@@ -106,9 +106,9 @@ class TodayViewModel(
                         habits = habits,
                         isLoading = false,
                         pendingCount = counts.pendingCount,
-                        dailyCompleted = counts.dailyCompleted,
+                        dailyResolved = counts.dailyResolved,
                         dailyTotal = counts.dailyTotal,
-                        weeklyCompleted = counts.weeklyCompleted,
+                        weeklyResolved = counts.weeklyResolved,
                         weeklyTotal = counts.weeklyTotal
                     )
                 }
