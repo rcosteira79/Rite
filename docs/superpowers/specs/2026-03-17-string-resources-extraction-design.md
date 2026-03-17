@@ -11,7 +11,7 @@ Extract all hardcoded UI strings into Compose Multiplatform string resources to 
 
 Use Compose Multiplatform's built-in resource system (`org.jetbrains.compose.resources`). The dependency `compose.components.resources` is already present in `composeApp/build.gradle.kts`.
 
-String files live in `commonMain/composeResources/values/` and are accessed at runtime via `stringResource(Res.string.<key>)` or `stringResource(Res.string.<key>, arg1, arg2, ...)` for parameterized strings.
+String files live in `commonMain/composeResources/values/` and are accessed at runtime via `stringResource(Res.string.<key>)` or `stringResource(Res.string.<key>, arg1, arg2, ...)` for parameterized strings. Plural strings use `pluralStringResource(Res.plurals.<key>, quantity, args...)`.
 
 The existing `androidMain/res/values/strings.xml` (which contains only `app_name` for the Android manifest) is left untouched.
 
@@ -69,11 +69,11 @@ Content descriptions use a `cd_` segment immediately after the screen prefix: `<
 - Content descriptions
 - Parameterized strings with runtime values
 - Strings that mix emoji with translatable text — the full string including the emoji is placed in the resource file; the emoji is treated as fixed UI decoration
+- Singular/plural variants — use `Res.plurals` and `pluralStringResource()`
 
 **Not extracted:**
 - Emoji-only strings (e.g. `"🟢"`, `"🟡"`, `"🔴"`) — not translatable text
 - Format-only runtime values with no surrounding text
-- Singular/plural variants (e.g. `"1 habit to go"` vs `"3 habits to go"`) — deferred; requires `Res.plurals` and is an i18n concern beyond the current scope
 
 ## Special Cases
 
@@ -93,6 +93,22 @@ Extract as two resource keys and select at the call site:
 ### List-of-strings call sites (`StrictnessScreen`)
 
 `PresetCard` receives `rules: List<String>`. Once extracted, `stringResource` calls must be resolved before constructing the list, which requires a `@Composable` context. Since `StrictnessScreen` is already `@Composable` this is not a blocker — resolve each string at the call site before passing the list.
+
+### Plural strings (`TodayScreen`)
+
+The subtitle `"${state.pendingCount} habit/habits to go"` uses an inline Kotlin conditional. Extract as a plural resource:
+
+```xml
+<plurals name="today_subtitle_habits_to_go">
+    <item quantity="one">%d habit to go</item>
+    <item quantity="other">%d habits to go</item>
+</plurals>
+```
+
+Used as:
+```kotlin
+pluralStringResource(Res.plurals.today_subtitle_habits_to_go, state.pendingCount, state.pendingCount)
+```
 
 ### XML escaping
 
