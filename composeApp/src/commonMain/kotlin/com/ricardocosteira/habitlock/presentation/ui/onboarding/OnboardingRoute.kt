@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ricardocosteira.habitlock.presentation.ui.isReduceMotionEnabled
 
 @Composable
 fun OnboardingRoute(
@@ -19,6 +20,7 @@ fun OnboardingRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var currentStep by remember { mutableIntStateOf(0) }
+    val reduceMotion = isReduceMotionEnabled()
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
@@ -36,6 +38,7 @@ fun OnboardingRoute(
         snackbarHostState = snackbarHostState,
         onStepChange = { currentStep = it },
         onSkip = viewModel::skipToToday,
+        reduceMotion = reduceMotion,
         onContinueFromStrictness = viewModel::continueFromStrictness,
         onCreateHabit = viewModel::createFirstHabit,
         onSkipFirstHabit = viewModel::skipFirstHabit,

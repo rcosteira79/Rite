@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -41,11 +42,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
 
+private val ColorDotFlexible = Color(0xFF4CAF50)
+private val ColorDotBalanced = Color(0xFFFF9800)
+
 private data class PresetInfo(
     val preset: StrictnessPreset,
     val label: String,
     val description: String,
-    val dotColor: Color,
     val rules: List<String>,
     val isRecommended: Boolean = false
 )
@@ -55,7 +58,6 @@ private val PRESETS = listOf(
         preset = StrictnessPreset.FLEXIBLE,
         label = "Flexible",
         description = "Gentle support, maximum forgiveness.",
-        dotColor = Color(0xFF4CAF50),
         rules = listOf(
             "Unlimited undo",
             "Unlimited snoozes",
@@ -67,7 +69,6 @@ private val PRESETS = listOf(
         preset = StrictnessPreset.BALANCED,
         label = "Balanced",
         description = "Structure with room for real life.",
-        dotColor = Color(0xFFFF9800),
         rules = listOf(
             "Undo allowed for today only",
             "Snoozes are limited",
@@ -80,7 +81,6 @@ private val PRESETS = listOf(
         preset = StrictnessPreset.LOCKED,
         label = "Locked",
         description = "No excuses. Full accountability.",
-        dotColor = Color(0xFFF44336),
         rules = listOf(
             "No undo",
             "Snoozes are capped",
@@ -89,6 +89,13 @@ private val PRESETS = listOf(
         )
     )
 )
+
+@Composable
+private fun StrictnessPreset.dotColor(): Color = when (this) {
+    StrictnessPreset.FLEXIBLE -> ColorDotFlexible
+    StrictnessPreset.BALANCED -> ColorDotBalanced
+    StrictnessPreset.LOCKED -> MaterialTheme.colorScheme.error
+}
 
 @Composable
 fun StrictnessStep(
@@ -107,7 +114,8 @@ fun StrictnessStep(
         Text(
             text = "How strict\nshould it be?",
             style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold),
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.semantics { heading() }
         )
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -185,7 +193,7 @@ private fun PresetCard(
             Box(
                 modifier = Modifier
                     .size(8.dp)
-                    .background(color = info.dotColor, shape = CircleShape)
+                    .background(color = info.preset.dotColor(), shape = CircleShape)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
