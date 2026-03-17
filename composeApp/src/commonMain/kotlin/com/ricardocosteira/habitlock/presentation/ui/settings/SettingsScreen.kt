@@ -33,15 +33,48 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ricardocosteira.habitlock.di.LocalAppComponent
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.UndoPolicy
+
+@Composable
+fun SettingsScreen(
+    onBackClick: () -> Unit,
+    onArchivedHabitsClick: () -> Unit,
+    snackbarHostState: SnackbarHostState
+) {
+    val viewModel = LocalAppComponent.current.settingsViewModel
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is SettingsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
+                is SettingsEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
+    SettingsScreen(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onBackClick = onBackClick,
+        onUndoPolicyChange = viewModel::updateUndoPolicy,
+        onMaxSnoozeDurationChange = viewModel::updateMaxSnoozeDuration,
+        onMaxSnoozesPerDayChange = viewModel::updateMaxSnoozesPerDay,
+        onMaxConsecutiveSkipsChange = viewModel::updateMaxConsecutiveSkips,
+        onArchivedHabitsClick = onArchivedHabitsClick
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
