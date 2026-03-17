@@ -233,6 +233,31 @@ fun OnboardingWizard(state: OnboardingState, viewModel: OnboardingViewModel, onF
 - Business state (preset, habit fields, loading) stays in `OnboardingViewModel` unchanged
 - `Theme.kt` updated with custom `lightColorScheme` / `darkColorScheme` tokens
 
+### Step advancement from Strictness (step 1)
+
+`continueFromStrictness()` is async — it applies the preset and emits `NavigateToFirstHabit` on success, or sets `error` on failure. Step 1 → 2 advancement is **event-driven**, not immediate:
+
+- The CTA on step 1 calls `viewModel.continueFromStrictness()` — it does **not** call `onAdvance` directly
+- `OnboardingRoute` collects `NavigateToFirstHabit` and increments `currentStep` to 2
+- While `isApplyingPreset = true`, the CTA shows a `CircularProgressIndicator` in place of the button label and is non-interactive (existing behaviour, preserved as-is)
+- On error, the existing `ShowError` snackbar event is used — no new error UI needed
+
+This means `OnboardingCta` must be aware of which step it's on to dispatch the right action.
+
+### Obsolete ViewModel events
+
+`NavigateToStrictness` and `NavigateToFirstHabit` were used by the old three-route model. In the new wizard:
+
+- `NavigateToFirstHabit` is still emitted by `continueFromStrictness()` and is **collected** by `OnboardingRoute` to advance to step 2 (see above)
+- `NavigateToStrictness` is emitted by `continueFromPhilosophy()` — this event becomes **unused**. `continueFromPhilosophy()` is replaced by a direct `onAdvance` call from the CTA on step 0 (no async work needed). The event and method may be removed from the VM or left as dead code — implementer's discretion, but removal is preferred.
+
+### Route changes
+
+`Route.Onboarding` does not yet exist. The plan must include:
+1. Adding `Route.Onboarding` to `Route.kt`
+2. Removing the three existing onboarding route objects (`Route.OnboardingPhilosophy`, `Route.OnboardingStrictness`, `Route.OnboardingFirstHabit` or equivalent)
+3. Updating the nav host to use the single new route
+
 ---
 
 ## 10. Out of Scope
