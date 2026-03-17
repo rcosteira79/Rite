@@ -11,7 +11,12 @@ data class TodayState(
     val showTimezoneWarning: Boolean = false,
     val previousTimezone: String? = null,
     val error: String? = null,
-    val showQuantitativeInputFor: String? = null
+    val showQuantitativeInputFor: String? = null,
+    val pendingCount: Int = 0,
+    val dailyResolved: Int = 0,
+    val dailyTotal: Int = 0,
+    val weeklyResolved: Int = 0,
+    val weeklyTotal: Int = 0
 )
 
 /**
@@ -23,5 +28,3 @@ sealed interface TodayEvent {
     data class ShowError(val message: String) : TodayEvent
     data class ShowSuccess(val message: String) : TodayEvent
 }
-
-

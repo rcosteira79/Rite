@@ -99,10 +99,17 @@ class TodayViewModel(
                     )
                 }
 
+                val counts = habits.computeCounts()
+
                 _state.update {
                     it.copy(
                         habits = habits,
-                        isLoading = false
+                        isLoading = false,
+                        pendingCount = counts.pendingCount,
+                        dailyResolved = counts.dailyResolved,
+                        dailyTotal = counts.dailyTotal,
+                        weeklyResolved = counts.weeklyResolved,
+                        weeklyTotal = counts.weeklyTotal
                     )
                 }
             } catch (e: Exception) {
@@ -237,4 +244,3 @@ class TodayViewModel(
         _state.update { it.copy(error = null) }
     }
 }
-
