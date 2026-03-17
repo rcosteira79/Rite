@@ -16,6 +16,7 @@ import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsEven
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsScreen
 import com.ricardocosteira.habitlock.presentation.ui.calendar.CalendarScreen
 import com.ricardocosteira.habitlock.presentation.ui.habit.HabitFormScreen
+import com.ricardocosteira.habitlock.presentation.ui.onboarding.OnboardingRoute
 import com.ricardocosteira.habitlock.presentation.ui.settings.SettingsEvent
 import com.ricardocosteira.habitlock.presentation.ui.settings.SettingsScreen
 import com.ricardocosteira.habitlock.presentation.ui.today.TodayEvent
@@ -83,8 +84,14 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
         modifier = Modifier.fillMaxSize(),
         entryProvider = entryProvider {
             entry<Onboarding> {
-                // TODO: replace with OnboardingRoute in Task 10
-                androidx.compose.material3.Text("Onboarding coming soon")
+                OnboardingRoute(
+                    viewModel = appComponent.onboardingViewModel,
+                    snackbarHostState = snackbarHostState,
+                    onFinished = {
+                        backStack.clear()
+                        backStack.add(Today)
+                    }
+                )
             }
 
             entry<Today> {
