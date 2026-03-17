@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
 @Composable
-fun PhilosophyStep(modifier: Modifier = Modifier) {
+fun PhilosophyStep(reduceMotion: Boolean = false, modifier: Modifier = Modifier) {
     val headlineAlpha = remember { Animatable(0f) }
     val headlineTranslateY = remember { Animatable(12f) }
     val accentWidth = remember { Animatable(0f) }
@@ -40,6 +40,14 @@ fun PhilosophyStep(modifier: Modifier = Modifier) {
     val lockAlpha = remember { Animatable(0f) }
 
     LaunchedEffect(Unit) {
+        if (reduceMotion) {
+            headlineAlpha.snapTo(1f)
+            headlineTranslateY.snapTo(0f)
+            accentWidth.snapTo(1f)
+            bodyAlpha.snapTo(1f)
+            lockAlpha.snapTo(0.45f)
+            return@LaunchedEffect
+        }
         // Headline: fade + translate up — 200ms, 0ms delay
         launch {
             headlineAlpha.animateTo(1f, tween(200))

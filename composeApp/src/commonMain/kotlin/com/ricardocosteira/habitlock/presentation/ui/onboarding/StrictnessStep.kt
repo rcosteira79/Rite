@@ -1,6 +1,8 @@
 package com.ricardocosteira.habitlock.presentation.ui.onboarding
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -92,6 +94,7 @@ private val PRESETS = listOf(
 fun StrictnessStep(
     selectedPreset: StrictnessPreset,
     onPresetSelected: (StrictnessPreset) -> Unit,
+    reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -133,7 +136,8 @@ fun StrictnessStep(
             PresetCard(
                 info = info,
                 isSelected = info.preset == selectedPreset,
-                onClick = { onPresetSelected(info.preset) }
+                onClick = { onPresetSelected(info.preset) },
+                reduceMotion = reduceMotion
             )
             Spacer(modifier = Modifier.height(10.dp))
         }
@@ -145,6 +149,7 @@ private fun PresetCard(
     info: PresetInfo,
     isSelected: Boolean,
     onClick: () -> Unit,
+    reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val borderColor = if (isSelected) {
@@ -217,8 +222,8 @@ private fun PresetCard(
 
         AnimatedVisibility(
             visible = isSelected,
-            enter = expandVertically(tween(250)) + fadeIn(tween(250)),
-            exit = shrinkVertically(tween(200)) + fadeOut(tween(200))
+            enter = if (reduceMotion) EnterTransition.None else expandVertically(tween(250)) + fadeIn(tween(250)),
+            exit = if (reduceMotion) ExitTransition.None else shrinkVertically(tween(200)) + fadeOut(tween(200))
         ) {
             Column(modifier = Modifier.padding(top = 10.dp, start = 16.dp)) {
                 Box(

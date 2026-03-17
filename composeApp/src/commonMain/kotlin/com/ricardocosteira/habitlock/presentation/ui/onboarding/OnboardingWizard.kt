@@ -1,6 +1,7 @@
 package com.ricardocosteira.habitlock.presentation.ui.onboarding
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -41,6 +42,7 @@ fun OnboardingWizard(
     onHabitTypeChange: (com.ricardocosteira.habitlock.domain.models.HabitType) -> Unit,
     onTargetValueChange: (String) -> Unit,
     onUnitChange: (String) -> Unit,
+    reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     BackHandler(enabled = currentStep > 0) {
@@ -62,42 +64,73 @@ fun OnboardingWizard(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            AnimatedContent(
-                targetState = currentStep,
-                transitionSpec = {
-                    val isForward = targetState > initialState
-                    val enterSlide = slideInHorizontally(
-                        tween(ENTER_DURATION_MS, easing = EmphasizedDecelerate)
-                    ) { if (isForward) it else -it } + fadeIn(tween(ENTER_DURATION_MS))
-                    val exitSlide = slideOutHorizontally(
-                        tween(EXIT_DURATION_MS, easing = EmphasizedAccelerate)
-                    ) { if (isForward) -it else it } + fadeOut(tween(EXIT_DURATION_MS))
-                    enterSlide togetherWith exitSlide
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                label = "onboarding_step"
-            ) { step ->
-                when (step) {
-                    0 -> PhilosophyStep(modifier = Modifier.fillMaxSize())
-                    1 -> StrictnessStep(
-                        selectedPreset = state.selectedPreset,
-                        onPresetSelected = onPresetSelected,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    2 -> FirstHabitStep(
-                        habitName = state.habitName,
-                        habitType = state.habitType,
-                        targetValue = state.targetValue,
-                        unit = state.unit,
-                        onHabitNameChange = onHabitNameChange,
-                        onHabitTypeChange = onHabitTypeChange,
-                        onTargetValueChange = onTargetValueChange,
-                        onUnitChange = onUnitChange,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    else -> Unit
+            if (reduceMotion) {
+                Crossfade(
+                    targetState = currentStep,
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    label = "onboarding_step"
+                ) { step ->
+                    when (step) {
+                        0 -> PhilosophyStep(reduceMotion = true, modifier = Modifier.fillMaxSize())
+                        1 -> StrictnessStep(
+                            selectedPreset = state.selectedPreset,
+                            onPresetSelected = onPresetSelected,
+                            reduceMotion = true,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        2 -> FirstHabitStep(
+                            habitName = state.habitName,
+                            habitType = state.habitType,
+                            targetValue = state.targetValue,
+                            unit = state.unit,
+                            onHabitNameChange = onHabitNameChange,
+                            onHabitTypeChange = onHabitTypeChange,
+                            onTargetValueChange = onTargetValueChange,
+                            onUnitChange = onUnitChange,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        else -> Unit
+                    }
+                }
+            } else {
+                AnimatedContent(
+                    targetState = currentStep,
+                    transitionSpec = {
+                        val isForward = targetState > initialState
+                        val enterSlide = slideInHorizontally(
+                            tween(ENTER_DURATION_MS, easing = EmphasizedDecelerate)
+                        ) { if (isForward) it else -it } + fadeIn(tween(ENTER_DURATION_MS))
+                        val exitSlide = slideOutHorizontally(
+                            tween(EXIT_DURATION_MS, easing = EmphasizedAccelerate)
+                        ) { if (isForward) -it else it } + fadeOut(tween(EXIT_DURATION_MS))
+                        enterSlide togetherWith exitSlide
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    label = "onboarding_step"
+                ) { step ->
+                    when (step) {
+                        0 -> PhilosophyStep(reduceMotion = reduceMotion, modifier = Modifier.fillMaxSize())
+                        1 -> StrictnessStep(
+                            selectedPreset = state.selectedPreset,
+                            onPresetSelected = onPresetSelected,
+                            reduceMotion = reduceMotion,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        2 -> FirstHabitStep(
+                            habitName = state.habitName,
+                            habitType = state.habitType,
+                            targetValue = state.targetValue,
+                            unit = state.unit,
+                            onHabitNameChange = onHabitNameChange,
+                            onHabitTypeChange = onHabitTypeChange,
+                            onTargetValueChange = onTargetValueChange,
+                            onUnitChange = onUnitChange,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        else -> Unit
+                    }
                 }
             }
 
@@ -108,6 +141,7 @@ fun OnboardingWizard(
                 onContinueFromStrictness = onContinueFromStrictness,
                 onCreateHabit = onCreateHabit,
                 onSkipFirstHabit = onSkipFirstHabit,
+                reduceMotion = reduceMotion,
                 modifier = Modifier.fillMaxWidth()
             )
         }

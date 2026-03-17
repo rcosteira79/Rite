@@ -32,12 +32,18 @@ fun OnboardingCta(
     onContinueFromStrictness: () -> Unit,
     onCreateHabit: () -> Unit,
     onSkipFirstHabit: () -> Unit,
+    reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val translateY = remember { Animatable(16f) }
     val alpha = remember { Animatable(0f) }
 
     LaunchedEffect(Unit) {
+        if (reduceMotion) {
+            translateY.snapTo(0f)
+            alpha.snapTo(1f)
+            return@LaunchedEffect
+        }
         kotlinx.coroutines.delay(200)
         launch { translateY.animateTo(0f, tween(200)) }
         launch { alpha.animateTo(1f, tween(200)) }
