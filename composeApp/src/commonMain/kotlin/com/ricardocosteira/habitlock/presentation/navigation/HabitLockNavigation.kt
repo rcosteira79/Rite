@@ -12,13 +12,13 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.ricardocosteira.habitlock.di.LocalAppComponent
+import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsEvent
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsScreen
 import com.ricardocosteira.habitlock.presentation.ui.calendar.CalendarScreen
 import com.ricardocosteira.habitlock.presentation.ui.habit.HabitFormScreen
-import com.ricardocosteira.habitlock.presentation.ui.onboarding.FirstHabitScreen
-import com.ricardocosteira.habitlock.presentation.ui.onboarding.PhilosophyScreen
-import com.ricardocosteira.habitlock.presentation.ui.onboarding.StrictnessScreen
+import com.ricardocosteira.habitlock.presentation.ui.settings.SettingsEvent
 import com.ricardocosteira.habitlock.presentation.ui.settings.SettingsScreen
+import com.ricardocosteira.habitlock.presentation.ui.today.TodayEvent
 import com.ricardocosteira.habitlock.presentation.ui.today.TodayScreen
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -27,9 +27,7 @@ import kotlinx.serialization.modules.subclass
 private val savedStateConfig: SavedStateConfiguration = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
-            subclass(OnboardingPhilosophy::class)
-            subclass(OnboardingStrictness::class)
-            subclass(OnboardingFirstHabit::class)
+            subclass(Onboarding::class)
             subclass(Today::class)
             subclass(HabitDetail::class)
             subclass(CreateHabit::class)
@@ -43,45 +41,50 @@ private val savedStateConfig: SavedStateConfiguration = SavedStateConfiguration 
 
 @Composable
 fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
-    val initialRoute: Route = if (isOnboardingCompleted) Today else OnboardingPhilosophy
+    val initialRoute: Route = if (isOnboardingCompleted) Today else Onboarding
     val backStack = rememberNavBackStack(savedStateConfig, initialRoute)
     val snackbarHostState = remember { SnackbarHostState() }
+    val appComponent = LocalAppComponent.current
+
+    LaunchedEffect(Unit) {
+        appComponent.todayViewModel.events.collect { event ->
+            when (event) {
+                is TodayEvent.NavigateToHabitDetail ->
+                    backStack.add(HabitDetail(event.instanceId))
+                TodayEvent.NavigateToCreateHabit -> backStack.add(CreateHabit)
+                is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                is TodayEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        appComponent.settingsViewModel.events.collect { event ->
+            when (event) {
+                is SettingsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
+                is SettingsEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        appComponent.archivedHabitsViewModel.events.collect { event ->
+            when (event) {
+                is ArchivedHabitsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
+                is ArchivedHabitsEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
 
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
         modifier = Modifier.fillMaxSize(),
         entryProvider = entryProvider {
-            entry<OnboardingPhilosophy> {
-                PhilosophyScreen(
-                    onNavigateToStrictness = { backStack.add(OnboardingStrictness) },
-                    onNavigateToToday = {
-                        backStack.clear()
-                        backStack.add(Today)
-                    },
-                    snackbarHostState = snackbarHostState
-                )
-            }
-
-            entry<OnboardingStrictness> {
-                StrictnessScreen(
-                    onNavigateToFirstHabit = { backStack.add(OnboardingFirstHabit) },
-                    onNavigateToToday = {
-                        backStack.clear()
-                        backStack.add(Today)
-                    },
-                    snackbarHostState = snackbarHostState
-                )
-            }
-
-            entry<OnboardingFirstHabit> {
-                FirstHabitScreen(
-                    onNavigateToToday = {
-                        backStack.clear()
-                        backStack.add(Today)
-                    },
-                    snackbarHostState = snackbarHostState
-                )
+            entry<Onboarding> {
+                // TODO: replace with OnboardingRoute in Task 10
+                androidx.compose.material3.Text("Onboarding coming soon")
             }
 
             entry<Today> {

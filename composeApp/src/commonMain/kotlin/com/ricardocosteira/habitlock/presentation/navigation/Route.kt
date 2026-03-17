@@ -7,13 +7,7 @@ import kotlinx.serialization.Serializable
 sealed interface Route : NavKey
 
 @Serializable
-data object OnboardingPhilosophy : Route
-
-@Serializable
-data object OnboardingStrictness : Route
-
-@Serializable
-data object OnboardingFirstHabit : Route
+data object Onboarding : Route
 
 @Serializable
 data object Today : Route
