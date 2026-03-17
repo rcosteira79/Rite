@@ -21,7 +21,6 @@ data class OnboardingState(
  * Events from the onboarding flow.
  */
 sealed interface OnboardingEvent {
-    data object NavigateToStrictness : OnboardingEvent
     data object NavigateToFirstHabit : OnboardingEvent
     data object NavigateToToday : OnboardingEvent
     data class ShowError(val message: String) : OnboardingEvent

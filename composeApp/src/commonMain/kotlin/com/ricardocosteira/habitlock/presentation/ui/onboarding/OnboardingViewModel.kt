@@ -65,12 +65,6 @@ class OnboardingViewModel(
         _state.update { it.copy(unit = unit) }
     }
 
-    fun continueFromPhilosophy() {
-        viewModelScope.launch {
-            _events.emit(OnboardingEvent.NavigateToStrictness)
-        }
-    }
-
     fun skipToToday() {
         viewModelScope.launch {
             applyPresetAndComplete(StrictnessPreset.BALANCED)
