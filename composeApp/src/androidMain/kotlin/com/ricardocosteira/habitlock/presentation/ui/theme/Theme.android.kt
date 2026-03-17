@@ -18,8 +18,8 @@ actual fun HabitLockTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> TealDarkColorScheme
+        else -> TealLightColorScheme
     }
 
     MaterialTheme(
