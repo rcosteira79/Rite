@@ -33,6 +33,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.Habit
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.archived_best_streak
+import habitlock.composeapp.generated.resources.archived_cd_delete
+import habitlock.composeapp.generated.resources.archived_cd_restore
+import habitlock.composeapp.generated.resources.archived_empty_state_heading
+import habitlock.composeapp.generated.resources.archived_empty_state_subtext
+import habitlock.composeapp.generated.resources.archived_title
+import habitlock.composeapp.generated.resources.common_cd_back
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,10 +57,10 @@ fun ArchivedHabitsScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("Archived Habits") },
+                title = { Text(stringResource(Res.string.archived_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.common_cd_back))
                     }
                 }
             )
@@ -78,13 +87,13 @@ fun ArchivedHabitsScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "No archived habits",
+                            text = stringResource(Res.string.archived_empty_state_heading),
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Archived habits will appear here",
+                            text = stringResource(Res.string.archived_empty_state_subtext),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -151,7 +160,7 @@ private fun ArchivedHabitCard(
                     )
                 }
                 Text(
-                    text = "Best streak: ${habit.longestStreak} days",
+                    text = stringResource(Res.string.archived_best_streak, habit.longestStreak),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -161,14 +170,14 @@ private fun ArchivedHabitCard(
                 IconButton(onClick = onUnarchiveClick) {
                     Icon(
                         Icons.Default.Refresh,
-                        contentDescription = "Restore",
+                        contentDescription = stringResource(Res.string.archived_cd_restore),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
                 IconButton(onClick = onDeleteClick) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Delete permanently",
+                        contentDescription = stringResource(Res.string.archived_cd_delete),
                         tint = MaterialTheme.colorScheme.error
                     )
                 }

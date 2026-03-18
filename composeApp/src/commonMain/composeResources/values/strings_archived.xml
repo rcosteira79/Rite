@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="archived_title">Archived Habits</string>
+    <string name="archived_empty_state_heading">No archived habits</string>
+    <string name="archived_empty_state_subtext">Archived habits will appear here</string>
+    <string name="archived_best_streak">Best streak: %d days</string>
+    <string name="archived_cd_restore">Restore</string>
+    <string name="archived_cd_delete">Delete permanently</string>
+</resources>
