@@ -28,15 +28,45 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ricardocosteira.habitlock.di.LocalAppComponent
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.Habit
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArchivedHabitsScreen(
+    onBackClick: () -> Unit,
+    snackbarHostState: SnackbarHostState
+) {
+    val viewModel = LocalAppComponent.current.archivedHabitsViewModel
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is ArchivedHabitsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
+                is ArchivedHabitsEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
+    ArchivedHabitsScreen(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onBackClick = onBackClick,
+        onUnarchiveClick = viewModel::unarchiveHabit,
+        onDeleteClick = viewModel::deleteHabit
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ArchivedHabitsScreen(
     state: ArchivedHabitsState,
     snackbarHostState: SnackbarHostState,
     onBackClick: () -> Unit,
