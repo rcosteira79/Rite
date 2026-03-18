@@ -16,14 +16,19 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ricardocosteira.habitlock.di.LocalAppComponent
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_continue
@@ -53,6 +58,35 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun StrictnessScreen(
+    onNavigateToFirstHabit: () -> Unit,
+    onNavigateToToday: () -> Unit,
+    snackbarHostState: SnackbarHostState
+) {
+    val viewModel = LocalAppComponent.current.onboardingViewModel
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                OnboardingEvent.NavigateToStrictness -> Unit  // not reachable from StrictnessScreen
+                OnboardingEvent.NavigateToFirstHabit -> onNavigateToFirstHabit()
+                OnboardingEvent.NavigateToToday -> onNavigateToToday()
+                is OnboardingEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
+    StrictnessScreen(
+        selectedPreset = state.selectedPreset,
+        isLoading = state.isApplyingPreset,
+        onPresetSelected = viewModel::selectPreset,
+        onContinue = viewModel::continueFromStrictness,
+        onSkip = viewModel::skipToToday
+    )
+}
+
+@Composable
+private fun StrictnessScreen(
     selectedPreset: StrictnessPreset,
     isLoading: Boolean,
     onPresetSelected: (StrictnessPreset) -> Unit,

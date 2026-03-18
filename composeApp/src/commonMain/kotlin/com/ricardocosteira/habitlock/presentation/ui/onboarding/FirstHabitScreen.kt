@@ -14,14 +14,19 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ricardocosteira.habitlock.di.LocalAppComponent
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_placeholder_habit_name
@@ -41,6 +46,40 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FirstHabitScreen(
+    onNavigateToToday: () -> Unit,
+    snackbarHostState: SnackbarHostState
+) {
+    val viewModel = LocalAppComponent.current.onboardingViewModel
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                OnboardingEvent.NavigateToStrictness -> Unit  // not reachable from FirstHabitScreen
+                OnboardingEvent.NavigateToFirstHabit -> Unit  // not reachable from FirstHabitScreen
+                OnboardingEvent.NavigateToToday -> onNavigateToToday()
+                is OnboardingEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
+    FirstHabitScreen(
+        habitName = state.habitName,
+        habitType = state.habitType,
+        targetValue = state.targetValue,
+        unit = state.unit,
+        isLoading = state.isCreatingHabit,
+        onHabitNameChange = viewModel::updateHabitName,
+        onHabitTypeChange = viewModel::updateHabitType,
+        onTargetValueChange = viewModel::updateTargetValue,
+        onUnitChange = viewModel::updateUnit,
+        onCreateHabit = viewModel::createFirstHabit,
+        onSkip = viewModel::skipFirstHabit
+    )
+}
+
+@Composable
+private fun FirstHabitScreen(
     habitName: String,
     habitType: HabitType,
     targetValue: String,

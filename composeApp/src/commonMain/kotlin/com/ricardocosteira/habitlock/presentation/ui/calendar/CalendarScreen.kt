@@ -32,7 +32,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ricardocosteira.habitlock.di.LocalAppComponent
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
@@ -61,9 +64,23 @@ import habitlock.composeapp.generated.resources.common_cd_back
 import habitlock.composeapp.generated.resources.common_failed
 import org.jetbrains.compose.resources.stringResource
 
+@Composable
+fun CalendarScreen(onBackClick: () -> Unit) {
+    val viewModel = LocalAppComponent.current.calendarViewModel
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    CalendarScreen(
+        state = state,
+        onBackClick = onBackClick,
+        onPreviousMonth = viewModel::previousMonth,
+        onNextMonth = viewModel::nextMonth,
+        onDayClick = { viewModel.selectDay(it.date) }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarScreen(
+private fun CalendarScreen(
     state: CalendarState,
     onBackClick: () -> Unit,
     onPreviousMonth: () -> Unit,

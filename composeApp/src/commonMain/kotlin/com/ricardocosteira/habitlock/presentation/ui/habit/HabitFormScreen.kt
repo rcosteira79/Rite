@@ -21,6 +21,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -30,7 +31,12 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ricardocosteira.habitlock.di.LocalAppComponent
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -72,9 +78,46 @@ import habitlock.composeapp.generated.resources.habit_form_type_binary_label
 import habitlock.composeapp.generated.resources.habit_form_type_quantitative_description
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HabitFormScreen(
+    habitIdToEdit: String?,
+    onNavigateBack: () -> Unit,
+    snackbarHostState: SnackbarHostState
+) {
+    val factory = LocalAppComponent.current.habitFormViewModelFactory
+    val viewModel = remember { factory.create(habitIdToEdit) }
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                HabitFormEvent.NavigateBack -> onNavigateBack()
+                is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
+
+    HabitFormScreen(
+        state = state,
+        onBackClick = onNavigateBack,
+        onNameChange = viewModel::updateName,
+        onDescriptionChange = viewModel::updateDescription,
+        onTypeChange = viewModel::updateType,
+        onTargetValueChange = viewModel::updateTargetValue,
+        onUnitChange = viewModel::updateUnit,
+        onScheduleTypeChange = viewModel::updateScheduleType,
+        onQuotaChange = viewModel::updateQuota,
+        onHasReminderChange = viewModel::updateHasReminder,
+        onReminderTypeChange = viewModel::updateReminderType,
+        onIntervalChange = viewModel::updateIntervalMinutes,
+        onSaveClick = viewModel::saveHabit,
+        onDeleteClick = viewModel::deleteHabit
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HabitFormScreen(
     state: HabitFormState,
     onBackClick: () -> Unit,
     onNameChange: (String) -> Unit,
