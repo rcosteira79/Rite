@@ -16,6 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.common_continue
+import habitlock.composeapp.generated.resources.common_skip
+import habitlock.composeapp.generated.resources.philosophy_body
+import habitlock.composeapp.generated.resources.philosophy_heading
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PhilosophyScreen(
@@ -31,7 +37,7 @@ fun PhilosophyScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "🔒 HabitLock enforces what you commit to",
+            text = stringResource(Res.string.philosophy_heading),
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground
@@ -40,10 +46,7 @@ fun PhilosophyScreen(
         Spacer(modifier = Modifier.height(32.dp))
         
         Text(
-            text = "HabitLock isn't about motivation or reminders alone.\n" +
-                   "It's about keeping promises to yourself — even on hard days.\n\n" +
-                   "You choose the rules.\n" +
-                   "HabitLock helps you stick to them.",
+            text = stringResource(Res.string.philosophy_body),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -55,13 +58,13 @@ fun PhilosophyScreen(
             onClick = onContinue,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Continue")
+            Text(stringResource(Res.string.common_continue))
         }
         
         Spacer(modifier = Modifier.height(8.dp))
         
         TextButton(onClick = onSkip) {
-            Text("Skip")
+            Text(stringResource(Res.string.common_skip))
         }
     }
 }

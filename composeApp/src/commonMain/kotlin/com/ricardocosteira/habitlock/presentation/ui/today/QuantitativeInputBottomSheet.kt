@@ -27,6 +27,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.common_cancel
+import habitlock.composeapp.generated.resources.quantitative_input_button_add
+import habitlock.composeapp.generated.resources.quantitative_input_current_no_unit
+import habitlock.composeapp.generated.resources.quantitative_input_current_with_unit
+import habitlock.composeapp.generated.resources.quantitative_input_label_amount
+import habitlock.composeapp.generated.resources.quantitative_input_quick_add
+import habitlock.composeapp.generated.resources.quantitative_input_title
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +58,7 @@ fun QuantitativeInputBottomSheet(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Add progress",
+                text = stringResource(Res.string.quantitative_input_title),
                 style = MaterialTheme.typography.titleLarge
             )
 
@@ -66,7 +75,7 @@ fun QuantitativeInputBottomSheet(
             // Current progress
             if (habit.targetValue != null) {
                 Text(
-                    text = "Current: ${habit.completedValue ?: 0}/${habit.targetValue}${habit.unit?.let { " $it" } ?: ""}",
+                    text = if (habit.unit != null) stringResource(Res.string.quantitative_input_current_with_unit, habit.completedValue ?: 0, habit.targetValue, habit.unit) else stringResource(Res.string.quantitative_input_current_no_unit, habit.completedValue ?: 0, habit.targetValue),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -87,7 +96,7 @@ fun QuantitativeInputBottomSheet(
                             inputValue = newValue
                         }
                     },
-                    label = { Text("Amount") },
+                    label = { Text(stringResource(Res.string.quantitative_input_label_amount)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier.width(120.dp)
@@ -112,7 +121,7 @@ fun QuantitativeInputBottomSheet(
                     TextButton(
                         onClick = { inputValue = amount.toString() }
                     ) {
-                        Text("+$amount")
+                        Text(stringResource(Res.string.quantitative_input_quick_add, amount))
                     }
                 }
             }
@@ -127,7 +136,7 @@ fun QuantitativeInputBottomSheet(
                     onClick = onDismiss,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(Res.string.common_cancel))
                 }
 
                 Button(
@@ -140,7 +149,7 @@ fun QuantitativeInputBottomSheet(
                     modifier = Modifier.weight(1f),
                     enabled = inputValue.toIntOrNull()?.let { it > 0 } == true
                 ) {
-                    Text("Add")
+                    Text(stringResource(Res.string.quantitative_input_button_add))
                 }
             }
 
