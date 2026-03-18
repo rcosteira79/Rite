@@ -23,6 +23,21 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.HabitType
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.common_placeholder_habit_name
+import habitlock.composeapp.generated.resources.common_placeholder_target_value
+import habitlock.composeapp.generated.resources.common_quantitative
+import habitlock.composeapp.generated.resources.first_habit_button_create
+import habitlock.composeapp.generated.resources.first_habit_button_skip
+import habitlock.composeapp.generated.resources.first_habit_heading
+import habitlock.composeapp.generated.resources.first_habit_label_name
+import habitlock.composeapp.generated.resources.first_habit_label_target_value
+import habitlock.composeapp.generated.resources.first_habit_label_type
+import habitlock.composeapp.generated.resources.first_habit_label_unit
+import habitlock.composeapp.generated.resources.first_habit_placeholder_unit
+import habitlock.composeapp.generated.resources.first_habit_subtext
+import habitlock.composeapp.generated.resources.first_habit_type_binary
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FirstHabitScreen(
@@ -47,7 +62,7 @@ fun FirstHabitScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Lock in your first habit",
+            text = stringResource(Res.string.first_habit_heading),
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground
@@ -56,7 +71,7 @@ fun FirstHabitScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Start small. One habit is enough to begin.",
+            text = stringResource(Res.string.first_habit_subtext),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -67,8 +82,8 @@ fun FirstHabitScreen(
         OutlinedTextField(
             value = habitName,
             onValueChange = onHabitNameChange,
-            label = { Text("Habit name") },
-            placeholder = { Text("E.g. Drink water") },
+            label = { Text(stringResource(Res.string.first_habit_label_name)) },
+            placeholder = { Text(stringResource(Res.string.common_placeholder_habit_name)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
@@ -76,7 +91,7 @@ fun FirstHabitScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Habit type",
+            text = stringResource(Res.string.first_habit_label_type),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.align(Alignment.Start)
@@ -91,12 +106,12 @@ fun FirstHabitScreen(
             FilterChip(
                 selected = habitType == HabitType.BINARY,
                 onClick = { onHabitTypeChange(HabitType.BINARY) },
-                label = { Text("Yes/No") }
+                label = { Text(stringResource(Res.string.first_habit_type_binary)) }
             )
             FilterChip(
                 selected = habitType == HabitType.QUANTITATIVE,
                 onClick = { onHabitTypeChange(HabitType.QUANTITATIVE) },
-                label = { Text("Quantitative") }
+                label = { Text(stringResource(Res.string.common_quantitative)) }
             )
         }
 
@@ -106,8 +121,8 @@ fun FirstHabitScreen(
             OutlinedTextField(
                 value = targetValue,
                 onValueChange = onTargetValueChange,
-                label = { Text("Target value") },
-                placeholder = { Text("E.g. 8") },
+                label = { Text(stringResource(Res.string.first_habit_label_target_value)) },
+                placeholder = { Text(stringResource(Res.string.common_placeholder_target_value)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
@@ -118,8 +133,8 @@ fun FirstHabitScreen(
             OutlinedTextField(
                 value = unit,
                 onValueChange = onUnitChange,
-                label = { Text("Unit (optional)") },
-                placeholder = { Text("E.g. glasses, pages, minutes") },
+                label = { Text(stringResource(Res.string.first_habit_label_unit)) },
+                placeholder = { Text(stringResource(Res.string.first_habit_placeholder_unit)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -136,13 +151,13 @@ fun FirstHabitScreen(
                 enabled = habitName.isNotBlank() &&
                     (habitType == HabitType.BINARY || targetValue.isNotBlank())
             ) {
-                Text("Create habit")
+                Text(stringResource(Res.string.first_habit_button_create))
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             TextButton(onClick = onSkip) {
-                Text("Skip for now")
+                Text(stringResource(Res.string.first_habit_button_skip))
             }
         }
     }
