@@ -65,6 +65,35 @@ import androidx.compose.ui.unit.sp
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.common_daily
+import habitlock.composeapp.generated.resources.common_edit
+import habitlock.composeapp.generated.resources.common_failed
+import habitlock.composeapp.generated.resources.common_skip
+import habitlock.composeapp.generated.resources.common_weekly
+import habitlock.composeapp.generated.resources.today_action_archive
+import habitlock.composeapp.generated.resources.today_cd_add_habit
+import habitlock.composeapp.generated.resources.today_cd_calendar
+import habitlock.composeapp.generated.resources.today_cd_complete
+import habitlock.composeapp.generated.resources.today_cd_settings
+import habitlock.composeapp.generated.resources.today_cd_undo
+import habitlock.composeapp.generated.resources.today_empty_state_add_habit
+import habitlock.composeapp.generated.resources.today_empty_state_heading
+import habitlock.composeapp.generated.resources.today_empty_state_subtext
+import habitlock.composeapp.generated.resources.today_score
+import habitlock.composeapp.generated.resources.today_section_daily_habits
+import habitlock.composeapp.generated.resources.today_section_suspended_habits
+import habitlock.composeapp.generated.resources.today_section_weekly_habits
+import habitlock.composeapp.generated.resources.today_status_suspended
+import habitlock.composeapp.generated.resources.today_streak
+import habitlock.composeapp.generated.resources.today_subtitle_all_done
+import habitlock.composeapp.generated.resources.today_subtitle_habits_to_go
+import habitlock.composeapp.generated.resources.today_timezone_changed_dismiss
+import habitlock.composeapp.generated.resources.today_timezone_changed_message
+import habitlock.composeapp.generated.resources.today_timezone_changed_title
+import habitlock.composeapp.generated.resources.today_title
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 
 private val SECTION_HEADER_LETTER_SPACING = 0.8.sp
 private val ACCENT_BAR_WIDTH = 3.dp
@@ -98,14 +127,14 @@ fun TodayScreen(
                 title = {
                     Column {
                         Text(
-                            text = "Today",
+                            text = stringResource(Res.string.today_title),
                             style = MaterialTheme.typography.titleLarge
                         )
                         if (!state.isLoading && (state.dailyTotal > 0 || state.weeklyTotal > 0)) {
                             val subtitleText: String = if (state.pendingCount > 0) {
-                                "${state.pendingCount} ${if (state.pendingCount == 1) "habit" else "habits"} to go"
+                                pluralStringResource(Res.plurals.today_subtitle_habits_to_go, state.pendingCount, state.pendingCount)
                             } else {
-                                "All done for today 🎉"
+                                stringResource(Res.string.today_subtitle_all_done)
                             }
                             val subtitleColor: Color = if (state.pendingCount > 0) {
                                 MaterialTheme.colorScheme.primary
@@ -124,13 +153,13 @@ fun TodayScreen(
                     IconButton(onClick = onCalendarClick) {
                         Icon(
                             imageVector = Icons.Default.CalendarMonth,
-                            contentDescription = "Calendar"
+                            contentDescription = stringResource(Res.string.today_cd_calendar)
                         )
                     }
                     IconButton(onClick = onSettingsClick) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings"
+                            contentDescription = stringResource(Res.string.today_cd_settings)
                         )
                     }
                 }
@@ -138,7 +167,7 @@ fun TodayScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddHabitClick) {
-                Icon(Icons.Default.Add, contentDescription = "Add Habit")
+                Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.today_cd_add_habit))
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -198,7 +227,7 @@ fun TodayScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "DAILY HABITS",
+                                        text = stringResource(Res.string.today_section_daily_habits),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
                                         letterSpacing = SECTION_HEADER_LETTER_SPACING,
@@ -237,7 +266,7 @@ fun TodayScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "WEEKLY HABITS",
+                                        text = stringResource(Res.string.today_section_weekly_habits),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
                                         letterSpacing = SECTION_HEADER_LETTER_SPACING,
@@ -270,7 +299,7 @@ fun TodayScreen(
                         if (suspendedHabits.isNotEmpty()) {
                             item {
                                 Text(
-                                    text = "SUSPENDED HABITS",
+                                    text = stringResource(Res.string.today_section_suspended_habits),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
                                     letterSpacing = SECTION_HEADER_LETTER_SPACING,
@@ -322,18 +351,18 @@ private fun TimezoneWarningBanner(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Timezone changed",
+                    text = stringResource(Res.string.today_timezone_changed_title),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onTertiaryContainer
                 )
                 Text(
-                    text = "Your timezone has changed from $previousTimezone. Past data remains unchanged.",
+                    text = stringResource(Res.string.today_timezone_changed_message, previousTimezone ?: ""),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onTertiaryContainer
                 )
             }
             TextButton(onClick = onDismiss) {
-                Text("Dismiss")
+                Text(stringResource(Res.string.today_timezone_changed_dismiss))
             }
         }
     }
@@ -350,13 +379,13 @@ private fun EmptyHabitsMessage(onAddHabitClick: () -> Unit) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "No habits for today",
+                text = stringResource(Res.string.today_empty_state_heading),
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Create your first habit to get started",
+                text = stringResource(Res.string.today_empty_state_subtext),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -364,7 +393,7 @@ private fun EmptyHabitsMessage(onAddHabitClick: () -> Unit) {
             TextButton(onClick = onAddHabitClick) {
                 Icon(Icons.Default.Add, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Add Habit")
+                Text(stringResource(Res.string.today_empty_state_add_habit))
             }
         }
     }
@@ -461,14 +490,14 @@ private fun HabitCard(
                         ) {
                             if (habit.currentStreak > 0) {
                                 Text(
-                                    text = "🔥 ${habit.currentStreak} day streak",
+                                    text = stringResource(Res.string.today_streak, habit.currentStreak),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.primary
                                 )
                             }
 
                             Text(
-                                text = "📊 Score: ${habit.scoreText}",
+                                text = stringResource(Res.string.today_score, habit.scoreText),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = when {
                                     habit.scorePercentage >= 100 -> MaterialTheme.colorScheme.primary
@@ -487,14 +516,14 @@ private fun HabitCard(
                             Row {
                                 if (!habit.isSkipLocked) {
                                     TextButton(onClick = onSkipClick) {
-                                        Text("Skip")
+                                        Text(stringResource(Res.string.common_skip))
                                     }
                                 }
                                 OutlinedButton(
                                     onClick = onCompleteClick,
                                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
                                 ) {
-                                    Icon(Icons.Default.Check, contentDescription = "Complete")
+                                    Icon(Icons.Default.Check, contentDescription = stringResource(Res.string.today_cd_complete))
                                 }
                             }
                         }
@@ -502,21 +531,21 @@ private fun HabitCard(
                             IconButton(onClick = onUndoClick) {
                                 Icon(
                                     Icons.Default.Undo,
-                                    contentDescription = "Undo",
+                                    contentDescription = stringResource(Res.string.today_cd_undo),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
                         HabitStatus.SUSPENDED -> {
                             Text(
-                                text = "Suspended",
+                                text = stringResource(Res.string.today_status_suspended),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                         }
                         HabitStatus.FAILED -> {
                             Text(
-                                text = "Failed",
+                                text = stringResource(Res.string.common_failed),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.error
                             )
@@ -545,14 +574,14 @@ private fun HabitCard(
                 onDismissRequest = { showMenu = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Edit") },
+                    text = { Text(stringResource(Res.string.common_edit)) },
                     onClick = {
                         showMenu = false
                         onEditClick()
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Archive") },
+                    text = { Text(stringResource(Res.string.today_action_archive)) },
                     onClick = {
                         showMenu = false
                         onArchiveClick()
@@ -580,7 +609,7 @@ private fun ProgressRingRow(
             RingChip(
                 completed = dailyResolved,
                 total = dailyTotal,
-                label = "Daily",
+                label = stringResource(Res.string.common_daily),
                 incompleteColor = MaterialTheme.colorScheme.primary,
                 modifier = if (weeklyTotal > 0) Modifier.weight(1f) else Modifier
             )
@@ -589,7 +618,7 @@ private fun ProgressRingRow(
             RingChip(
                 completed = weeklyResolved,
                 total = weeklyTotal,
-                label = "Weekly",
+                label = stringResource(Res.string.common_weekly),
                 incompleteColor = MaterialTheme.colorScheme.secondary,
                 modifier = if (dailyTotal > 0) Modifier.weight(1f) else Modifier
             )
