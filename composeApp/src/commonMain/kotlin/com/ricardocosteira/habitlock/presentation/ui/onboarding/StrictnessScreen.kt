@@ -25,6 +25,31 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.common_continue
+import habitlock.composeapp.generated.resources.common_skip
+import habitlock.composeapp.generated.resources.strictness_badge_recommended
+import habitlock.composeapp.generated.resources.strictness_balanced_description
+import habitlock.composeapp.generated.resources.strictness_balanced_label
+import habitlock.composeapp.generated.resources.strictness_balanced_rule_1
+import habitlock.composeapp.generated.resources.strictness_balanced_rule_2
+import habitlock.composeapp.generated.resources.strictness_balanced_rule_3
+import habitlock.composeapp.generated.resources.strictness_balanced_rule_4
+import habitlock.composeapp.generated.resources.strictness_flexible_description
+import habitlock.composeapp.generated.resources.strictness_flexible_label
+import habitlock.composeapp.generated.resources.strictness_flexible_rule_1
+import habitlock.composeapp.generated.resources.strictness_flexible_rule_2
+import habitlock.composeapp.generated.resources.strictness_flexible_rule_3
+import habitlock.composeapp.generated.resources.strictness_flexible_rule_4
+import habitlock.composeapp.generated.resources.strictness_heading
+import habitlock.composeapp.generated.resources.strictness_locked_description
+import habitlock.composeapp.generated.resources.strictness_locked_label
+import habitlock.composeapp.generated.resources.strictness_locked_rule_1
+import habitlock.composeapp.generated.resources.strictness_locked_rule_2
+import habitlock.composeapp.generated.resources.strictness_locked_rule_3
+import habitlock.composeapp.generated.resources.strictness_locked_rule_4
+import habitlock.composeapp.generated.resources.strictness_subtext
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun StrictnessScreen(
@@ -44,7 +69,7 @@ fun StrictnessScreen(
         Spacer(modifier = Modifier.height(32.dp))
         
         Text(
-            text = "How strict should HabitLock be?",
+            text = stringResource(Res.string.strictness_heading),
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground
@@ -53,7 +78,7 @@ fun StrictnessScreen(
         Spacer(modifier = Modifier.height(8.dp))
         
         Text(
-            text = "You're always in control. You can change this later.",
+            text = stringResource(Res.string.strictness_subtext),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -67,13 +92,13 @@ fun StrictnessScreen(
         ) {
             PresetCard(
                 emoji = "🟢",
-                label = "Flexible",
-                description = "Gentle support with maximum forgiveness.",
+                label = stringResource(Res.string.strictness_flexible_label),
+                description = stringResource(Res.string.strictness_flexible_description),
                 rules = listOf(
-                    "Unlimited undo",
-                    "Unlimited snoozes",
-                    "Skips allowed without limits",
-                    "Missed habits are tracked, but lightly enforced"
+                    stringResource(Res.string.strictness_flexible_rule_1),
+                    stringResource(Res.string.strictness_flexible_rule_2),
+                    stringResource(Res.string.strictness_flexible_rule_3),
+                    stringResource(Res.string.strictness_flexible_rule_4)
                 ),
                 isSelected = selectedPreset == StrictnessPreset.FLEXIBLE,
                 onClick = { onPresetSelected(StrictnessPreset.FLEXIBLE) }
@@ -81,13 +106,13 @@ fun StrictnessScreen(
             
             PresetCard(
                 emoji = "🟡",
-                label = "Balanced",
-                description = "Structure with room for real life.",
+                label = stringResource(Res.string.strictness_balanced_label),
+                description = stringResource(Res.string.strictness_balanced_description),
                 rules = listOf(
-                    "Undo allowed for today only",
-                    "Snoozes are limited",
-                    "Skips are limited",
-                    "Missed habits fail at the end of the day"
+                    stringResource(Res.string.strictness_balanced_rule_1),
+                    stringResource(Res.string.strictness_balanced_rule_2),
+                    stringResource(Res.string.strictness_balanced_rule_3),
+                    stringResource(Res.string.strictness_balanced_rule_4)
                 ),
                 isSelected = selectedPreset == StrictnessPreset.BALANCED,
                 isRecommended = true,
@@ -96,13 +121,13 @@ fun StrictnessScreen(
             
             PresetCard(
                 emoji = "🔴",
-                label = "Locked",
-                description = "No excuses. Full accountability.",
+                label = stringResource(Res.string.strictness_locked_label),
+                description = stringResource(Res.string.strictness_locked_description),
                 rules = listOf(
-                    "No undo",
-                    "Snoozes are capped",
-                    "Skips are capped",
-                    "Missed habits always fail"
+                    stringResource(Res.string.strictness_locked_rule_1),
+                    stringResource(Res.string.strictness_locked_rule_2),
+                    stringResource(Res.string.strictness_locked_rule_3),
+                    stringResource(Res.string.strictness_locked_rule_4)
                 ),
                 isSelected = selectedPreset == StrictnessPreset.LOCKED,
                 onClick = { onPresetSelected(StrictnessPreset.LOCKED) }
@@ -118,13 +143,13 @@ fun StrictnessScreen(
                 onClick = onContinue,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Continue")
+                Text(stringResource(Res.string.common_continue))
             }
             
             Spacer(modifier = Modifier.height(8.dp))
             
             TextButton(onClick = onSkip) {
-                Text("Skip")
+                Text(stringResource(Res.string.common_skip))
             }
         }
     }
@@ -180,7 +205,7 @@ private fun PresetCard(
                 )
                 if (isRecommended) {
                     Text(
-                        text = "(Recommended)",
+                        text = stringResource(Res.string.strictness_badge_recommended),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -199,7 +224,7 @@ private fun PresetCard(
             
             rules.forEach { rule ->
                 Text(
-                    text = "• $rule",
+                    text = rule,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
