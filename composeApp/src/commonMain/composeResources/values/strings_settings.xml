@@ -11,6 +11,7 @@
     <string name="settings_section_snooze">Snooze Settings</string>
     <string name="settings_snooze_max_duration">Max snooze duration: %d minutes</string>
     <string name="settings_snooze_unlimited_label">Unlimited snoozes</string>
+    <!-- Separate keys: snooze and skip "Enabled" states may diverge in translations -->
     <string name="settings_snooze_status_unlimited">Enabled</string>
     <string name="settings_snooze_status_limited">Limited to %d per habit/day</string>
     <string name="settings_section_skip">Skip Settings</string>

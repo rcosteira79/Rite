@@ -9,7 +9,7 @@
     <string name="today_section_weekly_habits">WEEKLY HABITS</string>
     <string name="today_section_suspended_habits">SUSPENDED HABITS</string>
     <string name="today_timezone_changed_title">Timezone changed</string>
-    <string name="today_timezone_changed_message">Your timezone has changed from %1$s. Past data remains unchanged.</string>
+    <string name="today_timezone_changed_message">Your timezone has changed from %s. Past data remains unchanged.</string>
     <string name="today_timezone_changed_dismiss">Dismiss</string>
     <string name="today_empty_state_heading">No habits for today</string>
     <string name="today_empty_state_subtext">Create your first habit to get started</string>
