@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_undo_policy">Undo Policy</string>
+    <string name="settings_undo_disabled_label">Disabled</string>
+    <string name="settings_undo_disabled_description">No undo allowed</string>
+    <string name="settings_undo_today_label">Today Only</string>
+    <string name="settings_undo_today_description">Can undo actions from today</string>
+    <string name="settings_undo_all_label">All History</string>
+    <string name="settings_undo_all_description">Can undo any past action</string>
+    <string name="settings_section_snooze">Snooze Settings</string>
+    <string name="settings_snooze_max_duration">Max snooze duration: %d minutes</string>
+    <string name="settings_snooze_unlimited_label">Unlimited snoozes</string>
+    <string name="settings_snooze_status_unlimited">Enabled</string>
+    <string name="settings_snooze_status_limited">Limited to %d per habit/day</string>
+    <string name="settings_section_skip">Skip Settings</string>
+    <string name="settings_skip_unlimited_label">Unlimited skips</string>
+    <string name="settings_skip_status_unlimited">Enabled</string>
+    <string name="settings_skip_status_limited">Limited to %d consecutive days</string>
+    <string name="settings_section_info">Info</string>
+    <string name="settings_info_timezone_label">Current timezone</string>
+    <string name="settings_archived_habits">Archived Habits</string>
+</resources>
