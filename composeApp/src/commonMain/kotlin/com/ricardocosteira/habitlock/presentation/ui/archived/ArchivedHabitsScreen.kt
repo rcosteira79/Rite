@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
+import com.ricardocosteira.habitlock.presentation.ui.asString
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -58,8 +59,8 @@ fun ArchivedHabitsScreen(
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
-                is ArchivedHabitsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
-                is ArchivedHabitsEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                is ArchivedHabitsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message.asString())
+                is ArchivedHabitsEvent.ShowError -> snackbarHostState.showSnackbar(event.message.asString())
             }
         }
     }

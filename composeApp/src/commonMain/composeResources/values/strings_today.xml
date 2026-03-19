@@ -24,4 +24,15 @@
         <item quantity="one">%d habit to go</item>
         <item quantity="other">%d habits to go</item>
     </plurals>
+    <string name="today_success_habit_completed">Habit completed! 🎉</string>
+    <string name="today_success_progress_added">Progress added!</string>
+    <string name="today_success_habit_skipped">Habit skipped</string>
+    <string name="today_success_action_undone">Action undone</string>
+    <string name="today_success_habit_archived">Habit archived</string>
+    <string name="today_error_skip_limit_reached">You\'ve reached the skip limit. Time to do this one!</string>
+    <string name="today_error_habit_complete_failed">Failed to complete habit</string>
+    <string name="today_error_progress_add_failed">Failed to add progress</string>
+    <string name="today_error_skip_failed">Failed to skip habit</string>
+    <string name="today_error_undo_failed">Failed to undo</string>
+    <string name="today_error_archive_failed">Failed to archive</string>
 </resources>

@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
+import com.ricardocosteira.habitlock.presentation.ui.asString
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -81,8 +82,8 @@ fun SettingsScreen(
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
-                is SettingsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
-                is SettingsEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                is SettingsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message.asString())
+                is SettingsEvent.ShowError -> snackbarHostState.showSnackbar(event.message.asString())
             }
         }
     }

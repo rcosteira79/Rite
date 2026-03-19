@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.di.LocalAppComponent
+import com.ricardocosteira.habitlock.presentation.ui.asString
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_continue
 import habitlock.composeapp.generated.resources.common_skip
@@ -40,7 +41,7 @@ fun PhilosophyScreen(
                 OnboardingEvent.NavigateToStrictness -> onNavigateToStrictness()
                 OnboardingEvent.NavigateToFirstHabit -> Unit  // not reachable from PhilosophyScreen
                 OnboardingEvent.NavigateToToday -> onNavigateToToday()
-                is OnboardingEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                is OnboardingEvent.ShowError -> snackbarHostState.showSnackbar(event.message.asString())
             }
         }
     }

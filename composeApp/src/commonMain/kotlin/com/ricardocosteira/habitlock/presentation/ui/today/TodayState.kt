@@ -1,6 +1,7 @@
 package com.ricardocosteira.habitlock.presentation.ui.today
 
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
+import com.ricardocosteira.habitlock.presentation.ui.UiText
 
 /**
  * State for the Today screen.
@@ -25,6 +26,6 @@ data class TodayState(
 sealed interface TodayEvent {
     data class NavigateToHabitDetail(val instanceId: String) : TodayEvent
     data object NavigateToCreateHabit : TodayEvent
-    data class ShowError(val message: String) : TodayEvent
-    data class ShowSuccess(val message: String) : TodayEvent
+    data class ShowError(val message: UiText) : TodayEvent
+    data class ShowSuccess(val message: UiText) : TodayEvent
 }

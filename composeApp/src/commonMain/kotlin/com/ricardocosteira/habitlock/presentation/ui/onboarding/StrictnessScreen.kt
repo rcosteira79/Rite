@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
+import com.ricardocosteira.habitlock.presentation.ui.asString
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_continue
@@ -71,7 +72,7 @@ fun StrictnessScreen(
                 OnboardingEvent.NavigateToStrictness -> Unit  // not reachable from StrictnessScreen
                 OnboardingEvent.NavigateToFirstHabit -> onNavigateToFirstHabit()
                 OnboardingEvent.NavigateToToday -> onNavigateToToday()
-                is OnboardingEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                is OnboardingEvent.ShowError -> snackbarHostState.showSnackbar(event.message.asString())
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.ricardocosteira.habitlock.presentation.ui.habit
 
 import com.ricardocosteira.habitlock.domain.models.HabitType
+import com.ricardocosteira.habitlock.presentation.ui.UiText
 import com.ricardocosteira.habitlock.domain.models.ReminderType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import kotlinx.datetime.LocalTime
@@ -43,5 +44,5 @@ data class HabitFormState(
  */
 sealed interface HabitFormEvent {
     data object NavigateBack : HabitFormEvent
-    data class ShowError(val message: String) : HabitFormEvent
+    data class ShowError(val message: UiText) : HabitFormEvent
 }

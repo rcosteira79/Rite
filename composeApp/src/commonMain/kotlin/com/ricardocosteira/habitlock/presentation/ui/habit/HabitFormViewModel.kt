@@ -3,6 +3,11 @@ package com.ricardocosteira.habitlock.presentation.ui.habit
 import me.tatarka.inject.annotations.Inject
 
 import androidx.lifecycle.ViewModel
+import com.ricardocosteira.habitlock.presentation.ui.UiText
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.habit_form_error_delete_failed
+import habitlock.composeapp.generated.resources.habit_form_error_required_fields
+import habitlock.composeapp.generated.resources.habit_form_error_save_failed
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.domain.models.Habit
 import com.ricardocosteira.habitlock.domain.models.HabitReminder
@@ -149,7 +154,7 @@ class HabitFormViewModel(
 
         if (!currentState.isValid) {
             viewModelScope.launch {
-                _events.emit(HabitFormEvent.ShowError("Please fill in all required fields"))
+                _events.emit(HabitFormEvent.ShowError(UiText.StringRes(Res.string.habit_form_error_required_fields)))
             }
             return
         }
@@ -182,7 +187,9 @@ class HabitFormViewModel(
                 _events.emit(HabitFormEvent.NavigateBack)
             } catch (e: Exception) {
                 _state.update { it.copy(isSaving = false, error = e.message) }
-                _events.emit(HabitFormEvent.ShowError(e.message ?: "Failed to save habit"))
+                val saveMessage = if (e.message != null) UiText.DynamicString(e.message!!)
+                                  else UiText.StringRes(Res.string.habit_form_error_save_failed)
+                _events.emit(HabitFormEvent.ShowError(saveMessage))
             }
         }
     }
@@ -240,7 +247,9 @@ class HabitFormViewModel(
                 habitRepository.deleteHabit(habitId)
                 _events.emit(HabitFormEvent.NavigateBack)
             } catch (e: Exception) {
-                _events.emit(HabitFormEvent.ShowError(e.message ?: "Failed to delete habit"))
+                val deleteMessage = if (e.message != null) UiText.DynamicString(e.message!!)
+                                    else UiText.StringRes(Res.string.habit_form_error_delete_failed)
+                _events.emit(HabitFormEvent.ShowError(deleteMessage))
             }
         }
     }

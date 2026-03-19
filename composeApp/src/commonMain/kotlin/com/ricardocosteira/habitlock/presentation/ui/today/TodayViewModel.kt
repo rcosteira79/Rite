@@ -4,6 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.di.AppScope
 import com.ricardocosteira.habitlock.domain.models.CompletionSource
+import com.ricardocosteira.habitlock.presentation.ui.UiText
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.today_error_archive_failed
+import habitlock.composeapp.generated.resources.today_error_habit_complete_failed
+import habitlock.composeapp.generated.resources.today_error_progress_add_failed
+import habitlock.composeapp.generated.resources.today_error_skip_failed
+import habitlock.composeapp.generated.resources.today_error_skip_limit_reached
+import habitlock.composeapp.generated.resources.today_error_undo_failed
+import habitlock.composeapp.generated.resources.today_success_action_undone
+import habitlock.composeapp.generated.resources.today_success_habit_archived
+import habitlock.composeapp.generated.resources.today_success_habit_completed
+import habitlock.composeapp.generated.resources.today_success_habit_skipped
+import habitlock.composeapp.generated.resources.today_success_progress_added
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
@@ -137,10 +150,12 @@ class TodayViewModel(
             result.fold(
                 onSuccess = {
                     loadTodayHabits()
-                    _events.emit(TodayEvent.ShowSuccess("Habit completed! 🎉"))
+                    _events.emit(TodayEvent.ShowSuccess(UiText.StringRes(Res.string.today_success_habit_completed)))
                 },
                 onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message ?: "Failed to complete habit"))
+                    val message = if (error.message != null) UiText.DynamicString(error.message!!)
+                                  else UiText.StringRes(Res.string.today_error_habit_complete_failed)
+                    _events.emit(TodayEvent.ShowError(message))
                 }
             )
         }
@@ -160,13 +175,15 @@ class TodayViewModel(
                 onSuccess = { updatedInstance ->
                     loadTodayHabits()
                     if (updatedInstance.isQuantitativeComplete()) {
-                        _events.emit(TodayEvent.ShowSuccess("Habit completed! 🎉"))
+                        _events.emit(TodayEvent.ShowSuccess(UiText.StringRes(Res.string.today_success_habit_completed)))
                     } else {
-                        _events.emit(TodayEvent.ShowSuccess("Progress added!"))
+                        _events.emit(TodayEvent.ShowSuccess(UiText.StringRes(Res.string.today_success_progress_added)))
                     }
                 },
                 onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message ?: "Failed to add progress"))
+                    val message = if (error.message != null) UiText.DynamicString(error.message!!)
+                                  else UiText.StringRes(Res.string.today_error_progress_add_failed)
+                    _events.emit(TodayEvent.ShowError(message))
                 }
             )
         }
@@ -183,12 +200,13 @@ class TodayViewModel(
             result.fold(
                 onSuccess = {
                     loadTodayHabits()
-                    _events.emit(TodayEvent.ShowSuccess("Habit skipped"))
+                    _events.emit(TodayEvent.ShowSuccess(UiText.StringRes(Res.string.today_success_habit_skipped)))
                 },
                 onFailure = { error ->
                     val message = when (error) {
-                        is SkipLockedException -> "You've reached the skip limit. Time to do this one!"
-                        else -> error.message ?: "Failed to skip habit"
+                        is SkipLockedException -> UiText.StringRes(Res.string.today_error_skip_limit_reached)
+                        else -> if (error.message != null) UiText.DynamicString(error.message!!)
+                                else UiText.StringRes(Res.string.today_error_skip_failed)
                     }
                     _events.emit(TodayEvent.ShowError(message))
                 }
@@ -203,10 +221,12 @@ class TodayViewModel(
             result.fold(
                 onSuccess = {
                     loadTodayHabits()
-                    _events.emit(TodayEvent.ShowSuccess("Action undone"))
+                    _events.emit(TodayEvent.ShowSuccess(UiText.StringRes(Res.string.today_success_action_undone)))
                 },
                 onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message ?: "Failed to undo"))
+                    val message = if (error.message != null) UiText.DynamicString(error.message!!)
+                                  else UiText.StringRes(Res.string.today_error_undo_failed)
+                    _events.emit(TodayEvent.ShowError(message))
                 }
             )
         }
@@ -217,9 +237,11 @@ class TodayViewModel(
             try {
                 habitRepository.archiveHabit(habitId)
                 loadTodayHabits()
-                _events.emit(TodayEvent.ShowSuccess("Habit archived"))
+                _events.emit(TodayEvent.ShowSuccess(UiText.StringRes(Res.string.today_success_habit_archived)))
             } catch (e: Exception) {
-                _events.emit(TodayEvent.ShowError(e.message ?: "Failed to archive"))
+                val message = if (e.message != null) UiText.DynamicString(e.message!!)
+                              else UiText.StringRes(Res.string.today_error_archive_failed)
+                _events.emit(TodayEvent.ShowError(message))
             }
         }
     }

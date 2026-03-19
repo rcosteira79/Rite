@@ -4,6 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.di.AppScope
 import com.ricardocosteira.habitlock.domain.models.HabitType
+import com.ricardocosteira.habitlock.presentation.ui.UiText
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.first_habit_error_empty_name
+import habitlock.composeapp.generated.resources.first_habit_error_invalid_target_value
+import habitlock.composeapp.generated.resources.first_habit_error_missing_target_value
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import com.ricardocosteira.habitlock.domain.usecases.ApplyStrictnessPreset
@@ -104,7 +109,7 @@ class OnboardingViewModel(
         val habitName = _state.value.habitName.trim()
         if (habitName.isBlank()) {
             viewModelScope.launch {
-                _events.emit(OnboardingEvent.ShowError("Please enter a habit name"))
+                _events.emit(OnboardingEvent.ShowError(UiText.StringRes(Res.string.first_habit_error_empty_name)))
             }
             return
         }
@@ -114,14 +119,14 @@ class OnboardingViewModel(
             val targetValueStr = _state.value.targetValue.trim()
             if (targetValueStr.isBlank()) {
                 viewModelScope.launch {
-                    _events.emit(OnboardingEvent.ShowError("Please enter a target value for quantitative habit"))
+                    _events.emit(OnboardingEvent.ShowError(UiText.StringRes(Res.string.first_habit_error_missing_target_value)))
                 }
                 return
             }
             val targetValue = targetValueStr.toIntOrNull()
             if (targetValue == null || targetValue <= 0) {
                 viewModelScope.launch {
-                    _events.emit(OnboardingEvent.ShowError("Target value must be a positive number"))
+                    _events.emit(OnboardingEvent.ShowError(UiText.StringRes(Res.string.first_habit_error_invalid_target_value)))
                 }
                 return
             }

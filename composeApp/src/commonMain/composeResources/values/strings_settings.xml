@@ -21,4 +21,7 @@
     <string name="settings_section_info">Info</string>
     <string name="settings_info_timezone_label">Current timezone</string>
     <string name="settings_archived_habits">Archived Habits</string>
+    <string name="settings_success_saved">Settings saved</string>
+    <string name="settings_success_daily_summary_updated">Daily summary time updated</string>
+    <string name="settings_error_save_failed">Failed to save</string>
 </resources>

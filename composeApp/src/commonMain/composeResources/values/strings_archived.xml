@@ -6,4 +6,8 @@
     <string name="archived_best_streak">Best streak: %d days</string>
     <string name="archived_cd_restore">Restore</string>
     <string name="archived_cd_delete">Delete permanently</string>
+    <string name="archived_success_habit_restored">Habit restored</string>
+    <string name="archived_success_habit_deleted">Habit deleted permanently</string>
+    <string name="archived_error_restore_failed">Failed to restore habit</string>
+    <string name="archived_error_delete_failed">Failed to delete habit</string>
 </resources>

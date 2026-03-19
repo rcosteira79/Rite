@@ -52,6 +52,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
+import com.ricardocosteira.habitlock.presentation.ui.asString
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -124,8 +125,8 @@ fun TodayScreen(
             when (event) {
                 is TodayEvent.NavigateToHabitDetail -> onNavigateToHabitDetail(event.instanceId)
                 TodayEvent.NavigateToCreateHabit -> onNavigateToCreateHabit()
-                is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
-                is TodayEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message)
+                is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message.asString())
+                is TodayEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message.asString())
             }
         }
     }
