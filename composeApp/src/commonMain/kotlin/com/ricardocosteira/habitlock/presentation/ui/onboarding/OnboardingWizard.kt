@@ -71,12 +71,12 @@ fun OnboardingWizard(
                     label = "onboarding_step"
                 ) { step ->
                     when (step) {
-                        0 -> PhilosophyStep(reduceMotion = true, modifier = Modifier.fillMaxSize())
+                        0 -> PhilosophyStep(modifier = Modifier.fillMaxSize(), reduceMotion = true)
                         1 -> StrictnessStep(
                             selectedPreset = state.selectedPreset,
                             onPresetSelected = onPresetSelected,
-                            reduceMotion = true,
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            reduceMotion = true
                         )
                         2 -> FirstHabitStep(
                             habitName = state.habitName,
@@ -111,12 +111,12 @@ fun OnboardingWizard(
                     label = "onboarding_step"
                 ) { step ->
                     when (step) {
-                        0 -> PhilosophyStep(reduceMotion = reduceMotion, modifier = Modifier.fillMaxSize())
+                        0 -> PhilosophyStep(modifier = Modifier.fillMaxSize(), reduceMotion = reduceMotion)
                         1 -> StrictnessStep(
                             selectedPreset = state.selectedPreset,
                             onPresetSelected = onPresetSelected,
-                            reduceMotion = reduceMotion,
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            reduceMotion = reduceMotion
                         )
                         2 -> FirstHabitStep(
                             habitName = state.habitName,
@@ -134,16 +134,26 @@ fun OnboardingWizard(
                 }
             }
 
-            OnboardingCta(
-                currentStep = currentStep,
-                state = state,
-                onAdvance = { onStepChange(currentStep + 1) },
-                onContinueFromStrictness = onContinueFromStrictness,
-                onCreateHabit = onCreateHabit,
-                onSkipFirstHabit = onSkipFirstHabit,
-                reduceMotion = reduceMotion,
-                modifier = Modifier.fillMaxWidth()
-            )
+            when (currentStep) {
+                0 -> PhilosophyStepCta(
+                    onAdvance = { onStepChange(currentStep + 1) },
+                    modifier = Modifier.fillMaxWidth(),
+                    reduceMotion = reduceMotion
+                )
+                1 -> StrictnessStepCta(
+                    state = state,
+                    onContinue = onContinueFromStrictness,
+                    modifier = Modifier.fillMaxWidth(),
+                    reduceMotion = reduceMotion
+                )
+                2 -> FirstHabitStepCta(
+                    state = state,
+                    onCreateHabit = onCreateHabit,
+                    onSkip = onSkipFirstHabit,
+                    modifier = Modifier.fillMaxWidth(),
+                    reduceMotion = reduceMotion
+                )
+            }
         }
     }
 }

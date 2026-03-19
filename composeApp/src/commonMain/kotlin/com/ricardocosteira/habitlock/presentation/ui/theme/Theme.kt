@@ -21,7 +21,7 @@ internal val TealDarkSurface = Color(0xFF1B2030)
 internal val TealDarkOnSurface = Color(0xFFDCE4E4)
 internal val TealDarkOnSurfaceVariant = Color(0xFFBEC9C8)
 
-internal val TealLightColorScheme = lightColorScheme(
+internal val LightColorScheme = lightColorScheme(
     primary = TealPrimary,
     primaryContainer = TealPrimaryContainer,
     onPrimaryContainer = TealOnPrimaryContainer,
@@ -30,7 +30,7 @@ internal val TealLightColorScheme = lightColorScheme(
     onSurfaceVariant = TealOnSurfaceVariant,
 )
 
-internal val TealDarkColorScheme = darkColorScheme(
+internal val DarkColorScheme = darkColorScheme(
     primary = TealDarkPrimary,
     primaryContainer = TealDarkPrimaryContainer,
     onPrimaryContainer = TealDarkOnPrimaryContainer,
@@ -50,7 +50,7 @@ fun HabitLockThemeFallback(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) TealDarkColorScheme else TealLightColorScheme
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
     MaterialTheme(
         colorScheme = colorScheme,
         content = content

@@ -53,7 +53,7 @@ private data class PresetInfo(
     val isRecommended: Boolean = false
 )
 
-private val PRESETS = listOf(
+private val presets = listOf(
     PresetInfo(
         preset = StrictnessPreset.FLEXIBLE,
         label = "Flexible",
@@ -101,8 +101,8 @@ private fun StrictnessPreset.dotColor(): Color = when (this) {
 fun StrictnessStep(
     selectedPreset: StrictnessPreset,
     onPresetSelected: (StrictnessPreset) -> Unit,
-    reduceMotion: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    reduceMotion: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -140,7 +140,7 @@ fun StrictnessStep(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        PRESETS.forEach { info ->
+        presets.forEach { info ->
             PresetCard(
                 info = info,
                 isSelected = info.preset == selectedPreset,
@@ -181,7 +181,7 @@ private fun PresetCard(
                 color = borderColor,
                 shape = RoundedCornerShape(14.dp)
             )
-            .clickable(onClick = onClick)
+            .clickable { onClick() }
             .semantics {
                 role = Role.RadioButton
                 selected = isSelected

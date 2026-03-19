@@ -29,10 +29,11 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun PhilosophyStep(reduceMotion: Boolean = false, modifier: Modifier = Modifier) {
+fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false) {
     val headlineAlpha = remember { Animatable(0f) }
     val headlineTranslateY = remember { Animatable(12f) }
     val accentWidth = remember { Animatable(0f) }
@@ -56,17 +57,17 @@ fun PhilosophyStep(reduceMotion: Boolean = false, modifier: Modifier = Modifier)
             headlineTranslateY.animateTo(0f, tween(200))
         }
         // Accent line: width draws in — 250ms, 80ms delay
-        kotlinx.coroutines.delay(80)
+        delay(80)
         launch {
             accentWidth.animateTo(1f, tween(250))
         }
         // Body: fade in — 200ms, 140ms delay
-        kotlinx.coroutines.delay(60) // 80 + 60 = 140ms total
+        delay(60) // 80 + 60 = 140ms total
         launch {
             bodyAlpha.animateTo(1f, tween(200))
         }
         // Lock watermark: fade in — 200ms, 300ms delay
-        kotlinx.coroutines.delay(160) // 140 + 160 = 300ms total
+        delay(160) // 140 + 160 = 300ms total
         lockAlpha.animateTo(0.45f, tween(200))
     }
 
