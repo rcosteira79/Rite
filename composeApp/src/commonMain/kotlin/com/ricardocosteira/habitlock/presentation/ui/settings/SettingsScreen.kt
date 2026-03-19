@@ -40,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
-import com.ricardocosteira.habitlock.presentation.ui.asString
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -61,6 +60,9 @@ import habitlock.composeapp.generated.resources.settings_snooze_max_duration
 import habitlock.composeapp.generated.resources.settings_snooze_status_limited
 import habitlock.composeapp.generated.resources.settings_snooze_status_unlimited
 import habitlock.composeapp.generated.resources.settings_snooze_unlimited_label
+import habitlock.composeapp.generated.resources.common_error_generic
+import habitlock.composeapp.generated.resources.settings_success_saved
+import habitlock.composeapp.generated.resources.settings_success_daily_summary_updated
 import habitlock.composeapp.generated.resources.settings_title
 import habitlock.composeapp.generated.resources.settings_undo_all_description
 import habitlock.composeapp.generated.resources.settings_undo_all_label
@@ -79,11 +81,16 @@ fun SettingsScreen(
     val viewModel = LocalAppComponent.current.settingsViewModel
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val messageSettingsSaved = stringResource(Res.string.settings_success_saved)
+    val messageDailySummaryUpdated = stringResource(Res.string.settings_success_daily_summary_updated)
+    val messageGenericError = stringResource(Res.string.common_error_generic)
+
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
-                is SettingsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message.asString())
-                is SettingsEvent.ShowError -> snackbarHostState.showSnackbar(event.message.asString())
+                SettingsEvent.SettingsSaved -> snackbarHostState.showSnackbar(messageSettingsSaved)
+                SettingsEvent.DailySummaryUpdated -> snackbarHostState.showSnackbar(messageDailySummaryUpdated)
+                is SettingsEvent.ShowError -> snackbarHostState.showSnackbar(event.message ?: messageGenericError)
             }
         }
     }

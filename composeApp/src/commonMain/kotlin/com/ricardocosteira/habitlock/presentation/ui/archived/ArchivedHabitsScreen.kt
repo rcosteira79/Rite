@@ -33,7 +33,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
-import com.ricardocosteira.habitlock.presentation.ui.asString
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -44,8 +43,11 @@ import habitlock.composeapp.generated.resources.archived_cd_delete
 import habitlock.composeapp.generated.resources.archived_cd_restore
 import habitlock.composeapp.generated.resources.archived_empty_state_heading
 import habitlock.composeapp.generated.resources.archived_empty_state_subtext
+import habitlock.composeapp.generated.resources.archived_success_habit_deleted
+import habitlock.composeapp.generated.resources.archived_success_habit_restored
 import habitlock.composeapp.generated.resources.archived_title
 import habitlock.composeapp.generated.resources.common_cd_back
+import habitlock.composeapp.generated.resources.common_error_generic
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -56,11 +58,16 @@ fun ArchivedHabitsScreen(
     val viewModel = LocalAppComponent.current.archivedHabitsViewModel
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val messageHabitRestored = stringResource(Res.string.archived_success_habit_restored)
+    val messageHabitDeleted = stringResource(Res.string.archived_success_habit_deleted)
+    val messageGenericError = stringResource(Res.string.common_error_generic)
+
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
-                is ArchivedHabitsEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message.asString())
-                is ArchivedHabitsEvent.ShowError -> snackbarHostState.showSnackbar(event.message.asString())
+                ArchivedHabitsEvent.HabitRestored -> snackbarHostState.showSnackbar(messageHabitRestored)
+                ArchivedHabitsEvent.HabitDeleted -> snackbarHostState.showSnackbar(messageHabitDeleted)
+                is ArchivedHabitsEvent.ShowError -> snackbarHostState.showSnackbar(event.message ?: messageGenericError)
             }
         }
     }

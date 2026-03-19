@@ -11,4 +11,5 @@
     <string name="common_failed">Failed</string>
     <string name="common_placeholder_habit_name">E.g. Drink water</string>
     <string name="common_placeholder_target_value">E.g. 8</string>
+    <string name="common_error_generic">Something went wrong</string>
 </resources>

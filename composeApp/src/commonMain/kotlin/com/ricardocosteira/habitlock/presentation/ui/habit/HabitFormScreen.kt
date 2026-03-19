@@ -37,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
-import com.ricardocosteira.habitlock.presentation.ui.asString
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -46,6 +45,8 @@ import com.ricardocosteira.habitlock.domain.models.ReminderType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_cd_back
+import habitlock.composeapp.generated.resources.common_error_generic
+import habitlock.composeapp.generated.resources.habit_form_error_required_fields
 import habitlock.composeapp.generated.resources.common_daily
 import habitlock.composeapp.generated.resources.common_placeholder_habit_name
 import habitlock.composeapp.generated.resources.common_placeholder_target_value
@@ -89,11 +90,15 @@ fun HabitFormScreen(
     val viewModel = remember { factory.create(habitIdToEdit) }
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val messageRequiredFields = stringResource(Res.string.habit_form_error_required_fields)
+    val messageGenericError = stringResource(Res.string.common_error_generic)
+
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
                 HabitFormEvent.NavigateBack -> onNavigateBack()
-                is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message.asString())
+                HabitFormEvent.RequiredFieldsMissing -> snackbarHostState.showSnackbar(messageRequiredFields)
+                is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message ?: messageGenericError)
             }
         }
     }

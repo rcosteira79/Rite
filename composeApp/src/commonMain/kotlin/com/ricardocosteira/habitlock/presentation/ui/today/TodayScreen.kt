@@ -52,7 +52,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
-import com.ricardocosteira.habitlock.presentation.ui.asString
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -96,6 +95,13 @@ import habitlock.composeapp.generated.resources.today_timezone_changed_dismiss
 import habitlock.composeapp.generated.resources.today_timezone_changed_message
 import habitlock.composeapp.generated.resources.today_timezone_changed_title
 import habitlock.composeapp.generated.resources.today_title
+import habitlock.composeapp.generated.resources.today_success_action_undone
+import habitlock.composeapp.generated.resources.today_success_habit_archived
+import habitlock.composeapp.generated.resources.today_success_habit_completed
+import habitlock.composeapp.generated.resources.today_success_habit_skipped
+import habitlock.composeapp.generated.resources.today_success_progress_added
+import habitlock.composeapp.generated.resources.today_error_skip_limit_reached
+import habitlock.composeapp.generated.resources.common_error_generic
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -120,13 +126,26 @@ fun TodayScreen(
     val viewModel = LocalAppComponent.current.todayViewModel
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val messageHabitCompleted = stringResource(Res.string.today_success_habit_completed)
+    val messageProgressAdded = stringResource(Res.string.today_success_progress_added)
+    val messageHabitSkipped = stringResource(Res.string.today_success_habit_skipped)
+    val messageActionUndone = stringResource(Res.string.today_success_action_undone)
+    val messageHabitArchived = stringResource(Res.string.today_success_habit_archived)
+    val messageSkipLimitReached = stringResource(Res.string.today_error_skip_limit_reached)
+    val messageGenericError = stringResource(Res.string.common_error_generic)
+
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
                 is TodayEvent.NavigateToHabitDetail -> onNavigateToHabitDetail(event.instanceId)
                 TodayEvent.NavigateToCreateHabit -> onNavigateToCreateHabit()
-                is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message.asString())
-                is TodayEvent.ShowSuccess -> snackbarHostState.showSnackbar(event.message.asString())
+                TodayEvent.HabitCompleted -> snackbarHostState.showSnackbar(messageHabitCompleted)
+                TodayEvent.ProgressAdded -> snackbarHostState.showSnackbar(messageProgressAdded)
+                TodayEvent.HabitSkipped -> snackbarHostState.showSnackbar(messageHabitSkipped)
+                TodayEvent.ActionUndone -> snackbarHostState.showSnackbar(messageActionUndone)
+                TodayEvent.HabitArchived -> snackbarHostState.showSnackbar(messageHabitArchived)
+                TodayEvent.SkipLimitReached -> snackbarHostState.showSnackbar(messageSkipLimitReached)
+                is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message ?: messageGenericError)
             }
         }
     }

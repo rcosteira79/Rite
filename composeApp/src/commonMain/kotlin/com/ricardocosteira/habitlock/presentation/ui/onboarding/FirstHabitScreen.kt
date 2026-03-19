@@ -27,7 +27,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
-import com.ricardocosteira.habitlock.presentation.ui.asString
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_placeholder_habit_name
@@ -42,6 +41,9 @@ import habitlock.composeapp.generated.resources.first_habit_label_type
 import habitlock.composeapp.generated.resources.first_habit_label_unit
 import habitlock.composeapp.generated.resources.first_habit_placeholder_unit
 import habitlock.composeapp.generated.resources.first_habit_subtext
+import habitlock.composeapp.generated.resources.first_habit_error_empty_name
+import habitlock.composeapp.generated.resources.first_habit_error_invalid_target_value
+import habitlock.composeapp.generated.resources.first_habit_error_missing_target_value
 import habitlock.composeapp.generated.resources.first_habit_type_binary
 import org.jetbrains.compose.resources.stringResource
 
@@ -53,13 +55,19 @@ fun FirstHabitScreen(
     val viewModel = LocalAppComponent.current.onboardingViewModel
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val messageEmptyName = stringResource(Res.string.first_habit_error_empty_name)
+    val messageMissingTarget = stringResource(Res.string.first_habit_error_missing_target_value)
+    val messageInvalidTarget = stringResource(Res.string.first_habit_error_invalid_target_value)
+
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
                 OnboardingEvent.NavigateToStrictness -> Unit  // not reachable from FirstHabitScreen
                 OnboardingEvent.NavigateToFirstHabit -> Unit  // not reachable from FirstHabitScreen
                 OnboardingEvent.NavigateToToday -> onNavigateToToday()
-                is OnboardingEvent.ShowError -> snackbarHostState.showSnackbar(event.message.asString())
+                OnboardingEvent.EmptyHabitName -> snackbarHostState.showSnackbar(messageEmptyName)
+                OnboardingEvent.MissingTargetValue -> snackbarHostState.showSnackbar(messageMissingTarget)
+                OnboardingEvent.InvalidTargetValue -> snackbarHostState.showSnackbar(messageInvalidTarget)
             }
         }
     }

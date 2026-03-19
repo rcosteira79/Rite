@@ -2,7 +2,6 @@ package com.ricardocosteira.habitlock.presentation.ui.onboarding
 
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
-import com.ricardocosteira.habitlock.presentation.ui.UiText
 
 /**
  * State for the onboarding flow.
@@ -25,7 +24,7 @@ sealed interface OnboardingEvent {
     data object NavigateToStrictness : OnboardingEvent
     data object NavigateToFirstHabit : OnboardingEvent
     data object NavigateToToday : OnboardingEvent
-    data class ShowError(val message: UiText) : OnboardingEvent
+    data object EmptyHabitName : OnboardingEvent
+    data object MissingTargetValue : OnboardingEvent
+    data object InvalidTargetValue : OnboardingEvent
 }
-
-

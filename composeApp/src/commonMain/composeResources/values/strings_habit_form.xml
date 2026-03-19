@@ -27,7 +27,4 @@
     <string name="habit_form_button_save">Save Changes</string>
     <string name="habit_form_button_create">Create Habit</string>
     <string name="habit_form_error_required_fields">Please fill in all required fields</string>
-    <string name="habit_form_error_habit_not_found">Habit not found</string>
-    <string name="habit_form_error_save_failed">Failed to save habit</string>
-    <string name="habit_form_error_delete_failed">Failed to delete habit</string>
 </resources>

@@ -4,12 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.di.AppScope
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
-import com.ricardocosteira.habitlock.presentation.ui.UiText
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.archived_error_delete_failed
-import habitlock.composeapp.generated.resources.archived_error_restore_failed
-import habitlock.composeapp.generated.resources.archived_success_habit_deleted
-import habitlock.composeapp.generated.resources.archived_success_habit_restored
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -61,11 +55,9 @@ class ArchivedHabitsViewModel(
         viewModelScope.launch {
             try {
                 habitRepository.unarchiveHabit(habitId)
-                _events.emit(ArchivedHabitsEvent.ShowSuccess(UiText.StringRes(Res.string.archived_success_habit_restored)))
+                _events.emit(ArchivedHabitsEvent.HabitRestored)
             } catch (e: Exception) {
-                val message = if (e.message != null) UiText.DynamicString(e.message!!)
-                              else UiText.StringRes(Res.string.archived_error_restore_failed)
-                _events.emit(ArchivedHabitsEvent.ShowError(message))
+                _events.emit(ArchivedHabitsEvent.ShowError(e.message))
             }
         }
     }
@@ -74,17 +66,16 @@ class ArchivedHabitsViewModel(
         viewModelScope.launch {
             try {
                 habitRepository.deleteHabit(habitId)
-                _events.emit(ArchivedHabitsEvent.ShowSuccess(UiText.StringRes(Res.string.archived_success_habit_deleted)))
+                _events.emit(ArchivedHabitsEvent.HabitDeleted)
             } catch (e: Exception) {
-                val message = if (e.message != null) UiText.DynamicString(e.message!!)
-                              else UiText.StringRes(Res.string.archived_error_delete_failed)
-                _events.emit(ArchivedHabitsEvent.ShowError(message))
+                _events.emit(ArchivedHabitsEvent.ShowError(e.message))
             }
         }
     }
 }
 
 sealed interface ArchivedHabitsEvent {
-    data class ShowSuccess(val message: UiText) : ArchivedHabitsEvent
-    data class ShowError(val message: UiText) : ArchivedHabitsEvent
+    data object HabitRestored : ArchivedHabitsEvent
+    data object HabitDeleted : ArchivedHabitsEvent
+    data class ShowError(val message: String?) : ArchivedHabitsEvent
 }

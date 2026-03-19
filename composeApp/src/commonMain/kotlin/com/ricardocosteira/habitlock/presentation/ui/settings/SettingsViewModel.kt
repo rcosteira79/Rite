@@ -5,11 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.di.AppScope
 import com.ricardocosteira.habitlock.domain.models.UndoPolicy
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
-import com.ricardocosteira.habitlock.presentation.ui.UiText
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.settings_error_save_failed
-import habitlock.composeapp.generated.resources.settings_success_daily_summary_updated
-import habitlock.composeapp.generated.resources.settings_success_saved
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -71,11 +66,9 @@ class SettingsViewModel(
             try {
                 val user = userRepository.getUser() ?: return@launch
                 userRepository.updateUser(user.copy(undoPolicy = policy))
-                _events.emit(SettingsEvent.ShowSuccess(UiText.StringRes(Res.string.settings_success_saved)))
+                _events.emit(SettingsEvent.SettingsSaved)
             } catch (e: Exception) {
-                val message = if (e.message != null) UiText.DynamicString(e.message!!)
-                              else UiText.StringRes(Res.string.settings_error_save_failed)
-                _events.emit(SettingsEvent.ShowError(message))
+                _events.emit(SettingsEvent.ShowError(e.message))
             } finally {
                 _state.update { it.copy(isSaving = false) }
             }
@@ -90,9 +83,7 @@ class SettingsViewModel(
                 val cappedMinutes = minutes.coerceIn(5, 60)
                 userRepository.updateUser(user.copy(maxSnoozeDurationMinutes = cappedMinutes))
             } catch (e: Exception) {
-                val message = if (e.message != null) UiText.DynamicString(e.message!!)
-                              else UiText.StringRes(Res.string.settings_error_save_failed)
-                _events.emit(SettingsEvent.ShowError(message))
+                _events.emit(SettingsEvent.ShowError(e.message))
             } finally {
                 _state.update { it.copy(isSaving = false) }
             }
@@ -106,9 +97,7 @@ class SettingsViewModel(
                 val user = userRepository.getUser() ?: return@launch
                 userRepository.updateUser(user.copy(maxSnoozesPerHabitPerDay = count))
             } catch (e: Exception) {
-                val message = if (e.message != null) UiText.DynamicString(e.message!!)
-                              else UiText.StringRes(Res.string.settings_error_save_failed)
-                _events.emit(SettingsEvent.ShowError(message))
+                _events.emit(SettingsEvent.ShowError(e.message))
             } finally {
                 _state.update { it.copy(isSaving = false) }
             }
@@ -122,9 +111,7 @@ class SettingsViewModel(
                 val user = userRepository.getUser() ?: return@launch
                 userRepository.updateUser(user.copy(maxConsecutiveSkips = count))
             } catch (e: Exception) {
-                val message = if (e.message != null) UiText.DynamicString(e.message!!)
-                              else UiText.StringRes(Res.string.settings_error_save_failed)
-                _events.emit(SettingsEvent.ShowError(message))
+                _events.emit(SettingsEvent.ShowError(e.message))
             } finally {
                 _state.update { it.copy(isSaving = false) }
             }
@@ -137,11 +124,9 @@ class SettingsViewModel(
             try {
                 val user = userRepository.getUser() ?: return@launch
                 userRepository.updateUser(user.copy(dailySummaryTime = time))
-                _events.emit(SettingsEvent.ShowSuccess(UiText.StringRes(Res.string.settings_success_daily_summary_updated)))
+                _events.emit(SettingsEvent.DailySummaryUpdated)
             } catch (e: Exception) {
-                val message = if (e.message != null) UiText.DynamicString(e.message!!)
-                              else UiText.StringRes(Res.string.settings_error_save_failed)
-                _events.emit(SettingsEvent.ShowError(message))
+                _events.emit(SettingsEvent.ShowError(e.message))
             } finally {
                 _state.update { it.copy(isSaving = false) }
             }
@@ -150,6 +135,7 @@ class SettingsViewModel(
 }
 
 sealed interface SettingsEvent {
-    data class ShowSuccess(val message: UiText) : SettingsEvent
-    data class ShowError(val message: UiText) : SettingsEvent
+    data object SettingsSaved : SettingsEvent
+    data object DailySummaryUpdated : SettingsEvent
+    data class ShowError(val message: String?) : SettingsEvent
 }
