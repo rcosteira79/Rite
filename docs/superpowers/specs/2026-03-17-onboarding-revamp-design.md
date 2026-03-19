@@ -174,7 +174,7 @@ Custom M3 `ColorScheme` seeded from `#006A6B` (deep teal), replacing the current
 All animations check `LocalReducedMotion`. When enabled:
 - Step transitions fall back to `Crossfade` (no translation)
 - Per-screen stagger is skipped (content appears immediately)
-- Card expansion/collapse uses instant `AnimatedVisibility`
+- Card expansion/collapse uses `AnimatedVisibility(enter = EnterTransition.None, exit = ExitTransition.None)`
 
 ---
 
@@ -194,19 +194,22 @@ All animations check `LocalReducedMotion`. When enabled:
 ## 9. Architecture Summary
 
 ```kotlin
-// OnboardingRoute.kt
+// OnboardingRoute.kt — owns event collection and navigation
 @Composable
 fun OnboardingRoute(viewModel: OnboardingViewModel, onFinished: () -> Unit) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    // collect events → call onFinished on NavigateToToday
-    OnboardingWizard(state, viewModel, onFinished)
+    var currentStep by remember { mutableIntStateOf(0) }
+    // collect events:
+    //   NavigateToFirstHabit → currentStep = 2
+    //   NavigateToToday      → onFinished()
+    //   ShowError            → show snackbar
+    OnboardingWizard(state, viewModel, currentStep, onStepChange = { currentStep = it })
 }
 
-// OnboardingWizard.kt
+// OnboardingWizard.kt — pure UI, no event collection
 @Composable
-fun OnboardingWizard(state: OnboardingState, viewModel: OnboardingViewModel, onFinished: () -> Unit) {
-    var currentStep by remember { mutableIntStateOf(0) }
-    BackHandler(enabled = currentStep > 0) { currentStep-- }
+fun OnboardingWizard(state: OnboardingState, viewModel: OnboardingViewModel, currentStep: Int, onStepChange: (Int) -> Unit) {
+    BackHandler(enabled = currentStep > 0) { onStepChange(currentStep - 1) }
 
     Scaffold { padding ->
         Column {
@@ -223,7 +226,10 @@ fun OnboardingWizard(state: OnboardingState, viewModel: OnboardingViewModel, onF
             }
 
             // CTA — outside AnimatedContent
-            OnboardingCta(currentStep, state, viewModel, onAdvance = { currentStep++ })
+            // Step 0: calls onStepChange(1) directly (no async work)
+            // Step 1: calls viewModel.continueFromStrictness(); advance driven by NavigateToFirstHabit event
+            // Step 2: calls viewModel.createFirstHabit(); advance driven by NavigateToToday event
+            OnboardingCta(currentStep, state, viewModel, onAdvance = { onStepChange(currentStep + 1) })
         }
     }
 }
