@@ -1,13 +1,12 @@
 package com.ricardocosteira.habitlock.presentation.ui.onboarding
 
 import com.ricardocosteira.habitlock.domain.models.HabitType
-import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
 
 /**
  * State for the onboarding flow.
  */
 data class OnboardingState(
-    val selectedPreset: StrictnessPreset = StrictnessPreset.BALANCED,
+    val selectedPreset: OnboardingStrictnessPreset = OnboardingStrictnessPreset.BALANCED,
     val habitName: String = "",
     val habitType: HabitType = HabitType.BINARY,
     val targetValue: String = "",

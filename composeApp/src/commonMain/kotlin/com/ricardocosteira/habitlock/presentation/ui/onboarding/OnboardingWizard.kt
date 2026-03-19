@@ -37,7 +37,7 @@ fun OnboardingWizard(
     onContinueFromStrictness: () -> Unit,
     onCreateHabit: () -> Unit,
     onSkipFirstHabit: () -> Unit,
-    onPresetSelected: (com.ricardocosteira.habitlock.domain.models.StrictnessPreset) -> Unit,
+    onPresetSelected: (OnboardingStrictnessPreset) -> Unit,
     onHabitNameChange: (String) -> Unit,
     onHabitTypeChange: (com.ricardocosteira.habitlock.domain.models.HabitType) -> Unit,
     onTargetValueChange: (String) -> Unit,

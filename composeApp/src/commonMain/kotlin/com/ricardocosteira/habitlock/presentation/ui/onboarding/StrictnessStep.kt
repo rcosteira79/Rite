@@ -40,67 +40,20 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
-
 private val ColorDotFlexible = Color(0xFF4CAF50)
 private val ColorDotBalanced = Color(0xFFFF9800)
 
-private data class PresetInfo(
-    val preset: StrictnessPreset,
-    val label: String,
-    val description: String,
-    val rules: List<String>,
-    val isRecommended: Boolean = false
-)
-
-private val presets = listOf(
-    PresetInfo(
-        preset = StrictnessPreset.FLEXIBLE,
-        label = "Flexible",
-        description = "Gentle support, maximum forgiveness.",
-        rules = listOf(
-            "Unlimited undo",
-            "Unlimited snoozes",
-            "Skips allowed without limits",
-            "Missed habits tracked lightly"
-        )
-    ),
-    PresetInfo(
-        preset = StrictnessPreset.BALANCED,
-        label = "Balanced",
-        description = "Structure with room for real life.",
-        rules = listOf(
-            "Undo allowed for today only",
-            "Snoozes are limited",
-            "Skips are limited",
-            "Missed habits fail at end of day"
-        ),
-        isRecommended = true
-    ),
-    PresetInfo(
-        preset = StrictnessPreset.LOCKED,
-        label = "Locked",
-        description = "No excuses. Full accountability.",
-        rules = listOf(
-            "No undo",
-            "Snoozes are capped",
-            "Skips are capped",
-            "Missed habits always fail"
-        )
-    )
-)
-
 @Composable
-private fun StrictnessPreset.dotColor(): Color = when (this) {
-    StrictnessPreset.FLEXIBLE -> ColorDotFlexible
-    StrictnessPreset.BALANCED -> ColorDotBalanced
-    StrictnessPreset.LOCKED -> MaterialTheme.colorScheme.error
+private fun OnboardingStrictnessPreset.dotColor(): Color = when (this) {
+    OnboardingStrictnessPreset.FLEXIBLE -> ColorDotFlexible
+    OnboardingStrictnessPreset.BALANCED -> ColorDotBalanced
+    OnboardingStrictnessPreset.LOCKED -> MaterialTheme.colorScheme.error
 }
 
 @Composable
 fun StrictnessStep(
-    selectedPreset: StrictnessPreset,
-    onPresetSelected: (StrictnessPreset) -> Unit,
+    selectedPreset: OnboardingStrictnessPreset,
+    onPresetSelected: (OnboardingStrictnessPreset) -> Unit,
     modifier: Modifier = Modifier,
     reduceMotion: Boolean = false
 ) {
@@ -140,11 +93,11 @@ fun StrictnessStep(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        presets.forEach { info ->
+        OnboardingStrictnessPreset.entries.forEach { preset ->
             PresetCard(
-                info = info,
-                isSelected = info.preset == selectedPreset,
-                onClick = { onPresetSelected(info.preset) },
+                preset = preset,
+                isSelected = preset == selectedPreset,
+                onClick = { onPresetSelected(preset) },
                 reduceMotion = reduceMotion
             )
             Spacer(modifier = Modifier.height(10.dp))
@@ -154,11 +107,11 @@ fun StrictnessStep(
 
 @Composable
 private fun PresetCard(
-    info: PresetInfo,
+    preset: OnboardingStrictnessPreset,
     isSelected: Boolean,
     onClick: () -> Unit,
-    reduceMotion: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    reduceMotion: Boolean = false
 ) {
     val borderColor = if (isSelected) {
         MaterialTheme.colorScheme.primary
@@ -193,16 +146,16 @@ private fun PresetCard(
             Box(
                 modifier = Modifier
                     .size(8.dp)
-                    .background(color = info.preset.dotColor(), shape = CircleShape)
+                    .background(color = preset.dotColor(), shape = CircleShape)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = info.label,
+                text = preset.label,
                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f)
             )
-            if (info.isRecommended) {
+            if (preset.isRecommended) {
                 SuggestionChip(
                     onClick = {},
                     label = {
@@ -222,7 +175,7 @@ private fun PresetCard(
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = info.description,
+            text = preset.description,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 16.dp)
@@ -244,7 +197,7 @@ private fun PresetCard(
                         )
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                info.rules.forEach { rule ->
+                preset.rules.forEach { rule ->
                     Row(
                         verticalAlignment = Alignment.Top,
                         modifier = Modifier.padding(bottom = 5.dp)

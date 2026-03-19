@@ -45,7 +45,7 @@ class OnboardingViewModel(
     private val _events = MutableSharedFlow<OnboardingEvent>()
     val events: SharedFlow<OnboardingEvent> = _events.asSharedFlow()
 
-    fun selectPreset(preset: StrictnessPreset) {
+    fun selectPreset(preset: OnboardingStrictnessPreset) {
         _state.update { it.copy(selectedPreset = preset) }
     }
 
@@ -75,7 +75,7 @@ class OnboardingViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isApplyingPreset = true) }
 
-            val result = applyStrictnessPreset.execute(_state.value.selectedPreset)
+            val result = applyStrictnessPreset.execute(_state.value.selectedPreset.toDomain())
 
             result.fold(
                 onSuccess = {
@@ -193,6 +193,12 @@ class OnboardingViewModel(
 
     fun clearError() {
         _state.update { it.copy(error = null) }
+    }
+
+    private fun OnboardingStrictnessPreset.toDomain(): StrictnessPreset = when (this) {
+        OnboardingStrictnessPreset.FLEXIBLE -> StrictnessPreset.FLEXIBLE
+        OnboardingStrictnessPreset.BALANCED -> StrictnessPreset.BALANCED
+        OnboardingStrictnessPreset.LOCKED -> StrictnessPreset.LOCKED
     }
 }
 
