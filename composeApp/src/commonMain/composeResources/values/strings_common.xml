@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_cd_back">Back</string>
+    <string name="common_skip">Skip</string>
+    <string name="common_continue">Continue</string>
+    <string name="common_edit">Edit</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_daily">Daily</string>
+    <string name="common_weekly">Weekly</string>
+    <string name="common_quantitative">Quantitative</string>
+    <string name="common_failed">Failed</string>
+    <string name="common_placeholder_habit_name">E.g. Drink water</string>
+    <string name="common_placeholder_target_value">E.g. 8</string>
+    <string name="common_error_generic">Something went wrong</string>
+</resources>

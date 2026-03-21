@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="strictness_heading">How strict should HabitLock be?</string>
+    <string name="strictness_subtext">You\'re always in control. You can change this later.</string>
+    <string name="strictness_flexible_label">Flexible</string>
+    <string name="strictness_flexible_description">Gentle support with maximum forgiveness.</string>
+    <string name="strictness_flexible_rule_1">• Unlimited undo</string>
+    <string name="strictness_flexible_rule_2">• Unlimited snoozes</string>
+    <string name="strictness_flexible_rule_3">• Skips allowed without limits</string>
+    <string name="strictness_flexible_rule_4">• Missed habits are tracked, but lightly enforced</string>
+    <string name="strictness_balanced_label">Balanced</string>
+    <string name="strictness_balanced_description">Structure with room for real life.</string>
+    <string name="strictness_balanced_rule_1">• Undo allowed for today only</string>
+    <string name="strictness_balanced_rule_2">• Snoozes are limited</string>
+    <string name="strictness_balanced_rule_3">• Skips are limited</string>
+    <string name="strictness_balanced_rule_4">• Missed habits fail at the end of the day</string>
+    <string name="strictness_locked_label">Locked</string>
+    <string name="strictness_locked_description">No excuses. Full accountability.</string>
+    <string name="strictness_locked_rule_1">• No undo</string>
+    <string name="strictness_locked_rule_2">• Snoozes are capped</string>
+    <string name="strictness_locked_rule_3">• Skips are capped</string>
+    <string name="strictness_locked_rule_4">• Missed habits always fail</string>
+    <string name="strictness_badge_recommended">(Recommended)</string>
+</resources>

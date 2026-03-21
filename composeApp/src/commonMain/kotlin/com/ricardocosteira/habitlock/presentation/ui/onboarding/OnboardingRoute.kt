@@ -10,6 +10,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.presentation.ui.isReduceMotionEnabled
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.first_habit_error_empty_name
+import habitlock.composeapp.generated.resources.first_habit_error_invalid_target_value
+import habitlock.composeapp.generated.resources.first_habit_error_missing_target_value
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun OnboardingRoute(
@@ -22,12 +27,18 @@ fun OnboardingRoute(
     var currentStep by remember { mutableIntStateOf(0) }
     val reduceMotion = isReduceMotionEnabled()
 
+    val messageEmptyName = stringResource(Res.string.first_habit_error_empty_name)
+    val messageMissingTarget = stringResource(Res.string.first_habit_error_missing_target_value)
+    val messageInvalidTarget = stringResource(Res.string.first_habit_error_invalid_target_value)
+
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
                 OnboardingEvent.NavigateToFirstHabit -> currentStep = 2
                 OnboardingEvent.NavigateToToday -> onFinished()
-                is OnboardingEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                OnboardingEvent.EmptyHabitName -> snackbarHostState.showSnackbar(messageEmptyName)
+                OnboardingEvent.MissingTargetValue -> snackbarHostState.showSnackbar(messageMissingTarget)
+                OnboardingEvent.InvalidTargetValue -> snackbarHostState.showSnackbar(messageInvalidTarget)
             }
         }
     }

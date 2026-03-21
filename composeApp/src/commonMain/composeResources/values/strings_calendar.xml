@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="calendar_title">Calendar</string>
+    <string name="calendar_stats_perfect_days">Perfect Days</string>
+    <string name="calendar_stats_days_tracked">Days Tracked</string>
+    <string name="calendar_cd_previous_month">Previous month</string>
+    <string name="calendar_cd_next_month">Next month</string>
+    <string name="calendar_day_mon">Mon</string>
+    <string name="calendar_day_tue">Tue</string>
+    <string name="calendar_day_wed">Wed</string>
+    <string name="calendar_day_thu">Thu</string>
+    <string name="calendar_day_fri">Fri</string>
+    <string name="calendar_day_sat">Sat</string>
+    <string name="calendar_day_sun">Sun</string>
+    <string name="calendar_legend_perfect">Perfect</string>
+    <string name="calendar_legend_best_effort">Best Effort</string>
+    <string name="calendar_legend_partial">Partial</string>
+    <string name="calendar_legend_rough_day">Rough Day</string>
+    <string name="calendar_legend_future">Future</string>
+</resources>

@@ -43,6 +43,42 @@ import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.ReminderType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.common_cd_back
+import habitlock.composeapp.generated.resources.common_error_generic
+import habitlock.composeapp.generated.resources.habit_form_error_required_fields
+import habitlock.composeapp.generated.resources.common_daily
+import habitlock.composeapp.generated.resources.common_placeholder_habit_name
+import habitlock.composeapp.generated.resources.common_placeholder_target_value
+import habitlock.composeapp.generated.resources.common_quantitative
+import habitlock.composeapp.generated.resources.common_weekly
+import habitlock.composeapp.generated.resources.habit_form_button_create
+import habitlock.composeapp.generated.resources.habit_form_button_save
+import habitlock.composeapp.generated.resources.habit_form_cd_delete
+import habitlock.composeapp.generated.resources.habit_form_label_description
+import habitlock.composeapp.generated.resources.habit_form_label_interval
+import habitlock.composeapp.generated.resources.habit_form_label_name
+import habitlock.composeapp.generated.resources.habit_form_label_quota
+import habitlock.composeapp.generated.resources.habit_form_label_target_value
+import habitlock.composeapp.generated.resources.habit_form_label_unit
+import habitlock.composeapp.generated.resources.habit_form_placeholder_quota
+import habitlock.composeapp.generated.resources.habit_form_placeholder_unit
+import habitlock.composeapp.generated.resources.habit_form_quota_supporting_daily
+import habitlock.composeapp.generated.resources.habit_form_quota_supporting_weekly
+import habitlock.composeapp.generated.resources.habit_form_reminder_info_periodic
+import habitlock.composeapp.generated.resources.habit_form_reminder_info_time
+import habitlock.composeapp.generated.resources.habit_form_schedule_daily_description
+import habitlock.composeapp.generated.resources.habit_form_schedule_weekly_description
+import habitlock.composeapp.generated.resources.habit_form_section_reminder
+import habitlock.composeapp.generated.resources.habit_form_section_schedule
+import habitlock.composeapp.generated.resources.habit_form_section_target
+import habitlock.composeapp.generated.resources.habit_form_section_type
+import habitlock.composeapp.generated.resources.habit_form_title_create
+import habitlock.composeapp.generated.resources.habit_form_title_edit
+import habitlock.composeapp.generated.resources.habit_form_type_binary_description
+import habitlock.composeapp.generated.resources.habit_form_type_binary_label
+import habitlock.composeapp.generated.resources.habit_form_type_quantitative_description
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HabitFormScreen(
@@ -54,11 +90,15 @@ fun HabitFormScreen(
     val viewModel = remember { factory.create(habitIdToEdit) }
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val messageRequiredFields = stringResource(Res.string.habit_form_error_required_fields)
+    val messageGenericError = stringResource(Res.string.common_error_generic)
+
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
                 HabitFormEvent.NavigateBack -> onNavigateBack()
-                is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                HabitFormEvent.RequiredFieldsMissing -> snackbarHostState.showSnackbar(messageRequiredFields)
+                is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message ?: messageGenericError)
             }
         }
     }
@@ -105,11 +145,11 @@ private fun HabitFormScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(if (state.isEditing) "Edit Habit" else "Create Habit")
+                    Text(if (state.isEditing) stringResource(Res.string.habit_form_title_edit) else stringResource(Res.string.habit_form_title_create))
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.common_cd_back))
                     }
                 },
                 actions = {
@@ -117,7 +157,7 @@ private fun HabitFormScreen(
                         IconButton(onClick = onDeleteClick) {
                             Icon(
                                 Icons.Default.Delete,
-                                contentDescription = "Delete",
+                                contentDescription = stringResource(Res.string.habit_form_cd_delete),
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }
@@ -146,8 +186,8 @@ private fun HabitFormScreen(
                 OutlinedTextField(
                     value = state.name,
                     onValueChange = onNameChange,
-                    label = { Text("Habit name *") },
-                    placeholder = { Text("E.g. Drink water") },
+                    label = { Text(stringResource(Res.string.habit_form_label_name)) },
+                    placeholder = { Text(stringResource(Res.string.common_placeholder_habit_name)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -156,7 +196,7 @@ private fun HabitFormScreen(
                 OutlinedTextField(
                     value = state.description,
                     onValueChange = onDescriptionChange,
-                    label = { Text("Description (optional)") },
+                    label = { Text(stringResource(Res.string.habit_form_label_description)) },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3
                 )
@@ -165,7 +205,7 @@ private fun HabitFormScreen(
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = "Habit Type",
+                            text = stringResource(Res.string.habit_form_section_type),
                             style = MaterialTheme.typography.titleMedium
                         )
 
@@ -188,9 +228,9 @@ private fun HabitFormScreen(
                                     onClick = null
                                 )
                                 Column(modifier = Modifier.padding(start = 16.dp)) {
-                                    Text("Binary", style = MaterialTheme.typography.bodyLarge)
+                                    Text(stringResource(Res.string.habit_form_type_binary_label), style = MaterialTheme.typography.bodyLarge)
                                     Text(
-                                        "Single action - done or not done",
+                                        stringResource(Res.string.habit_form_type_binary_description),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -213,9 +253,9 @@ private fun HabitFormScreen(
                                     onClick = null
                                 )
                                 Column(modifier = Modifier.padding(start = 16.dp)) {
-                                    Text("Quantitative", style = MaterialTheme.typography.bodyLarge)
+                                    Text(stringResource(Res.string.common_quantitative), style = MaterialTheme.typography.bodyLarge)
                                     Text(
-                                        "Track progress with a target",
+                                        stringResource(Res.string.habit_form_type_quantitative_description),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -230,7 +270,7 @@ private fun HabitFormScreen(
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "Target",
+                                text = stringResource(Res.string.habit_form_section_target),
                                 style = MaterialTheme.typography.titleMedium
                             )
 
@@ -243,8 +283,8 @@ private fun HabitFormScreen(
                                 OutlinedTextField(
                                     value = state.targetValue,
                                     onValueChange = onTargetValueChange,
-                                    label = { Text("Target value *") },
-                                    placeholder = { Text("E.g. 8") },
+                                    label = { Text(stringResource(Res.string.habit_form_label_target_value)) },
+                                    placeholder = { Text(stringResource(Res.string.common_placeholder_target_value)) },
                                     singleLine = true,
                                     modifier = Modifier.weight(1f)
                                 )
@@ -252,8 +292,8 @@ private fun HabitFormScreen(
                                 OutlinedTextField(
                                     value = state.unit,
                                     onValueChange = onUnitChange,
-                                    label = { Text("Unit") },
-                                    placeholder = { Text("E.g. glasses") },
+                                    label = { Text(stringResource(Res.string.habit_form_label_unit)) },
+                                    placeholder = { Text(stringResource(Res.string.habit_form_placeholder_unit)) },
                                     singleLine = true,
                                     modifier = Modifier.weight(1f)
                                 )
@@ -266,7 +306,7 @@ private fun HabitFormScreen(
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = "Schedule",
+                            text = stringResource(Res.string.habit_form_section_schedule),
                             style = MaterialTheme.typography.titleMedium
                         )
 
@@ -289,9 +329,9 @@ private fun HabitFormScreen(
                                     onClick = null
                                 )
                                 Column(modifier = Modifier.padding(start = 16.dp)) {
-                                    Text("Daily", style = MaterialTheme.typography.bodyLarge)
+                                    Text(stringResource(Res.string.common_daily), style = MaterialTheme.typography.bodyLarge)
                                     Text(
-                                        "Resets every day",
+                                        stringResource(Res.string.habit_form_schedule_daily_description),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -314,9 +354,9 @@ private fun HabitFormScreen(
                                     onClick = null
                                 )
                                 Column(modifier = Modifier.padding(start = 16.dp)) {
-                                    Text("Weekly", style = MaterialTheme.typography.bodyLarge)
+                                    Text(stringResource(Res.string.common_weekly), style = MaterialTheme.typography.bodyLarge)
                                     Text(
-                                        "Resets every week",
+                                        stringResource(Res.string.habit_form_schedule_weekly_description),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -329,14 +369,14 @@ private fun HabitFormScreen(
                         OutlinedTextField(
                             value = state.quota,
                             onValueChange = onQuotaChange,
-                            label = { Text("Quota *") },
-                            placeholder = { Text("E.g. 1") },
+                            label = { Text(stringResource(Res.string.habit_form_label_quota)) },
+                            placeholder = { Text(stringResource(Res.string.habit_form_placeholder_quota)) },
                             supportingText = {
                                 Text(
                                     if (state.scheduleType == ScheduleType.DAILY) {
-                                        "Number of completions required per day"
+                                        stringResource(Res.string.habit_form_quota_supporting_daily)
                                     } else {
-                                        "Number of completions required per week"
+                                        stringResource(Res.string.habit_form_quota_supporting_weekly)
                                     }
                                 )
                             },
@@ -355,7 +395,7 @@ private fun HabitFormScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Reminder",
+                                text = stringResource(Res.string.habit_form_section_reminder),
                                 style = MaterialTheme.typography.titleMedium
                             )
                             Switch(
@@ -369,7 +409,7 @@ private fun HabitFormScreen(
 
                             if (state.type == HabitType.QUANTITATIVE) {
                                 Text(
-                                    text = "Periodic reminders at intervals",
+                                    text = stringResource(Res.string.habit_form_reminder_info_periodic),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -379,13 +419,13 @@ private fun HabitFormScreen(
                                 OutlinedTextField(
                                     value = state.intervalMinutes,
                                     onValueChange = onIntervalChange,
-                                    label = { Text("Interval (minutes)") },
+                                    label = { Text(stringResource(Res.string.habit_form_label_interval)) },
                                     singleLine = true,
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             } else {
                                 Text(
-                                    text = "Set a specific time for your reminder",
+                                    text = stringResource(Res.string.habit_form_reminder_info_time),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -406,7 +446,7 @@ private fun HabitFormScreen(
                     if (state.isSaving) {
                         CircularProgressIndicator()
                     } else {
-                        Text(if (state.isEditing) "Save Changes" else "Create Habit")
+                        Text(if (state.isEditing) stringResource(Res.string.habit_form_button_save) else stringResource(Res.string.habit_form_button_create))
                     }
                 }
             }

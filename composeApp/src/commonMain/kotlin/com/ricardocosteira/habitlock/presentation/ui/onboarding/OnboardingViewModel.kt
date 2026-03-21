@@ -98,7 +98,7 @@ class OnboardingViewModel(
         val habitName = _state.value.habitName.trim()
         if (habitName.isBlank()) {
             viewModelScope.launch {
-                _events.emit(OnboardingEvent.ShowError("Please enter a habit name"))
+                _events.emit(OnboardingEvent.EmptyHabitName)
             }
             return
         }
@@ -108,14 +108,14 @@ class OnboardingViewModel(
             val targetValueStr = _state.value.targetValue.trim()
             if (targetValueStr.isBlank()) {
                 viewModelScope.launch {
-                    _events.emit(OnboardingEvent.ShowError("Please enter a target value for quantitative habit"))
+                    _events.emit(OnboardingEvent.MissingTargetValue)
                 }
                 return
             }
             val targetValue = targetValueStr.toIntOrNull()
             if (targetValue == null || targetValue <= 0) {
                 viewModelScope.launch {
-                    _events.emit(OnboardingEvent.ShowError("Target value must be a positive number"))
+                    _events.emit(OnboardingEvent.InvalidTargetValue)
                 }
                 return
             }

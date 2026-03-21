@@ -42,6 +42,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.presentation.models.CalendarDayUiModel
 import com.ricardocosteira.habitlock.presentation.models.DayClassification
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.calendar_cd_next_month
+import habitlock.composeapp.generated.resources.calendar_cd_previous_month
+import habitlock.composeapp.generated.resources.calendar_day_fri
+import habitlock.composeapp.generated.resources.calendar_day_mon
+import habitlock.composeapp.generated.resources.calendar_day_sat
+import habitlock.composeapp.generated.resources.calendar_day_sun
+import habitlock.composeapp.generated.resources.calendar_day_thu
+import habitlock.composeapp.generated.resources.calendar_day_tue
+import habitlock.composeapp.generated.resources.calendar_day_wed
+import habitlock.composeapp.generated.resources.calendar_legend_best_effort
+import habitlock.composeapp.generated.resources.calendar_legend_future
+import habitlock.composeapp.generated.resources.calendar_legend_partial
+import habitlock.composeapp.generated.resources.calendar_legend_perfect
+import habitlock.composeapp.generated.resources.calendar_legend_rough_day
+import habitlock.composeapp.generated.resources.calendar_stats_days_tracked
+import habitlock.composeapp.generated.resources.calendar_stats_perfect_days
+import habitlock.composeapp.generated.resources.calendar_title
+import habitlock.composeapp.generated.resources.common_cd_back
+import habitlock.composeapp.generated.resources.common_failed
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CalendarScreen(onBackClick: () -> Unit) {
@@ -71,10 +92,10 @@ private fun CalendarScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("Calendar") },
+                title = { Text(stringResource(Res.string.calendar_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.common_cd_back))
                     }
                 }
             )
@@ -106,7 +127,7 @@ private fun CalendarScreen(
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
-                            text = "Perfect Days",
+                            text = stringResource(Res.string.calendar_stats_perfect_days),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
@@ -118,7 +139,7 @@ private fun CalendarScreen(
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
-                            text = "Days Tracked",
+                            text = stringResource(Res.string.calendar_stats_days_tracked),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
@@ -135,7 +156,7 @@ private fun CalendarScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onPreviousMonth) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous month")
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = stringResource(Res.string.calendar_cd_previous_month))
                 }
 
                 Text(
@@ -144,7 +165,7 @@ private fun CalendarScreen(
                 )
 
                 IconButton(onClick = onNextMonth) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next month")
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = stringResource(Res.string.calendar_cd_next_month))
                 }
             }
 
@@ -152,7 +173,7 @@ private fun CalendarScreen(
 
             // Day of week headers
             Row(modifier = Modifier.fillMaxWidth()) {
-                listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun").forEach { day ->
+                listOf(stringResource(Res.string.calendar_day_mon), stringResource(Res.string.calendar_day_tue), stringResource(Res.string.calendar_day_wed), stringResource(Res.string.calendar_day_thu), stringResource(Res.string.calendar_day_fri), stringResource(Res.string.calendar_day_sat), stringResource(Res.string.calendar_day_sun)).forEach { day ->
                     Text(
                         text = day,
                         modifier = Modifier.weight(1f),
@@ -206,17 +227,17 @@ private fun CalendarScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    LegendItem(color = MaterialTheme.colorScheme.primary, label = "Perfect")
-                    LegendItem(color = MaterialTheme.colorScheme.tertiary, label = "Best Effort")
-                    LegendItem(color = MaterialTheme.colorScheme.secondary, label = "Partial")
+                    LegendItem(color = MaterialTheme.colorScheme.primary, label = stringResource(Res.string.calendar_legend_perfect))
+                    LegendItem(color = MaterialTheme.colorScheme.tertiary, label = stringResource(Res.string.calendar_legend_best_effort))
+                    LegendItem(color = MaterialTheme.colorScheme.secondary, label = stringResource(Res.string.calendar_legend_partial))
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    LegendItem(color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f), label = "Rough Day")
-                    LegendItem(color = MaterialTheme.colorScheme.error, label = "Failed")
-                    LegendItem(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), label = "Future")
+                    LegendItem(color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f), label = stringResource(Res.string.calendar_legend_rough_day))
+                    LegendItem(color = MaterialTheme.colorScheme.error, label = stringResource(Res.string.common_failed))
+                    LegendItem(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), label = stringResource(Res.string.calendar_legend_future))
                 }
             }
         }

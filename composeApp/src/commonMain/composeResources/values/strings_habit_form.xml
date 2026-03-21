@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="habit_form_title_create">Create Habit</string>
+    <string name="habit_form_title_edit">Edit Habit</string>
+    <string name="habit_form_cd_delete">Delete</string>
+    <string name="habit_form_label_name">Habit name *</string>
+    <string name="habit_form_label_description">Description (optional)</string>
+    <string name="habit_form_section_type">Habit Type</string>
+    <string name="habit_form_type_binary_label">Binary</string>
+    <string name="habit_form_type_binary_description">Single action - done or not done</string>
+    <string name="habit_form_type_quantitative_description">Track progress with a target</string>
+    <string name="habit_form_section_target">Target</string>
+    <string name="habit_form_label_target_value">Target value *</string>
+    <string name="habit_form_label_unit">Unit</string>
+    <string name="habit_form_placeholder_unit">E.g. glasses</string>
+    <string name="habit_form_section_schedule">Schedule</string>
+    <string name="habit_form_schedule_daily_description">Resets every day</string>
+    <string name="habit_form_schedule_weekly_description">Resets every week</string>
+    <string name="habit_form_label_quota">Quota *</string>
+    <string name="habit_form_placeholder_quota">E.g. 1</string>
+    <string name="habit_form_quota_supporting_daily">Number of completions required per day</string>
+    <string name="habit_form_quota_supporting_weekly">Number of completions required per week</string>
+    <string name="habit_form_section_reminder">Reminder</string>
+    <string name="habit_form_reminder_info_periodic">Periodic reminders at intervals</string>
+    <string name="habit_form_label_interval">Interval (minutes)</string>
+    <string name="habit_form_reminder_info_time">Set a specific time for your reminder</string>
+    <string name="habit_form_button_save">Save Changes</string>
+    <string name="habit_form_button_create">Create Habit</string>
+    <string name="habit_form_error_required_fields">Please fill in all required fields</string>
+</resources>

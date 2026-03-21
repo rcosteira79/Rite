@@ -30,7 +30,7 @@ class ArchivedHabitsViewModel(
 
     private val _state = MutableStateFlow(ArchivedHabitsState())
     val state: StateFlow<ArchivedHabitsState> = _state.asStateFlow()
-    
+
     private val _events = MutableSharedFlow<ArchivedHabitsEvent>()
     val events: SharedFlow<ArchivedHabitsEvent> = _events.asSharedFlow()
 
@@ -55,9 +55,9 @@ class ArchivedHabitsViewModel(
         viewModelScope.launch {
             try {
                 habitRepository.unarchiveHabit(habitId)
-                _events.emit(ArchivedHabitsEvent.ShowSuccess("Habit restored"))
+                _events.emit(ArchivedHabitsEvent.HabitRestored)
             } catch (e: Exception) {
-                _events.emit(ArchivedHabitsEvent.ShowError(e.message ?: "Failed to restore habit"))
+                _events.emit(ArchivedHabitsEvent.ShowError(e.message))
             }
         }
     }
@@ -66,16 +66,16 @@ class ArchivedHabitsViewModel(
         viewModelScope.launch {
             try {
                 habitRepository.deleteHabit(habitId)
-                _events.emit(ArchivedHabitsEvent.ShowSuccess("Habit deleted permanently"))
+                _events.emit(ArchivedHabitsEvent.HabitDeleted)
             } catch (e: Exception) {
-                _events.emit(ArchivedHabitsEvent.ShowError(e.message ?: "Failed to delete habit"))
+                _events.emit(ArchivedHabitsEvent.ShowError(e.message))
             }
         }
     }
 }
 
 sealed interface ArchivedHabitsEvent {
-    data class ShowSuccess(val message: String) : ArchivedHabitsEvent
-    data class ShowError(val message: String) : ArchivedHabitsEvent
+    data object HabitRestored : ArchivedHabitsEvent
+    data object HabitDeleted : ArchivedHabitsEvent
+    data class ShowError(val message: String?) : ArchivedHabitsEvent
 }
-

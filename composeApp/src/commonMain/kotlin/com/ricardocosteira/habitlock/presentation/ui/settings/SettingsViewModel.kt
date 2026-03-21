@@ -32,7 +32,7 @@ class SettingsViewModel(
 
     private val _state = MutableStateFlow(SettingsState())
     val state: StateFlow<SettingsState> = _state.asStateFlow()
-    
+
     private val _events = MutableSharedFlow<SettingsEvent>()
     val events: SharedFlow<SettingsEvent> = _events.asSharedFlow()
 
@@ -66,9 +66,9 @@ class SettingsViewModel(
             try {
                 val user = userRepository.getUser() ?: return@launch
                 userRepository.updateUser(user.copy(undoPolicy = policy))
-                _events.emit(SettingsEvent.ShowSuccess("Settings saved"))
+                _events.emit(SettingsEvent.SettingsSaved)
             } catch (e: Exception) {
-                _events.emit(SettingsEvent.ShowError(e.message ?: "Failed to save"))
+                _events.emit(SettingsEvent.ShowError(e.message))
             } finally {
                 _state.update { it.copy(isSaving = false) }
             }
@@ -83,7 +83,7 @@ class SettingsViewModel(
                 val cappedMinutes = minutes.coerceIn(5, 60)
                 userRepository.updateUser(user.copy(maxSnoozeDurationMinutes = cappedMinutes))
             } catch (e: Exception) {
-                _events.emit(SettingsEvent.ShowError(e.message ?: "Failed to save"))
+                _events.emit(SettingsEvent.ShowError(e.message))
             } finally {
                 _state.update { it.copy(isSaving = false) }
             }
@@ -97,7 +97,7 @@ class SettingsViewModel(
                 val user = userRepository.getUser() ?: return@launch
                 userRepository.updateUser(user.copy(maxSnoozesPerHabitPerDay = count))
             } catch (e: Exception) {
-                _events.emit(SettingsEvent.ShowError(e.message ?: "Failed to save"))
+                _events.emit(SettingsEvent.ShowError(e.message))
             } finally {
                 _state.update { it.copy(isSaving = false) }
             }
@@ -111,7 +111,7 @@ class SettingsViewModel(
                 val user = userRepository.getUser() ?: return@launch
                 userRepository.updateUser(user.copy(maxConsecutiveSkips = count))
             } catch (e: Exception) {
-                _events.emit(SettingsEvent.ShowError(e.message ?: "Failed to save"))
+                _events.emit(SettingsEvent.ShowError(e.message))
             } finally {
                 _state.update { it.copy(isSaving = false) }
             }
@@ -124,9 +124,9 @@ class SettingsViewModel(
             try {
                 val user = userRepository.getUser() ?: return@launch
                 userRepository.updateUser(user.copy(dailySummaryTime = time))
-                _events.emit(SettingsEvent.ShowSuccess("Daily summary time updated"))
+                _events.emit(SettingsEvent.DailySummaryUpdated)
             } catch (e: Exception) {
-                _events.emit(SettingsEvent.ShowError(e.message ?: "Failed to save"))
+                _events.emit(SettingsEvent.ShowError(e.message))
             } finally {
                 _state.update { it.copy(isSaving = false) }
             }
@@ -135,7 +135,7 @@ class SettingsViewModel(
 }
 
 sealed interface SettingsEvent {
-    data class ShowSuccess(val message: String) : SettingsEvent
-    data class ShowError(val message: String) : SettingsEvent
+    data object SettingsSaved : SettingsEvent
+    data object DailySummaryUpdated : SettingsEvent
+    data class ShowError(val message: String?) : SettingsEvent
 }
-

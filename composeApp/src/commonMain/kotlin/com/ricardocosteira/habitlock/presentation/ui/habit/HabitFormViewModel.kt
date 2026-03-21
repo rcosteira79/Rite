@@ -149,7 +149,7 @@ class HabitFormViewModel(
 
         if (!currentState.isValid) {
             viewModelScope.launch {
-                _events.emit(HabitFormEvent.ShowError("Please fill in all required fields"))
+                _events.emit(HabitFormEvent.RequiredFieldsMissing)
             }
             return
         }
@@ -182,7 +182,7 @@ class HabitFormViewModel(
                 _events.emit(HabitFormEvent.NavigateBack)
             } catch (e: Exception) {
                 _state.update { it.copy(isSaving = false, error = e.message) }
-                _events.emit(HabitFormEvent.ShowError(e.message ?: "Failed to save habit"))
+                _events.emit(HabitFormEvent.ShowError(e.message))
             }
         }
     }
@@ -240,7 +240,7 @@ class HabitFormViewModel(
                 habitRepository.deleteHabit(habitId)
                 _events.emit(HabitFormEvent.NavigateBack)
             } catch (e: Exception) {
-                _events.emit(HabitFormEvent.ShowError(e.message ?: "Failed to delete habit"))
+                _events.emit(HabitFormEvent.ShowError(e.message))
             }
         }
     }

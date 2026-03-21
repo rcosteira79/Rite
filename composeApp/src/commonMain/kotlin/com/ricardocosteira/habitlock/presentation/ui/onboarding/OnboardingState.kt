@@ -22,7 +22,7 @@ data class OnboardingState(
 sealed interface OnboardingEvent {
     data object NavigateToFirstHabit : OnboardingEvent
     data object NavigateToToday : OnboardingEvent
-    data class ShowError(val message: String) : OnboardingEvent
+    data object EmptyHabitName : OnboardingEvent
+    data object MissingTargetValue : OnboardingEvent
+    data object InvalidTargetValue : OnboardingEvent
 }
-
-

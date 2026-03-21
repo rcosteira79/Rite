@@ -137,10 +137,10 @@ class TodayViewModel(
             result.fold(
                 onSuccess = {
                     loadTodayHabits()
-                    _events.emit(TodayEvent.ShowSuccess("Habit completed! 🎉"))
+                    _events.emit(TodayEvent.HabitCompleted)
                 },
                 onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message ?: "Failed to complete habit"))
+                    _events.emit(TodayEvent.ShowError(error.message))
                 }
             )
         }
@@ -160,13 +160,13 @@ class TodayViewModel(
                 onSuccess = { updatedInstance ->
                     loadTodayHabits()
                     if (updatedInstance.isQuantitativeComplete()) {
-                        _events.emit(TodayEvent.ShowSuccess("Habit completed! 🎉"))
+                        _events.emit(TodayEvent.HabitCompleted)
                     } else {
-                        _events.emit(TodayEvent.ShowSuccess("Progress added!"))
+                        _events.emit(TodayEvent.ProgressAdded)
                     }
                 },
                 onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message ?: "Failed to add progress"))
+                    _events.emit(TodayEvent.ShowError(error.message))
                 }
             )
         }
@@ -183,14 +183,13 @@ class TodayViewModel(
             result.fold(
                 onSuccess = {
                     loadTodayHabits()
-                    _events.emit(TodayEvent.ShowSuccess("Habit skipped"))
+                    _events.emit(TodayEvent.HabitSkipped)
                 },
                 onFailure = { error ->
-                    val message = when (error) {
-                        is SkipLockedException -> "You've reached the skip limit. Time to do this one!"
-                        else -> error.message ?: "Failed to skip habit"
+                    when (error) {
+                        is SkipLockedException -> _events.emit(TodayEvent.SkipLimitReached)
+                        else -> _events.emit(TodayEvent.ShowError(error.message))
                     }
-                    _events.emit(TodayEvent.ShowError(message))
                 }
             )
         }
@@ -203,10 +202,10 @@ class TodayViewModel(
             result.fold(
                 onSuccess = {
                     loadTodayHabits()
-                    _events.emit(TodayEvent.ShowSuccess("Action undone"))
+                    _events.emit(TodayEvent.ActionUndone)
                 },
                 onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message ?: "Failed to undo"))
+                    _events.emit(TodayEvent.ShowError(error.message))
                 }
             )
         }
@@ -217,9 +216,9 @@ class TodayViewModel(
             try {
                 habitRepository.archiveHabit(habitId)
                 loadTodayHabits()
-                _events.emit(TodayEvent.ShowSuccess("Habit archived"))
+                _events.emit(TodayEvent.HabitArchived)
             } catch (e: Exception) {
-                _events.emit(TodayEvent.ShowError(e.message ?: "Failed to archive"))
+                _events.emit(TodayEvent.ShowError(e.message))
             }
         }
     }

@@ -25,6 +25,11 @@ data class TodayState(
 sealed interface TodayEvent {
     data class NavigateToHabitDetail(val instanceId: String) : TodayEvent
     data object NavigateToCreateHabit : TodayEvent
-    data class ShowError(val message: String) : TodayEvent
-    data class ShowSuccess(val message: String) : TodayEvent
+    data object HabitCompleted : TodayEvent
+    data object ProgressAdded : TodayEvent
+    data object HabitSkipped : TodayEvent
+    data object ActionUndone : TodayEvent
+    data object HabitArchived : TodayEvent
+    data object SkipLimitReached : TodayEvent
+    data class ShowError(val message: String?) : TodayEvent
 }
