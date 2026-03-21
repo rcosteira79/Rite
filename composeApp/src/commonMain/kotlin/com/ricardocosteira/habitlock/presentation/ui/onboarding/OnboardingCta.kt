@@ -22,8 +22,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.HabitType
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.first_habit_button_create
+import habitlock.composeapp.generated.resources.first_habit_button_skip
+import habitlock.composeapp.generated.resources.philosophy_cta_accept
+import habitlock.composeapp.generated.resources.strictness_cta_continue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 private fun CtaContainer(
@@ -66,7 +72,7 @@ internal fun PhilosophyStepCta(
 ) {
     CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
         Button(onClick = onAdvance, modifier = Modifier.fillMaxWidth()) {
-            Text("Continue")
+            Text(stringResource(Res.string.philosophy_cta_accept))
         }
     }
 }
@@ -83,7 +89,7 @@ internal fun StrictnessStepCta(
             CircularProgressIndicator(modifier = Modifier.size(36.dp))
         } else {
             Button(onClick = onContinue, modifier = Modifier.fillMaxWidth()) {
-                Text("Continue")
+                Text(stringResource(Res.string.strictness_cta_continue))
             }
         }
     }
@@ -98,7 +104,8 @@ internal fun FirstHabitStepCta(
     reduceMotion: Boolean = false
 ) {
     val isEnabled = state.habitName.isNotBlank() &&
-            (state.habitType == HabitType.BINARY || state.targetValue.isNotBlank())
+            (state.habitType == HabitType.BINARY || state.targetValue.isNotBlank()) &&
+            (state.scheduleOption != ScheduleOption.CUSTOM || state.customDays.isNotEmpty())
 
     CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
         if (state.isCreatingHabit) {
@@ -109,7 +116,7 @@ internal fun FirstHabitStepCta(
                 enabled = isEnabled,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Create habit")
+                Text(stringResource(Res.string.first_habit_button_create))
             }
         }
 
@@ -117,7 +124,7 @@ internal fun FirstHabitStepCta(
 
         TextButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = "Skip for now",
+                text = stringResource(Res.string.first_habit_button_skip),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
