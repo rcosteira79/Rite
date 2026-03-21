@@ -1,0 +1,126 @@
+package com.ricardocosteira.habitlock.presentation.ui.onboarding
+
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.dp
+import com.ricardocosteira.habitlock.domain.models.HabitType
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
+@Composable
+private fun CtaContainer(
+    modifier: Modifier = Modifier,
+    reduceMotion: Boolean = false,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val translateYAnim = remember { Animatable(16f) }
+    val alphaAnim = remember { Animatable(0f) }
+
+    LaunchedEffect(Unit) {
+        if (reduceMotion) {
+            translateYAnim.snapTo(0f)
+            alphaAnim.snapTo(1f)
+            return@LaunchedEffect
+        }
+        delay(200)
+        launch { translateYAnim.animateTo(0f, tween(200)) }
+        launch { alphaAnim.animateTo(1f, tween(200)) }
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .graphicsLayer {
+                alpha = alphaAnim.value
+                translationY = translateYAnim.value.dp.toPx()
+            },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        content = content
+    )
+}
+
+@Composable
+internal fun PhilosophyStepCta(
+    onAdvance: () -> Unit,
+    modifier: Modifier = Modifier,
+    reduceMotion: Boolean = false
+) {
+    CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
+        Button(onClick = onAdvance, modifier = Modifier.fillMaxWidth()) {
+            Text("Continue")
+        }
+    }
+}
+
+@Composable
+internal fun StrictnessStepCta(
+    state: OnboardingState,
+    onContinue: () -> Unit,
+    modifier: Modifier = Modifier,
+    reduceMotion: Boolean = false
+) {
+    CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
+        if (state.isApplyingPreset) {
+            CircularProgressIndicator(modifier = Modifier.size(36.dp))
+        } else {
+            Button(onClick = onContinue, modifier = Modifier.fillMaxWidth()) {
+                Text("Continue")
+            }
+        }
+    }
+}
+
+@Composable
+internal fun FirstHabitStepCta(
+    state: OnboardingState,
+    onCreateHabit: () -> Unit,
+    onSkip: () -> Unit,
+    modifier: Modifier = Modifier,
+    reduceMotion: Boolean = false
+) {
+    val isEnabled = state.habitName.isNotBlank() &&
+            (state.habitType == HabitType.BINARY || state.targetValue.isNotBlank())
+
+    CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
+        if (state.isCreatingHabit) {
+            CircularProgressIndicator(modifier = Modifier.size(36.dp))
+        } else {
+            Button(
+                onClick = onCreateHabit,
+                enabled = isEnabled,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Create habit")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        TextButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Skip for now",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}

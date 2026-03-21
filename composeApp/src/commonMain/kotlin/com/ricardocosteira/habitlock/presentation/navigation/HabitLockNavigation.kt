@@ -15,9 +15,7 @@ import com.ricardocosteira.habitlock.di.LocalAppComponent
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsScreen
 import com.ricardocosteira.habitlock.presentation.ui.calendar.CalendarScreen
 import com.ricardocosteira.habitlock.presentation.ui.habit.HabitFormScreen
-import com.ricardocosteira.habitlock.presentation.ui.onboarding.FirstHabitScreen
-import com.ricardocosteira.habitlock.presentation.ui.onboarding.PhilosophyScreen
-import com.ricardocosteira.habitlock.presentation.ui.onboarding.StrictnessScreen
+import com.ricardocosteira.habitlock.presentation.ui.onboarding.OnboardingRoute
 import com.ricardocosteira.habitlock.presentation.ui.settings.SettingsScreen
 import com.ricardocosteira.habitlock.presentation.ui.today.TodayScreen
 import kotlinx.serialization.modules.SerializersModule
@@ -27,9 +25,7 @@ import kotlinx.serialization.modules.subclass
 private val savedStateConfig: SavedStateConfiguration = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
-            subclass(OnboardingPhilosophy::class)
-            subclass(OnboardingStrictness::class)
-            subclass(OnboardingFirstHabit::class)
+            subclass(Onboarding::class)
             subclass(Today::class)
             subclass(HabitDetail::class)
             subclass(CreateHabit::class)
@@ -43,44 +39,24 @@ private val savedStateConfig: SavedStateConfiguration = SavedStateConfiguration 
 
 @Composable
 fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
-    val initialRoute: Route = if (isOnboardingCompleted) Today else OnboardingPhilosophy
+    val initialRoute: Route = if (isOnboardingCompleted) Today else Onboarding
     val backStack = rememberNavBackStack(savedStateConfig, initialRoute)
     val snackbarHostState = remember { SnackbarHostState() }
+    val appComponent = LocalAppComponent.current
 
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
         modifier = Modifier.fillMaxSize(),
         entryProvider = entryProvider {
-            entry<OnboardingPhilosophy> {
-                PhilosophyScreen(
-                    onNavigateToStrictness = { backStack.add(OnboardingStrictness) },
-                    onNavigateToToday = {
+            entry<Onboarding> {
+                OnboardingRoute(
+                    viewModel = appComponent.onboardingViewModel,
+                    snackbarHostState = snackbarHostState,
+                    onFinished = {
                         backStack.clear()
                         backStack.add(Today)
-                    },
-                    snackbarHostState = snackbarHostState
-                )
-            }
-
-            entry<OnboardingStrictness> {
-                StrictnessScreen(
-                    onNavigateToFirstHabit = { backStack.add(OnboardingFirstHabit) },
-                    onNavigateToToday = {
-                        backStack.clear()
-                        backStack.add(Today)
-                    },
-                    snackbarHostState = snackbarHostState
-                )
-            }
-
-            entry<OnboardingFirstHabit> {
-                FirstHabitScreen(
-                    onNavigateToToday = {
-                        backStack.clear()
-                        backStack.add(Today)
-                    },
-                    snackbarHostState = snackbarHostState
+                    }
                 )
             }
 
