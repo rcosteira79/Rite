@@ -67,7 +67,12 @@ class OnboardingViewModel(
     }
 
     fun updateScheduleOption(option: ScheduleOption) {
-        _state.update { it.copy(scheduleOption = option) }
+        _state.update { currentState ->
+            currentState.copy(
+                scheduleOption = option,
+                customDays = if (option == ScheduleOption.CUSTOM) currentState.customDays else emptySet()
+            )
+        }
     }
 
     fun updateCustomDays(days: Set<DayOfWeek>) {

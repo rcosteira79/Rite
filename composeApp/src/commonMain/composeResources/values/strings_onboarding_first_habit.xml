@@ -19,7 +19,7 @@
     <string name="first_habit_type_quantitative_description">Track units like "Minutes" or "Pages". Focus on volume.</string>
 
     <!-- Schedule section -->
-    <string name="first_habit_schedule_label">Set a schedule</string>
+    <string name="first_habit_schedule_label">SET A SCHEDULE</string>
     <string name="first_habit_schedule_every_day">Every Day</string>
     <string name="first_habit_schedule_weekdays">Weekdays</string>
     <string name="first_habit_schedule_weekends">Weekends</string>

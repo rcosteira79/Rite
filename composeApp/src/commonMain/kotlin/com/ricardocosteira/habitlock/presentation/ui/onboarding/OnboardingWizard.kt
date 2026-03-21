@@ -19,6 +19,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.ricardocosteira.habitlock.presentation.ui.BackHandler
+import kotlinx.datetime.DayOfWeek
 
 private const val ENTER_DURATION_MS = 300
 private const val EXIT_DURATION_MS = 200
@@ -43,7 +44,7 @@ fun OnboardingWizard(
     onTargetValueChange: (String) -> Unit,
     onUnitChange: (String) -> Unit,
     onScheduleOptionChange: (ScheduleOption) -> Unit,
-    onCustomDaysChange: (Set<kotlinx.datetime.DayOfWeek>) -> Unit,
+    onCustomDaysChange: (Set<DayOfWeek>) -> Unit,
     reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {

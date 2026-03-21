@@ -176,7 +176,7 @@ fun FirstHabitStep(
 
         // Schedule section
         Text(
-            text = stringResource(Res.string.first_habit_schedule_label).uppercase(),
+            text = stringResource(Res.string.first_habit_schedule_label),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
