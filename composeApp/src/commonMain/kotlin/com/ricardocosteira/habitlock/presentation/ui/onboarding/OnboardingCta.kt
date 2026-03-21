@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -71,7 +73,15 @@ internal fun PhilosophyStepCta(
     reduceMotion: Boolean = false
 ) {
     CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
-        Button(onClick = onAdvance, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = onAdvance,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
+        ) {
             Text(stringResource(Res.string.philosophy_cta_accept))
         }
     }
@@ -88,7 +98,15 @@ internal fun StrictnessStepCta(
         if (state.isApplyingPreset) {
             CircularProgressIndicator(modifier = Modifier.size(36.dp))
         } else {
-            Button(onClick = onContinue, modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = onContinue,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
                 Text(stringResource(Res.string.strictness_cta_continue))
             }
         }
@@ -114,7 +132,12 @@ internal fun FirstHabitStepCta(
             Button(
                 onClick = onCreateHabit,
                 enabled = isEnabled,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
             ) {
                 Text(stringResource(Res.string.first_habit_button_create))
             }
