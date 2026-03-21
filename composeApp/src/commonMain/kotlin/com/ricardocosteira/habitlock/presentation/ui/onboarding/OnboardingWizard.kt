@@ -42,6 +42,8 @@ fun OnboardingWizard(
     onHabitTypeChange: (com.ricardocosteira.habitlock.domain.models.HabitType) -> Unit,
     onTargetValueChange: (String) -> Unit,
     onUnitChange: (String) -> Unit,
+    onScheduleOptionChange: (ScheduleOption) -> Unit,
+    onCustomDaysChange: (Set<kotlinx.datetime.DayOfWeek>) -> Unit,
     reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {
@@ -83,10 +85,14 @@ fun OnboardingWizard(
                             habitType = state.habitType,
                             targetValue = state.targetValue,
                             unit = state.unit,
+                            scheduleOption = state.scheduleOption,
+                            customDays = state.customDays,
                             onHabitNameChange = onHabitNameChange,
                             onHabitTypeChange = onHabitTypeChange,
                             onTargetValueChange = onTargetValueChange,
                             onUnitChange = onUnitChange,
+                            onScheduleOptionChange = onScheduleOptionChange,
+                            onCustomDaysChange = onCustomDaysChange,
                             modifier = Modifier.fillMaxSize()
                         )
                         else -> Unit
@@ -123,10 +129,14 @@ fun OnboardingWizard(
                             habitType = state.habitType,
                             targetValue = state.targetValue,
                             unit = state.unit,
+                            scheduleOption = state.scheduleOption,
+                            customDays = state.customDays,
                             onHabitNameChange = onHabitNameChange,
                             onHabitTypeChange = onHabitTypeChange,
                             onTargetValueChange = onTargetValueChange,
                             onUnitChange = onUnitChange,
+                            onScheduleOptionChange = onScheduleOptionChange,
+                            onCustomDaysChange = onCustomDaysChange,
                             modifier = Modifier.fillMaxSize()
                         )
                         else -> Unit

@@ -58,6 +58,8 @@ fun OnboardingRoute(
         onHabitTypeChange = viewModel::updateHabitType,
         onTargetValueChange = viewModel::updateTargetValue,
         onUnitChange = viewModel::updateUnit,
+        onScheduleOptionChange = viewModel::updateScheduleOption,
+        onCustomDaysChange = viewModel::updateCustomDays,
         modifier = modifier
     )
 }
