@@ -3,6 +3,7 @@ package com.ricardocosteira.habitlock.presentation.ui.onboarding
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.test.assertFalse
 
 class OnboardingStrictnessPresetTest {
 
@@ -54,7 +55,16 @@ class OnboardingStrictnessPresetTest {
     @Test
     fun `BALANCED is recommended, others are not`() {
         assertTrue(OnboardingStrictnessPreset.BALANCED.isRecommended)
-        assertTrue(!OnboardingStrictnessPreset.FLEXIBLE.isRecommended)
-        assertTrue(!OnboardingStrictnessPreset.LOCKED.isRecommended)
+        assertFalse(OnboardingStrictnessPreset.FLEXIBLE.isRecommended)
+        assertFalse(OnboardingStrictnessPreset.LOCKED.isRecommended)
+    }
+
+    @Test
+    fun `LOCKED rules contain key-value pairs for Undo, Snoozes, Skips`() {
+        val rules = OnboardingStrictnessPreset.LOCKED.rules
+        assertEquals(expected = listOf("Undo", "Snoozes", "Skips"), actual = rules.map { it.key })
+        assertEquals(expected = "None",   actual = rules[0].value)
+        assertEquals(expected = "Capped", actual = rules[1].value)
+        assertEquals(expected = "Capped", actual = rules[2].value)
     }
 }
