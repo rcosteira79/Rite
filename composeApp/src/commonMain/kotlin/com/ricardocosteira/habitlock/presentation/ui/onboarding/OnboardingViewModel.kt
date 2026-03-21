@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.TimeZone
 import kotlin.time.Clock
 import me.tatarka.inject.annotations.Inject
@@ -63,6 +64,14 @@ class OnboardingViewModel(
 
     fun updateUnit(unit: String) {
         _state.update { it.copy(unit = unit) }
+    }
+
+    fun updateScheduleOption(option: ScheduleOption) {
+        _state.update { it.copy(scheduleOption = option) }
+    }
+
+    fun updateCustomDays(days: Set<DayOfWeek>) {
+        _state.update { it.copy(customDays = days) }
     }
 
     fun skipToToday() {
@@ -138,6 +147,16 @@ class OnboardingViewModel(
                 null
             }
 
+            val specificDays: Set<DayOfWeek>? = when (_state.value.scheduleOption) {
+                ScheduleOption.EVERY_DAY -> null
+                ScheduleOption.WEEKDAYS -> setOf(
+                    DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
+                    DayOfWeek.THURSDAY, DayOfWeek.FRIDAY
+                )
+                ScheduleOption.WEEKENDS -> setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
+                ScheduleOption.CUSTOM -> _state.value.customDays
+            }
+
             val result = createHabit.execute(
                 params = CreateHabit.CreateHabitParams(
                     name = habitName,
@@ -145,6 +164,7 @@ class OnboardingViewModel(
                     type = habitType,
                     targetValue = targetValue,
                     unit = unit,
+                    specificDays = specificDays,
                     reminder = null
                 ),
                 startDate = today
