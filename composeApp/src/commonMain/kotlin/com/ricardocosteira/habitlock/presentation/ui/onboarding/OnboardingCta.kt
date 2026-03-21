@@ -33,6 +33,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
+private val CtaButtonShape = RoundedCornerShape(12.dp)
+
+@Composable
+private fun ctaButtonColors() = ButtonDefaults.buttonColors(
+    containerColor = MaterialTheme.colorScheme.primaryContainer,
+    contentColor = MaterialTheme.colorScheme.onPrimary
+)
+
 @Composable
 private fun CtaContainer(
     modifier: Modifier = Modifier,
@@ -76,11 +84,8 @@ internal fun PhilosophyStepCta(
         Button(
             onClick = onAdvance,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
+            shape = CtaButtonShape,
+            colors = ctaButtonColors()
         ) {
             Text(stringResource(Res.string.philosophy_cta_accept))
         }
@@ -101,11 +106,8 @@ internal fun StrictnessStepCta(
             Button(
                 onClick = onContinue,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                shape = CtaButtonShape,
+                colors = ctaButtonColors()
             ) {
                 Text(stringResource(Res.string.strictness_cta_continue))
             }
@@ -133,11 +135,8 @@ internal fun FirstHabitStepCta(
                 onClick = onCreateHabit,
                 enabled = isEnabled,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                shape = CtaButtonShape,
+                colors = ctaButtonColors()
             ) {
                 Text(stringResource(Res.string.first_habit_button_create))
             }
