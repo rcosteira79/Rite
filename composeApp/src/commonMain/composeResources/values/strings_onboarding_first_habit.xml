@@ -16,7 +16,6 @@
 
     <!-- Type card descriptions -->
     <string name="first_habit_type_binary_description">Simple "Yes" or "No" completion. Perfect for streaks.</string>
-    <string name="first_habit_type_quantitative">Quantitative</string>
     <string name="first_habit_type_quantitative_description">Track units like "Minutes" or "Pages". Focus on volume.</string>
 
     <!-- Schedule section -->
