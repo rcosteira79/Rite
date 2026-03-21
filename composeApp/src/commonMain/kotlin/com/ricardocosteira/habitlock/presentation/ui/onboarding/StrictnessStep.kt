@@ -148,6 +148,7 @@ private fun PresetCard(
                     ) else Modifier
                 )
                 .background(backgroundColor)
+                .animateContentSize(animationSpec = tween(200))
                 .clickable { onClick() }
                 .semantics {
                     role = Role.RadioButton
@@ -155,7 +156,6 @@ private fun PresetCard(
                     stateDescription = if (isSelected) "Selected" else "Not selected"
                 }
                 .padding(16.dp)
-                .animateContentSize(animationSpec = tween(200))
         ) {
             if (isSelected) {
                 // === SELECTED STATE ===
