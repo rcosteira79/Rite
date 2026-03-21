@@ -1,6 +1,8 @@
 package com.ricardocosteira.habitlock.presentation.ui.onboarding
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Balance
@@ -54,8 +57,7 @@ private fun OnboardingStrictnessPreset.icon(): ImageVector = when (this) {
 fun StrictnessStep(
     selectedPreset: OnboardingStrictnessPreset,
     onPresetSelected: (OnboardingStrictnessPreset) -> Unit,
-    modifier: Modifier = Modifier,
-    reduceMotion: Boolean = false
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
@@ -121,7 +123,11 @@ private fun PresetCard(
         label = "presetCardBackground"
     )
 
-    val cornerRadius = if (isSelected) 24.dp else 16.dp
+    val cornerRadius by animateDpAsState(
+        targetValue = if (isSelected) 24.dp else 16.dp,
+        animationSpec = tween(200),
+        label = "presetCardCornerRadius"
+    )
 
     Box(modifier = modifier) {
         Column(
@@ -134,7 +140,6 @@ private fun PresetCard(
                     ) else Modifier
                 )
                 .clip(RoundedCornerShape(cornerRadius))
-                .background(backgroundColor)
                 .then(
                     if (!isSelected) Modifier.border(
                         width = 1.dp,
@@ -142,6 +147,7 @@ private fun PresetCard(
                         shape = RoundedCornerShape(cornerRadius)
                     ) else Modifier
                 )
+                .background(backgroundColor)
                 .clickable { onClick() }
                 .semantics {
                     role = Role.RadioButton
@@ -149,6 +155,7 @@ private fun PresetCard(
                     stateDescription = if (isSelected) "Selected" else "Not selected"
                 }
                 .padding(16.dp)
+                .animateContentSize(animationSpec = tween(200))
         ) {
             if (isSelected) {
                 // === SELECTED STATE ===
@@ -246,7 +253,7 @@ private fun PresetCard(
                     .offset(y = (-12).dp)
                     .background(
                         color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(999.dp)
+                        shape = CircleShape
                     )
                     .padding(horizontal = 14.dp, vertical = 3.dp)
             ) {
