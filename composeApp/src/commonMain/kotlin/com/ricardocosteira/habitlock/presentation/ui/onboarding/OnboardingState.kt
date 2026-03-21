@@ -1,6 +1,9 @@
 package com.ricardocosteira.habitlock.presentation.ui.onboarding
 
 import com.ricardocosteira.habitlock.domain.models.HabitType
+import kotlinx.datetime.DayOfWeek
+
+enum class ScheduleOption { EVERY_DAY, WEEKDAYS, WEEKENDS, CUSTOM }
 
 /**
  * State for the onboarding flow.
@@ -11,6 +14,8 @@ data class OnboardingState(
     val habitType: HabitType = HabitType.BINARY,
     val targetValue: String = "",
     val unit: String = "",
+    val scheduleOption: ScheduleOption = ScheduleOption.EVERY_DAY,
+    val customDays: Set<DayOfWeek> = emptySet(),
     val isCreatingHabit: Boolean = false,
     val isApplyingPreset: Boolean = false,
     val error: String? = null
