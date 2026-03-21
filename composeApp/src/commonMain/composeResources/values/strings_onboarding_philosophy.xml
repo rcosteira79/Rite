@@ -2,4 +2,5 @@
 <resources>
     <string name="philosophy_heading">🔒 HabitLock enforces what you commit to</string>
     <string name="philosophy_body">HabitLock isn\'t about motivation or reminders alone.\nIt\'s about keeping promises to yourself — even on hard days.\n\nYou choose the rules.\nHabitLock helps you stick to them.</string>
+    <string name="philosophy_cta_accept">Accept the Commitment</string>
 </resources>
