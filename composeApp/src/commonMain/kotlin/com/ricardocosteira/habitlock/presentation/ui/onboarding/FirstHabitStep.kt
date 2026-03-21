@@ -33,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -71,6 +72,20 @@ import habitlock.composeapp.generated.resources.first_habit_type_quantitative_de
 import kotlinx.datetime.DayOfWeek
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+
+private val OnboardingTextFieldShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+
+private val HabitTypeCardIconSize = 26.dp
+
+@Composable
+private fun onboardingTextFieldColors(): TextFieldColors =
+    TextFieldDefaults.colors(
+        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        disabledIndicatorColor = Color.Transparent
+    )
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -133,14 +148,8 @@ fun FirstHabitStep(
             placeholder = { Text(stringResource(Res.string.common_placeholder_habit_name)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 0.dp, bottomEnd = 0.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            )
+            shape = OnboardingTextFieldShape,
+            colors = onboardingTextFieldColors()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -176,14 +185,8 @@ fun FirstHabitStep(
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 0.dp, bottomEnd = 0.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent
-                        )
+                        shape = OnboardingTextFieldShape,
+                        colors = onboardingTextFieldColors()
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     TextField(
@@ -193,14 +196,8 @@ fun FirstHabitStep(
                         placeholder = { Text(stringResource(Res.string.first_habit_placeholder_unit)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 0.dp, bottomEnd = 0.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent
-                        )
+                        shape = OnboardingTextFieldShape,
+                        colors = onboardingTextFieldColors()
                     )
                 }
             }
@@ -302,7 +299,7 @@ private fun HabitTypeCard(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.size(26.dp),
+                modifier = Modifier.size(HabitTypeCardIconSize),
                 tint = if (isSelected) MaterialTheme.colorScheme.primary
                        else MaterialTheme.colorScheme.onSurfaceVariant
             )
