@@ -166,30 +166,30 @@ private fun PresetCard(
                     imageVector = preset.icon(),
                     contentDescription = null,
                     modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = preset.label,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = preset.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 HorizontalDivider(
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.1f)
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 preset.rules.forEachIndexed { index, rule ->
                     if (index > 0) {
                         HorizontalDivider(
                             modifier = Modifier.padding(vertical = 8.dp),
-                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.07f)
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.07f)
                         )
                     }
                     Row(
@@ -199,12 +199,12 @@ private fun PresetCard(
                         Text(
                             text = rule.key,
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f)
                         )
                         Text(
                             text = rule.value,
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                 }

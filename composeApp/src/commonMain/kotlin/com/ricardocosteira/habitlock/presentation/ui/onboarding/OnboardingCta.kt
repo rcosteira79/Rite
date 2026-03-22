@@ -38,7 +38,7 @@ private val CtaButtonShape = RoundedCornerShape(12.dp)
 @Composable
 private fun ctaButtonColors() = ButtonDefaults.buttonColors(
     containerColor = MaterialTheme.colorScheme.primaryContainer,
-    contentColor = MaterialTheme.colorScheme.onPrimary
+    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
 )
 
 @Composable
