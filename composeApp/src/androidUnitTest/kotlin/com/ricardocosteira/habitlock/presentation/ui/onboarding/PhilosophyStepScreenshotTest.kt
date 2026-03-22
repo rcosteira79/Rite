@@ -1,0 +1,41 @@
+package com.ricardocosteira.habitlock.presentation.ui.onboarding
+
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onRoot
+import com.github.takahirom.roborazzi.captureRoboImage
+import com.ricardocosteira.habitlock.presentation.ui.theme.HabitLockThemeFallback
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+
+@RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(sdk = [33])
+class PhilosophyStepScreenshotTest {
+
+    @get:Rule
+    val composeRule = createComposeRule()
+
+    @Test
+    fun philosophyStep_lightTheme() {
+        composeRule.setContent {
+            HabitLockThemeFallback(darkTheme = false) {
+                PhilosophyStep(reduceMotion = true)
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun philosophyStep_darkTheme() {
+        composeRule.setContent {
+            HabitLockThemeFallback(darkTheme = true) {
+                PhilosophyStep(reduceMotion = true)
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+}

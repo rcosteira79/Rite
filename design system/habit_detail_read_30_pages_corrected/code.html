@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HabitLock - Habit Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline": "#727974",
+              "primary-container": "#2d4f3f",
+              "inverse-primary": "#a9cfba",
+              "error": "#ba1a1a",
+              "surface-tint": "#436654",
+              "background": "#fdf9f6",
+              "secondary-fixed-dim": "#bcc7dd",
+              "primary": "#163829",
+              "on-primary-container": "#9ac0ab",
+              "on-error": "#ffffff",
+              "on-background": "#1c1b1a",
+              "on-tertiary-fixed-variant": "#584329",
+              "on-primary": "#ffffff",
+              "surface-variant": "#e5e2df",
+              "tertiary": "#412e15",
+              "on-secondary-fixed-variant": "#3c475a",
+              "inverse-on-surface": "#f4f0ed",
+              "surface-container-highest": "#e5e2df",
+              "primary-fixed": "#c5ebd6",
+              "surface-bright": "#fdf9f6",
+              "tertiary-fixed": "#fdddb9",
+              "on-primary-fixed": "#002114",
+              "secondary-fixed": "#d8e3fa",
+              "secondary": "#545f72",
+              "outline-variant": "#c1c8c2",
+              "on-secondary-container": "#586377",
+              "on-primary-fixed-variant": "#2b4d3e",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#59442a",
+              "on-tertiary-fixed": "#281803",
+              "surface-container-high": "#ebe7e4",
+              "surface-container-low": "#f7f3f0",
+              "surface-container": "#f1edea",
+              "secondary-container": "#d5e0f7",
+              "on-error-container": "#93000a",
+              "on-secondary": "#ffffff",
+              "error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#e0c29f",
+              "surface": "#fdf9f6",
+              "primary-fixed-dim": "#a9cfba",
+              "inverse-surface": "#31302f",
+              "surface-dim": "#ddd9d6",
+              "on-surface-variant": "#414844",
+              "on-tertiary-container": "#cfb290",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#1c1b1a",
+              "on-secondary-fixed": "#111c2c"
+            },
+            fontFamily: {
+              "headline": ["Manrope", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-glass {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .asymmetric-layout {
+            padding-left: 2rem;
+            padding-right: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body min-h-screen selection:bg-primary-fixed">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-40 bg-[#FDF9F6] dark:bg-[#1C1B1A]">
+<div class="flex justify-between items-center px-8 py-4 w-full">
+<button class="p-2 -ml-2 rounded-full hover:bg-[#E5E2DF]/50 transition-colors active:opacity-80 active:scale-95">
+<span class="material-symbols-outlined text-[#163829] dark:text-[#A9CFBA]">arrow_back</span>
+</button>
+<h1 class="font-headline font-bold text-2xl tracking-tight text-[#163829] dark:text-[#A9CFBA]">HabitLock</h1>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/15">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="Close up portrait of a smiling man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANI2qe8ofsidCw-7ekKSlGyRXPiw_Y8ZIa9JcCppXkUrT-LWQFarHbrruq32bX5iMZ_Xi3puAlwiAAqyGZw_ZDsIteLzqTCTmFOVrCWErAz_M3Beq-YRlM5QcmIpCMHm6GqBk5zadhdVqMcP2wulATX76HHcCapao_zTPwTN615ZclmCKoICE58DRiR_83Qrxb7ZMcWhatTuL9XB_orJoKNJatX6xpg3xslINrOC862Io7xPcMcb3ouxdkN1GDLD8TqxlIdiJK_OU"/>
+</div>
+</div>
+<div class="bg-[#F7F3F0] dark:bg-[#2D2C2B] h-px w-full opacity-15"></div>
+</header>
+<main class="max-w-2xl mx-auto pb-32">
+<!-- Hero Section -->
+<section class="asymmetric-layout pt-8 pb-6">
+<span class="text-secondary font-label text-xs tracking-widest uppercase mb-2 block">Quantitative Pursuit</span>
+<h2 class="font-headline text-3xl font-extrabold text-primary leading-tight mb-4 uppercase">Read 30 Pages</h2>
+<!-- Tactile Progress Ring & Stats -->
+<div class="flex flex-col md:flex-row items-center gap-8 bg-surface-container-low rounded-[1.5rem] p-8 mt-4">
+<div class="relative w-40 h-40 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90">
+<circle class="text-surface-variant" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary-container" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" stroke-dasharray="440" stroke-dashoffset="110" stroke-linecap="round" stroke-width="10"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline text-3xl font-bold text-on-surface">22</span>
+<span class="font-label text-[10px] uppercase tracking-tighter text-secondary">of 30 pages</span>
+</div>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-4 w-full">
+<div class="p-4 bg-surface-container-highest rounded-xl">
+<span class="block font-label text-[10px] text-secondary uppercase mb-1">Current Streak</span>
+<span class="font-headline text-xl font-bold text-primary">14 Days</span>
+</div>
+<div class="p-4 bg-surface-container-highest rounded-xl">
+<span class="block font-label text-[10px] text-secondary uppercase mb-1">Longest Streak</span>
+<span class="font-headline text-xl font-bold text-primary">42 Days</span>
+</div>
+<div class="p-4 bg-surface-container-highest rounded-xl col-span-2">
+<div class="flex justify-between items-center">
+<div>
+<span class="block font-label text-[10px] text-secondary uppercase mb-1">Enforcement Limits</span>
+<span class="font-headline text-lg font-bold text-error">2 skips remaining</span>
+</div>
+<span class="material-symbols-outlined text-error opacity-40">lock_clock</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Progress Chart Section -->
+<section class="asymmetric-layout py-6">
+<h3 class="font-headline text-xl font-bold text-on-surface mb-6">Weekly Velocity</h3>
+<div class="grid grid-cols-7 gap-2 items-end h-48 bg-surface-container-low p-6 rounded-[1.5rem]">
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="w-full bg-surface-variant rounded-full h-[40%] group-hover:bg-primary-fixed-dim transition-colors"></div>
+<span class="font-label text-[10px] text-secondary">M</span>
+</div>
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="w-full bg-surface-variant rounded-full h-[65%] group-hover:bg-primary-fixed-dim transition-colors"></div>
+<span class="font-label text-[10px] text-secondary">T</span>
+</div>
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="w-full bg-primary-container rounded-full h-[100%]"></div>
+<span class="font-label text-[10px] text-primary font-bold">W</span>
+</div>
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="w-full bg-surface-variant rounded-full h-[85%] group-hover:bg-primary-fixed-dim transition-colors"></div>
+<span class="font-label text-[10px] text-secondary">T</span>
+</div>
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="w-full bg-surface-variant rounded-full h-[30%] group-hover:bg-primary-fixed-dim transition-colors"></div>
+<span class="font-label text-[10px] text-secondary">F</span>
+</div>
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="w-full bg-surface-variant rounded-full h-[55%] group-hover:bg-primary-fixed-dim transition-colors"></div>
+<span class="font-label text-[10px] text-secondary">S</span>
+</div>
+<div class="flex flex-col items-center gap-2 group h-full justify-end">
+<div class="w-full bg-primary-fixed-dim/40 border border-dashed border-outline-variant rounded-full h-[70%]"></div>
+<span class="font-label text-[10px] text-secondary">S</span>
+</div>
+</div>
+</section>
+<!-- Actions -->
+<section class="asymmetric-layout py-8 flex flex-col gap-4">
+<button class="w-full bg-primary-container text-on-primary py-4 rounded-xl font-headline font-bold flex items-center justify-center gap-3 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined">add_circle</span>
+                Log Progress
+            </button>
+<div class="flex gap-4">
+<button class="flex-1 bg-secondary-container text-on-secondary-container py-4 rounded-xl font-headline font-bold flex items-center justify-center gap-3 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined">redo</span>
+                    Skip
+                </button>
+<button class="px-6 bg-surface-container-highest text-on-surface-variant py-4 rounded-xl active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-6 left-0 right-0 z-50 flex justify-around items-center px-4 py-3 mx-auto w-[92%] max-w-lg">
+<div class="w-full max-w-md bg-[#FDF9F6]/80 dark:bg-[#1C1B1A]/80 backdrop-blur-xl rounded-[24px] shadow-[0_8px_24px_-2px_rgba(28,27,26,0.06)] flex justify-around items-center p-2">
+<a class="flex flex-col items-center justify-center bg-[#2D4F3F] dark:bg-[#A9CFBA] text-[#FDF9F6] dark:text-[#163829] rounded-[16px] px-5 py-2 active:scale-90 transition-transform duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">today</span>
+<span class="font-label font-medium text-[10px] uppercase tracking-widest mt-0.5">Today</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#545F72] dark:text-[#E5E2DF] px-5 py-2 hover:bg-[#F7F3F0] dark:hover:bg-[#2C2B2A] rounded-[16px] active:scale-90 transition-transform duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label font-medium text-[10px] uppercase tracking-widest mt-0.5">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#545F72] dark:text-[#E5E2DF] px-5 py-2 hover:bg-[#F7F3F0] dark:hover:bg-[#2C2B2A] rounded-[16px] active:scale-90 transition-transform duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">center_focus_strong</span>
+<span class="font-label font-medium text-[10px] uppercase tracking-widest mt-0.5">Focus</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#545F72] dark:text-[#E5E2DF] px-5 py-2 hover:bg-[#F7F3F0] dark:hover:bg-[#2C2B2A] rounded-[16px] active:scale-90 transition-transform duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label font-medium text-[10px] uppercase tracking-widest mt-0.5">Settings</span>
+</a>
+</div>
+</nav>
+</body></html>

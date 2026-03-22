@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HabitLock — Create Your First Habit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-low": "#f7f3f0",
+              "surface-container": "#f1edea",
+              "secondary-container": "#d5e0f7",
+              "tertiary-container": "#59442a",
+              "on-tertiary-fixed": "#281803",
+              "surface-container-high": "#ebe7e4",
+              "on-secondary-container": "#586377",
+              "on-primary-fixed-variant": "#2b4d3e",
+              "on-tertiary": "#ffffff",
+              "secondary": "#545f72",
+              "outline-variant": "#c1c8c2",
+              "surface-dim": "#ddd9d6",
+              "on-surface-variant": "#414844",
+              "on-tertiary-container": "#cfb290",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#1c1b1a",
+              "on-secondary-fixed": "#111c2c",
+              "tertiary-fixed-dim": "#e0c29f",
+              "surface": "#fdf9f6",
+              "primary-fixed-dim": "#a9cfba",
+              "inverse-surface": "#31302f",
+              "on-secondary": "#ffffff",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "on-error": "#ffffff",
+              "on-background": "#1c1b1a",
+              "on-tertiary-fixed-variant": "#584329",
+              "on-primary": "#ffffff",
+              "secondary-fixed-dim": "#bcc7dd",
+              "primary": "#163829",
+              "on-primary-container": "#9ac0ab",
+              "surface-tint": "#436654",
+              "background": "#fdf9f6",
+              "outline": "#727974",
+              "primary-container": "#2d4f3f",
+              "inverse-primary": "#a9cfba",
+              "error": "#ba1a1a",
+              "tertiary-fixed": "#fdddb9",
+              "on-primary-fixed": "#002114",
+              "secondary-fixed": "#d8e3fa",
+              "surface-bright": "#fdf9f6",
+              "primary-fixed": "#c5ebd6",
+              "surface-variant": "#e5e2df",
+              "tertiary": "#412e15",
+              "on-secondary-fixed-variant": "#3c475a",
+              "inverse-on-surface": "#f4f0ed",
+              "surface-container-highest": "#e5e2df"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        display: inline-block;
+        line-height: 1;
+        text-transform: none;
+        letter-spacing: normal;
+        word-wrap: normal;
+        white-space: nowrap;
+        direction: ltr;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #FDF9F6;
+        color: #1C1B1A;
+      }
+      h1, h2, h3 {
+        font-family: 'Manrope', sans-serif;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background min-h-screen pb-32">
+<header class="bg-[#FDF9F6] dark:bg-[#1C1B1A] flex justify-between items-center w-full px-8 py-4 fixed top-0 z-50">
+<div class="text-2xl font-extrabold text-[#163829] dark:text-[#A9CFBA]">HabitLock</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#163829] dark:text-[#A9CFBA] cursor-pointer" data-icon="calendar_today">calendar_today</span>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden">
+<img alt="user profile" class="w-full h-full object-cover" data-alt="Minimalist user profile avatar portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPuvjDez9qRgUNg-eVb5ypnFFfLZFHAMtvLA8p6nO_0S3axW98mWEb2tZXw85TRtu2J4IrcpVtTVXZvIbYcyr57333_ge3ByCScbEeuuPh8-qPKLfda0OgzOS6x3_WDyb6MvUPo1Xy3tAgrlTFsCmOVBcxENhiJMIr4-zpX4KJsGKubhLvMndmRtENdV6mBY8Y8_hdmF1g85IHPEiiC-kibrw6iFVOhtpFE0xLfBb5RFwD4TV4JOiWzbJLZeikjREizdN8Fc8d-Sc"/>
+</div>
+</div>
+</header>
+<div class="bg-[#F7F3F0] dark:bg-[#2C2B2A] h-[1px] w-full mt-[64px]"></div>
+<main class="max-w-xl mx-auto px-6 pt-12 pb-12">
+<section class="mb-10 text-left">
+<span class="text-secondary font-label text-xs uppercase tracking-[0.2em] mb-3 block">Step 03 — Onboarding</span>
+<h1 class="text-primary font-headline font-bold text-4xl tracking-tight leading-tight">Create your first habit.</h1>
+<p class="text-on-surface-variant font-body text-lg mt-4 max-w-md">Small steps lead to lasting change. Let's start with one meaningful action.</p>
+</section>
+<form class="space-y-8">
+<div class="space-y-2">
+<label class="font-headline font-bold text-primary text-sm tracking-wide ml-1" for="habit-name">WHAT IS YOUR HABIT?</label>
+<div class="relative">
+<input class="w-full bg-surface-container-highest border-none rounded-xl px-6 py-5 text-on-surface font-headline text-xl focus:ring-2 focus:ring-primary outline-none transition-all placeholder:text-outline-variant" id="habit-name" placeholder="e.g. Morning Meditation" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="relative group">
+<input checked="" class="hidden peer" id="type-binary" name="habit-type" type="radio"/>
+<label class="flex flex-col p-6 rounded-[1.5rem] bg-surface-container-low border-2 border-transparent peer-checked:bg-surface-container-highest peer-checked:border-primary-container cursor-pointer transition-all hover:bg-surface-container" for="type-binary">
+<span class="material-symbols-outlined text-primary-container text-3xl mb-4" data-icon="check_circle">check_circle</span>
+<span class="font-headline font-bold text-primary text-lg">Binary</span>
+<span class="text-on-surface-variant text-sm mt-1">Simple "Yes" or "No" completion. Perfect for streaks.</span>
+</label>
+</div>
+<div class="relative group">
+<input class="hidden peer" id="type-quant" name="habit-type" type="radio"/>
+<label class="flex flex-col p-6 rounded-[1.5rem] bg-surface-container-low border-2 border-transparent peer-checked:bg-surface-container-highest peer-checked:border-primary-container cursor-pointer transition-all hover:bg-surface-container" for="type-quant">
+<span class="material-symbols-outlined text-secondary text-3xl mb-4" data-icon="show_chart">show_chart</span>
+<span class="font-headline font-bold text-primary text-lg">Quantitative</span>
+<span class="text-on-surface-variant text-sm mt-1">Track units like "Minutes" or "Pages". Focus on volume.</span>
+</label>
+</div>
+</div>
+<div class="space-y-4">
+<label class="font-headline font-bold text-primary text-sm tracking-wide ml-1">SET A SCHEDULE</label>
+<div class="flex flex-wrap gap-2">
+<button class="px-5 py-3 rounded-full bg-primary-container text-on-primary font-medium text-sm transition-all" type="button">Every Day</button>
+<button class="px-5 py-3 rounded-full bg-surface-container-low text-on-surface-variant font-medium text-sm hover:bg-surface-container transition-all" type="button">Weekdays</button>
+<button class="px-5 py-3 rounded-full bg-surface-container-low text-on-surface-variant font-medium text-sm hover:bg-surface-container transition-all" type="button">Weekends</button>
+<button class="px-5 py-3 rounded-full bg-surface-container-low text-on-surface-variant font-medium text-sm hover:bg-surface-container transition-all" type="button">Custom</button>
+</div>
+</div>
+<div class="pt-6 flex flex-col gap-4">
+<button class="w-full bg-primary-container text-white py-5 rounded-xl font-headline font-bold text-lg active:scale-95 transition-transform duration-200" type="submit">
+                    Create Habit
+                </button>
+<button class="w-full bg-transparent text-secondary py-3 rounded-xl font-body font-medium text-sm hover:bg-surface-container transition-all" type="button">
+                    Skip for now
+                </button>
+</div>
+</form>
+</main>
+<nav class="fixed bottom-6 left-0 right-0 z-50 flex justify-around items-center px-4 py-3 mx-auto w-[92%] max-w-lg bg-[#FDF9F6]/80 dark:bg-[#1C1B1A]/80 backdrop-blur-xl shadow-[0_8px_24px_-2px_rgba(28,27,26,0.06)] rounded-[24px]">
+<a class="flex flex-col items-center justify-center bg-[#2D4F3F] dark:bg-[#A9CFBA] text-[#FDF9F6] dark:text-[#163829] rounded-[16px] px-5 py-2 scale-90 transition-transform duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="today">today</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest mt-1">Today</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#545F72] dark:text-[#E5E2DF] px-5 py-2 hover:bg-[#F7F3F0] dark:hover:bg-[#2C2B2A] rounded-[16px]" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest mt-1">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#545F72] dark:text-[#E5E2DF] px-5 py-2 hover:bg-[#F7F3F0] dark:hover:bg-[#2C2B2A] rounded-[16px]" href="#">
+<span class="material-symbols-outlined" data-icon="center_focus_strong">center_focus_strong</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest mt-1">Focus</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#545F72] dark:text-[#E5E2DF] px-5 py-2 hover:bg-[#F7F3F0] dark:hover:bg-[#2C2B2A] rounded-[16px]" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest mt-1">Settings</span>
+</a>
+</nav>
+</body></html>

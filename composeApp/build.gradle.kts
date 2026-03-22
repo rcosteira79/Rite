@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.roborazzi)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinxSerialization)
@@ -61,6 +62,14 @@ kotlin {
             implementation(libs.mockk)
             implementation(libs.turbine)
         }
+        androidUnitTest.dependencies {
+            implementation(libs.robolectric)
+            implementation(libs.roborazzi)
+            implementation(libs.roborazzi.compose)
+            implementation(libs.roborazzi.junit.rule)
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
+        }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
         }
@@ -114,6 +123,11 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 }
 
