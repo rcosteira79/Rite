@@ -1,6 +1,7 @@
 package com.ricardocosteira.habitlock.presentation.ui.onboarding
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.snap
@@ -161,35 +162,42 @@ private fun PresetCard(
                 .padding(16.dp)
         ) {
             if (isSelected) {
+                // Light: white (#FFFFFF) on forest green — Forest Discipline
+                // Dark: sage (#A9CFBA) on forest green — Stoic Night
+                val cardContent = if (isSystemInDarkTheme()) {
+                    MaterialTheme.colorScheme.onPrimaryContainer
+                } else {
+                    MaterialTheme.colorScheme.onPrimary
+                }
                 // === SELECTED STATE ===
                 Icon(
                     imageVector = preset.icon(),
                     contentDescription = null,
                     modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    tint = cardContent
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = preset.label,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = cardContent
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = preset.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                    color = cardContent.copy(alpha = 0.8f)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 HorizontalDivider(
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.1f)
+                    color = cardContent.copy(alpha = 0.1f)
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 preset.rules.forEachIndexed { index, rule ->
                     if (index > 0) {
                         HorizontalDivider(
                             modifier = Modifier.padding(vertical = 8.dp),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.07f)
+                            color = cardContent.copy(alpha = 0.07f)
                         )
                     }
                     Row(
@@ -199,12 +207,12 @@ private fun PresetCard(
                         Text(
                             text = rule.key,
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f)
+                            color = cardContent.copy(alpha = 0.6f)
                         )
                         Text(
                             text = rule.value,
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = cardContent
                         )
                     }
                 }
