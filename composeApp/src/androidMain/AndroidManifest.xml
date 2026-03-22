@@ -17,6 +17,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HabitLock">
 
+        <!-- Required for createComposeRule() in Robolectric tests -->
+        <activity
+            android:name="androidx.activity.ComponentActivity"
+            android:exported="false" />
+
         <!-- Main Activity -->
         <activity
             android:exported="true"
