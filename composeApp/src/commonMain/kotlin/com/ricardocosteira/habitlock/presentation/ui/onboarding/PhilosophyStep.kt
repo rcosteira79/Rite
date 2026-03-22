@@ -75,7 +75,7 @@ fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false)
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .offset(x = 120.dp, y = (-80).dp)
-                .size(420.dp)
+                .requiredSize(420.dp)
                 .graphicsLayer { rotationZ = 12f }
                 .border(
                     width = 40.dp,
