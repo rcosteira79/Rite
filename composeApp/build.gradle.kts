@@ -68,7 +68,7 @@ kotlin {
             implementation(libs.roborazzi.compose)
             implementation(libs.roborazzi.junit.rule)
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-            implementation(compose.uiTest)
+            implementation(compose.uiTestJUnit4)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
