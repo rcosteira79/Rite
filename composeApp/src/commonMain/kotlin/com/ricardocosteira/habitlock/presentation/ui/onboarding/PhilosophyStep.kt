@@ -67,7 +67,7 @@ fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false)
           .graphicsLayer { rotationZ = 12f }
           .border(
             width = 40.dp,
-            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.05f),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
             shape = CircleShape,
           )
     )
