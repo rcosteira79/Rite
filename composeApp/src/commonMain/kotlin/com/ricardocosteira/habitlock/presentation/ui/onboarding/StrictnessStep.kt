@@ -156,7 +156,7 @@ private fun PresetCard(
             .then(
                 if (isSelected) Modifier.background(
                     Brush.verticalGradient(
-                        listOf(Color.White.copy(alpha = 0.06f), Color.Transparent)
+                        listOf(Color.Transparent, Color.Black.copy(alpha = 0.25f))
                     )
                 ) else Modifier
             )
