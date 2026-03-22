@@ -2,7 +2,6 @@ package com.ricardocosteira.habitlock.presentation.ui.onboarding
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
@@ -37,19 +36,10 @@ import org.jetbrains.compose.resources.stringResource
 private val CtaButtonShape = RoundedCornerShape(12.dp)
 
 @Composable
-private fun ctaButtonColors() = if (isSystemInDarkTheme()) {
-    // Stoic Night: sage button (#A9CFBA) with dark text (#143728)
-    ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary
-    )
-} else {
-    // Forest Discipline: forest green button (#2D4F3F) with white text
-    ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimary
-    )
-}
+private fun ctaButtonColors() = ButtonDefaults.buttonColors(
+    containerColor = MaterialTheme.colorScheme.primary,
+    contentColor = MaterialTheme.colorScheme.onPrimary
+)
 
 @Composable
 private fun CtaContainer(
