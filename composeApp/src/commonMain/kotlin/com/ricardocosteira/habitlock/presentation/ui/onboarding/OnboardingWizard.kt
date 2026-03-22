@@ -2,7 +2,6 @@ package com.ricardocosteira.habitlock.presentation.ui.onboarding
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -10,7 +9,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -75,30 +73,58 @@ fun OnboardingWizard(
                     modifier = Modifier.fillMaxWidth().weight(1f),
                     label = "onboarding_step"
                 ) { step ->
-                    when (step) {
-                        0 -> PhilosophyStep(modifier = Modifier.fillMaxSize(), reduceMotion = true)
-                        1 -> StrictnessStep(
-                            selectedPreset = state.selectedPreset,
-                            onPresetSelected = onPresetSelected,
-                            reduceMotion = reduceMotion,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        2 -> FirstHabitStep(
-                            habitName = state.habitName,
-                            habitType = state.habitType,
-                            targetValue = state.targetValue,
-                            unit = state.unit,
-                            scheduleOption = state.scheduleOption,
-                            customDays = state.customDays,
-                            onHabitNameChange = onHabitNameChange,
-                            onHabitTypeChange = onHabitTypeChange,
-                            onTargetValueChange = onTargetValueChange,
-                            onUnitChange = onUnitChange,
-                            onScheduleOptionChange = onScheduleOptionChange,
-                            onCustomDaysChange = onCustomDaysChange,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        else -> Unit
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        when (step) {
+                            0 -> {
+                                PhilosophyStep(
+                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                    reduceMotion = true
+                                )
+                                PhilosophyStepCta(
+                                    onAdvance = { onStepChange(step + 1) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = true
+                                )
+                            }
+                            1 -> {
+                                StrictnessStep(
+                                    selectedPreset = state.selectedPreset,
+                                    onPresetSelected = onPresetSelected,
+                                    reduceMotion = true,
+                                    modifier = Modifier.weight(1f).fillMaxWidth()
+                                )
+                                StrictnessStepCta(
+                                    state = state,
+                                    onContinue = onContinueFromStrictness,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = true
+                                )
+                            }
+                            2 -> {
+                                FirstHabitStep(
+                                    habitName = state.habitName,
+                                    habitType = state.habitType,
+                                    targetValue = state.targetValue,
+                                    unit = state.unit,
+                                    scheduleOption = state.scheduleOption,
+                                    customDays = state.customDays,
+                                    onHabitNameChange = onHabitNameChange,
+                                    onHabitTypeChange = onHabitTypeChange,
+                                    onTargetValueChange = onTargetValueChange,
+                                    onUnitChange = onUnitChange,
+                                    onScheduleOptionChange = onScheduleOptionChange,
+                                    onCustomDaysChange = onCustomDaysChange,
+                                    modifier = Modifier.weight(1f).fillMaxWidth()
+                                )
+                                FirstHabitStepCta(
+                                    state = state,
+                                    onCreateHabit = onCreateHabit,
+                                    onSkip = onSkipFirstHabit,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = true
+                                )
+                            }
+                        }
                     }
                 }
             } else {
@@ -119,58 +145,59 @@ fun OnboardingWizard(
                         .weight(1f),
                     label = "onboarding_step"
                 ) { step ->
-                    when (step) {
-                        0 -> PhilosophyStep(modifier = Modifier.fillMaxSize(), reduceMotion = reduceMotion)
-                        1 -> StrictnessStep(
-                            selectedPreset = state.selectedPreset,
-                            onPresetSelected = onPresetSelected,
-                            reduceMotion = reduceMotion,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        2 -> FirstHabitStep(
-                            habitName = state.habitName,
-                            habitType = state.habitType,
-                            targetValue = state.targetValue,
-                            unit = state.unit,
-                            scheduleOption = state.scheduleOption,
-                            customDays = state.customDays,
-                            onHabitNameChange = onHabitNameChange,
-                            onHabitTypeChange = onHabitTypeChange,
-                            onTargetValueChange = onTargetValueChange,
-                            onUnitChange = onUnitChange,
-                            onScheduleOptionChange = onScheduleOptionChange,
-                            onCustomDaysChange = onCustomDaysChange,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        else -> Unit
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        when (step) {
+                            0 -> {
+                                PhilosophyStep(
+                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                    reduceMotion = reduceMotion
+                                )
+                                PhilosophyStepCta(
+                                    onAdvance = { onStepChange(step + 1) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = reduceMotion
+                                )
+                            }
+                            1 -> {
+                                StrictnessStep(
+                                    selectedPreset = state.selectedPreset,
+                                    onPresetSelected = onPresetSelected,
+                                    reduceMotion = reduceMotion,
+                                    modifier = Modifier.weight(1f).fillMaxWidth()
+                                )
+                                StrictnessStepCta(
+                                    state = state,
+                                    onContinue = onContinueFromStrictness,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = reduceMotion
+                                )
+                            }
+                            2 -> {
+                                FirstHabitStep(
+                                    habitName = state.habitName,
+                                    habitType = state.habitType,
+                                    targetValue = state.targetValue,
+                                    unit = state.unit,
+                                    scheduleOption = state.scheduleOption,
+                                    customDays = state.customDays,
+                                    onHabitNameChange = onHabitNameChange,
+                                    onHabitTypeChange = onHabitTypeChange,
+                                    onTargetValueChange = onTargetValueChange,
+                                    onUnitChange = onUnitChange,
+                                    onScheduleOptionChange = onScheduleOptionChange,
+                                    onCustomDaysChange = onCustomDaysChange,
+                                    modifier = Modifier.weight(1f).fillMaxWidth()
+                                )
+                                FirstHabitStepCta(
+                                    state = state,
+                                    onCreateHabit = onCreateHabit,
+                                    onSkip = onSkipFirstHabit,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = reduceMotion
+                                )
+                            }
+                        }
                     }
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .animateContentSize(animationSpec = tween(ENTER_DURATION_MS))
-            ) {
-                when (currentStep) {
-                    0 -> PhilosophyStepCta(
-                        onAdvance = { onStepChange(currentStep + 1) },
-                        modifier = Modifier.fillMaxWidth(),
-                        reduceMotion = reduceMotion
-                    )
-                    1 -> StrictnessStepCta(
-                        state = state,
-                        onContinue = onContinueFromStrictness,
-                        modifier = Modifier.fillMaxWidth(),
-                        reduceMotion = reduceMotion
-                    )
-                    2 -> FirstHabitStepCta(
-                        state = state,
-                        onCreateHabit = onCreateHabit,
-                        onSkip = onSkipFirstHabit,
-                        modifier = Modifier.fillMaxWidth(),
-                        reduceMotion = reduceMotion
-                    )
                 }
             }
         }
