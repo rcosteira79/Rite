@@ -3,6 +3,7 @@ package com.ricardocosteira.habitlock.presentation.ui.onboarding
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,7 +20,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Balance
@@ -57,6 +57,7 @@ private fun OnboardingStrictnessPreset.icon(): ImageVector = when (this) {
 fun StrictnessStep(
     selectedPreset: OnboardingStrictnessPreset,
     onPresetSelected: (OnboardingStrictnessPreset) -> Unit,
+    reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -99,7 +100,8 @@ fun StrictnessStep(
             PresetCard(
                 preset = preset,
                 isSelected = preset == selectedPreset,
-                onClick = { onPresetSelected(preset) }
+                onClick = { onPresetSelected(preset) },
+                reduceMotion = reduceMotion
             )
             Spacer(modifier = Modifier.height(10.dp))
         }
@@ -111,6 +113,7 @@ private fun PresetCard(
     preset: OnboardingStrictnessPreset,
     isSelected: Boolean,
     onClick: () -> Unit,
+    reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val backgroundColor by animateColorAsState(
@@ -119,13 +122,13 @@ private fun PresetCard(
         } else {
             MaterialTheme.colorScheme.surfaceContainerLow
         },
-        animationSpec = tween(200),
+        animationSpec = if (reduceMotion) snap() else tween(200),
         label = "presetCardBackground"
     )
 
     val cornerRadius by animateDpAsState(
         targetValue = if (isSelected) 24.dp else 16.dp,
-        animationSpec = tween(200),
+        animationSpec = if (reduceMotion) snap() else tween(200),
         label = "presetCardCornerRadius"
     )
 
@@ -253,7 +256,7 @@ private fun PresetCard(
                     .offset(y = (-12).dp)
                     .background(
                         color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape
+                        shape = RoundedCornerShape(percent = 50)
                     )
                     .padding(horizontal = 14.dp, vertical = 3.dp)
             ) {

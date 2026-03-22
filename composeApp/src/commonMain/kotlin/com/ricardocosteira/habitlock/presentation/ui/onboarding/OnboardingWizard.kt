@@ -78,6 +78,7 @@ fun OnboardingWizard(
                         1 -> StrictnessStep(
                             selectedPreset = state.selectedPreset,
                             onPresetSelected = onPresetSelected,
+                            reduceMotion = reduceMotion,
                             modifier = Modifier.fillMaxSize()
                         )
                         2 -> FirstHabitStep(
@@ -121,6 +122,7 @@ fun OnboardingWizard(
                         1 -> StrictnessStep(
                             selectedPreset = state.selectedPreset,
                             onPresetSelected = onPresetSelected,
+                            reduceMotion = reduceMotion,
                             modifier = Modifier.fillMaxSize()
                         )
                         2 -> FirstHabitStep(
