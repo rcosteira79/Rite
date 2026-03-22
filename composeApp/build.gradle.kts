@@ -59,10 +59,10 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.mockk)
             implementation(libs.turbine)
         }
         androidUnitTest.dependencies {
+            implementation(libs.mockk)
             implementation(libs.robolectric)
             implementation(libs.roborazzi)
             implementation(libs.roborazzi.compose)
