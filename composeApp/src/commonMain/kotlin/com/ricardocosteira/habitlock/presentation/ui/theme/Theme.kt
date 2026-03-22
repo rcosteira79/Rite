@@ -21,9 +21,9 @@ private val ForestOnTertiary = Color(0xFFFFFFFF)
 private val ForestTertiaryContainer = Color(0xFFA9CFBA)
 private val ForestOnTertiaryContainer = Color(0xFF0C2118)
 private val ForestSurface = Color(0xFFFDF9F6)
-private val ForestOnSurface = Color(0xFF1C1B1A)
+private val ForestOnSurface = Color(0xFF2D4F3F)
 private val ForestSurfaceVariant = Color(0xFFE5E2DF)
-private val ForestOnSurfaceVariant = Color(0xFF545F72)
+private val ForestOnSurfaceVariant = Color(0xFF334155)
 private val ForestSurfaceContainerLowest = Color(0xFFFFFFFF)
 private val ForestSurfaceContainerLow = Color(0xFFF7F3F0)
 private val ForestSurfaceContainer = Color(0xFFF1EDE9)
@@ -42,10 +42,11 @@ private val ForestInverseOnSurface = Color(0xFFF0F1EF)
 private val ForestInversePrimary = Color(0xFFA9CFBA)
 
 // Stoic Night — Dark palette (design system: night_discipline/DESIGN.md)
-private val ForestDarkPrimary = Color(0xFFA9CFBA)           // sage — high-importance actions
-private val ForestDarkOnPrimary = Color(0xFF143728)          // dark text on sage buttons
-private val ForestDarkPrimaryContainer = Color(0xFF2D4F3F)   // forest green — completion/selected
-private val ForestDarkOnPrimaryContainer = Color(0xFFE5E2DF) // off-white (tertiary-fixed) — 6.35:1 on forest green
+private val ForestDarkPrimary = Color(0xFFA9CFBA) // sage — high-importance actions
+private val ForestDarkOnPrimary = Color(0xFF143728) // dark text on sage buttons
+private val ForestDarkPrimaryContainer = Color(0xFF2D4F3F) // forest green — completion/selected
+private val ForestDarkOnPrimaryContainer =
+  Color(0xFFE5E2DF) // off-white (tertiary-fixed) — 6.35:1 on forest green
 private val ForestDarkSecondary = Color(0xFFB8C4D8)
 private val ForestDarkOnSecondary = Color(0xFF253141)
 private val ForestDarkSecondaryContainer = Color(0xFF3B4759)
@@ -54,8 +55,8 @@ private val ForestDarkTertiary = Color(0xFFA9CFBA)
 private val ForestDarkOnTertiary = Color(0xFF143728)
 private val ForestDarkTertiaryContainer = Color(0xFF22493A)
 private val ForestDarkOnTertiaryContainer = Color(0xFFA9CFBA)
-private val ForestDarkSurface = Color(0xFF131313)            // obsidian void
-private val ForestDarkOnSurface = Color(0xFFE5E2DF)          // tertiary-fixed — stone under moonlight
+private val ForestDarkSurface = Color(0xFF131313) // obsidian void
+private val ForestDarkOnSurface = Color(0xFFE5E2DF) // tertiary-fixed — stone under moonlight
 private val ForestDarkSurfaceVariant = Color(0xFF414844)
 private val ForestDarkOnSurfaceVariant = Color(0xFFBBC5BC)
 private val ForestDarkSurfaceContainerLowest = Color(0xFF0E0E0E)
@@ -64,11 +65,12 @@ private val ForestDarkSurfaceContainer = Color(0xFF201F1F)
 private val ForestDarkSurfaceContainerHigh = Color(0xFF2A2A2A)
 private val ForestDarkSurfaceContainerHighest = Color(0xFF333333)
 private val ForestDarkOutline = Color(0xFF858F87)
-private val ForestDarkOutlineVariant = Color(0xFF414844)     // ghost border
+private val ForestDarkOutlineVariant = Color(0xFF414844) // ghost border
 private val ForestDarkBackground = Color(0xFF131313)
 private val ForestDarkOnBackground = Color(0xFFE5E2DF)
 
-internal val LightColorScheme = lightColorScheme(
+internal val LightColorScheme =
+  lightColorScheme(
     primary = ForestPrimary,
     onPrimary = ForestOnPrimary,
     primaryContainer = ForestPrimaryContainer,
@@ -101,9 +103,10 @@ internal val LightColorScheme = lightColorScheme(
     inverseSurface = ForestInverseSurface,
     inverseOnSurface = ForestInverseOnSurface,
     inversePrimary = ForestInversePrimary,
-)
+  )
 
-internal val DarkColorScheme = darkColorScheme(
+internal val DarkColorScheme =
+  darkColorScheme(
     primary = ForestDarkPrimary,
     onPrimary = ForestDarkOnPrimary,
     primaryContainer = ForestDarkPrimaryContainer,
@@ -129,23 +132,19 @@ internal val DarkColorScheme = darkColorScheme(
     outlineVariant = ForestDarkOutlineVariant,
     background = ForestDarkBackground,
     onBackground = ForestDarkOnBackground,
-)
+  )
 
 @Composable
 expect fun HabitLockTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+  darkTheme: Boolean = isSystemInDarkTheme(),
+  content: @Composable () -> Unit,
 )
 
 @Composable
 fun HabitLockThemeFallback(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+  darkTheme: Boolean = isSystemInDarkTheme(),
+  content: @Composable () -> Unit,
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = habitLockTypography(),
-        content = content
-    )
+  val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+  MaterialTheme(colorScheme = colorScheme, typography = habitLockTypography(), content = content)
 }

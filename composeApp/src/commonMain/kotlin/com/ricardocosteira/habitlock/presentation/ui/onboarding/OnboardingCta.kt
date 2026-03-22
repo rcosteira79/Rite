@@ -36,120 +36,120 @@ import org.jetbrains.compose.resources.stringResource
 private val CtaButtonShape = RoundedCornerShape(12.dp)
 
 @Composable
-private fun ctaButtonColors() = ButtonDefaults.buttonColors(
+private fun ctaButtonColors() =
+  ButtonDefaults.buttonColors(
     containerColor = MaterialTheme.colorScheme.primary,
-    contentColor = MaterialTheme.colorScheme.onPrimary
-)
+    contentColor = MaterialTheme.colorScheme.onPrimary,
+  )
 
 @Composable
 private fun CtaContainer(
-    modifier: Modifier = Modifier,
-    reduceMotion: Boolean = false,
-    content: @Composable ColumnScope.() -> Unit
+  modifier: Modifier = Modifier,
+  reduceMotion: Boolean = false,
+  content: @Composable ColumnScope.() -> Unit,
 ) {
-    val translateYAnim = remember { Animatable(16f) }
-    val alphaAnim = remember { Animatable(0f) }
+  val translateYAnim = remember { Animatable(16f) }
+  val alphaAnim = remember { Animatable(0f) }
 
-    LaunchedEffect(Unit) {
-        if (reduceMotion) {
-            translateYAnim.snapTo(0f)
-            alphaAnim.snapTo(1f)
-            return@LaunchedEffect
-        }
-        delay(200)
-        launch { translateYAnim.animateTo(0f, tween(200)) }
-        launch { alphaAnim.animateTo(1f, tween(200)) }
+  LaunchedEffect(Unit) {
+    if (reduceMotion) {
+      translateYAnim.snapTo(0f)
+      alphaAnim.snapTo(1f)
+      return@LaunchedEffect
     }
+    delay(200)
+    launch { translateYAnim.animateTo(0f, tween(200)) }
+    launch { alphaAnim.animateTo(1f, tween(200)) }
+  }
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 16.dp)
-            .graphicsLayer {
-                alpha = alphaAnim.value
-                translationY = translateYAnim.value.dp.toPx()
-            },
-        horizontalAlignment = Alignment.CenterHorizontally,
-        content = content
-    )
+  Column(
+    modifier =
+      modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp).graphicsLayer {
+        alpha = alphaAnim.value
+        translationY = translateYAnim.value.dp.toPx()
+      },
+    horizontalAlignment = Alignment.CenterHorizontally,
+    content = content,
+  )
 }
 
 @Composable
 internal fun PhilosophyStepCta(
-    onAdvance: () -> Unit,
-    modifier: Modifier = Modifier,
-    reduceMotion: Boolean = false
+  onAdvance: () -> Unit,
+  modifier: Modifier = Modifier,
+  reduceMotion: Boolean = false,
 ) {
-    CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
-        Button(
-            onClick = onAdvance,
-            modifier = Modifier.fillMaxWidth(),
-            shape = CtaButtonShape,
-            colors = ctaButtonColors()
-        ) {
-            Text(stringResource(Res.string.philosophy_cta_accept))
-        }
+  CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
+    Button(
+      onClick = onAdvance,
+      modifier = Modifier.fillMaxWidth(),
+      shape = CtaButtonShape,
+      colors = ctaButtonColors(),
+    ) {
+      Text(stringResource(Res.string.philosophy_cta_accept))
     }
+  }
 }
 
 @Composable
 internal fun StrictnessStepCta(
-    state: OnboardingState,
-    onContinue: () -> Unit,
-    modifier: Modifier = Modifier,
-    reduceMotion: Boolean = false
+  state: OnboardingState,
+  onContinue: () -> Unit,
+  modifier: Modifier = Modifier,
+  reduceMotion: Boolean = false,
 ) {
-    CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
-        if (state.isApplyingPreset) {
-            CircularProgressIndicator(modifier = Modifier.size(36.dp))
-        } else {
-            Button(
-                onClick = onContinue,
-                modifier = Modifier.fillMaxWidth(),
-                shape = CtaButtonShape,
-                colors = ctaButtonColors()
-            ) {
-                Text(stringResource(Res.string.strictness_cta_continue))
-            }
-        }
+  CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
+    if (state.isApplyingPreset) {
+      CircularProgressIndicator(modifier = Modifier.size(36.dp))
+    } else {
+      Button(
+        onClick = onContinue,
+        modifier = Modifier.fillMaxWidth(),
+        shape = CtaButtonShape,
+        colors = ctaButtonColors(),
+      ) {
+        Text(stringResource(Res.string.strictness_cta_continue))
+      }
     }
+  }
 }
 
 @Composable
 internal fun FirstHabitStepCta(
-    state: OnboardingState,
-    onCreateHabit: () -> Unit,
-    onSkip: () -> Unit,
-    modifier: Modifier = Modifier,
-    reduceMotion: Boolean = false
+  state: OnboardingState,
+  onCreateHabit: () -> Unit,
+  onSkip: () -> Unit,
+  modifier: Modifier = Modifier,
+  reduceMotion: Boolean = false,
 ) {
-    val isEnabled = state.habitName.isNotBlank() &&
-            (state.habitType == HabitType.BINARY || state.targetValue.isNotBlank()) &&
-            (state.scheduleOption != ScheduleOption.CUSTOM || state.customDays.isNotEmpty())
+  val isEnabled =
+    state.habitName.isNotBlank() &&
+      (state.habitType == HabitType.BINARY || state.targetValue.isNotBlank()) &&
+      state.selectedDays.isNotEmpty()
 
-    CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
-        if (state.isCreatingHabit) {
-            CircularProgressIndicator(modifier = Modifier.size(36.dp))
-        } else {
-            Button(
-                onClick = onCreateHabit,
-                enabled = isEnabled,
-                modifier = Modifier.fillMaxWidth(),
-                shape = CtaButtonShape,
-                colors = ctaButtonColors()
-            ) {
-                Text(stringResource(Res.string.first_habit_button_create))
-            }
-        }
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        TextButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = stringResource(Res.string.first_habit_button_skip),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+  CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
+    if (state.isCreatingHabit) {
+      CircularProgressIndicator(modifier = Modifier.size(36.dp))
+    } else {
+      Button(
+        onClick = onCreateHabit,
+        enabled = isEnabled,
+        modifier = Modifier.fillMaxWidth(),
+        shape = CtaButtonShape,
+        colors = ctaButtonColors(),
+      ) {
+        Text(stringResource(Res.string.first_habit_button_create))
+      }
     }
+
+    Spacer(modifier = Modifier.height(4.dp))
+
+    TextButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) {
+      Text(
+        text = stringResource(Res.string.first_habit_button_skip),
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    }
+  }
 }
