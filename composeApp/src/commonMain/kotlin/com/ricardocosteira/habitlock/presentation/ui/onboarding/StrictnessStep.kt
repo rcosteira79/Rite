@@ -1,7 +1,6 @@
 package com.ricardocosteira.habitlock.presentation.ui.onboarding
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.snap
@@ -162,13 +161,8 @@ private fun PresetCard(
                 .padding(16.dp)
         ) {
             if (isSelected) {
-                // Light: white (#FFFFFF) on forest green — Forest Discipline
-                // Dark: sage (#A9CFBA) on forest green — Stoic Night
-                val cardContent = if (isSystemInDarkTheme()) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                } else {
-                    MaterialTheme.colorScheme.onPrimary
-                }
+                // onPrimaryContainer: Forest Discipline #A9CFBA / Stoic Night #E5E2DF
+                val cardContent = MaterialTheme.colorScheme.onPrimaryContainer
                 // === SELECTED STATE ===
                 Icon(
                     imageVector = preset.icon(),

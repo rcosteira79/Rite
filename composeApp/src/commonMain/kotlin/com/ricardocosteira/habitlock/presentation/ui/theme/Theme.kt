@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 private val ForestPrimary = Color(0xFF163829)
 private val ForestOnPrimary = Color(0xFFFFFFFF)
 private val ForestPrimaryContainer = Color(0xFF2D4F3F)
-private val ForestOnPrimaryContainer = Color(0xFFA9CFBA)
+private val ForestOnPrimaryContainer = Color(0xFFFFFFFF)
 private val ForestSecondary = Color(0xFF545F72)
 private val ForestOnSecondary = Color(0xFFFFFFFF)
 private val ForestSecondaryContainer = Color(0xFFD5E0F7)
