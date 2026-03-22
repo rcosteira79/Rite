@@ -2,6 +2,7 @@ package com.ricardocosteira.habitlock.presentation.ui.onboarding
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -9,6 +10,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -145,25 +147,31 @@ fun OnboardingWizard(
                 }
             }
 
-            when (currentStep) {
-                0 -> PhilosophyStepCta(
-                    onAdvance = { onStepChange(currentStep + 1) },
-                    modifier = Modifier.fillMaxWidth(),
-                    reduceMotion = reduceMotion
-                )
-                1 -> StrictnessStepCta(
-                    state = state,
-                    onContinue = onContinueFromStrictness,
-                    modifier = Modifier.fillMaxWidth(),
-                    reduceMotion = reduceMotion
-                )
-                2 -> FirstHabitStepCta(
-                    state = state,
-                    onCreateHabit = onCreateHabit,
-                    onSkip = onSkipFirstHabit,
-                    modifier = Modifier.fillMaxWidth(),
-                    reduceMotion = reduceMotion
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateContentSize(animationSpec = tween(ENTER_DURATION_MS))
+            ) {
+                when (currentStep) {
+                    0 -> PhilosophyStepCta(
+                        onAdvance = { onStepChange(currentStep + 1) },
+                        modifier = Modifier.fillMaxWidth(),
+                        reduceMotion = reduceMotion
+                    )
+                    1 -> StrictnessStepCta(
+                        state = state,
+                        onContinue = onContinueFromStrictness,
+                        modifier = Modifier.fillMaxWidth(),
+                        reduceMotion = reduceMotion
+                    )
+                    2 -> FirstHabitStepCta(
+                        state = state,
+                        onCreateHabit = onCreateHabit,
+                        onSkip = onSkipFirstHabit,
+                        modifier = Modifier.fillMaxWidth(),
+                        reduceMotion = reduceMotion
+                    )
+                }
             }
         }
     }
