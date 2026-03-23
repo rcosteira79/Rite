@@ -130,6 +130,10 @@ android {
     }
 }
 
+roborazzi {
+    outputDir.set(file("src/androidUnitTest/snapshots/images"))
+}
+
 compose.desktop {
     application {
         mainClass = "com.ricardocosteira.habitlock.MainKt"
