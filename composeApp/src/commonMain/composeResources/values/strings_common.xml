@@ -7,6 +7,14 @@
     <string name="common_cancel">Cancel</string>
     <string name="common_daily">Daily</string>
     <string name="common_weekly">Weekly</string>
+    <string name="common_schedule">SCHEDULE</string>
+    <string name="common_schedule_day_mon">M</string>
+    <string name="common_schedule_day_tue">T</string>
+    <string name="common_schedule_day_wed">W</string>
+    <string name="common_schedule_day_thu">T</string>
+    <string name="common_schedule_day_fri">F</string>
+    <string name="common_schedule_day_sat">S</string>
+    <string name="common_schedule_day_sun">S</string>
     <string name="common_quantitative">Quantitative</string>
     <string name="common_failed">Failed</string>
     <string name="common_placeholder_habit_name">E.g. Drink water</string>

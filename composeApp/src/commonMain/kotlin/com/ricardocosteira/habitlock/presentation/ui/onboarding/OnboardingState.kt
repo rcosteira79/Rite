@@ -10,7 +10,7 @@ data class OnboardingState(
   val habitType: HabitType = HabitType.BINARY,
   val targetValue: String = "",
   val unit: String = "",
-  val selectedDays: Set<DayOfWeek> = emptySet(),
+  val selectedDays: Set<DayOfWeek> = DayOfWeek.entries.toSet(),
   val isCreatingHabit: Boolean = false,
   val isApplyingPreset: Boolean = false,
   val error: String? = null,

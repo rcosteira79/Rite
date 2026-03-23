@@ -57,11 +57,10 @@ class OnboardingViewModelScheduleTest {
 
   @Test
   fun `given all seven days selected when creating habit then specificDays is null`() = runTest {
-    // Given
+    // Given — default state is Daily (all 7 days)
     givenCreateHabitSucceeds()
     val viewModel = buildViewModel()
     viewModel.updateHabitName("Run")
-    viewModel.updateSelectedDays(DayOfWeek.entries.toSet())
 
     // When
     viewModel.createFirstHabit()
