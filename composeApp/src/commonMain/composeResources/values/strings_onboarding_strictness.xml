@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="strictness_heading">How strict should HabitLock be?</string>
-    <string name="strictness_subtext">You\'re always in control. You can change this later.</string>
+    <string name="strictness_heading">How strict\nshould it be?</string>
+    <string name="strictness_subtext">You\'re always in control. Change this anytime.</string>
     <string name="strictness_flexible_label">Flexible</string>
     <string name="strictness_flexible_description">Gentle support with maximum forgiveness.</string>
     <string name="strictness_flexible_rule_1">• Unlimited undo</string>
@@ -20,6 +20,8 @@
     <string name="strictness_locked_rule_2">• Snoozes are capped</string>
     <string name="strictness_locked_rule_3">• Skips are capped</string>
     <string name="strictness_locked_rule_4">• Missed habits always fail</string>
-    <string name="strictness_badge_recommended">(Recommended)</string>
+    <string name="strictness_badge_recommended">RECOMMENDED</string>
+    <string name="strictness_preset_cd_selected">Selected</string>
+    <string name="strictness_preset_cd_not_selected">Not selected</string>
     <string name="strictness_cta_continue">Continue</string>
 </resources>

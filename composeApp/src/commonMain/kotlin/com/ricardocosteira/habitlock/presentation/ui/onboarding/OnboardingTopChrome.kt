@@ -23,6 +23,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.common_cd_onboarding_step
+import habitlock.composeapp.generated.resources.common_skip
+import org.jetbrains.compose.resources.stringResource
 
 private const val TOTAL_STEPS = 3
 private const val DONE_DOT_ALPHA = 0.45f
@@ -31,27 +35,30 @@ private const val DONE_DOT_ALPHA = 0.45f
 fun OnboardingTopChrome(
     currentStep: Int,
     onSkip: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
+    val stepDescription = stringResource(Res.string.common_cd_onboarding_step, currentStep + 1, TOTAL_STEPS)
+
     Row(
         modifier = modifier.padding(horizontal = 24.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         ProgressDots(
             currentStep = currentStep,
-            modifier = Modifier
-                .weight(1f)
-                .semantics {
-                    contentDescription = "Step ${currentStep + 1} of $TOTAL_STEPS"
-                }
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .semantics {
+                        contentDescription = stepDescription
+                    },
         )
 
         TextButton(onClick = onSkip) {
             Text(
-                text = "Skip",
+                text = stringResource(Res.string.common_skip),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -60,20 +67,21 @@ fun OnboardingTopChrome(
 @Composable
 private fun ProgressDots(
     currentStep: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         repeat(TOTAL_STEPS) { index ->
             StepDot(
-                state = when {
-                    index < currentStep -> DotState.Done
-                    index == currentStep -> DotState.Active
-                    else -> DotState.Inactive
-                }
+                state =
+                    when {
+                        index < currentStep -> DotState.Done
+                        index == currentStep -> DotState.Active
+                        else -> DotState.Inactive
+                    },
             )
         }
     }
@@ -84,32 +92,41 @@ private enum class DotState { Active, Done, Inactive }
 @Composable
 private fun StepDot(
     state: DotState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val targetWidth = if (state == DotState.Active) 20.dp else 6.dp
     val animatedWidth by animateDpAsState(
         targetValue = targetWidth,
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "dot_width"
+        label = "dot_width",
     )
 
-    val targetAlpha = if (state == DotState.Inactive) 1f else if (state == DotState.Done) DONE_DOT_ALPHA else 1f
+    val targetAlpha =
+        if (state == DotState.Inactive) {
+            1f
+        } else if (state == DotState.Done) {
+            DONE_DOT_ALPHA
+        } else {
+            1f
+        }
     val animatedAlpha by animateFloatAsState(
         targetValue = targetAlpha,
-        label = "dot_alpha"
+        label = "dot_alpha",
     )
 
-    val color = if (state == DotState.Inactive) {
-        MaterialTheme.colorScheme.surfaceVariant
-    } else {
-        MaterialTheme.colorScheme.primary
-    }
+    val color =
+        if (state == DotState.Inactive) {
+            MaterialTheme.colorScheme.surfaceVariant
+        } else {
+            MaterialTheme.colorScheme.primary
+        }
 
     Box(
-        modifier = modifier
-            .width(animatedWidth)
-            .height(6.dp)
-            .alpha(animatedAlpha)
-            .background(color = color, shape = RoundedCornerShape(3.dp))
+        modifier =
+            modifier
+                .width(animatedWidth)
+                .height(6.dp)
+                .alpha(animatedAlpha)
+                .background(color = color, shape = RoundedCornerShape(3.dp)),
     )
 }
