@@ -15,9 +15,8 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [33], application = android.app.Application::class)
+@Config(sdk = [33], qualifiers = "w360dp-h800dp-420dpi", application = android.app.Application::class)
 class FirstHabitStepScreenshotTest {
-
     @get:Rule
     val composeRule = createComposeRule()
 
@@ -53,10 +52,14 @@ class FirstHabitStepScreenshotTest {
                     habitType = HabitType.QUANTITATIVE,
                     targetValue = "5",
                     unit = "km",
-                    selectedDays = setOf(
-                        DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
-                        DayOfWeek.THURSDAY, DayOfWeek.FRIDAY,
-                    ),
+                    selectedDays =
+                        setOf(
+                            DayOfWeek.MONDAY,
+                            DayOfWeek.TUESDAY,
+                            DayOfWeek.WEDNESDAY,
+                            DayOfWeek.THURSDAY,
+                            DayOfWeek.FRIDAY,
+                        ),
                     onHabitNameChange = {},
                     onHabitTypeChange = {},
                     onTargetValueChange = {},
@@ -121,10 +124,14 @@ class FirstHabitStepScreenshotTest {
                     habitType = HabitType.QUANTITATIVE,
                     targetValue = "5",
                     unit = "km",
-                    selectedDays = setOf(
-                        DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
-                        DayOfWeek.THURSDAY, DayOfWeek.FRIDAY,
-                    ),
+                    selectedDays =
+                        setOf(
+                            DayOfWeek.MONDAY,
+                            DayOfWeek.TUESDAY,
+                            DayOfWeek.WEDNESDAY,
+                            DayOfWeek.THURSDAY,
+                            DayOfWeek.FRIDAY,
+                        ),
                     onHabitNameChange = {},
                     onHabitTypeChange = {},
                     onTargetValueChange = {},

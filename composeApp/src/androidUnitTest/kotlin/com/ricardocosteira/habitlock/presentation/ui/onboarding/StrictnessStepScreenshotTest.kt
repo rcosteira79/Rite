@@ -13,9 +13,8 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [33], application = android.app.Application::class)
+@Config(sdk = [33], qualifiers = "w360dp-h800dp-420dpi", application = android.app.Application::class)
 class StrictnessStepScreenshotTest {
-
     @get:Rule
     val composeRule = createComposeRule()
 
