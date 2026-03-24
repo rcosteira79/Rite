@@ -2,6 +2,7 @@ package com.ricardocosteira.habitlock.presentation.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -46,7 +47,7 @@ private val ForestDarkPrimary = Color(0xFFA9CFBA) // sage — high-importance ac
 private val ForestDarkOnPrimary = Color(0xFF143728) // dark text on sage buttons
 private val ForestDarkPrimaryContainer = Color(0xFF2D4F3F) // forest green — completion/selected
 private val ForestDarkOnPrimaryContainer =
-  Color(0xFFE5E2DF) // off-white (tertiary-fixed) — 6.35:1 on forest green
+    Color(0xFFE5E2DF) // off-white (tertiary-fixed) — 6.35:1 on forest green
 private val ForestDarkSecondary = Color(0xFFB8C4D8)
 private val ForestDarkOnSecondary = Color(0xFF253141)
 private val ForestDarkSecondaryContainer = Color(0xFF3B4759)
@@ -70,81 +71,83 @@ private val ForestDarkBackground = Color(0xFF131313)
 private val ForestDarkOnBackground = Color(0xFFE5E2DF)
 
 internal val LightColorScheme =
-  lightColorScheme(
-    primary = ForestPrimary,
-    onPrimary = ForestOnPrimary,
-    primaryContainer = ForestPrimaryContainer,
-    onPrimaryContainer = ForestOnPrimaryContainer,
-    secondary = ForestSecondary,
-    onSecondary = ForestOnSecondary,
-    secondaryContainer = ForestSecondaryContainer,
-    onSecondaryContainer = ForestOnSecondaryContainer,
-    tertiary = ForestTertiary,
-    onTertiary = ForestOnTertiary,
-    tertiaryContainer = ForestTertiaryContainer,
-    onTertiaryContainer = ForestOnTertiaryContainer,
-    surface = ForestSurface,
-    onSurface = ForestOnSurface,
-    surfaceVariant = ForestSurfaceVariant,
-    onSurfaceVariant = ForestOnSurfaceVariant,
-    surfaceContainerLowest = ForestSurfaceContainerLowest,
-    surfaceContainerLow = ForestSurfaceContainerLow,
-    surfaceContainer = ForestSurfaceContainer,
-    surfaceContainerHigh = ForestSurfaceContainerHigh,
-    surfaceContainerHighest = ForestSurfaceContainerHighest,
-    outline = ForestOutline,
-    outlineVariant = ForestOutlineVariant,
-    background = ForestBackground,
-    onBackground = ForestOnBackground,
-    error = ForestError,
-    onError = ForestOnError,
-    errorContainer = ForestErrorContainer,
-    onErrorContainer = ForestOnErrorContainer,
-    inverseSurface = ForestInverseSurface,
-    inverseOnSurface = ForestInverseOnSurface,
-    inversePrimary = ForestInversePrimary,
-  )
+    lightColorScheme(
+        primary = ForestPrimary,
+        onPrimary = ForestOnPrimary,
+        primaryContainer = ForestPrimaryContainer,
+        onPrimaryContainer = ForestOnPrimaryContainer,
+        secondary = ForestSecondary,
+        onSecondary = ForestOnSecondary,
+        secondaryContainer = ForestSecondaryContainer,
+        onSecondaryContainer = ForestOnSecondaryContainer,
+        tertiary = ForestTertiary,
+        onTertiary = ForestOnTertiary,
+        tertiaryContainer = ForestTertiaryContainer,
+        onTertiaryContainer = ForestOnTertiaryContainer,
+        surface = ForestSurface,
+        onSurface = ForestOnSurface,
+        surfaceVariant = ForestSurfaceVariant,
+        onSurfaceVariant = ForestOnSurfaceVariant,
+        surfaceContainerLowest = ForestSurfaceContainerLowest,
+        surfaceContainerLow = ForestSurfaceContainerLow,
+        surfaceContainer = ForestSurfaceContainer,
+        surfaceContainerHigh = ForestSurfaceContainerHigh,
+        surfaceContainerHighest = ForestSurfaceContainerHighest,
+        outline = ForestOutline,
+        outlineVariant = ForestOutlineVariant,
+        background = ForestBackground,
+        onBackground = ForestOnBackground,
+        error = ForestError,
+        onError = ForestOnError,
+        errorContainer = ForestErrorContainer,
+        onErrorContainer = ForestOnErrorContainer,
+        inverseSurface = ForestInverseSurface,
+        inverseOnSurface = ForestInverseOnSurface,
+        inversePrimary = ForestInversePrimary,
+    )
 
 internal val DarkColorScheme =
-  darkColorScheme(
-    primary = ForestDarkPrimary,
-    onPrimary = ForestDarkOnPrimary,
-    primaryContainer = ForestDarkPrimaryContainer,
-    onPrimaryContainer = ForestDarkOnPrimaryContainer,
-    secondary = ForestDarkSecondary,
-    onSecondary = ForestDarkOnSecondary,
-    secondaryContainer = ForestDarkSecondaryContainer,
-    onSecondaryContainer = ForestDarkOnSecondaryContainer,
-    tertiary = ForestDarkTertiary,
-    onTertiary = ForestDarkOnTertiary,
-    tertiaryContainer = ForestDarkTertiaryContainer,
-    onTertiaryContainer = ForestDarkOnTertiaryContainer,
-    surface = ForestDarkSurface,
-    onSurface = ForestDarkOnSurface,
-    surfaceVariant = ForestDarkSurfaceVariant,
-    onSurfaceVariant = ForestDarkOnSurfaceVariant,
-    surfaceContainerLowest = ForestDarkSurfaceContainerLowest,
-    surfaceContainerLow = ForestDarkSurfaceContainerLow,
-    surfaceContainer = ForestDarkSurfaceContainer,
-    surfaceContainerHigh = ForestDarkSurfaceContainerHigh,
-    surfaceContainerHighest = ForestDarkSurfaceContainerHighest,
-    outline = ForestDarkOutline,
-    outlineVariant = ForestDarkOutlineVariant,
-    background = ForestDarkBackground,
-    onBackground = ForestDarkOnBackground,
-  )
+    darkColorScheme(
+        primary = ForestDarkPrimary,
+        onPrimary = ForestDarkOnPrimary,
+        primaryContainer = ForestDarkPrimaryContainer,
+        onPrimaryContainer = ForestDarkOnPrimaryContainer,
+        secondary = ForestDarkSecondary,
+        onSecondary = ForestDarkOnSecondary,
+        secondaryContainer = ForestDarkSecondaryContainer,
+        onSecondaryContainer = ForestDarkOnSecondaryContainer,
+        tertiary = ForestDarkTertiary,
+        onTertiary = ForestDarkOnTertiary,
+        tertiaryContainer = ForestDarkTertiaryContainer,
+        onTertiaryContainer = ForestDarkOnTertiaryContainer,
+        surface = ForestDarkSurface,
+        onSurface = ForestDarkOnSurface,
+        surfaceVariant = ForestDarkSurfaceVariant,
+        onSurfaceVariant = ForestDarkOnSurfaceVariant,
+        surfaceContainerLowest = ForestDarkSurfaceContainerLowest,
+        surfaceContainerLow = ForestDarkSurfaceContainerLow,
+        surfaceContainer = ForestDarkSurfaceContainer,
+        surfaceContainerHigh = ForestDarkSurfaceContainerHigh,
+        surfaceContainerHighest = ForestDarkSurfaceContainerHighest,
+        outline = ForestDarkOutline,
+        outlineVariant = ForestDarkOutlineVariant,
+        background = ForestDarkBackground,
+        onBackground = ForestDarkOnBackground,
+    )
 
 @Composable
 expect fun HabitLockTheme(
-  darkTheme: Boolean = isSystemInDarkTheme(),
-  content: @Composable () -> Unit,
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit,
 )
 
 @Composable
 fun HabitLockThemeFallback(
-  darkTheme: Boolean = isSystemInDarkTheme(),
-  content: @Composable () -> Unit,
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit,
 ) {
-  val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
-  MaterialTheme(colorScheme = colorScheme, typography = habitLockTypography(), content = content)
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    MaterialTheme(colorScheme = colorScheme, typography = habitLockTypography()) {
+        Surface(content = content)
+    }
 }
