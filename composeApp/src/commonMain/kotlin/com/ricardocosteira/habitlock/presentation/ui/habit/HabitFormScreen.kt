@@ -1,5 +1,15 @@
 package com.ricardocosteira.habitlock.presentation.ui.habit
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,75 +19,78 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.HabitType
-import com.ricardocosteira.habitlock.domain.models.ReminderType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
+import com.ricardocosteira.habitlock.presentation.ui.BackHandler
+import com.ricardocosteira.habitlock.presentation.ui.components.FormListRow
+import com.ricardocosteira.habitlock.presentation.ui.components.QuantityStepper
+import com.ricardocosteira.habitlock.presentation.ui.components.SchedulePicker
+import com.ricardocosteira.habitlock.presentation.ui.components.TypeToggle
 import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.common_cd_back
-import habitlock.composeapp.generated.resources.common_error_generic
-import habitlock.composeapp.generated.resources.habit_form_error_required_fields
 import habitlock.composeapp.generated.resources.common_daily
+import habitlock.composeapp.generated.resources.common_error_generic
 import habitlock.composeapp.generated.resources.common_placeholder_habit_name
-import habitlock.composeapp.generated.resources.common_placeholder_target_value
-import habitlock.composeapp.generated.resources.common_quantitative
 import habitlock.composeapp.generated.resources.common_weekly
-import habitlock.composeapp.generated.resources.habit_form_button_create
+import habitlock.composeapp.generated.resources.habit_form_button_discard_changes
+import habitlock.composeapp.generated.resources.habit_form_button_discard_draft
+import habitlock.composeapp.generated.resources.habit_form_button_establish
 import habitlock.composeapp.generated.resources.habit_form_button_save
 import habitlock.composeapp.generated.resources.habit_form_cd_delete
-import habitlock.composeapp.generated.resources.habit_form_label_description
-import habitlock.composeapp.generated.resources.habit_form_label_interval
-import habitlock.composeapp.generated.resources.habit_form_label_name
-import habitlock.composeapp.generated.resources.habit_form_label_quota
-import habitlock.composeapp.generated.resources.habit_form_label_target_value
-import habitlock.composeapp.generated.resources.habit_form_label_unit
-import habitlock.composeapp.generated.resources.habit_form_placeholder_quota
+import habitlock.composeapp.generated.resources.habit_form_delete_dialog_body
+import habitlock.composeapp.generated.resources.habit_form_delete_dialog_cancel
+import habitlock.composeapp.generated.resources.habit_form_delete_dialog_confirm
+import habitlock.composeapp.generated.resources.habit_form_delete_dialog_title
+import habitlock.composeapp.generated.resources.habit_form_error_required_fields
+import habitlock.composeapp.generated.resources.habit_form_note_collapsed_subtitle
+import habitlock.composeapp.generated.resources.habit_form_note_collapsed_title
+import habitlock.composeapp.generated.resources.habit_form_note_expanded_title
 import habitlock.composeapp.generated.resources.habit_form_placeholder_unit
-import habitlock.composeapp.generated.resources.habit_form_quota_supporting_daily
-import habitlock.composeapp.generated.resources.habit_form_quota_supporting_weekly
-import habitlock.composeapp.generated.resources.habit_form_reminder_info_periodic
-import habitlock.composeapp.generated.resources.habit_form_reminder_info_time
-import habitlock.composeapp.generated.resources.habit_form_schedule_daily_description
-import habitlock.composeapp.generated.resources.habit_form_schedule_weekly_description
-import habitlock.composeapp.generated.resources.habit_form_section_reminder
+import habitlock.composeapp.generated.resources.habit_form_reminder_off
+import habitlock.composeapp.generated.resources.habit_form_reminder_title
+import habitlock.composeapp.generated.resources.habit_form_section_daily_target
+import habitlock.composeapp.generated.resources.habit_form_section_habit_name
 import habitlock.composeapp.generated.resources.habit_form_section_schedule
-import habitlock.composeapp.generated.resources.habit_form_section_target
 import habitlock.composeapp.generated.resources.habit_form_section_type
-import habitlock.composeapp.generated.resources.habit_form_title_create
+import habitlock.composeapp.generated.resources.habit_form_subtitle_create
 import habitlock.composeapp.generated.resources.habit_form_title_edit
-import habitlock.composeapp.generated.resources.habit_form_type_binary_description
-import habitlock.composeapp.generated.resources.habit_form_type_binary_label
-import habitlock.composeapp.generated.resources.habit_form_type_quantitative_description
+import habitlock.composeapp.generated.resources.habit_form_title_new_habit
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -93,6 +106,10 @@ fun HabitFormScreen(
     val messageRequiredFields = stringResource(Res.string.habit_form_error_required_fields)
     val messageGenericError = stringResource(Res.string.common_error_generic)
 
+    if (state.isEditing) {
+        BackHandler { viewModel.discardChanges() }
+    }
+
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
@@ -105,352 +122,454 @@ fun HabitFormScreen(
 
     HabitFormScreen(
         state = state,
-        onBackClick = onNavigateBack,
         onNameChange = viewModel::updateName,
         onDescriptionChange = viewModel::updateDescription,
         onTypeChange = viewModel::updateType,
         onTargetValueChange = viewModel::updateTargetValue,
         onUnitChange = viewModel::updateUnit,
         onScheduleTypeChange = viewModel::updateScheduleType,
+        onSelectedDaysChange = viewModel::updateSelectedDays,
         onQuotaChange = viewModel::updateQuota,
         onHasReminderChange = viewModel::updateHasReminder,
-        onReminderTypeChange = viewModel::updateReminderType,
-        onIntervalChange = viewModel::updateIntervalMinutes,
         onSaveClick = viewModel::saveHabit,
-        onDeleteClick = viewModel::deleteHabit
+        onDeleteClick = viewModel::deleteHabit,
+        onDiscardDraftClick = viewModel::discardDraft,
+        onDiscardChangesClick = viewModel::discardChanges
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HabitFormScreen(
     state: HabitFormState,
-    onBackClick: () -> Unit,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onTypeChange: (HabitType) -> Unit,
     onTargetValueChange: (String) -> Unit,
     onUnitChange: (String) -> Unit,
     onScheduleTypeChange: (ScheduleType) -> Unit,
+    onSelectedDaysChange: (Set<DayOfWeek>) -> Unit,
     onQuotaChange: (String) -> Unit,
     onHasReminderChange: (Boolean) -> Unit,
-    onReminderTypeChange: (ReminderType) -> Unit,
-    onIntervalChange: (String) -> Unit,
     onSaveClick: () -> Unit,
     onDeleteClick: () -> Unit,
+    onDiscardDraftClick: () -> Unit,
+    onDiscardChangesClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(if (state.isEditing) stringResource(Res.string.habit_form_title_edit) else stringResource(Res.string.habit_form_title_create))
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.common_cd_back))
-                    }
-                },
-                actions = {
-                    if (state.isEditing) {
-                        IconButton(onClick = onDeleteClick) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = stringResource(Res.string.habit_form_cd_delete),
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
+    var isNoteExpanded by remember { mutableStateOf(false) }
+    var isDeleteDialogVisible by remember { mutableStateOf(false) }
+
+    if (isDeleteDialogVisible) {
+        DeleteHabitDialog(
+            onConfirm = {
+                isDeleteDialogVisible = false
+                onDeleteClick()
+            },
+            onDismiss = { isDeleteDialogVisible = false }
+        )
+    }
+
+    if (state.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+    ) {
+        // Top bar
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "HabitLock",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            if (state.isEditing) {
+                IconButton(onClick = { isDeleteDialogVisible = true }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = stringResource(Res.string.habit_form_cd_delete),
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(22.dp)
+                    )
                 }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Heading
+        Text(
+            text = if (state.isEditing) {
+                stringResource(Res.string.habit_form_title_edit)
+            } else {
+                stringResource(Res.string.habit_form_title_new_habit)
+            },
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.ExtraBold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Accent bar
+        Box(
+            modifier = Modifier
+                .width(36.dp)
+                .height(3.dp)
+                .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
+        )
+
+        if (!state.isEditing) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(Res.string.habit_form_subtitle_create),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-    ) { paddingValues ->
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // HABIT NAME
+        SectionLabel(stringResource(Res.string.habit_form_section_habit_name))
+        Spacer(modifier = Modifier.height(4.dp))
+        UnderlineTextField(
+            value = state.name,
+            onValueChange = onNameChange,
+            placeholder = stringResource(Res.string.common_placeholder_habit_name)
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // TYPE
+        SectionLabel(stringResource(Res.string.habit_form_section_type))
+        Spacer(modifier = Modifier.height(8.dp))
+        TypeToggle(
+            selected = state.type,
+            onSelectionChange = onTypeChange,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // DAILY TARGET
+        SectionLabel(stringResource(Res.string.habit_form_section_daily_target))
+        Spacer(modifier = Modifier.height(8.dp))
+
+        val stepperValue: Int = if (state.type == HabitType.BINARY) {
+            state.quota.toIntOrNull() ?: 1
         } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // Name
-                OutlinedTextField(
-                    value = state.name,
-                    onValueChange = onNameChange,
-                    label = { Text(stringResource(Res.string.habit_form_label_name)) },
-                    placeholder = { Text(stringResource(Res.string.common_placeholder_habit_name)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+            state.targetValue.toIntOrNull() ?: 1
+        }
+        val cadence: String = if (state.scheduleType == ScheduleType.DAILY) "day" else "week"
+        val stepperLabel: String = if (state.type == HabitType.QUANTITATIVE && state.unit.isNotBlank()) {
+            "${state.unit} / $cadence"
+        } else {
+            "time(s) / $cadence"
+        }
+
+        QuantityStepper(
+            value = stepperValue,
+            onValueChange = { newValue: Int ->
+                if (state.type == HabitType.BINARY) {
+                    onQuotaChange(newValue.toString())
+                } else {
+                    onTargetValueChange(newValue.toString())
+                }
+            },
+            label = stepperLabel
+        )
+
+        AnimatedVisibility(
+            visible = state.type == HabitType.QUANTITATIVE,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            Column {
+                Spacer(modifier = Modifier.height(12.dp))
+                UnderlineTextField(
+                    value = state.unit,
+                    onValueChange = onUnitChange,
+                    label = "UNIT",
+                    placeholder = stringResource(Res.string.habit_form_placeholder_unit)
                 )
-
-                // Description
-                OutlinedTextField(
-                    value = state.description,
-                    onValueChange = onDescriptionChange,
-                    label = { Text(stringResource(Res.string.habit_form_label_description)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    maxLines = 3
-                )
-
-                // Type selection
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = stringResource(Res.string.habit_form_section_type),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Column(modifier = Modifier.selectableGroup()) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .selectable(
-                                        selected = state.type == HabitType.BINARY,
-                                        onClick = { onTypeChange(HabitType.BINARY) },
-                                        role = Role.RadioButton
-                                    )
-                                    .padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                RadioButton(
-                                    selected = state.type == HabitType.BINARY,
-                                    onClick = null
-                                )
-                                Column(modifier = Modifier.padding(start = 16.dp)) {
-                                    Text(stringResource(Res.string.habit_form_type_binary_label), style = MaterialTheme.typography.bodyLarge)
-                                    Text(
-                                        stringResource(Res.string.habit_form_type_binary_description),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .selectable(
-                                        selected = state.type == HabitType.QUANTITATIVE,
-                                        onClick = { onTypeChange(HabitType.QUANTITATIVE) },
-                                        role = Role.RadioButton
-                                    )
-                                    .padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                RadioButton(
-                                    selected = state.type == HabitType.QUANTITATIVE,
-                                    onClick = null
-                                )
-                                Column(modifier = Modifier.padding(start = 16.dp)) {
-                                    Text(stringResource(Res.string.common_quantitative), style = MaterialTheme.typography.bodyLarge)
-                                    Text(
-                                        stringResource(Res.string.habit_form_type_quantitative_description),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Quantitative options
-                if (state.type == HabitType.QUANTITATIVE) {
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                text = stringResource(Res.string.habit_form_section_target),
-                                style = MaterialTheme.typography.titleMedium
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                OutlinedTextField(
-                                    value = state.targetValue,
-                                    onValueChange = onTargetValueChange,
-                                    label = { Text(stringResource(Res.string.habit_form_label_target_value)) },
-                                    placeholder = { Text(stringResource(Res.string.common_placeholder_target_value)) },
-                                    singleLine = true,
-                                    modifier = Modifier.weight(1f)
-                                )
-
-                                OutlinedTextField(
-                                    value = state.unit,
-                                    onValueChange = onUnitChange,
-                                    label = { Text(stringResource(Res.string.habit_form_label_unit)) },
-                                    placeholder = { Text(stringResource(Res.string.habit_form_placeholder_unit)) },
-                                    singleLine = true,
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Schedule/Cadence selection
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = stringResource(Res.string.habit_form_section_schedule),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Column(modifier = Modifier.selectableGroup()) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .selectable(
-                                        selected = state.scheduleType == ScheduleType.DAILY,
-                                        onClick = { onScheduleTypeChange(ScheduleType.DAILY) },
-                                        role = Role.RadioButton
-                                    )
-                                    .padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                RadioButton(
-                                    selected = state.scheduleType == ScheduleType.DAILY,
-                                    onClick = null
-                                )
-                                Column(modifier = Modifier.padding(start = 16.dp)) {
-                                    Text(stringResource(Res.string.common_daily), style = MaterialTheme.typography.bodyLarge)
-                                    Text(
-                                        stringResource(Res.string.habit_form_schedule_daily_description),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .selectable(
-                                        selected = state.scheduleType == ScheduleType.WEEKLY,
-                                        onClick = { onScheduleTypeChange(ScheduleType.WEEKLY) },
-                                        role = Role.RadioButton
-                                    )
-                                    .padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                RadioButton(
-                                    selected = state.scheduleType == ScheduleType.WEEKLY,
-                                    onClick = null
-                                )
-                                Column(modifier = Modifier.padding(start = 16.dp)) {
-                                    Text(stringResource(Res.string.common_weekly), style = MaterialTheme.typography.bodyLarge)
-                                    Text(
-                                        stringResource(Res.string.habit_form_schedule_weekly_description),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        OutlinedTextField(
-                            value = state.quota,
-                            onValueChange = onQuotaChange,
-                            label = { Text(stringResource(Res.string.habit_form_label_quota)) },
-                            placeholder = { Text(stringResource(Res.string.habit_form_placeholder_quota)) },
-                            supportingText = {
-                                Text(
-                                    if (state.scheduleType == ScheduleType.DAILY) {
-                                        stringResource(Res.string.habit_form_quota_supporting_daily)
-                                    } else {
-                                        stringResource(Res.string.habit_form_quota_supporting_weekly)
-                                    }
-                                )
-                            },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
-
-                // Reminder settings
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(Res.string.habit_form_section_reminder),
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Switch(
-                                checked = state.hasReminder,
-                                onCheckedChange = onHasReminderChange
-                            )
-                        }
-
-                        if (state.hasReminder) {
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            if (state.type == HabitType.QUANTITATIVE) {
-                                Text(
-                                    text = stringResource(Res.string.habit_form_reminder_info_periodic),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                OutlinedTextField(
-                                    value = state.intervalMinutes,
-                                    onValueChange = onIntervalChange,
-                                    label = { Text(stringResource(Res.string.habit_form_label_interval)) },
-                                    singleLine = true,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            } else {
-                                Text(
-                                    text = stringResource(Res.string.habit_form_reminder_info_time),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                // Time picker would go here - simplified for now
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Save button
-                Button(
-                    onClick = onSaveClick,
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = state.isValid && !state.isSaving
-                ) {
-                    if (state.isSaving) {
-                        CircularProgressIndicator()
-                    } else {
-                        Text(if (state.isEditing) stringResource(Res.string.habit_form_button_save) else stringResource(Res.string.habit_form_button_create))
-                    }
-                }
             }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // SCHEDULE
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SectionLabel(stringResource(Res.string.habit_form_section_schedule))
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                ScheduleTypePill(
+                    text = stringResource(Res.string.common_daily),
+                    isSelected = state.scheduleType == ScheduleType.DAILY,
+                    onClick = { onScheduleTypeChange(ScheduleType.DAILY) }
+                )
+                ScheduleTypePill(
+                    text = stringResource(Res.string.common_weekly),
+                    isSelected = state.scheduleType == ScheduleType.WEEKLY,
+                    onClick = { onScheduleTypeChange(ScheduleType.WEEKLY) }
+                )
+            }
+        }
+
+        AnimatedVisibility(
+            visible = state.scheduleType == ScheduleType.WEEKLY,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            Column {
+                Spacer(modifier = Modifier.height(8.dp))
+                SchedulePicker(
+                    selectedDays = state.selectedDays,
+                    onSelectedDaysChange = onSelectedDaysChange
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Reminder row
+        val reminderSubtitle: String = if (state.hasReminder) {
+            state.reminderTime?.formatAmPm() ?: "09:00 AM"
+        } else {
+            stringResource(Res.string.habit_form_reminder_off)
+        }
+        FormListRow(
+            icon = Icons.Outlined.Notifications,
+            iconTint = if (state.hasReminder) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            title = stringResource(Res.string.habit_form_reminder_title),
+            subtitle = reminderSubtitle,
+            onClick = null,
+            trailingContent = {
+                Switch(
+                    checked = state.hasReminder,
+                    onCheckedChange = onHasReminderChange
+                )
+            }
+        )
+
+        // Note row
+        FormListRow(
+            icon = Icons.Outlined.Edit,
+            iconTint = if (isNoteExpanded) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            title = if (isNoteExpanded) {
+                stringResource(Res.string.habit_form_note_expanded_title)
+            } else {
+                stringResource(Res.string.habit_form_note_collapsed_title)
+            },
+            subtitle = if (isNoteExpanded) "" else stringResource(Res.string.habit_form_note_collapsed_subtitle),
+            onClick = { isNoteExpanded = !isNoteExpanded },
+            trailingContent = null
+        )
+
+        AnimatedVisibility(
+            visible = isNoteExpanded,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            UnderlineTextField(
+                value = state.description,
+                onValueChange = onDescriptionChange,
+                placeholder = "",
+                maxLines = 5
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Primary CTA
+        Button(
+            onClick = onSaveClick,
+            modifier = Modifier.fillMaxWidth(),
+            enabled = state.isValid && !state.isSaving,
+            shape = RoundedCornerShape(28.dp)
+        ) {
+            if (state.isSaving) {
+                CircularProgressIndicator(modifier = Modifier.size(20.dp))
+            } else {
+                Text(
+                    text = if (state.isEditing) {
+                        stringResource(Res.string.habit_form_button_save)
+                    } else {
+                        stringResource(Res.string.habit_form_button_establish)
+                    }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Secondary CTA
+        TextButton(
+            onClick = if (state.isEditing) onDiscardChangesClick else onDiscardDraftClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = if (state.isEditing) {
+                    stringResource(Res.string.habit_form_button_discard_changes)
+                } else {
+                    stringResource(Res.string.habit_form_button_discard_draft)
+                },
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
 
+@Composable
+private fun SectionLabel(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+}
+
+@Composable
+private fun UnderlineTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: String = "",
+    label: String = "",
+    maxLines: Int = 1
+) {
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier.fillMaxWidth(),
+        placeholder = if (placeholder.isNotEmpty()) {
+            { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        } else {
+            null
+        },
+        label = if (label.isNotEmpty()) {
+            {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        } else {
+            null
+        },
+        shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+            unfocusedIndicatorColor = MaterialTheme.colorScheme.outlineVariant
+        ),
+        maxLines = maxLines,
+        singleLine = maxLines == 1
+    )
+}
+
+@Composable
+private fun ScheduleTypePill(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val isDarkTheme = isSystemInDarkTheme()
+    val pillShape = RoundedCornerShape(percent = 50)
+    val backgroundColor = if (isSelected) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerLow
+    }
+    val contentColor = if (isSelected) {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    Box(
+        modifier = modifier
+            .clip(pillShape)
+            .background(backgroundColor)
+            .then(
+                if (!isSelected && isDarkTheme) {
+                    Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, pillShape)
+                } else {
+                    Modifier
+                }
+            ).clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            ).padding(horizontal = 12.dp, vertical = 3.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+            color = contentColor
+        )
+    }
+}
+
+@Composable
+private fun DeleteHabitDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.habit_form_delete_dialog_title)) },
+        text = { Text(stringResource(Res.string.habit_form_delete_dialog_body)) },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm,
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text(stringResource(Res.string.habit_form_delete_dialog_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.habit_form_delete_dialog_cancel))
+            }
+        }
+    )
+}
+
+private fun LocalTime.formatAmPm(): String {
+    val hour12: Int = when {
+        hour == 0 -> 12
+        hour > 12 -> hour - 12
+        else -> hour
+    }
+    val amPm: String = if (hour < 12) "AM" else "PM"
+    return "${hour12.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} $amPm"
+}
