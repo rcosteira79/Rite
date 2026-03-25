@@ -190,12 +190,24 @@ internal fun HabitFormScreen(
             .statusBarsPadding()
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
-        // Delete icon (edit mode only)
-        if (state.isEditing) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
+        // Heading + delete icon (edit mode only)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = if (state.isEditing) {
+                    stringResource(Res.string.habit_form_title_edit)
+                } else {
+                    stringResource(Res.string.habit_form_title_new_habit)
+                },
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f)
+            )
+            if (state.isEditing) {
                 IconButton(onClick = { isDeleteDialogVisible = true }) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
@@ -206,20 +218,6 @@ internal fun HabitFormScreen(
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Heading
-        Text(
-            text = if (state.isEditing) {
-                stringResource(Res.string.habit_form_title_edit)
-            } else {
-                stringResource(Res.string.habit_form_title_new_habit)
-            },
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
