@@ -37,6 +37,7 @@ class HabitFormViewModel(
 
     private companion object {
         private const val ERROR_HABIT_NOT_FOUND = "Habit not found"
+        private val DEFAULT_REMINDER_TIME = LocalTime(9, 0)
     }
 
     val state: StateFlow<HabitFormState> = _state.asStateFlow()
@@ -142,7 +143,7 @@ class HabitFormViewModel(
         _state.update {
             it.copy(
                 hasReminder = hasReminder,
-                reminderTime = if (hasReminder && it.reminderTime == null) LocalTime(9, 0) else it.reminderTime
+                reminderTime = if (hasReminder && it.reminderTime == null) DEFAULT_REMINDER_TIME else it.reminderTime
             )
         }
     }

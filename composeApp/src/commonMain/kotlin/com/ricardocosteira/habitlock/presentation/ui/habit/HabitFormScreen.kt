@@ -351,7 +351,7 @@ internal fun HabitFormScreen(
 
         // Reminder + Note card
         val reminderSubtitle: String = if (state.hasReminder) {
-            state.reminderTime?.formatAmPm() ?: LocalTime(9, 0).formatAmPm()
+            state.reminderTime?.formatAmPm().orEmpty()
         } else {
             stringResource(Res.string.habit_form_reminder_off)
         }
