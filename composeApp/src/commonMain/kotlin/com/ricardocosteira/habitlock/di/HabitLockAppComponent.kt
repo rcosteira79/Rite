@@ -22,19 +22,19 @@ import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
 import com.ricardocosteira.habitlock.domain.usecases.SnoozeHabit
 import com.ricardocosteira.habitlock.domain.usecases.UuidProvider
 import com.ricardocosteira.habitlock.generateUuid
-import com.ricardocosteira.habitlock.presentation.ui.startup.StartupViewModel
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsViewModel
 import com.ricardocosteira.habitlock.presentation.ui.calendar.CalendarViewModel
 import com.ricardocosteira.habitlock.presentation.ui.habit.HabitFormViewModel
 import com.ricardocosteira.habitlock.presentation.ui.onboarding.OnboardingViewModel
 import com.ricardocosteira.habitlock.presentation.ui.settings.SettingsViewModel
+import com.ricardocosteira.habitlock.presentation.ui.startup.StartupViewModel
 import com.ricardocosteira.habitlock.presentation.ui.today.TodayViewModel
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
 /**
  * Main application component for dependency injection using kotlin-inject.
- * 
+ *
  * This component is generated at compile-time by KSP and provides all dependencies
  * needed by the application. Dependencies marked with @Inject are automatically wired.
  */
@@ -43,22 +43,18 @@ import me.tatarka.inject.annotations.Provides
 abstract class HabitLockAppComponent(
     @get:Provides val databaseDriverFactory: DatabaseDriverFactory
 ) {
-
     // Database (singleton)
     @AppScope
     @Provides
-    fun provideDatabase(driverFactory: DatabaseDriverFactory): HabitLockDatabase {
-        return HabitLockDatabase(driverFactory.createDriver())
-    }
+    fun provideDatabase(driverFactory: DatabaseDriverFactory): HabitLockDatabase = HabitLockDatabase(driverFactory.createDriver())
 
     // UUID Provider (singleton)
     @AppScope
     @Provides
-    fun provideUuidProvider(): UuidProvider {
-        return object : UuidProvider {
+    fun provideUuidProvider(): UuidProvider =
+        object : UuidProvider {
             override fun generate(): String = generateUuid()
         }
-    }
 
     // Repository bindings (interface -> implementation)
     @AppScope
@@ -90,14 +86,13 @@ abstract class HabitLockAppComponent(
     @Provides
     fun provideHabitFormViewModelFactory(
         habitRepository: HabitRepository,
-        createHabit: CreateHabit
-    ): HabitFormViewModel.Factory {
-        return object : HabitFormViewModel.Factory {
-            override fun create(habitIdToEdit: String?): HabitFormViewModel {
-                return HabitFormViewModel(habitRepository, createHabit, habitIdToEdit)
-            }
+        createHabit: CreateHabit,
+        uuidProvider: UuidProvider
+    ): HabitFormViewModel.Factory =
+        object : HabitFormViewModel.Factory {
+            override fun create(habitIdToEdit: String?): HabitFormViewModel =
+                HabitFormViewModel(habitRepository, createHabit, uuidProvider, habitIdToEdit)
         }
-    }
 
     // Public accessors for App initialization
     abstract val startupViewModel: StartupViewModel
