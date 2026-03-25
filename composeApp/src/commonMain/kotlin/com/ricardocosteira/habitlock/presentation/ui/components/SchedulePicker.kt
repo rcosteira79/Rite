@@ -23,9 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.common_schedule
 import habitlock.composeapp.generated.resources.common_schedule_day_fri
 import habitlock.composeapp.generated.resources.common_schedule_day_mon
 import habitlock.composeapp.generated.resources.common_schedule_day_sat
@@ -57,6 +55,18 @@ private fun SchedulePreset.labelRes(): StringResource =
         SchedulePreset.WEEKEND -> Res.string.common_schedule_weekend
     }
 
+private val DayOfWeek.labelRes: StringResource
+    get() =
+        when (this) {
+            DayOfWeek.MONDAY -> Res.string.common_schedule_day_mon
+            DayOfWeek.TUESDAY -> Res.string.common_schedule_day_tue
+            DayOfWeek.WEDNESDAY -> Res.string.common_schedule_day_wed
+            DayOfWeek.THURSDAY -> Res.string.common_schedule_day_thu
+            DayOfWeek.FRIDAY -> Res.string.common_schedule_day_fri
+            DayOfWeek.SATURDAY -> Res.string.common_schedule_day_sat
+            DayOfWeek.SUNDAY -> Res.string.common_schedule_day_sun
+        }
+
 /**
  * Schedule picker with three preset pills (Every day / Weekdays / Weekend) and
  * circular day chips. Pressing a pill selects the corresponding days. Any manual
@@ -71,24 +81,13 @@ fun SchedulePicker(
     val activePreset = SchedulePreset.entries.find { it.days == selectedDays }
 
     Column(modifier = modifier) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(Res.string.common_schedule),
-                style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.5.sp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SchedulePreset.entries.forEach { preset ->
-                    PresetPill(
-                        text = stringResource(preset.labelRes()),
-                        isSelected = preset == activePreset,
-                        onClick = { onSelectedDaysChange(preset.days) },
-                    )
-                }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SchedulePreset.entries.forEach { preset ->
+                PresetPill(
+                    text = stringResource(preset.labelRes()),
+                    isSelected = preset == activePreset,
+                    onClick = { onSelectedDaysChange(preset.days) },
+                )
             }
         }
 
@@ -101,7 +100,7 @@ fun SchedulePicker(
             DayOfWeek.entries.forEach { day ->
                 val isSelected = day in selectedDays
                 DayChip(
-                    label = stringResource(dayInitial(day)),
+                    label = stringResource(day.labelRes),
                     isSelected = isSelected,
                     onClick = {
                         val updated = if (isSelected) selectedDays - day else selectedDays + day
@@ -195,14 +194,3 @@ private fun DayChip(
         )
     }
 }
-
-private fun dayInitial(day: DayOfWeek): StringResource =
-    when (day) {
-        DayOfWeek.MONDAY -> Res.string.common_schedule_day_mon
-        DayOfWeek.TUESDAY -> Res.string.common_schedule_day_tue
-        DayOfWeek.WEDNESDAY -> Res.string.common_schedule_day_wed
-        DayOfWeek.THURSDAY -> Res.string.common_schedule_day_thu
-        DayOfWeek.FRIDAY -> Res.string.common_schedule_day_fri
-        DayOfWeek.SATURDAY -> Res.string.common_schedule_day_sat
-        DayOfWeek.SUNDAY -> Res.string.common_schedule_day_sun
-    }

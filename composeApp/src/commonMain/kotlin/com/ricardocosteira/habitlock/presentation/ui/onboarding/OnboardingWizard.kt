@@ -18,6 +18,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.presentation.ui.BackHandler
 import kotlinx.datetime.DayOfWeek
 
@@ -30,160 +31,163 @@ private val EmphasizedAccelerate = CubicBezierEasing(0.3f, 0.0f, 0.8f, 0.15f)
 
 @Composable
 fun OnboardingWizard(
-  state: OnboardingState,
-  currentStep: Int,
-  snackbarHostState: SnackbarHostState,
-  onStepChange: (Int) -> Unit,
-  onSkip: () -> Unit,
-  onContinueFromStrictness: () -> Unit,
-  onCreateHabit: () -> Unit,
-  onSkipFirstHabit: () -> Unit,
-  onPresetSelected: (OnboardingStrictnessPreset) -> Unit,
-  onHabitNameChange: (String) -> Unit,
-  onHabitTypeChange: (com.ricardocosteira.habitlock.domain.models.HabitType) -> Unit,
-  onTargetValueChange: (String) -> Unit,
-  onUnitChange: (String) -> Unit,
-  onSelectedDaysChange: (Set<DayOfWeek>) -> Unit,
-  reduceMotion: Boolean = false,
-  modifier: Modifier = Modifier,
+    state: OnboardingState,
+    currentStep: Int,
+    snackbarHostState: SnackbarHostState,
+    onStepChange: (Int) -> Unit,
+    onSkip: () -> Unit,
+    onContinueFromStrictness: () -> Unit,
+    onCreateHabit: () -> Unit,
+    onSkipFirstHabit: () -> Unit,
+    onPresetSelected: (OnboardingStrictnessPreset) -> Unit,
+    onHabitNameChange: (String) -> Unit,
+    onHabitTypeChange: (HabitType) -> Unit,
+    onTargetValueChange: (String) -> Unit,
+    onUnitChange: (String) -> Unit,
+    onSelectedDaysChange: (Set<DayOfWeek>) -> Unit,
+    reduceMotion: Boolean = false,
+    modifier: Modifier = Modifier,
 ) {
-  BackHandler(enabled = currentStep > 0) { onStepChange(currentStep - 1) }
+    BackHandler(enabled = currentStep > 0) { onStepChange(currentStep - 1) }
 
-  Scaffold(modifier = modifier.fillMaxSize(), snackbarHost = { SnackbarHost(snackbarHostState) }) {
-    innerPadding ->
-    Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-      OnboardingTopChrome(
-        currentStep = currentStep,
-        onSkip = onSkip,
-        modifier = Modifier.fillMaxWidth(),
-      )
+    Scaffold(modifier = modifier.fillMaxSize(), snackbarHost = { SnackbarHost(snackbarHostState) }) { innerPadding ->
+        Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+            OnboardingTopChrome(
+                currentStep = currentStep,
+                onSkip = onSkip,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-      if (reduceMotion) {
-        Crossfade(
-          targetState = currentStep,
-          modifier = Modifier.fillMaxWidth().weight(1f),
-          label = "onboarding_step",
-        ) { step ->
-          Column(modifier = Modifier.fillMaxSize()) {
-            when (step) {
-              0 -> {
-                PhilosophyStep(modifier = Modifier.weight(1f).fillMaxWidth(), reduceMotion = true)
-                PhilosophyStepCta(
-                  onAdvance = { onStepChange(step + 1) },
-                  modifier = Modifier.fillMaxWidth(),
-                  reduceMotion = true,
-                )
-              }
-              1 -> {
-                StrictnessStep(
-                  selectedPreset = state.selectedPreset,
-                  onPresetSelected = onPresetSelected,
-                  reduceMotion = true,
-                  modifier = Modifier.weight(1f).fillMaxWidth(),
-                )
-                StrictnessStepCta(
-                  state = state,
-                  onContinue = onContinueFromStrictness,
-                  modifier = Modifier.fillMaxWidth(),
-                  reduceMotion = true,
-                )
-              }
-              2 -> {
-                FirstHabitStep(
-                  habitName = state.habitName,
-                  habitType = state.habitType,
-                  targetValue = state.targetValue,
-                  unit = state.unit,
-                  selectedDays = state.selectedDays,
-                  onHabitNameChange = onHabitNameChange,
-                  onHabitTypeChange = onHabitTypeChange,
-                  onTargetValueChange = onTargetValueChange,
-                  onUnitChange = onUnitChange,
-                  onSelectedDaysChange = onSelectedDaysChange,
-                  modifier = Modifier.weight(1f).fillMaxWidth(),
-                )
-                FirstHabitStepCta(
-                  state = state,
-                  onCreateHabit = onCreateHabit,
-                  onSkip = onSkipFirstHabit,
-                  modifier = Modifier.fillMaxWidth(),
-                  reduceMotion = true,
-                )
-              }
+            if (reduceMotion) {
+                Crossfade(
+                    targetState = currentStep,
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    label = "onboarding_step",
+                ) { step ->
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        when (step) {
+                            0 -> {
+                                PhilosophyStep(modifier = Modifier.weight(1f).fillMaxWidth(), reduceMotion = true)
+                                PhilosophyStepCta(
+                                    onAdvance = { onStepChange(step + 1) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = true,
+                                )
+                            }
+
+                            1 -> {
+                                StrictnessStep(
+                                    selectedPreset = state.selectedPreset,
+                                    onPresetSelected = onPresetSelected,
+                                    reduceMotion = true,
+                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                )
+                                StrictnessStepCta(
+                                    state = state,
+                                    onContinue = onContinueFromStrictness,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = true,
+                                )
+                            }
+
+                            2 -> {
+                                FirstHabitStep(
+                                    habitName = state.habitName,
+                                    habitType = state.habitType,
+                                    targetValue = state.targetValue,
+                                    unit = state.unit,
+                                    selectedDays = state.selectedDays,
+                                    onHabitNameChange = onHabitNameChange,
+                                    onHabitTypeChange = onHabitTypeChange,
+                                    onTargetValueChange = onTargetValueChange,
+                                    onUnitChange = onUnitChange,
+                                    onSelectedDaysChange = onSelectedDaysChange,
+                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                )
+                                FirstHabitStepCta(
+                                    state = state,
+                                    onCreateHabit = onCreateHabit,
+                                    onSkip = onSkipFirstHabit,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = true,
+                                )
+                            }
+                        }
+                    }
+                }
+            } else {
+                AnimatedContent(
+                    targetState = currentStep,
+                    transitionSpec = {
+                        val isForward = targetState > initialState
+                        val enterSlide =
+                            slideInHorizontally(tween(ENTER_DURATION_MS, easing = EmphasizedDecelerate)) {
+                                if (isForward) it else -it
+                            } + fadeIn(tween(ENTER_DURATION_MS))
+                        val exitSlide =
+                            slideOutHorizontally(tween(EXIT_DURATION_MS, easing = EmphasizedAccelerate)) {
+                                if (isForward) -it else it
+                            } + fadeOut(tween(EXIT_DURATION_MS))
+                        enterSlide togetherWith exitSlide
+                    },
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    label = "onboarding_step",
+                ) { step ->
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        when (step) {
+                            0 -> {
+                                PhilosophyStep(
+                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                    reduceMotion = reduceMotion,
+                                )
+                                PhilosophyStepCta(
+                                    onAdvance = { onStepChange(step + 1) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = reduceMotion,
+                                )
+                            }
+
+                            1 -> {
+                                StrictnessStep(
+                                    selectedPreset = state.selectedPreset,
+                                    onPresetSelected = onPresetSelected,
+                                    reduceMotion = reduceMotion,
+                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                )
+                                StrictnessStepCta(
+                                    state = state,
+                                    onContinue = onContinueFromStrictness,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = reduceMotion,
+                                )
+                            }
+
+                            2 -> {
+                                FirstHabitStep(
+                                    habitName = state.habitName,
+                                    habitType = state.habitType,
+                                    targetValue = state.targetValue,
+                                    unit = state.unit,
+                                    selectedDays = state.selectedDays,
+                                    onHabitNameChange = onHabitNameChange,
+                                    onHabitTypeChange = onHabitTypeChange,
+                                    onTargetValueChange = onTargetValueChange,
+                                    onUnitChange = onUnitChange,
+                                    onSelectedDaysChange = onSelectedDaysChange,
+                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                )
+                                FirstHabitStepCta(
+                                    state = state,
+                                    onCreateHabit = onCreateHabit,
+                                    onSkip = onSkipFirstHabit,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = reduceMotion,
+                                )
+                            }
+                        }
+                    }
+                }
             }
-          }
         }
-      } else {
-        AnimatedContent(
-          targetState = currentStep,
-          transitionSpec = {
-            val isForward = targetState > initialState
-            val enterSlide =
-              slideInHorizontally(tween(ENTER_DURATION_MS, easing = EmphasizedDecelerate)) {
-                if (isForward) it else -it
-              } + fadeIn(tween(ENTER_DURATION_MS))
-            val exitSlide =
-              slideOutHorizontally(tween(EXIT_DURATION_MS, easing = EmphasizedAccelerate)) {
-                if (isForward) -it else it
-              } + fadeOut(tween(EXIT_DURATION_MS))
-            enterSlide togetherWith exitSlide
-          },
-          modifier = Modifier.fillMaxWidth().weight(1f),
-          label = "onboarding_step",
-        ) { step ->
-          Column(modifier = Modifier.fillMaxSize()) {
-            when (step) {
-              0 -> {
-                PhilosophyStep(
-                  modifier = Modifier.weight(1f).fillMaxWidth(),
-                  reduceMotion = reduceMotion,
-                )
-                PhilosophyStepCta(
-                  onAdvance = { onStepChange(step + 1) },
-                  modifier = Modifier.fillMaxWidth(),
-                  reduceMotion = reduceMotion,
-                )
-              }
-              1 -> {
-                StrictnessStep(
-                  selectedPreset = state.selectedPreset,
-                  onPresetSelected = onPresetSelected,
-                  reduceMotion = reduceMotion,
-                  modifier = Modifier.weight(1f).fillMaxWidth(),
-                )
-                StrictnessStepCta(
-                  state = state,
-                  onContinue = onContinueFromStrictness,
-                  modifier = Modifier.fillMaxWidth(),
-                  reduceMotion = reduceMotion,
-                )
-              }
-              2 -> {
-                FirstHabitStep(
-                  habitName = state.habitName,
-                  habitType = state.habitType,
-                  targetValue = state.targetValue,
-                  unit = state.unit,
-                  selectedDays = state.selectedDays,
-                  onHabitNameChange = onHabitNameChange,
-                  onHabitTypeChange = onHabitTypeChange,
-                  onTargetValueChange = onTargetValueChange,
-                  onUnitChange = onUnitChange,
-                  onSelectedDaysChange = onSelectedDaysChange,
-                  modifier = Modifier.weight(1f).fillMaxWidth(),
-                )
-                FirstHabitStepCta(
-                  state = state,
-                  onCreateHabit = onCreateHabit,
-                  onSkip = onSkipFirstHabit,
-                  modifier = Modifier.fillMaxWidth(),
-                  reduceMotion = reduceMotion,
-                )
-              }
-            }
-          }
-        }
-      }
     }
-  }
 }

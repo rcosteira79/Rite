@@ -8,7 +8,6 @@
     <string name="common_cancel">Cancel</string>
     <string name="common_daily">Daily</string>
     <string name="common_weekly">Weekly</string>
-    <string name="common_schedule">SCHEDULE</string>
     <string name="common_schedule_every_day">Every day</string>
     <string name="common_schedule_weekdays">Weekdays</string>
     <string name="common_schedule_weekend">Weekend</string>

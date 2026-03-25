@@ -10,7 +10,6 @@ import com.ricardocosteira.habitlock.domain.usecases.ApplyStrictnessPreset
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabit
 import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabits
 import com.ricardocosteira.habitlock.util.todayIn
-import kotlin.time.Clock
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,6 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.TimeZone
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Clock
 
 /**
  * Scoped to the application lifetime via [AppScope] rather than a
@@ -33,165 +33,169 @@ import me.tatarka.inject.annotations.Inject
 @AppScope
 @Inject
 class OnboardingViewModel(
-  private val userRepository: UserRepository,
-  private val applyStrictnessPreset: ApplyStrictnessPreset,
-  private val createHabit: CreateHabit,
-  private val generateDailyHabits: GenerateDailyHabits,
+    private val userRepository: UserRepository,
+    private val applyStrictnessPreset: ApplyStrictnessPreset,
+    private val createHabit: CreateHabit,
+    private val generateDailyHabits: GenerateDailyHabits,
 ) : ViewModel() {
+    private val _state = MutableStateFlow(OnboardingState())
+    val state: StateFlow<OnboardingState> = _state.asStateFlow()
 
-  private val _state = MutableStateFlow(OnboardingState())
-  val state: StateFlow<OnboardingState> = _state.asStateFlow()
+    private val _events = MutableSharedFlow<OnboardingEvent>()
+    val events: SharedFlow<OnboardingEvent> = _events.asSharedFlow()
 
-  private val _events = MutableSharedFlow<OnboardingEvent>()
-  val events: SharedFlow<OnboardingEvent> = _events.asSharedFlow()
-
-  fun selectPreset(preset: OnboardingStrictnessPreset) {
-    _state.update { it.copy(selectedPreset = preset) }
-  }
-
-  fun updateHabitName(name: String) {
-    _state.update { it.copy(habitName = name) }
-  }
-
-  fun updateHabitType(type: HabitType) {
-    _state.update { it.copy(habitType = type) }
-  }
-
-  fun updateTargetValue(value: String) {
-    _state.update { it.copy(targetValue = value) }
-  }
-
-  fun updateUnit(unit: String) {
-    _state.update { it.copy(unit = unit) }
-  }
-
-  fun updateSelectedDays(days: Set<DayOfWeek>) {
-    _state.update { it.copy(selectedDays = days) }
-  }
-
-  fun skipToToday() {
-    viewModelScope.launch { applyPresetAndComplete(StrictnessPreset.BALANCED) }
-  }
-
-  fun continueFromStrictness() {
-    viewModelScope.launch {
-      _state.update { it.copy(isApplyingPreset = true) }
-
-      val result = applyStrictnessPreset.execute(_state.value.selectedPreset.toDomain())
-
-      result.fold(
-        onSuccess = {
-          _state.update { it.copy(isApplyingPreset = false) }
-          _events.emit(OnboardingEvent.NavigateToFirstHabit)
-        },
-        onFailure = { error ->
-          _state.update { it.copy(isApplyingPreset = false, error = error.message) }
-        },
-      )
-    }
-  }
-
-  fun createFirstHabit() {
-    val habitName = _state.value.habitName.trim()
-    if (habitName.isBlank()) {
-      viewModelScope.launch { _events.emit(OnboardingEvent.EmptyHabitName) }
-      return
+    fun selectPreset(preset: OnboardingStrictnessPreset) {
+        _state.update { it.copy(selectedPreset = preset) }
     }
 
-    val habitType = _state.value.habitType
-    if (habitType == HabitType.QUANTITATIVE) {
-      val targetValueStr = _state.value.targetValue.trim()
-      if (targetValueStr.isBlank()) {
-        viewModelScope.launch { _events.emit(OnboardingEvent.MissingTargetValue) }
-        return
-      }
-      val targetValue = targetValueStr.toIntOrNull()
-      if (targetValue == null || targetValue <= 0) {
-        viewModelScope.launch { _events.emit(OnboardingEvent.InvalidTargetValue) }
-        return
-      }
+    fun setCurrentStep(step: Int) {
+        _state.update { it.copy(currentStep = step) }
     }
 
-    viewModelScope.launch {
-      _state.update { it.copy(isCreatingHabit = true) }
+    fun updateHabitName(name: String) {
+        _state.update { it.copy(habitName = name) }
+    }
 
-      val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    fun updateHabitType(type: HabitType) {
+        _state.update { it.copy(habitType = type) }
+    }
 
-      val targetValue =
+    fun updateTargetValue(value: String) {
+        _state.update { it.copy(targetValue = value) }
+    }
+
+    fun updateUnit(unit: String) {
+        _state.update { it.copy(unit = unit) }
+    }
+
+    fun updateSelectedDays(days: Set<DayOfWeek>) {
+        _state.update { it.copy(selectedDays = days) }
+    }
+
+    fun skipToToday() {
+        viewModelScope.launch { applyPresetAndComplete(StrictnessPreset.BALANCED) }
+    }
+
+    fun continueFromStrictness() {
+        viewModelScope.launch {
+            _state.update { it.copy(isApplyingPreset = true) }
+
+            val result = applyStrictnessPreset.execute(_state.value.selectedPreset.toDomain())
+
+            result.fold(
+                onSuccess = {
+                    _state.update { it.copy(isApplyingPreset = false, currentStep = 2) }
+                },
+                onFailure = { error ->
+                    _state.update { it.copy(isApplyingPreset = false, error = error.message) }
+                },
+            )
+        }
+    }
+
+    fun createFirstHabit() {
+        val habitName = _state.value.habitName.trim()
+        if (habitName.isBlank()) {
+            viewModelScope.launch { _events.emit(OnboardingEvent.EmptyHabitName) }
+            return
+        }
+
+        val habitType = _state.value.habitType
         if (habitType == HabitType.QUANTITATIVE) {
-          _state.value.targetValue.trim().toIntOrNull()
-        } else {
-          null
+            val targetValueStr = _state.value.targetValue.trim()
+            if (targetValueStr.isBlank()) {
+                viewModelScope.launch { _events.emit(OnboardingEvent.MissingTargetValue) }
+                return
+            }
+            val targetValue = targetValueStr.toIntOrNull()
+            if (targetValue == null || targetValue <= 0) {
+                viewModelScope.launch { _events.emit(OnboardingEvent.InvalidTargetValue) }
+                return
+            }
         }
 
-      val unit =
-        if (habitType == HabitType.QUANTITATIVE && _state.value.unit.isNotBlank()) {
-          _state.value.unit.trim()
-        } else {
-          null
+        viewModelScope.launch {
+            _state.update { it.copy(isCreatingHabit = true) }
+
+            val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+
+            val targetValue =
+                if (habitType == HabitType.QUANTITATIVE) {
+                    _state.value.targetValue
+                        .trim()
+                        .toIntOrNull()
+                } else {
+                    null
+                }
+
+            val unit =
+                if (habitType == HabitType.QUANTITATIVE && _state.value.unit.isNotBlank()) {
+                    _state.value.unit.trim()
+                } else {
+                    null
+                }
+
+            val selectedDays = _state.value.selectedDays
+            val specificDays: Set<DayOfWeek>? =
+                if (selectedDays.size == DayOfWeek.entries.size) null else selectedDays
+
+            val result =
+                createHabit.execute(
+                    params =
+                        CreateHabit.CreateHabitParams(
+                            name = habitName,
+                            description = null,
+                            type = habitType,
+                            targetValue = targetValue,
+                            unit = unit,
+                            specificDays = specificDays,
+                            reminder = null,
+                        ),
+                    startDate = today,
+                )
+
+            result.fold(
+                onSuccess = {
+                    // Generate habit instance for today
+                    generateDailyHabits.execute()
+                    completeOnboarding()
+                },
+                onFailure = { error ->
+                    _state.update { it.copy(isCreatingHabit = false, error = error.message) }
+                },
+            )
+        }
+    }
+
+    fun skipFirstHabit() {
+        viewModelScope.launch { completeOnboarding() }
+    }
+
+    private suspend fun applyPresetAndComplete(preset: StrictnessPreset) {
+        _state.update { it.copy(isApplyingPreset = true) }
+
+        applyStrictnessPreset.execute(preset)
+        completeOnboarding()
+    }
+
+    private suspend fun completeOnboarding() {
+        val user = userRepository.getUser()
+        if (user != null) {
+            userRepository.setOnboardingCompleted(user.id, true)
         }
 
-      val selectedDays = _state.value.selectedDays
-      val specificDays: Set<DayOfWeek>? =
-        if (selectedDays.size == DayOfWeek.entries.size) null else selectedDays
-
-      val result =
-        createHabit.execute(
-          params =
-            CreateHabit.CreateHabitParams(
-              name = habitName,
-              description = null,
-              type = habitType,
-              targetValue = targetValue,
-              unit = unit,
-              specificDays = specificDays,
-              reminder = null,
-            ),
-          startDate = today,
-        )
-
-      result.fold(
-        onSuccess = {
-          // Generate habit instance for today
-          generateDailyHabits.execute()
-          completeOnboarding()
-        },
-        onFailure = { error ->
-          _state.update { it.copy(isCreatingHabit = false, error = error.message) }
-        },
-      )
-    }
-  }
-
-  fun skipFirstHabit() {
-    viewModelScope.launch { completeOnboarding() }
-  }
-
-  private suspend fun applyPresetAndComplete(preset: StrictnessPreset) {
-    _state.update { it.copy(isApplyingPreset = true) }
-
-    applyStrictnessPreset.execute(preset)
-    completeOnboarding()
-  }
-
-  private suspend fun completeOnboarding() {
-    val user = userRepository.getUser()
-    if (user != null) {
-      userRepository.setOnboardingCompleted(user.id, true)
+        _state.update { it.copy(isCreatingHabit = false, isApplyingPreset = false) }
+        _events.emit(OnboardingEvent.NavigateToToday)
     }
 
-    _state.update { it.copy(isCreatingHabit = false, isApplyingPreset = false) }
-    _events.emit(OnboardingEvent.NavigateToToday)
-  }
-
-  fun clearError() {
-    _state.update { it.copy(error = null) }
-  }
-
-  private fun OnboardingStrictnessPreset.toDomain(): StrictnessPreset =
-    when (this) {
-      OnboardingStrictnessPreset.FLEXIBLE -> StrictnessPreset.FLEXIBLE
-      OnboardingStrictnessPreset.BALANCED -> StrictnessPreset.BALANCED
-      OnboardingStrictnessPreset.LOCKED -> StrictnessPreset.LOCKED
+    fun clearError() {
+        _state.update { it.copy(error = null) }
     }
+
+    private fun OnboardingStrictnessPreset.toDomain(): StrictnessPreset =
+        when (this) {
+            OnboardingStrictnessPreset.FLEXIBLE -> StrictnessPreset.FLEXIBLE
+            OnboardingStrictnessPreset.BALANCED -> StrictnessPreset.BALANCED
+            OnboardingStrictnessPreset.LOCKED -> StrictnessPreset.LOCKED
+        }
 }

@@ -3,7 +3,6 @@
     <string name="first_habit_heading">Lock in your first habit</string>
     <string name="first_habit_subtext">Start small. One habit is enough to begin.</string>
     <string name="first_habit_label_name">Habit name</string>
-    <string name="first_habit_label_type">Habit type</string>
     <string name="first_habit_type_binary">Binary</string>
     <string name="first_habit_label_target_value">Target value</string>
     <string name="first_habit_label_unit">Unit (optional)</string>
@@ -18,19 +17,4 @@
     <string name="first_habit_type_binary_description">Simple "Yes" or "No" completion. Perfect for streaks.</string>
     <string name="first_habit_type_quantitative_description">Track units like "Minutes" or "Pages". Focus on volume.</string>
 
-    <!-- Schedule section -->
-    <string name="first_habit_schedule_label">SET A SCHEDULE</string>
-    <string name="first_habit_schedule_every_day">Every Day</string>
-    <string name="first_habit_schedule_weekdays">Weekdays</string>
-    <string name="first_habit_schedule_weekends">Weekends</string>
-    <string name="first_habit_schedule_custom">Custom</string>
-
-    <!-- Day labels for custom picker -->
-    <string name="first_habit_schedule_day_mon">Mon</string>
-    <string name="first_habit_schedule_day_tue">Tue</string>
-    <string name="first_habit_schedule_day_wed">Wed</string>
-    <string name="first_habit_schedule_day_thu">Thu</string>
-    <string name="first_habit_schedule_day_fri">Fri</string>
-    <string name="first_habit_schedule_day_sat">Sat</string>
-    <string name="first_habit_schedule_day_sun">Sun</string>
 </resources>
