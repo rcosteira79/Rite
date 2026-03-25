@@ -41,11 +41,11 @@ import org.jetbrains.compose.resources.stringResource
 private val DayChipSize = 40.dp
 
 private enum class SchedulePreset(
-    val days: Set<DayOfWeek>,
+    val days: Set<DayOfWeek>
 ) {
     EVERY_DAY(DayOfWeek.entries.toSet()),
     WEEKDAYS(setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)),
-    WEEKEND(setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)),
+    WEEKEND(setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY))
 }
 
 private fun SchedulePreset.labelRes(): StringResource =

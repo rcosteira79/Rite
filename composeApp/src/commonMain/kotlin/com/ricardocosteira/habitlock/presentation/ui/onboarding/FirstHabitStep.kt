@@ -68,7 +68,7 @@ private fun onboardingTextFieldColors(): TextFieldColors =
         unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
-        disabledIndicatorColor = Color.Transparent,
+        disabledIndicatorColor = Color.Transparent
     )
 
 @Composable
