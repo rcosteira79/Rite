@@ -45,7 +45,6 @@
     <string name="habit_form_label_interval">Interval (minutes)</string>
     <string name="habit_form_cadence_day">day</string>
     <string name="habit_form_cadence_week">week</string>
-    <string name="habit_form_stepper_label_times">time(s) / %s</string>
-    <string name="habit_form_stepper_label_unit">%1$s / %2$s</string>
+    <string name="habit_form_stepper_label_times">time(s)</string>
     <string name="habit_form_unit_label">UNIT</string>
 </resources>

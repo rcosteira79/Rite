@@ -91,7 +91,6 @@ import habitlock.composeapp.generated.resources.habit_form_section_habit_name
 import habitlock.composeapp.generated.resources.habit_form_section_schedule
 import habitlock.composeapp.generated.resources.habit_form_section_type
 import habitlock.composeapp.generated.resources.habit_form_stepper_label_times
-import habitlock.composeapp.generated.resources.habit_form_stepper_label_unit
 import habitlock.composeapp.generated.resources.habit_form_subtitle_create
 import habitlock.composeapp.generated.resources.habit_form_title_edit
 import habitlock.composeapp.generated.resources.habit_form_title_new_habit
@@ -285,9 +284,9 @@ internal fun HabitFormScreen(
             stringResource(Res.string.habit_form_cadence_week)
         }
         val stepperLabel: String = if (state.type == HabitType.QUANTITATIVE && state.unit.isNotBlank()) {
-            stringResource(Res.string.habit_form_stepper_label_unit, state.unit, cadence)
+            "${state.unit} / $cadence"
         } else {
-            stringResource(Res.string.habit_form_stepper_label_times, cadence)
+            "${stringResource(Res.string.habit_form_stepper_label_times)} / $cadence"
         }
 
         QuantityStepper(
