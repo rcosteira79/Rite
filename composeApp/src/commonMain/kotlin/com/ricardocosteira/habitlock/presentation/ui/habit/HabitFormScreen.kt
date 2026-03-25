@@ -70,6 +70,8 @@ import habitlock.composeapp.generated.resources.habit_form_button_discard_change
 import habitlock.composeapp.generated.resources.habit_form_button_discard_draft
 import habitlock.composeapp.generated.resources.habit_form_button_establish
 import habitlock.composeapp.generated.resources.habit_form_button_save
+import habitlock.composeapp.generated.resources.habit_form_cadence_day
+import habitlock.composeapp.generated.resources.habit_form_cadence_week
 import habitlock.composeapp.generated.resources.habit_form_cd_delete
 import habitlock.composeapp.generated.resources.habit_form_delete_dialog_body
 import habitlock.composeapp.generated.resources.habit_form_delete_dialog_cancel
@@ -86,9 +88,12 @@ import habitlock.composeapp.generated.resources.habit_form_section_daily_target
 import habitlock.composeapp.generated.resources.habit_form_section_habit_name
 import habitlock.composeapp.generated.resources.habit_form_section_schedule
 import habitlock.composeapp.generated.resources.habit_form_section_type
+import habitlock.composeapp.generated.resources.habit_form_stepper_label_times
+import habitlock.composeapp.generated.resources.habit_form_stepper_label_unit
 import habitlock.composeapp.generated.resources.habit_form_subtitle_create
 import habitlock.composeapp.generated.resources.habit_form_title_edit
 import habitlock.composeapp.generated.resources.habit_form_title_new_habit
+import habitlock.composeapp.generated.resources.habit_form_unit_label
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
@@ -159,6 +164,13 @@ private fun HabitFormScreen(
     var isNoteExpanded by remember { mutableStateOf(false) }
     var isDeleteDialogVisible by remember { mutableStateOf(false) }
 
+    if (state.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
     if (isDeleteDialogVisible) {
         DeleteHabitDialog(
             onConfirm = {
@@ -167,13 +179,6 @@ private fun HabitFormScreen(
             },
             onDismiss = { isDeleteDialogVisible = false }
         )
-    }
-
-    if (state.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
     }
 
     Column(
@@ -272,11 +277,15 @@ private fun HabitFormScreen(
         } else {
             state.targetValue.toIntOrNull() ?: 1
         }
-        val cadence: String = if (state.scheduleType == ScheduleType.DAILY) "day" else "week"
-        val stepperLabel: String = if (state.type == HabitType.QUANTITATIVE && state.unit.isNotBlank()) {
-            "${state.unit} / $cadence"
+        val cadence: String = if (state.scheduleType == ScheduleType.DAILY) {
+            stringResource(Res.string.habit_form_cadence_day)
         } else {
-            "time(s) / $cadence"
+            stringResource(Res.string.habit_form_cadence_week)
+        }
+        val stepperLabel: String = if (state.type == HabitType.QUANTITATIVE && state.unit.isNotBlank()) {
+            stringResource(Res.string.habit_form_stepper_label_unit, state.unit, cadence)
+        } else {
+            stringResource(Res.string.habit_form_stepper_label_times, cadence)
         }
 
         QuantityStepper(
@@ -301,7 +310,7 @@ private fun HabitFormScreen(
                 UnderlineTextField(
                     value = state.unit,
                     onValueChange = onUnitChange,
-                    label = "UNIT",
+                    label = stringResource(Res.string.habit_form_unit_label),
                     placeholder = stringResource(Res.string.habit_form_placeholder_unit)
                 )
             }
@@ -348,7 +357,7 @@ private fun HabitFormScreen(
 
         // Reminder row
         val reminderSubtitle: String = if (state.hasReminder) {
-            state.reminderTime?.formatAmPm() ?: "09:00 AM"
+            state.reminderTime?.formatAmPm() ?: LocalTime(9, 0).formatAmPm()
         } else {
             stringResource(Res.string.habit_form_reminder_off)
         }

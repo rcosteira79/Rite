@@ -43,4 +43,9 @@
     <string name="habit_form_reminder_info_periodic">Remind me at regular intervals</string>
     <string name="habit_form_reminder_info_time">Remind me at a specific time</string>
     <string name="habit_form_label_interval">Interval (minutes)</string>
+    <string name="habit_form_cadence_day">day</string>
+    <string name="habit_form_cadence_week">week</string>
+    <string name="habit_form_stepper_label_times">time(s) / %s</string>
+    <string name="habit_form_stepper_label_unit">%1$s / %2$s</string>
+    <string name="habit_form_unit_label">UNIT</string>
 </resources>
