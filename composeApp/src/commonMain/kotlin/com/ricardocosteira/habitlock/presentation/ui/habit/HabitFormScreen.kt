@@ -144,7 +144,7 @@ fun HabitFormScreen(
 }
 
 @Composable
-private fun HabitFormScreen(
+internal fun HabitFormScreen(
     state: HabitFormState,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
