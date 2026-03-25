@@ -188,19 +188,12 @@ internal fun HabitFormScreen(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
-        // Top bar
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "HabitLock",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-            if (state.isEditing) {
+        // Delete icon (edit mode only)
+        if (state.isEditing) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
                 IconButton(onClick = { isDeleteDialogVisible = true }) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
