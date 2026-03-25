@@ -129,4 +129,9 @@ interface HabitRepository {
      * Delete a reminder.
      */
     suspend fun deleteReminder(reminderId: String)
+
+    /**
+     * Create (insert) a new reminder for an existing habit.
+     */
+    suspend fun createReminderForHabit(reminder: HabitReminder)
 }

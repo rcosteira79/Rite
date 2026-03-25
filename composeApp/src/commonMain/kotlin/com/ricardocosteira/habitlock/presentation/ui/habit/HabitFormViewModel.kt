@@ -34,6 +34,11 @@ class HabitFormViewModel(
     private val habitIdToEdit: String? = null
 ) : ViewModel() {
     private val _state = MutableStateFlow(HabitFormState())
+
+    private companion object {
+        private const val ERROR_HABIT_NOT_FOUND = "Habit not found"
+    }
+
     val state: StateFlow<HabitFormState> = _state.asStateFlow()
 
     private val _events = MutableSharedFlow<HabitFormEvent>()
@@ -88,7 +93,7 @@ class HabitFormViewModel(
                     }
                     originalState = _state.value
                 } else {
-                    _state.update { it.copy(isLoading = false, error = "Habit not found") }
+                    _state.update { it.copy(isLoading = false, error = ERROR_HABIT_NOT_FOUND) }
                 }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.message) }
@@ -252,7 +257,7 @@ class HabitFormViewModel(
     ) {
         val habitId = state.habitId!!
         val existingHabit = habitRepository.getHabitById(habitId)
-            ?: throw IllegalStateException("Habit not found")
+            ?: throw IllegalStateException(ERROR_HABIT_NOT_FOUND)
 
         val updatedHabit = existingHabit.copy(
             name = state.name.trim(),
@@ -298,7 +303,9 @@ class HabitFormViewModel(
         existingReminders.forEach { habitRepository.deleteReminder(it.id) }
 
         if (reminder != null) {
-            habitRepository.updateReminder(reminder.copy(habitId = habitId))
+            habitRepository.createReminderForHabit(
+                reminder.copy(habitId = habitId, id = uuidProvider.generate())
+            )
         }
     }
 

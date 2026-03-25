@@ -25,7 +25,7 @@ class HabitFormScreenshotTest {
     // --- Binary create ---
 
     @Test
-    fun habitFormScreen_binaryCreate_lightTheme() {
+    fun habitForm_create_binary_lightTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = false) {
                 HabitFormScreen(
@@ -54,7 +54,7 @@ class HabitFormScreenshotTest {
     }
 
     @Test
-    fun habitFormScreen_binaryCreate_darkTheme() {
+    fun habitForm_create_binary_darkTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = true) {
                 HabitFormScreen(
@@ -85,7 +85,7 @@ class HabitFormScreenshotTest {
     // --- Quantitative create ---
 
     @Test
-    fun habitFormScreen_quantitativeCreate_lightTheme() {
+    fun habitForm_create_quantitative_lightTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = false) {
                 HabitFormScreen(
@@ -115,7 +115,7 @@ class HabitFormScreenshotTest {
     }
 
     @Test
-    fun habitFormScreen_quantitativeCreate_darkTheme() {
+    fun habitForm_create_quantitative_darkTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = true) {
                 HabitFormScreen(
@@ -147,7 +147,7 @@ class HabitFormScreenshotTest {
     // --- Weekly schedule create ---
 
     @Test
-    fun habitFormScreen_weeklyScheduleCreate_lightTheme() {
+    fun habitForm_create_weeklySchedule_lightTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = false) {
                 HabitFormScreen(
@@ -176,7 +176,7 @@ class HabitFormScreenshotTest {
     }
 
     @Test
-    fun habitFormScreen_weeklyScheduleCreate_darkTheme() {
+    fun habitForm_create_weeklySchedule_darkTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = true) {
                 HabitFormScreen(
@@ -207,7 +207,7 @@ class HabitFormScreenshotTest {
     // --- Note with content ---
 
     @Test
-    fun habitFormScreen_noteWithContent_lightTheme() {
+    fun habitForm_create_noteExpanded_lightTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = false) {
                 HabitFormScreen(
@@ -236,7 +236,7 @@ class HabitFormScreenshotTest {
     }
 
     @Test
-    fun habitFormScreen_noteWithContent_darkTheme() {
+    fun habitForm_create_noteExpanded_darkTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = true) {
                 HabitFormScreen(
@@ -267,7 +267,7 @@ class HabitFormScreenshotTest {
     // --- Reminder on ---
 
     @Test
-    fun habitFormScreen_reminderOn_lightTheme() {
+    fun habitForm_create_reminderOn_lightTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = false) {
                 HabitFormScreen(
@@ -297,7 +297,7 @@ class HabitFormScreenshotTest {
     }
 
     @Test
-    fun habitFormScreen_reminderOn_darkTheme() {
+    fun habitForm_create_reminderOn_darkTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = true) {
                 HabitFormScreen(
@@ -329,7 +329,7 @@ class HabitFormScreenshotTest {
     // --- Edit mode binary ---
 
     @Test
-    fun habitFormScreen_editModeBinary_lightTheme() {
+    fun habitForm_edit_lightTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = false) {
                 HabitFormScreen(
@@ -359,7 +359,7 @@ class HabitFormScreenshotTest {
     }
 
     @Test
-    fun habitFormScreen_editModeBinary_darkTheme() {
+    fun habitForm_edit_darkTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = true) {
                 HabitFormScreen(
@@ -391,7 +391,7 @@ class HabitFormScreenshotTest {
     // --- Edit mode weekly ---
 
     @Test
-    fun habitFormScreen_editModeWeekly_lightTheme() {
+    fun habitForm_edit_weeklySchedule_lightTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = false) {
                 HabitFormScreen(
@@ -422,7 +422,7 @@ class HabitFormScreenshotTest {
     }
 
     @Test
-    fun habitFormScreen_editModeWeekly_darkTheme() {
+    fun habitForm_edit_weeklySchedule_darkTheme() {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = true) {
                 HabitFormScreen(

@@ -243,4 +243,18 @@ class HabitRepositoryImpl(
         withContext(Dispatchers.IO) {
             queries.deleteReminder(reminderId)
         }
+
+    override suspend fun createReminderForHabit(reminder: HabitReminder): Unit =
+        withContext(Dispatchers.IO) {
+            queries.insertReminder(
+                id = reminder.id,
+                habitId = reminder.habitId,
+                reminderType = reminder.reminderType.name,
+                time = reminder.time?.toString(),
+                intervalMinutes = reminder.intervalMinutes?.toLong(),
+                startTime = reminder.startTime?.toString(),
+                endTime = reminder.endTime?.toString(),
+                isActive = if (reminder.isActive) 1 else 0
+            )
+        }
 }

@@ -207,6 +207,8 @@ private class FakeHabitRepository : HabitRepository {
     override suspend fun updateReminder(reminder: HabitReminder) = Unit
 
     override suspend fun deleteReminder(reminderId: String) = Unit
+
+    override suspend fun createReminderForHabit(reminder: HabitReminder) = Unit
 }
 
 private class FakeUserRepository : UserRepository {

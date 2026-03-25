@@ -20,9 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.quantity_stepper_cd_decrease
+import habitlock.composeapp.generated.resources.quantity_stepper_cd_increase
+import org.jetbrains.compose.resources.stringResource
 
 private val ButtonSize = 36.dp
 private const val MIN_VALUE = 1
+private const val DISABLED_CONTENT_ALPHA = 0.38f
 
 @Composable
 fun QuantityStepper(
@@ -57,11 +62,11 @@ fun QuantityStepper(
         ) {
             Icon(
                 imageVector = Icons.Default.Remove,
-                contentDescription = "Decrease",
+                contentDescription = stringResource(Res.string.quantity_stepper_cd_decrease),
                 tint = if (value > MIN_VALUE) {
                     MaterialTheme.colorScheme.primary
                 } else {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_CONTENT_ALPHA)
                 }
             )
         }
@@ -89,7 +94,7 @@ fun QuantityStepper(
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
-                contentDescription = "Increase",
+                contentDescription = stringResource(Res.string.quantity_stepper_cd_increase),
                 tint = MaterialTheme.colorScheme.primary
             )
         }
