@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,6 +37,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -355,59 +357,71 @@ internal fun HabitFormScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Reminder row
+        // Reminder + Note card
         val reminderSubtitle: String = if (state.hasReminder) {
             state.reminderTime?.formatAmPm() ?: LocalTime(9, 0).formatAmPm()
         } else {
             stringResource(Res.string.habit_form_reminder_off)
         }
-        FormListRow(
-            icon = Icons.Outlined.Notifications,
-            iconTint = if (state.hasReminder) {
-                MaterialTheme.colorScheme.onSurface
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            },
-            title = stringResource(Res.string.habit_form_reminder_title),
-            subtitle = reminderSubtitle,
-            onClick = null,
-            trailingContent = {
-                Switch(
-                    checked = state.hasReminder,
-                    onCheckedChange = onHasReminderChange
-                )
-            }
-        )
-
-        // Note row
-        FormListRow(
-            icon = Icons.Outlined.Edit,
-            iconTint = if (isNoteExpanded) {
-                MaterialTheme.colorScheme.onSurface
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            },
-            title = if (isNoteExpanded) {
-                stringResource(Res.string.habit_form_note_expanded_title)
-            } else {
-                stringResource(Res.string.habit_form_note_collapsed_title)
-            },
-            subtitle = if (isNoteExpanded) "" else stringResource(Res.string.habit_form_note_collapsed_subtitle),
-            onClick = { isNoteExpanded = !isNoteExpanded },
-            trailingContent = null
-        )
-
-        AnimatedVisibility(
-            visible = isNoteExpanded,
-            enter = expandVertically() + fadeIn(),
-            exit = shrinkVertically() + fadeOut()
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            shadowElevation = 1.dp,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            UnderlineTextField(
-                value = state.description,
-                onValueChange = onDescriptionChange,
-                placeholder = "",
-                maxLines = 5
-            )
+            Column {
+                FormListRow(
+                    icon = Icons.Outlined.Notifications,
+                    iconTint = if (state.hasReminder) {
+                        MaterialTheme.colorScheme.onSurface
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    title = stringResource(Res.string.habit_form_reminder_title),
+                    subtitle = reminderSubtitle,
+                    onClick = null,
+                    showTopDivider = false,
+                    trailingContent = {
+                        Switch(
+                            checked = state.hasReminder,
+                            onCheckedChange = onHasReminderChange
+                        )
+                    },
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+
+                FormListRow(
+                    icon = Icons.Outlined.Edit,
+                    iconTint = if (isNoteExpanded) {
+                        MaterialTheme.colorScheme.onSurface
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    title = if (isNoteExpanded) {
+                        stringResource(Res.string.habit_form_note_expanded_title)
+                    } else {
+                        stringResource(Res.string.habit_form_note_collapsed_title)
+                    },
+                    subtitle = if (isNoteExpanded) "" else stringResource(Res.string.habit_form_note_collapsed_subtitle),
+                    onClick = { isNoteExpanded = !isNoteExpanded },
+                    trailingContent = null,
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+
+                AnimatedVisibility(
+                    visible = isNoteExpanded,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    UnderlineTextField(
+                        value = state.description,
+                        onValueChange = onDescriptionChange,
+                        placeholder = "",
+                        maxLines = 5,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -415,9 +429,16 @@ internal fun HabitFormScreen(
         // Primary CTA
         Button(
             onClick = onSaveClick,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 56.dp),
             enabled = state.isValid && !state.isSaving,
-            shape = RoundedCornerShape(28.dp)
+            shape = RoundedCornerShape(28.dp),
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 4.dp,
+                pressedElevation = 8.dp,
+                disabledElevation = 0.dp
+            )
         ) {
             if (state.isSaving) {
                 CircularProgressIndicator(modifier = Modifier.size(20.dp))
