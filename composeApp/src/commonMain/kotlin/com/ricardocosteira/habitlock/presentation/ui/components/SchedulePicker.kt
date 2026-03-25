@@ -56,16 +56,15 @@ private fun SchedulePreset.labelRes(): StringResource =
     }
 
 private val DayOfWeek.labelRes: StringResource
-    get() =
-        when (this) {
-            DayOfWeek.MONDAY -> Res.string.common_schedule_day_mon
-            DayOfWeek.TUESDAY -> Res.string.common_schedule_day_tue
-            DayOfWeek.WEDNESDAY -> Res.string.common_schedule_day_wed
-            DayOfWeek.THURSDAY -> Res.string.common_schedule_day_thu
-            DayOfWeek.FRIDAY -> Res.string.common_schedule_day_fri
-            DayOfWeek.SATURDAY -> Res.string.common_schedule_day_sat
-            DayOfWeek.SUNDAY -> Res.string.common_schedule_day_sun
-        }
+    get() = when (this) {
+        DayOfWeek.MONDAY -> Res.string.common_schedule_day_mon
+        DayOfWeek.TUESDAY -> Res.string.common_schedule_day_tue
+        DayOfWeek.WEDNESDAY -> Res.string.common_schedule_day_wed
+        DayOfWeek.THURSDAY -> Res.string.common_schedule_day_thu
+        DayOfWeek.FRIDAY -> Res.string.common_schedule_day_fri
+        DayOfWeek.SATURDAY -> Res.string.common_schedule_day_sat
+        DayOfWeek.SUNDAY -> Res.string.common_schedule_day_sun
+    }
 
 /**
  * Schedule picker with three preset pills (Every day / Weekdays / Weekend) and
@@ -76,7 +75,7 @@ private val DayOfWeek.labelRes: StringResource
 fun SchedulePicker(
     selectedDays: Set<DayOfWeek>,
     onSelectedDaysChange: (Set<DayOfWeek>) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val activePreset = SchedulePreset.entries.find { it.days == selectedDays }
 
@@ -86,7 +85,7 @@ fun SchedulePicker(
                 PresetPill(
                     text = stringResource(preset.labelRes()),
                     isSelected = preset == activePreset,
-                    onClick = { onSelectedDaysChange(preset.days) },
+                    onClick = { onSelectedDaysChange(preset.days) }
                 )
             }
         }
@@ -95,7 +94,7 @@ fun SchedulePicker(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             DayOfWeek.entries.forEach { day ->
                 val isSelected = day in selectedDays
@@ -105,7 +104,7 @@ fun SchedulePicker(
                     onClick = {
                         val updated = if (isSelected) selectedDays - day else selectedDays + day
                         onSelectedDaysChange(updated)
-                    },
+                    }
                 )
             }
         }
@@ -117,38 +116,35 @@ private fun PresetPill(
     text: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
-    val backgroundColor =
-        if (isSelected) {
-            MaterialTheme.colorScheme.primaryContainer
-        } else {
-            MaterialTheme.colorScheme.surfaceContainerHighest
-        }
-    val contentColor =
-        if (isSelected) {
-            MaterialTheme.colorScheme.onPrimaryContainer
-        } else {
-            MaterialTheme.colorScheme.onSurfaceVariant
-        }
+    val backgroundColor = if (isSelected) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerHighest
+    }
+    val contentColor = if (isSelected) {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
 
     Box(
-        modifier =
-            modifier
-                .clip(RoundedCornerShape(percent = 50))
-                .background(backgroundColor)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onClick,
-                ).padding(horizontal = 10.dp, vertical = 4.dp),
-        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .clip(RoundedCornerShape(percent = 50))
+            .background(backgroundColor)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            ).padding(horizontal = 10.dp, vertical = 4.dp),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelSmall,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-            color = contentColor,
+            color = contentColor
         )
     }
 }
@@ -158,39 +154,36 @@ private fun DayChip(
     label: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
-    val backgroundColor =
-        if (isSelected) {
-            MaterialTheme.colorScheme.primaryContainer
-        } else {
-            MaterialTheme.colorScheme.surfaceContainerHighest
-        }
-    val contentColor =
-        if (isSelected) {
-            MaterialTheme.colorScheme.onPrimaryContainer
-        } else {
-            MaterialTheme.colorScheme.onSurfaceVariant
-        }
+    val backgroundColor = if (isSelected) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerHighest
+    }
+    val contentColor = if (isSelected) {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
 
     Box(
-        modifier =
-            modifier
-                .size(DayChipSize)
-                .clip(CircleShape)
-                .background(backgroundColor)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onClick,
-                ),
-        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .size(DayChipSize)
+            .clip(CircleShape)
+            .background(backgroundColor)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            ),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            color = contentColor,
+            color = contentColor
         )
     }
 }

@@ -83,30 +83,28 @@ fun FirstHabitStep(
     onTargetValueChange: (String) -> Unit,
     onUnitChange: (String) -> Unit,
     onSelectedDaysChange: (Set<DayOfWeek>) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
         Text(
             text = stringResource(Res.string.first_habit_heading),
             style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold),
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.semantics { heading() },
+            modifier = Modifier.semantics { heading() }
         )
 
         Spacer(modifier = Modifier.height(14.dp))
 
         Box(
-            modifier =
-                Modifier
-                    .width(36.dp)
-                    .height(3.dp)
-                    .background(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(2.dp)),
+            modifier = Modifier
+                .width(36.dp)
+                .height(3.dp)
+                .background(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(2.dp))
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -114,7 +112,7 @@ fun FirstHabitStep(
         Text(
             text = stringResource(Res.string.first_habit_subtext),
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -127,7 +125,7 @@ fun FirstHabitStep(
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             shape = OnboardingTextFieldShape,
-            colors = onboardingTextFieldColors(),
+            colors = onboardingTextFieldColors()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -138,7 +136,7 @@ fun FirstHabitStep(
             description = stringResource(Res.string.first_habit_type_binary_description),
             isSelected = habitType == HabitType.BINARY,
             onClick = { onHabitTypeChange(HabitType.BINARY) },
-            expandedContent = null,
+            expandedContent = null
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -159,7 +157,7 @@ fun FirstHabitStep(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
                         shape = OnboardingTextFieldShape,
-                        colors = onboardingTextFieldColors(),
+                        colors = onboardingTextFieldColors()
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     TextField(
@@ -170,10 +168,10 @@ fun FirstHabitStep(
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         shape = OnboardingTextFieldShape,
-                        colors = onboardingTextFieldColors(),
+                        colors = onboardingTextFieldColors()
                     )
                 }
-            },
+            }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -181,7 +179,7 @@ fun FirstHabitStep(
         SchedulePicker(
             selectedDays = selectedDays,
             onSelectedDaysChange = onSelectedDaysChange,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -194,58 +192,54 @@ private fun HabitTypeCard(
     isSelected: Boolean,
     onClick: () -> Unit,
     expandedContent: (@Composable () -> Unit)?,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        border =
-            if (isSelected) {
-                BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer)
+        border = if (isSelected) {
+            BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer)
+        } else {
+            BorderStroke(2.dp, Color.Transparent)
+        },
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) {
+                MaterialTheme.colorScheme.surfaceContainerHighest
             } else {
-                BorderStroke(2.dp, Color.Transparent)
-            },
-        colors =
-            CardDefaults.cardColors(
-                containerColor =
-                    if (isSelected) {
-                        MaterialTheme.colorScheme.surfaceContainerHighest
-                    } else {
-                        MaterialTheme.colorScheme.surfaceContainerLow
-                    },
-            ),
+                MaterialTheme.colorScheme.surfaceContainerLow
+            }
+        )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(HabitTypeCardIconSize),
-                tint =
-                    if (isSelected) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
+                tint = if (isSelected) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = label,
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.SemiBold
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             if (expandedContent != null) {
                 AnimatedVisibility(
                     visible = isSelected,
                     enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut(),
+                    exit = shrinkVertically() + fadeOut()
                 ) {
                     expandedContent()
                 }

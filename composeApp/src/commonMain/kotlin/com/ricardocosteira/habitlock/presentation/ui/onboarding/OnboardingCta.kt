@@ -39,14 +39,14 @@ private val CtaButtonShape = RoundedCornerShape(12.dp)
 private fun ctaButtonColors() =
     ButtonDefaults.buttonColors(
         containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary,
+        contentColor = MaterialTheme.colorScheme.onPrimary
     )
 
 @Composable
 private fun CtaContainer(
     modifier: Modifier = Modifier,
     reduceMotion: Boolean = false,
-    content: @Composable ColumnScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit
 ) {
     val translateYAnim = remember { Animatable(16f) }
     val alphaAnim = remember { Animatable(0f) }
@@ -63,16 +63,15 @@ private fun CtaContainer(
     }
 
     Column(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 16.dp)
-                .graphicsLayer {
-                    alpha = alphaAnim.value
-                    translationY = translateYAnim.value.dp.toPx()
-                },
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .graphicsLayer {
+                alpha = alphaAnim.value
+                translationY = translateYAnim.value.dp.toPx()
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
-        content = content,
+        content = content
     )
 }
 
@@ -80,14 +79,14 @@ private fun CtaContainer(
 internal fun PhilosophyStepCta(
     onAdvance: () -> Unit,
     modifier: Modifier = Modifier,
-    reduceMotion: Boolean = false,
+    reduceMotion: Boolean = false
 ) {
     CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
         Button(
             onClick = onAdvance,
             modifier = Modifier.fillMaxWidth(),
             shape = CtaButtonShape,
-            colors = ctaButtonColors(),
+            colors = ctaButtonColors()
         ) {
             Text(stringResource(Res.string.philosophy_cta_accept))
         }
@@ -99,7 +98,7 @@ internal fun StrictnessStepCta(
     state: OnboardingState,
     onContinue: () -> Unit,
     modifier: Modifier = Modifier,
-    reduceMotion: Boolean = false,
+    reduceMotion: Boolean = false
 ) {
     CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
         if (state.isApplyingPreset) {
@@ -109,7 +108,7 @@ internal fun StrictnessStepCta(
                 onClick = onContinue,
                 modifier = Modifier.fillMaxWidth(),
                 shape = CtaButtonShape,
-                colors = ctaButtonColors(),
+                colors = ctaButtonColors()
             ) {
                 Text(stringResource(Res.string.strictness_cta_continue))
             }
@@ -123,7 +122,7 @@ internal fun FirstHabitStepCta(
     onCreateHabit: () -> Unit,
     onSkip: () -> Unit,
     modifier: Modifier = Modifier,
-    reduceMotion: Boolean = false,
+    reduceMotion: Boolean = false
 ) {
     val isEnabled =
         state.habitName.isNotBlank() &&
@@ -139,7 +138,7 @@ internal fun FirstHabitStepCta(
                 enabled = isEnabled,
                 modifier = Modifier.fillMaxWidth(),
                 shape = CtaButtonShape,
-                colors = ctaButtonColors(),
+                colors = ctaButtonColors()
             ) {
                 Text(stringResource(Res.string.first_habit_button_create))
             }
@@ -151,7 +150,7 @@ internal fun FirstHabitStepCta(
             Text(
                 text = stringResource(Res.string.first_habit_button_skip),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

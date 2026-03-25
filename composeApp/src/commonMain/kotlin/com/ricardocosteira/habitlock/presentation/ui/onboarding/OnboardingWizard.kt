@@ -46,7 +46,7 @@ fun OnboardingWizard(
     onUnitChange: (String) -> Unit,
     onSelectedDaysChange: (Set<DayOfWeek>) -> Unit,
     reduceMotion: Boolean = false,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     BackHandler(enabled = currentStep > 0) { onStepChange(currentStep - 1) }
 
@@ -55,14 +55,14 @@ fun OnboardingWizard(
             OnboardingTopChrome(
                 currentStep = currentStep,
                 onSkip = onSkip,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
             )
 
             if (reduceMotion) {
                 Crossfade(
                     targetState = currentStep,
                     modifier = Modifier.fillMaxWidth().weight(1f),
-                    label = "onboarding_step",
+                    label = "onboarding_step"
                 ) { step ->
                     Column(modifier = Modifier.fillMaxSize()) {
                         when (step) {
@@ -71,7 +71,7 @@ fun OnboardingWizard(
                                 PhilosophyStepCta(
                                     onAdvance = { onStepChange(step + 1) },
                                     modifier = Modifier.fillMaxWidth(),
-                                    reduceMotion = true,
+                                    reduceMotion = true
                                 )
                             }
 
@@ -80,13 +80,13 @@ fun OnboardingWizard(
                                     selectedPreset = state.selectedPreset,
                                     onPresetSelected = onPresetSelected,
                                     reduceMotion = true,
-                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                    modifier = Modifier.weight(1f).fillMaxWidth()
                                 )
                                 StrictnessStepCta(
                                     state = state,
                                     onContinue = onContinueFromStrictness,
                                     modifier = Modifier.fillMaxWidth(),
-                                    reduceMotion = true,
+                                    reduceMotion = true
                                 )
                             }
 
@@ -102,14 +102,14 @@ fun OnboardingWizard(
                                     onTargetValueChange = onTargetValueChange,
                                     onUnitChange = onUnitChange,
                                     onSelectedDaysChange = onSelectedDaysChange,
-                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                    modifier = Modifier.weight(1f).fillMaxWidth()
                                 )
                                 FirstHabitStepCta(
                                     state = state,
                                     onCreateHabit = onCreateHabit,
                                     onSkip = onSkipFirstHabit,
                                     modifier = Modifier.fillMaxWidth(),
-                                    reduceMotion = true,
+                                    reduceMotion = true
                                 )
                             }
                         }
@@ -131,19 +131,19 @@ fun OnboardingWizard(
                         enterSlide togetherWith exitSlide
                     },
                     modifier = Modifier.fillMaxWidth().weight(1f),
-                    label = "onboarding_step",
+                    label = "onboarding_step"
                 ) { step ->
                     Column(modifier = Modifier.fillMaxSize()) {
                         when (step) {
                             0 -> {
                                 PhilosophyStep(
                                     modifier = Modifier.weight(1f).fillMaxWidth(),
-                                    reduceMotion = reduceMotion,
+                                    reduceMotion = reduceMotion
                                 )
                                 PhilosophyStepCta(
                                     onAdvance = { onStepChange(step + 1) },
                                     modifier = Modifier.fillMaxWidth(),
-                                    reduceMotion = reduceMotion,
+                                    reduceMotion = reduceMotion
                                 )
                             }
 
@@ -152,13 +152,13 @@ fun OnboardingWizard(
                                     selectedPreset = state.selectedPreset,
                                     onPresetSelected = onPresetSelected,
                                     reduceMotion = reduceMotion,
-                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                    modifier = Modifier.weight(1f).fillMaxWidth()
                                 )
                                 StrictnessStepCta(
                                     state = state,
                                     onContinue = onContinueFromStrictness,
                                     modifier = Modifier.fillMaxWidth(),
-                                    reduceMotion = reduceMotion,
+                                    reduceMotion = reduceMotion
                                 )
                             }
 
@@ -174,14 +174,14 @@ fun OnboardingWizard(
                                     onTargetValueChange = onTargetValueChange,
                                     onUnitChange = onUnitChange,
                                     onSelectedDaysChange = onSelectedDaysChange,
-                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                    modifier = Modifier.weight(1f).fillMaxWidth()
                                 )
                                 FirstHabitStepCta(
                                     state = state,
                                     onCreateHabit = onCreateHabit,
                                     onSkip = onSkipFirstHabit,
                                     modifier = Modifier.fillMaxWidth(),
-                                    reduceMotion = reduceMotion,
+                                    reduceMotion = reduceMotion
                                 )
                             }
                         }

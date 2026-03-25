@@ -14,7 +14,7 @@ data class OnboardingState(
     val isCreatingHabit: Boolean = false,
     val isApplyingPreset: Boolean = false,
     val error: String? = null,
-    val currentStep: Int = 0,
+    val currentStep: Int = 0
 )
 
 /** Events from the onboarding flow. */

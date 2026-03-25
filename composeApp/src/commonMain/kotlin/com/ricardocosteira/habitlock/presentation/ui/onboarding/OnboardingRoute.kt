@@ -18,7 +18,7 @@ fun OnboardingRoute(
     viewModel: OnboardingViewModel,
     snackbarHostState: SnackbarHostState,
     onFinished: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val reduceMotion = isReduceMotionEnabled()
@@ -54,6 +54,6 @@ fun OnboardingRoute(
         onTargetValueChange = viewModel::updateTargetValue,
         onUnitChange = viewModel::updateUnit,
         onSelectedDaysChange = viewModel::updateSelectedDays,
-        modifier = modifier,
+        modifier = modifier
     )
 }

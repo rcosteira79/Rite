@@ -36,7 +36,7 @@ class OnboardingViewModel(
     private val userRepository: UserRepository,
     private val applyStrictnessPreset: ApplyStrictnessPreset,
     private val createHabit: CreateHabit,
-    private val generateDailyHabits: GenerateDailyHabits,
+    private val generateDailyHabits: GenerateDailyHabits
 ) : ViewModel() {
     private val _state = MutableStateFlow(OnboardingState())
     val state: StateFlow<OnboardingState> = _state.asStateFlow()
@@ -88,7 +88,7 @@ class OnboardingViewModel(
                 },
                 onFailure = { error ->
                     _state.update { it.copy(isApplyingPreset = false, error = error.message) }
-                },
+                }
             )
         }
     }
@@ -119,40 +119,36 @@ class OnboardingViewModel(
 
             val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
-            val targetValue =
-                if (habitType == HabitType.QUANTITATIVE) {
-                    _state.value.targetValue
-                        .trim()
-                        .toIntOrNull()
-                } else {
-                    null
-                }
+            val targetValue = if (habitType == HabitType.QUANTITATIVE) {
+                _state.value.targetValue
+                    .trim()
+                    .toIntOrNull()
+            } else {
+                null
+            }
 
-            val unit =
-                if (habitType == HabitType.QUANTITATIVE && _state.value.unit.isNotBlank()) {
-                    _state.value.unit.trim()
-                } else {
-                    null
-                }
+            val unit = if (habitType == HabitType.QUANTITATIVE && _state.value.unit.isNotBlank()) {
+                _state.value.unit.trim()
+            } else {
+                null
+            }
 
             val selectedDays = _state.value.selectedDays
             val specificDays: Set<DayOfWeek>? =
                 if (selectedDays.size == DayOfWeek.entries.size) null else selectedDays
 
-            val result =
-                createHabit.execute(
-                    params =
-                        CreateHabit.CreateHabitParams(
-                            name = habitName,
-                            description = null,
-                            type = habitType,
-                            targetValue = targetValue,
-                            unit = unit,
-                            specificDays = specificDays,
-                            reminder = null,
-                        ),
-                    startDate = today,
-                )
+            val result = createHabit.execute(
+                params = CreateHabit.CreateHabitParams(
+                    name = habitName,
+                    description = null,
+                    type = habitType,
+                    targetValue = targetValue,
+                    unit = unit,
+                    specificDays = specificDays,
+                    reminder = null
+                ),
+                startDate = today
+            )
 
             result.fold(
                 onSuccess = {
@@ -162,7 +158,7 @@ class OnboardingViewModel(
                 },
                 onFailure = { error ->
                     _state.update { it.copy(isCreatingHabit = false, error = error.message) }
-                },
+                }
             )
         }
     }
