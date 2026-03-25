@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -186,6 +187,7 @@ internal fun HabitFormScreen(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .statusBarsPadding()
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
         // Delete icon (edit mode only)
