@@ -6,14 +6,6 @@
 
 ---
 
-## Screenshots
-
-| Today screen |
-|---|
-| ![Today Screen](./todayScreen.png) |
-
----
-
 ## What Makes HabitLock Different
 
 - **Enforcement-based design** — the app actively prevents you from breaking your own rules
