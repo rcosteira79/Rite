@@ -3,6 +3,7 @@ package com.ricardocosteira.habitlock.presentation.ui.habit
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.ReminderType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 
 /**
@@ -16,6 +17,7 @@ data class HabitFormState(
     val targetValue: String = "",
     val unit: String = "",
     val scheduleType: ScheduleType = ScheduleType.DAILY,
+    val selectedDays: Set<DayOfWeek> = DayOfWeek.entries.toSet(),
     val quota: String = "1",
     val hasReminder: Boolean = false,
     val reminderType: ReminderType = ReminderType.FIXED,
@@ -33,8 +35,9 @@ data class HabitFormState(
         val nameValid = name.isNotBlank()
         val typeValid = type == HabitType.BINARY || targetValue.toIntOrNull()?.let { it > 0 } == true
         val quotaValid = quota.toIntOrNull()?.let { it > 0 } == true
+        val daysValid = scheduleType == ScheduleType.DAILY || selectedDays.isNotEmpty()
 
-        return nameValid && typeValid && quotaValid
+        return nameValid && typeValid && quotaValid && daysValid
     }
 }
 
@@ -43,6 +46,10 @@ data class HabitFormState(
  */
 sealed interface HabitFormEvent {
     data object NavigateBack : HabitFormEvent
+
     data object RequiredFieldsMissing : HabitFormEvent
-    data class ShowError(val message: String?) : HabitFormEvent
+
+    data class ShowError(
+        val message: String?
+    ) : HabitFormEvent
 }
