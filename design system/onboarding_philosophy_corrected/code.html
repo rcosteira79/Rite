@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HabitLock Philosophy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline": "#727974",
+              "primary-container": "#2d4f3f",
+              "inverse-primary": "#a9cfba",
+              "error": "#ba1a1a",
+              "surface-tint": "#436654",
+              "background": "#fdf9f6",
+              "secondary-fixed-dim": "#bcc7dd",
+              "primary": "#163829",
+              "on-primary-container": "#9ac0ab",
+              "on-error": "#ffffff",
+              "on-background": "#1c1b1a",
+              "on-tertiary-fixed-variant": "#584329",
+              "on-primary": "#ffffff",
+              "surface-variant": "#e5e2df",
+              "tertiary": "#412e15",
+              "on-secondary-fixed-variant": "#3c475a",
+              "inverse-on-surface": "#f4f0ed",
+              "surface-container-highest": "#e5e2df",
+              "primary-fixed": "#c5ebd6",
+              "surface-bright": "#fdf9f6",
+              "tertiary-fixed": "#fdddb9",
+              "on-primary-fixed": "#002114",
+              "secondary-fixed": "#d8e3fa",
+              "secondary": "#545f72",
+              "outline-variant": "#c1c8c2",
+              "on-secondary-container": "#586377",
+              "on-primary-fixed-variant": "#2b4d3e",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#59442a",
+              "on-tertiary-fixed": "#281803",
+              "surface-container-high": "#ebe7e4",
+              "surface-container-low": "#f7f3f0",
+              "surface-container": "#f1edea",
+              "secondary-container": "#d5e0f7",
+              "on-error-container": "#93000a",
+              "on-secondary": "#ffffff",
+              "error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#e0c29f",
+              "surface": "#fdf9f6",
+              "primary-fixed-dim": "#a9cfba",
+              "inverse-surface": "#31302f",
+              "surface-dim": "#ddd9d6",
+              "on-surface-variant": "#414844",
+              "on-tertiary-container": "#cfb290",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#1c1b1a",
+              "on-secondary-fixed": "#111c2c"
+            },
+            fontFamily: {
+              "headline": ["Manrope", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .asymmetric-canvas {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+        body {
+          min-height: 100dvh;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Onboarding: Philosophy Section -->
+<main class="min-h-screen flex flex-col items-center justify-start pt-12 pb-32 relative overflow-hidden">
+<!-- Background Architectural Element -->
+<div class="absolute inset-0 pointer-events-none opacity-5 flex items-center justify-center">
+<div class="w-[120%] h-[120%] border-[40px] border-primary-container rounded-full rotate-12"></div>
+</div>
+<div class="max-w-4xl w-full asymmetric-canvas z-10">
+<!-- Branding Anchor -->
+<div class="mb-12">
+<span class="font-headline font-extrabold tracking-tighter text-primary text-2xl">HabitLock</span>
+</div>
+<!-- Philosophy Content -->
+<div class="flex flex-col gap-12 md:flex-row md:items-start">
+<!-- Left Column: Bold Typography -->
+<div class="flex-1">
+<h1 class="font-headline font-extrabold text-5xl md:text-7xl text-primary leading-[1.1] tracking-tight mb-8">
+                        The Architecture of Discipline.
+                    </h1>
+<p class="font-body text-lg text-on-surface-variant max-w-md leading-relaxed">
+                        HabitLock enforces what you commit to. We replace temporary motivation with permanent structure.
+                    </p>
+</div>
+<!-- Right Column: Tactile Values Card -->
+<div class="flex-1">
+<div class="bg-surface-container-low rounded-xl p-8 flex flex-col gap-8 shadow-sm">
+<div class="space-y-1">
+<span class="material-symbols-outlined text-primary-container text-3xl" data-icon="lock">lock</span>
+<h3 class="font-headline font-bold text-lg text-primary">Uncompromising Focus</h3>
+<p class="font-body text-sm text-secondary">Active locks prevent digital distractions while your habit window is open.</p>
+</div>
+<div class="space-y-1">
+<span class="material-symbols-outlined text-primary-container text-3xl" data-icon="architecture">architecture</span>
+<h3 class="font-headline font-bold text-lg text-primary">Intentional Design</h3>
+<p class="font-body text-sm text-secondary">A workspace crafted for serenity, not stimulation.</p>
+</div>
+<div class="space-y-1">
+<span class="material-symbols-outlined text-primary-container text-3xl" data-icon="verified">verified</span>
+<h3 class="font-headline font-bold text-lg text-primary">Proof of Effort</h3>
+<p class="font-body text-sm text-secondary">Meaningful progress requires friction. We embrace the resistance.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Call to Action -->
+<div class="mt-16 flex flex-col sm:flex-row items-center gap-4">
+<button class="w-full sm:w-auto bg-primary-container text-on-primary font-headline font-bold px-10 py-5 rounded-xl hover:opacity-90 active:scale-95 transition-all duration-200 shadow-lg shadow-primary-container/10">
+                    Accept the Commitment
+                </button>
+<button class="text-secondary font-headline font-medium hover:text-primary transition-colors py-4 px-6">
+                    Review our Manifesto
+                </button>
+</div>
+</div>
+<!-- Progress Indicator (Step 1 of 4) -->
+<div class="absolute bottom-32 left-1/2 -translate-x-1/2 flex gap-3">
+<div class="h-1.5 w-12 bg-primary rounded-full"></div>
+<div class="h-1.5 w-4 bg-surface-container-highest rounded-full"></div>
+<div class="h-1.5 w-4 bg-surface-container-highest rounded-full"></div>
+<div class="h-1.5 w-4 bg-surface-container-highest rounded-full"></div>
+</div>
+</main>
+<!-- Floating Bottom Navigation -->
+<nav class="fixed bottom-6 left-0 right-0 z-50 flex justify-around items-center px-4 py-3 mx-auto w-[92%] max-w-lg bg-[#FDF9F6]/80 backdrop-blur-xl shadow-[0_8px_24px_-2px_rgba(28,27,26,0.06)] rounded-[24px]">
+<a class="flex flex-col items-center justify-center bg-[#2D4F3F] text-[#FDF9F6] rounded-[16px] px-5 py-2 active:scale-90 transition-transform duration-300 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="today">today</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest">Today</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#545F72] px-5 py-2 hover:bg-[#F7F3F0] rounded-[16px] active:scale-90 transition-transform duration-300 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="history">history</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#545F72] px-5 py-2 hover:bg-[#F7F3F0] rounded-[16px] active:scale-90 transition-transform duration-300 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="center_focus_strong">center_focus_strong</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest">Focus</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#545F72] px-5 py-2 hover:bg-[#F7F3F0] rounded-[16px] active:scale-90 transition-transform duration-300 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="settings">settings</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest">Settings</span>
+</a>
+</nav>
+<!-- Visual Texture Layer -->
+<div class="fixed inset-0 pointer-events-none z-[60] opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]" data-alt="Subtle paper texture overlay for tactile feel"></div>
+</body></html>

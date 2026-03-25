@@ -23,6 +23,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.common_cd_onboarding_step
+import habitlock.composeapp.generated.resources.common_skip
+import org.jetbrains.compose.resources.stringResource
 
 private const val TOTAL_STEPS = 3
 private const val DONE_DOT_ALPHA = 0.45f
@@ -33,6 +37,8 @@ fun OnboardingTopChrome(
     onSkip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val stepDescription = stringResource(Res.string.common_cd_onboarding_step, currentStep + 1, TOTAL_STEPS)
+
     Row(
         modifier = modifier.padding(horizontal = 24.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -43,13 +49,13 @@ fun OnboardingTopChrome(
             modifier = Modifier
                 .weight(1f)
                 .semantics {
-                    contentDescription = "Step ${currentStep + 1} of $TOTAL_STEPS"
+                    contentDescription = stepDescription
                 }
         )
 
         TextButton(onClick = onSkip) {
             Text(
-                text = "Skip",
+                text = stringResource(Res.string.common_skip),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -93,7 +99,13 @@ private fun StepDot(
         label = "dot_width"
     )
 
-    val targetAlpha = if (state == DotState.Inactive) 1f else if (state == DotState.Done) DONE_DOT_ALPHA else 1f
+    val targetAlpha = if (state == DotState.Inactive) {
+        1f
+    } else if (state == DotState.Done) {
+        DONE_DOT_ALPHA
+    } else {
+        1f
+    }
     val animatedAlpha by animateFloatAsState(
         targetValue = targetAlpha,
         label = "dot_alpha"

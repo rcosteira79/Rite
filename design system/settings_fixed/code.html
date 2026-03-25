@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HabitLock - Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline": "#727974",
+              "primary-container": "#2d4f3f",
+              "inverse-primary": "#a9cfba",
+              "error": "#ba1a1a",
+              "surface-tint": "#436654",
+              "background": "#fdf9f6",
+              "secondary-fixed-dim": "#bcc7dd",
+              "primary": "#163829",
+              "on-primary-container": "#9ac0ab",
+              "on-error": "#ffffff",
+              "on-background": "#1c1b1a",
+              "on-tertiary-fixed-variant": "#584329",
+              "on-primary": "#ffffff",
+              "surface-variant": "#e5e2df",
+              "tertiary": "#412e15",
+              "on-secondary-fixed-variant": "#3c475a",
+              "inverse-on-surface": "#f4f0ed",
+              "surface-container-highest": "#e5e2df",
+              "primary-fixed": "#c5ebd6",
+              "surface-bright": "#fdf9f6",
+              "tertiary-fixed": "#fdddb9",
+              "on-primary-fixed": "#002114",
+              "secondary-fixed": "#d8e3fa",
+              "secondary": "#545f72",
+              "outline-variant": "#c1c8c2",
+              "on-secondary-container": "#586377",
+              "on-primary-fixed-variant": "#2b4d3e",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#59442a",
+              "on-tertiary-fixed": "#281803",
+              "surface-container-high": "#ebe7e4",
+              "surface-container-low": "#f7f3f0",
+              "surface-container": "#f1edea",
+              "secondary-container": "#d5e0f7",
+              "on-error-container": "#93000a",
+              "on-secondary": "#ffffff",
+              "error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#e0c29f",
+              "surface": "#fdf9f6",
+              "primary-fixed-dim": "#a9cfba",
+              "inverse-surface": "#31302f",
+              "surface-dim": "#ddd9d6",
+              "on-surface-variant": "#414844",
+              "on-tertiary-container": "#cfb290",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#1c1b1a",
+              "on-secondary-fixed": "#111c2c"
+            },
+            fontFamily: {
+              "headline": ["Manrope", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      body {
+        min-height: max(884px, 100dvh);
+      }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-40 bg-[#FDF9F6] dark:bg-[#1C1B1A]">
+<div class="flex justify-between items-center px-8 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="text-[#163829] dark:text-[#A9CFBA] hover:bg-[#E5E2DF]/50 transition-colors p-2 rounded-full active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline font-bold text-lg tracking-tight text-[#163829] dark:text-[#A9CFBA]">Settings</h1>
+</div>
+<div class="h-10 w-10 rounded-full overflow-hidden border-2 border-primary-fixed-dim">
+<img class="w-full h-full object-cover" data-alt="User profile avatar smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLPimvrskxKCaMUcvZ0bOSN8wUbVQM_yol-h-s4k8awqF4ho2AQyiRuUDMDZaAM9elMCqk7A7zmLyAbiSAbbHO4yRcWwveZSICtprtQ-tHraVHyWq6VPLn5o815tEMtGpbd4WYLQV5BkIvihYuyya0Qf0QuKF77_z0Cm8wn9OcbrerkBsz2yod_0c99mnouZHfmPPZiRKg8UvNSP54fd43p0T3oLSlo248gbwL5-2ZYAJ32kqSgZzqCvobpnrfW_ss2UK4WqhToDM"/>
+</div>
+</div>
+<div class="bg-[#F7F3F0] dark:bg-[#2C2B2A] h-px w-full"></div>
+</header>
+<main class="max-w-2xl mx-auto px-6 pt-8 space-y-12">
+<!-- Profile Section -->
+<section class="flex flex-col items-start pl-8 pr-4">
+<span class="font-headline font-extrabold text-[#163829] tracking-tighter text-4xl mb-2">HabitLock</span>
+<p class="text-secondary font-label text-sm uppercase tracking-widest">Architectural Discipline</p>
+</section>
+<!-- Configuration Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Strictness Selection -->
+<div class="bg-surface-container-low rounded-xl p-6 flex flex-col justify-between aspect-square md:aspect-auto">
+<div>
+<h3 class="font-headline font-bold text-primary text-xl mb-1">Strictness</h3>
+<p class="text-on-surface-variant font-body text-sm mb-6">Define your boundary integrity.</p>
+</div>
+<div class="space-y-3 font-body">
+<button class="w-full flex justify-between items-center p-4 bg-surface-container-highest rounded-lg border-2 border-primary transition-all">
+<span class="font-medium">Flexible</span>
+<span class="material-symbols-outlined text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</button>
+<button class="w-full flex justify-between items-center p-4 bg-surface hover:bg-surface-container-high rounded-lg transition-all">
+<span class="font-medium">Balanced</span>
+</button>
+<button class="w-full flex justify-between items-center p-4 bg-surface hover:bg-surface-container-high rounded-lg transition-all">
+<span class="font-medium">Locked</span>
+</button>
+</div>
+</div>
+<!-- Appearance & Toggles -->
+<div class="space-y-4 font-body">
+<!-- Notifications Toggle -->
+<div class="bg-surface-container-low rounded-xl p-6 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="bg-secondary-container p-3 rounded-lg text-on-secondary-container">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+</div>
+<div>
+<p class="font-bold text-primary">Notifications</p>
+<p class="text-xs text-on-surface-variant">Gentle awareness cues</p>
+</div>
+</div>
+<!-- Tactile Toggle Switch -->
+<button class="w-12 h-6 bg-primary-container rounded-full relative transition-colors duration-300">
+<div class="absolute right-1 top-1 w-4 h-4 bg-on-primary rounded-full shadow-sm"></div>
+</button>
+</div>
+<!-- Theme Selection -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<h3 class="font-headline font-bold text-primary text-lg mb-4">Visual Theme</h3>
+<div class="flex gap-2">
+<button class="flex-1 py-3 px-2 bg-surface rounded-lg flex flex-col items-center gap-2 border-2 border-primary-fixed-dim">
+<span class="material-symbols-outlined text-primary" data-icon="light_mode">light_mode</span>
+<span class="text-[10px] font-label font-bold uppercase tracking-tighter">Light</span>
+</button>
+<button class="flex-1 py-3 px-2 bg-surface-container-highest rounded-lg flex flex-col items-center gap-2 hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-secondary" data-icon="dark_mode">dark_mode</span>
+<span class="text-[10px] font-label font-bold uppercase tracking-tighter">Dark</span>
+</button>
+<button class="flex-1 py-3 px-2 bg-surface-container-highest rounded-lg flex flex-col items-center gap-2 hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-secondary" data-icon="settings_brightness">settings_brightness</span>
+<span class="text-[10px] font-label font-bold uppercase tracking-tighter">Auto</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Account Settings List -->
+<section class="space-y-4 pb-12">
+<h2 class="font-headline font-bold text-primary text-2xl pl-2">Security &amp; Data</h2>
+<div class="bg-surface-container-low rounded-[1.5rem] overflow-hidden font-body">
+<button class="w-full px-8 py-5 flex items-center justify-between hover:bg-surface-container-high transition-colors text-left group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary" data-icon="lock_reset">lock_reset</span>
+<span class="font-medium text-on-surface">Privacy &amp; Encryption</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+<div class="mx-8 h-px bg-surface-variant opacity-30"></div>
+<button class="w-full px-8 py-5 flex items-center justify-between hover:bg-surface-container-high transition-colors text-left group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary" data-icon="cloud_sync">cloud_sync</span>
+<span class="font-medium text-on-surface">Data Synchronization</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+<div class="mx-8 h-px bg-surface-variant opacity-30"></div>
+<button class="w-full px-8 py-5 flex items-center justify-between hover:bg-surface-container-high transition-colors text-left group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-error" data-icon="delete_forever">delete_forever</span>
+<span class="font-medium text-error">Purge Habit Data</span>
+</div>
+<span class="material-symbols-outlined text-error opacity-40" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar - Restored from Components -->
+<nav class="fixed bottom-6 left-0 right-0 z-50 flex justify-around items-center px-4 py-3 mx-auto w-[92%] max-w-lg">
+<div class="flex justify-around items-center w-full max-w-md rounded-[24px] bg-[#FDF9F6]/80 dark:bg-[#1C1B1A]/80 backdrop-blur-xl shadow-[0_8px_24px_-2px_rgba(28,27,26,0.06)] py-3">
+<a class="flex flex-col items-center justify-center text-[#545F72] dark:text-[#E5E2DF] px-5 py-2 hover:bg-[#F7F3F0] dark:hover:bg-[#2C2B2A] rounded-[16px] transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="today">today</span>
+<span class="font-label text-[10px] font-medium uppercase tracking-widest mt-1">Today</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#545F72] dark:text-[#E5E2DF] px-5 py-2 hover:bg-[#F7F3F0] dark:hover:bg-[#2C2B2A] rounded-[16px] transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label text-[10px] font-medium uppercase tracking-widest mt-1">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#545F72] dark:text-[#E5E2DF] px-5 py-2 hover:bg-[#F7F3F0] dark:hover:bg-[#2C2B2A] rounded-[16px] transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="center_focus_strong">center_focus_strong</span>
+<span class="font-label text-[10px] font-medium uppercase tracking-widest mt-1">Focus</span>
+</a>
+<!-- Active State -->
+<a class="flex flex-col items-center justify-center bg-[#2D4F3F] dark:bg-[#A9CFBA] text-[#FDF9F6] dark:text-[#163829] rounded-[16px] px-5 py-2 shadow-lg transition-transform active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="settings" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label text-[10px] font-medium uppercase tracking-widest mt-0.5">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Visual Polish -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] z-[100] bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
+</body></html>

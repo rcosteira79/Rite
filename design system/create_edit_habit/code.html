@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HabitLock - Create Habit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-low": "#f7f3f0",
+              "surface-container": "#f1edea",
+              "secondary-container": "#d5e0f7",
+              "tertiary-container": "#59442a",
+              "on-tertiary-fixed": "#281803",
+              "surface-container-high": "#ebe7e4",
+              "on-secondary-container": "#586377",
+              "on-primary-fixed-variant": "#2b4d3e",
+              "on-tertiary": "#ffffff",
+              "secondary": "#545f72",
+              "outline-variant": "#c1c8c2",
+              "surface-dim": "#ddd9d6",
+              "on-surface-variant": "#414844",
+              "on-tertiary-container": "#cfb290",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#1c1b1a",
+              "on-secondary-fixed": "#111c2c",
+              "tertiary-fixed-dim": "#e0c29f",
+              "surface": "#fdf9f6",
+              "primary-fixed-dim": "#a9cfba",
+              "inverse-surface": "#31302f",
+              "on-secondary": "#ffffff",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "on-error": "#ffffff",
+              "on-background": "#1c1b1a",
+              "on-tertiary-fixed-variant": "#584329",
+              "on-primary": "#ffffff",
+              "secondary-fixed-dim": "#bcc7dd",
+              "primary": "#163829",
+              "on-primary-container": "#9ac0ab",
+              "surface-tint": "#436654",
+              "background": "#fdf9f6",
+              "outline": "#727974",
+              "primary-container": "#2d4f3f",
+              "inverse-primary": "#a9cfba",
+              "error": "#ba1a1a",
+              "tertiary-fixed": "#fdddb9",
+              "on-primary-fixed": "#002114",
+              "secondary-fixed": "#d8e3fa",
+              "surface-bright": "#fdf9f6",
+              "primary-fixed": "#c5ebd6",
+              "surface-variant": "#e5e2df",
+              "tertiary": "#412e15",
+              "on-secondary-fixed-variant": "#3c475a",
+              "inverse-on-surface": "#f4f0ed",
+              "surface-container-highest": "#e5e2df"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "12px", "2xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdf9f6;
+            color: #1c1b1a;
+        }
+        .headline-font { font-family: 'Manrope', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- Top App Bar (Shared Component) -->
+<header class="flex justify-between items-center w-full px-8 py-4 bg-[#FDF9F6] dark:bg-[#1C1B1A] sticky top-0 z-40">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+<img alt="user profile" class="w-full h-full object-cover" data-alt="Close up portrait of a smiling man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrbAbHmtLgkgU8LszqmqLyg0xY7mmckNlW0PRSLVFOc2Ob0mHOobQOtkDA35sKTKdittZWvkiw_IpeP4eSGCTcpROFqyTlo9dOUCkXMcPeuUnPsyOIAK-ZWLLh8HRpOEwSe_mSmZGL8SpT3zJvUkmMgXKpBVEWqSnsc-hDYvWh1bAD9QH5DIFdqZvJwc9P45p4YrVbwfwHmHEIn17ZuVEJecCuVS3L8sAc3vrA_2bqnc2C4pueHdOsdUQgNXlv2hrwHGz1xHgarRc"/>
+</div>
+<span class="font-['Manrope'] font-bold text-2xl tracking-tight text-[#163829] dark:text-[#A9CFBA]">HabitLock</span>
+</div>
+<div class="text-[#163829] dark:text-[#A9CFBA] cursor-pointer hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+</div>
+</header>
+<div class="bg-[#F7F3F0] dark:bg-[#2C2B2A] h-[1px] w-full"></div>
+<!-- Main Content Canvas -->
+<main class="max-w-2xl mx-auto px-6 pt-12">
+<!-- Header Section -->
+<section class="mb-12 pl-8 md:pl-0">
+<h1 class="headline-font font-extrabold text-4xl tracking-tight text-primary mb-2">New Habit</h1>
+<p class="text-on-surface-variant font-body text-sm">Define your path to architectural discipline.</p>
+</section>
+<!-- Form Section -->
+<form class="space-y-10">
+<!-- Habit Name -->
+<div class="space-y-3">
+<label class="font-label text-xs uppercase tracking-widest text-secondary font-semibold ml-1">Habit Name</label>
+<input class="w-full bg-surface-container-highest border-none rounded-xl px-6 py-4 text-xl headline-font font-bold text-primary focus:ring-2 focus:ring-primary-container transition-all placeholder:text-outline-variant" placeholder="e.g., Deep Work" type="text"/>
+</div>
+<!-- Type Selection (Asymmetric Layout) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-3">
+<label class="font-label text-xs uppercase tracking-widest text-secondary font-semibold ml-1">Type</label>
+<div class="flex gap-2 p-1.5 bg-surface-container-low rounded-2xl">
+<button class="flex-1 py-3 px-4 rounded-xl bg-primary-container text-on-primary font-medium text-sm transition-all shadow-sm" type="button">Binary</button>
+<button class="flex-1 py-3 px-4 rounded-xl text-on-surface-variant font-medium text-sm hover:bg-surface-container transition-all" type="button">Quantitative</button>
+</div>
+</div>
+<!-- Conditional Target (Shown for context) -->
+<div class="space-y-3 opacity-40">
+<label class="font-label text-xs uppercase tracking-widest text-secondary font-semibold ml-1">Daily Target</label>
+<div class="relative">
+<input class="w-full bg-surface-container-high border-none rounded-xl px-6 py-3.5 text-lg font-body cursor-not-allowed" disabled="" placeholder="0" type="text"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-label text-outline uppercase tracking-wider">Units</span>
+</div>
+</div>
+</div>
+<!-- Schedule -->
+<div class="space-y-6">
+<div class="flex justify-between items-end">
+<label class="font-label text-xs uppercase tracking-widest text-secondary font-semibold ml-1">Schedule</label>
+<div class="flex gap-4">
+<button class="text-sm font-semibold text-primary border-b-2 border-primary pb-1" type="button">Daily</button>
+<button class="text-sm font-medium text-on-surface-variant pb-1" type="button">Weekly</button>
+</div>
+</div>
+<!-- Specific Days (Custom Multi-select) -->
+<div class="flex justify-between bg-surface-container-low p-2 rounded-2xl">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold bg-primary-container text-on-primary" type="button">M</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold bg-primary-container text-on-primary" type="button">T</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold bg-primary-container text-on-primary" type="button">W</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold bg-primary-container text-on-primary" type="button">T</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold bg-primary-container text-on-primary" type="button">F</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-medium text-on-surface-variant hover:bg-surface-container-high" type="button">S</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-medium text-on-surface-variant hover:bg-surface-container-high" type="button">S</button>
+</div>
+</div>
+<!-- Additional Settings (Glassmorphism Concept) -->
+<div class="bg-surface-container-low rounded-2xl p-6 space-y-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</div>
+<div>
+<p class="font-body font-semibold text-primary">Reminder</p>
+<p class="text-xs text-on-surface-variant">08:00 AM</p>
+</div>
+</div>
+<div class="w-12 h-6 bg-primary-container rounded-full relative">
+<div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between opacity-60">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="notes">notes</span>
+</div>
+<div>
+<p class="font-body font-semibold text-primary">Add Note</p>
+<p class="text-xs text-on-surface-variant">Optional intention</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+<!-- Submit Action -->
+<div class="pt-8">
+<button class="w-full bg-primary-container text-on-primary py-5 rounded-2xl font-headline font-bold text-lg shadow-lg hover:shadow-xl transition-all active:scale-[0.98]" type="submit">
+                    Establish Habit
+                </button>
+<button class="w-full mt-4 text-on-surface-variant font-label text-sm font-medium hover:text-primary transition-colors" type="button">
+                    Discard Draft
+                </button>
+</div>
+</form>
+</main>
+<!-- Bottom Navigation Bar (Shared Component) -->
+<nav class="fixed bottom-6 left-0 right-0 z-50 flex justify-around items-center px-4 py-3 mx-auto w-[92%] max-w-lg bg-[#FDF9F6]/80 dark:bg-[#1C1B1A]/80 backdrop-blur-xl rounded-[24px] shadow-[0_8px_24px_-2px_rgba(28,27,26,0.06)]">
+<a class="flex flex-col items-center justify-center text-[#545F72] dark:text-[#E5E2DF] px-5 py-2 hover:bg-[#F7F3F0] dark:hover:bg-[#2C2B2A] rounded-[16px] transition-all active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="today">today</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest mt-1">Today</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#545F72] dark:text-[#E5E2DF] px-5 py-2 hover:bg-[#F7F3F0] dark:hover:bg-[#2C2B2A] rounded-[16px] transition-all active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest mt-1">History</span>
+</a>
+<!-- Focus Tab Active for Habit Creation (Closest Intent) -->
+<a class="flex flex-col items-center justify-center bg-[#2D4F3F] dark:bg-[#A9CFBA] text-[#FDF9F6] dark:text-[#163829] rounded-[16px] px-5 py-2 transition-all active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="center_focus_strong" style="font-variation-settings: 'FILL' 1;">center_focus_strong</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest mt-1">Focus</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#545F72] dark:text-[#E5E2DF] px-5 py-2 hover:bg-[#F7F3F0] dark:hover:bg-[#2C2B2A] rounded-[16px] transition-all active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest mt-1">Settings</span>
+</a>
+</nav>
+</body></html>

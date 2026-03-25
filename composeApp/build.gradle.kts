@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.roborazzi)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinxSerialization)
@@ -58,8 +59,15 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.mockk)
             implementation(libs.turbine)
+        }
+        androidUnitTest.dependencies {
+            implementation(libs.mockk)
+            implementation(libs.robolectric)
+            implementation(libs.roborazzi)
+            implementation(libs.roborazzi.compose)
+            implementation(libs.roborazzi.junit.rule)
+            implementation(libs.compose.ui.test.junit4)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
@@ -115,6 +123,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+}
+
+roborazzi {
+    outputDir.set(file("src/androidUnitTest/snapshots/images"))
 }
 
 compose.desktop {

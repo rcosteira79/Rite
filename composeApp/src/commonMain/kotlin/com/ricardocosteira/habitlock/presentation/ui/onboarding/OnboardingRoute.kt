@@ -4,9 +4,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.presentation.ui.isReduceMotionEnabled
@@ -24,7 +21,6 @@ fun OnboardingRoute(
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    var currentStep by remember { mutableIntStateOf(0) }
     val reduceMotion = isReduceMotionEnabled()
 
     val messageEmptyName = stringResource(Res.string.first_habit_error_empty_name)
@@ -34,7 +30,6 @@ fun OnboardingRoute(
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
-                OnboardingEvent.NavigateToFirstHabit -> currentStep = 2
                 OnboardingEvent.NavigateToToday -> onFinished()
                 OnboardingEvent.EmptyHabitName -> snackbarHostState.showSnackbar(messageEmptyName)
                 OnboardingEvent.MissingTargetValue -> snackbarHostState.showSnackbar(messageMissingTarget)
@@ -45,9 +40,9 @@ fun OnboardingRoute(
 
     OnboardingWizard(
         state = state,
-        currentStep = currentStep,
+        currentStep = state.currentStep,
         snackbarHostState = snackbarHostState,
-        onStepChange = { currentStep = it },
+        onStepChange = viewModel::setCurrentStep,
         onSkip = viewModel::skipToToday,
         reduceMotion = reduceMotion,
         onContinueFromStrictness = viewModel::continueFromStrictness,
@@ -58,6 +53,7 @@ fun OnboardingRoute(
         onHabitTypeChange = viewModel::updateHabitType,
         onTargetValueChange = viewModel::updateTargetValue,
         onUnitChange = viewModel::updateUnit,
+        onSelectedDaysChange = viewModel::updateSelectedDays,
         modifier = modifier
     )
 }

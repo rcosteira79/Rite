@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HabitLock - History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline": "#8a938c",
+              "primary-container": "#2d4f3f",
+              "inverse-primary": "#a9cfba",
+              "error": "#ffb4ab",
+              "surface-tint": "#a9cfba",
+              "background": "#121412",
+              "secondary-fixed-dim": "#bcc7dd",
+              "primary": "#a9cfba",
+              "on-primary-container": "#c5ebd6",
+              "on-error": "#690005",
+              "on-background": "#e1e3df",
+              "on-tertiary-fixed-variant": "#fdddb9",
+              "on-primary": "#123728",
+              "surface-variant": "#414944",
+              "tertiary": "#fdddb9",
+              "on-secondary-fixed-variant": "#d8e3fa",
+              "inverse-on-surface": "#121412",
+              "surface-container-highest": "#313532",
+              "primary-fixed": "#c5ebd6",
+              "surface-bright": "#373a37",
+              "tertiary-fixed": "#fdddb9",
+              "on-primary-fixed": "#002114",
+              "secondary-fixed": "#d8e3fa",
+              "secondary": "#bfc9c1",
+              "outline-variant": "#414944",
+              "on-secondary-container": "#d8e3fa",
+              "on-primary-fixed-variant": "#2b4d3e",
+              "on-tertiary": "#412e15",
+              "tertiary-container": "#59442a",
+              "on-tertiary-fixed": "#281803",
+              "surface-container-high": "#272b28",
+              "surface-container-low": "#1a1e1b",
+              "surface-container": "#1d211e",
+              "secondary-container": "#3c475a",
+              "on-error-container": "#ffdad6",
+              "on-secondary": "#28323f",
+              "error-container": "#93000a",
+              "tertiary-fixed-dim": "#e0c29f",
+              "surface": "#121412",
+              "primary-fixed-dim": "#a9cfba",
+              "inverse-surface": "#e1e3df",
+              "surface-dim": "#121412",
+              "on-surface-variant": "#c1c8c2",
+              "on-tertiary-container": "#fdddb9",
+              "surface-container-lowest": "#0c0f0d",
+              "on-surface": "#e1e3df",
+              "on-secondary-fixed": "#111c2c"
+            },
+            fontFamily: {
+              "headline": ["Manrope", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .day-cell {
+            aspect-ratio: 1 / 1;
+        }
+        body {
+          min-height: max(884px, 100dvh);
+        }
+        /* Full-spectrum color protocol overrides for calendar cells in dark mode */
+        .cell-perfect { background-color: #064e3b; color: #a7f3d0; } /* Emerald */
+        .cell-best { background-color: #134e4a; color: #99f6e4; }    /* Teal */
+        .cell-partial { background-color: #1e3a8a; color: #bfdbfe; } /* Indigo */
+        .cell-rough { background-color: #78350f; color: #fef3c7; }   /* Amber */
+        .cell-failed { background-color: #7f1d1d; color: #fecaca; }  /* Red */
+        .cell-future { background-color: #262626; color: #525252; }  /* Neutral */
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-40 bg-background/80 backdrop-blur-md">
+<div class="flex justify-between items-center px-8 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="text-primary hover:bg-surface-variant/50 transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline font-extrabold text-on-surface text-lg tracking-tighter">HabitLock</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest ring-1 ring-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="User profile avatar portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXHa2dZhhvOc-K_x3iF4Co3ZiNMHgg8Fz7rEThUUXsWBO5223KVYaJOpUOkE9sLkl4ii3Fa_MhmFunb9CH-RaexkdiT6D7kmRAVj2rYPG0f3sKNXqc64JxA5B14hKb0F-TpJq12pgkPPaY57cNna1a7NL9C-3t9JB87HywqmAKlLdAibzYpvHSF8rUYQ9UZjMkEJ4UvR-FiDOS4d9bec5pdAajFLaYDy2mLIu7X_GJcWDU77Ae11Yh3n0gDlnM3r9WW5BuJCh4qGU"/>
+</div>
+</div>
+</div>
+<div class="bg-outline-variant h-px w-full opacity-20"></div>
+</header>
+<main class="max-w-4xl mx-auto px-6 pt-8">
+<!-- Editorial Header Section -->
+<section class="mb-12 pl-4 md:pl-8">
+<p class="font-label text-secondary text-xs tracking-widest uppercase mb-2">Reflect &amp; Refine</p>
+<h2 class="font-headline font-bold text-4xl text-on-surface tracking-tight mb-4">Your Journey</h2>
+<div class="flex flex-wrap gap-8 items-end">
+<div>
+<span class="block text-3xl font-headline font-extrabold text-primary">84%</span>
+<span class="font-label text-xs text-secondary uppercase tracking-widest">Monthly Clarity</span>
+</div>
+<div class="h-10 w-px bg-outline-variant opacity-30 hidden md:block"></div>
+<div>
+<span class="block text-3xl font-headline font-extrabold text-primary">12</span>
+<span class="font-label text-xs text-secondary uppercase tracking-widest">Perfect Days</span>
+</div>
+</div>
+</section>
+<!-- Calendar Legend -->
+<section class="mb-8 px-6 py-6 bg-surface-container-low rounded-2xl border border-outline-variant/10">
+<div class="grid grid-cols-2 md:grid-cols-6 gap-4">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm cell-perfect shadow-sm"></div>
+<span class="font-label text-[10px] font-medium uppercase tracking-tighter text-on-surface-variant">Perfect</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm cell-best shadow-sm"></div>
+<span class="font-label text-[10px] font-medium uppercase tracking-tighter text-on-surface-variant">Best Effort</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm cell-partial shadow-sm"></div>
+<span class="font-label text-[10px] font-medium uppercase tracking-tighter text-on-surface-variant">Partial</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm cell-rough shadow-sm"></div>
+<span class="font-label text-[10px] font-medium uppercase tracking-tighter text-on-surface-variant">Rough Day</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm cell-failed shadow-sm"></div>
+<span class="font-label text-[10px] font-medium uppercase tracking-tighter text-on-surface-variant">Failed</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm cell-future shadow-sm"></div>
+<span class="font-label text-[10px] font-medium uppercase tracking-tighter text-on-surface-variant">Future</span>
+</div>
+</div>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Main Calendar Card -->
+<div class="md:col-span-8 bg-surface-container-low p-8 rounded-[1.5rem] shadow-xl border border-outline-variant/10">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-headline font-bold text-xl text-on-surface">October 2023</h3>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container-highest rounded-full transition-colors text-on-surface">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-2 hover:bg-surface-container-highest rounded-full transition-colors text-on-surface">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-7 gap-3">
+<!-- Day Labels -->
+<div class="text-center font-label text-[10px] font-bold text-secondary tracking-widest uppercase pb-2">Mo</div>
+<div class="text-center font-label text-[10px] font-bold text-secondary tracking-widest uppercase pb-2">Tu</div>
+<div class="text-center font-label text-[10px] font-bold text-secondary tracking-widest uppercase pb-2">We</div>
+<div class="text-center font-label text-[10px] font-bold text-secondary tracking-widest uppercase pb-2">Th</div>
+<div class="text-center font-label text-[10px] font-bold text-secondary tracking-widest uppercase pb-2">Fr</div>
+<div class="text-center font-label text-[10px] font-bold text-secondary tracking-widest uppercase pb-2">Sa</div>
+<div class="text-center font-label text-[10px] font-bold text-secondary tracking-widest uppercase pb-2">Su</div>
+<!-- Calendar Cells -->
+<div class="day-cell bg-surface-variant/20 rounded-lg flex items-center justify-center text-xs text-secondary opacity-30">25</div>
+<div class="day-cell bg-surface-variant/20 rounded-lg flex items-center justify-center text-xs text-secondary opacity-30">26</div>
+<div class="day-cell bg-surface-variant/20 rounded-lg flex items-center justify-center text-xs text-secondary opacity-30">27</div>
+<div class="day-cell bg-surface-variant/20 rounded-lg flex items-center justify-center text-xs text-secondary opacity-30">28</div>
+<div class="day-cell bg-surface-variant/20 rounded-lg flex items-center justify-center text-xs text-secondary opacity-30">29</div>
+<div class="day-cell bg-surface-variant/20 rounded-lg flex items-center justify-center text-xs text-secondary opacity-30">30</div>
+<div class="day-cell cell-perfect rounded-lg flex items-center justify-center text-xs font-bold shadow-md">1</div>
+<div class="day-cell cell-best rounded-lg flex items-center justify-center text-xs font-bold shadow-md">2</div>
+<div class="day-cell cell-perfect rounded-lg flex items-center justify-center text-xs font-bold shadow-md">3</div>
+<div class="day-cell cell-partial rounded-lg flex items-center justify-center text-xs font-bold shadow-md">4</div>
+<div class="day-cell cell-failed rounded-lg flex items-center justify-center text-xs font-bold shadow-md">5</div>
+<div class="day-cell cell-perfect rounded-lg flex items-center justify-center text-xs font-bold shadow-md">6</div>
+<div class="day-cell cell-rough rounded-lg flex items-center justify-center text-xs font-bold shadow-md">7</div>
+<div class="day-cell cell-perfect rounded-lg flex items-center justify-center text-xs font-bold shadow-md">8</div>
+<div class="day-cell cell-perfect rounded-lg flex items-center justify-center text-xs font-bold shadow-md">9</div>
+<div class="day-cell cell-best rounded-lg flex items-center justify-center text-xs font-bold shadow-md">10</div>
+<div class="day-cell cell-perfect rounded-lg flex items-center justify-center text-xs font-bold shadow-md">11</div>
+<div class="day-cell cell-partial rounded-lg flex items-center justify-center text-xs font-bold shadow-md">12</div>
+<div class="day-cell cell-perfect rounded-lg flex items-center justify-center text-xs font-bold shadow-md">13</div>
+<div class="day-cell cell-rough rounded-lg flex items-center justify-center text-xs font-bold shadow-md">14</div>
+<div class="day-cell cell-perfect rounded-lg flex items-center justify-center text-xs font-bold shadow-md ring-2 ring-primary ring-offset-4 ring-offset-surface-container-low">15</div>
+<div class="day-cell cell-future rounded-lg flex items-center justify-center text-xs font-medium">16</div>
+<div class="day-cell cell-future rounded-lg flex items-center justify-center text-xs font-medium">17</div>
+<div class="day-cell cell-future rounded-lg flex items-center justify-center text-xs font-medium">18</div>
+<div class="day-cell cell-future rounded-lg flex items-center justify-center text-xs font-medium">19</div>
+<div class="day-cell cell-future rounded-lg flex items-center justify-center text-xs font-medium">20</div>
+<div class="day-cell cell-future rounded-lg flex items-center justify-center text-xs font-medium">21</div>
+</div>
+</div>
+<!-- Side Stats -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<div class="bg-[#1e3a31] p-8 rounded-[1.5rem] text-[#c5ebd6] shadow-2xl flex flex-col justify-between aspect-square md:aspect-auto border border-[#2d4f3f]/50">
+<div>
+<span class="material-symbols-outlined text-primary mb-3 text-3xl" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<h4 class="font-headline font-bold text-xl leading-tight">Current Strength</h4>
+</div>
+<div>
+<p class="text-5xl font-extrabold font-headline text-white">14 Days</p>
+<p class="font-label text-xs text-primary opacity-60 uppercase tracking-widest mt-2">Unbroken Chain</p>
+</div>
+</div>
+<div class="bg-surface-container p-6 rounded-[1.5rem] flex flex-col justify-center border border-outline-variant/10">
+<p class="italic text-secondary font-body leading-relaxed mb-4">"Discipline is the bridge between goals and accomplishment."</p>
+<p class="font-label text-[10px] font-bold uppercase tracking-widest text-primary opacity-60">— Jim Rohn</p>
+</div>
+</div>
+</div>
+<!-- Detailed Breakdown -->
+<section class="mt-12">
+<h3 class="font-headline font-bold text-2xl text-on-surface mb-6">Habit Consistency</h3>
+<div class="space-y-4">
+<div class="bg-surface-container-low p-6 rounded-2xl flex items-center justify-between border border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">self_care</span>
+</div>
+<div>
+<p class="font-headline font-bold text-on-surface">Mindful Meditation</p>
+<p class="font-body text-xs text-secondary">20 min / day</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-lg font-headline font-bold text-primary">92%</p>
+<div class="w-24 h-1.5 bg-surface-variant rounded-full mt-1 overflow-hidden">
+<div class="bg-primary h-full w-[92%]"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-2xl flex items-center justify-between border border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">menu_book</span>
+</div>
+<div>
+<p class="font-headline font-bold text-on-surface">Deep Reading</p>
+<p class="font-body text-xs text-secondary">45 min / day</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-lg font-headline font-bold text-primary">68%</p>
+<div class="w-24 h-1.5 bg-surface-variant rounded-full mt-1 overflow-hidden">
+<div class="bg-primary-container h-full w-[68%]"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-6 left-0 right-0 z-50 flex justify-center items-center px-4 py-3 mx-auto w-[92%] max-w-lg">
+<div class="flex justify-around items-center w-full max-w-md bg-surface-container-lowest/80 backdrop-blur-xl rounded-[24px] shadow-2xl px-4 py-2 border border-outline-variant/20">
+<!-- Today -->
+<a class="flex flex-col items-center justify-center text-secondary px-5 py-2 hover:bg-surface-variant/30 rounded-[16px] transition-all" href="#">
+<span class="material-symbols-outlined">today</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest mt-0.5">Today</span>
+</a>
+<!-- ACTIVE: History -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-[16px] px-5 py-2 active:scale-90 transition-transform duration-300 ease-out shadow-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest mt-0.5">History</span>
+</a>
+<!-- Focus -->
+<a class="flex flex-col items-center justify-center text-secondary px-5 py-2 hover:bg-surface-variant/30 rounded-[16px] transition-all" href="#">
+<span class="material-symbols-outlined">center_focus_strong</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest mt-0.5">Focus</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-secondary px-5 py-2 hover:bg-surface-variant/30 rounded-[16px] transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Inter'] font-medium text-[10px] uppercase tracking-widest mt-0.5">Settings</span>
+</a>
+</div>
+</nav>
+</body></html>

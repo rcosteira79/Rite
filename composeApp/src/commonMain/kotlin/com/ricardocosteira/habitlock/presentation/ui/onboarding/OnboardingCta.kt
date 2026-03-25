@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,8 +24,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.HabitType
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.first_habit_button_create
+import habitlock.composeapp.generated.resources.first_habit_button_skip
+import habitlock.composeapp.generated.resources.philosophy_cta_accept
+import habitlock.composeapp.generated.resources.strictness_cta_continue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+
+private val CtaButtonShape = RoundedCornerShape(12.dp)
+
+@Composable
+private fun ctaButtonColors() =
+    ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary
+    )
 
 @Composable
 private fun CtaContainer(
@@ -65,8 +82,13 @@ internal fun PhilosophyStepCta(
     reduceMotion: Boolean = false
 ) {
     CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
-        Button(onClick = onAdvance, modifier = Modifier.fillMaxWidth()) {
-            Text("Continue")
+        Button(
+            onClick = onAdvance,
+            modifier = Modifier.fillMaxWidth(),
+            shape = CtaButtonShape,
+            colors = ctaButtonColors()
+        ) {
+            Text(stringResource(Res.string.philosophy_cta_accept))
         }
     }
 }
@@ -82,8 +104,13 @@ internal fun StrictnessStepCta(
         if (state.isApplyingPreset) {
             CircularProgressIndicator(modifier = Modifier.size(36.dp))
         } else {
-            Button(onClick = onContinue, modifier = Modifier.fillMaxWidth()) {
-                Text("Continue")
+            Button(
+                onClick = onContinue,
+                modifier = Modifier.fillMaxWidth(),
+                shape = CtaButtonShape,
+                colors = ctaButtonColors()
+            ) {
+                Text(stringResource(Res.string.strictness_cta_continue))
             }
         }
     }
@@ -97,8 +124,10 @@ internal fun FirstHabitStepCta(
     modifier: Modifier = Modifier,
     reduceMotion: Boolean = false
 ) {
-    val isEnabled = state.habitName.isNotBlank() &&
-            (state.habitType == HabitType.BINARY || state.targetValue.isNotBlank())
+    val isEnabled =
+        state.habitName.isNotBlank() &&
+            (state.habitType == HabitType.BINARY || state.targetValue.isNotBlank()) &&
+            state.selectedDays.isNotEmpty()
 
     CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
         if (state.isCreatingHabit) {
@@ -107,9 +136,11 @@ internal fun FirstHabitStepCta(
             Button(
                 onClick = onCreateHabit,
                 enabled = isEnabled,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = CtaButtonShape,
+                colors = ctaButtonColors()
             ) {
-                Text("Create habit")
+                Text(stringResource(Res.string.first_habit_button_create))
             }
         }
 
@@ -117,7 +148,7 @@ internal fun FirstHabitStepCta(
 
         TextButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = "Skip for now",
+                text = stringResource(Res.string.first_habit_button_skip),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

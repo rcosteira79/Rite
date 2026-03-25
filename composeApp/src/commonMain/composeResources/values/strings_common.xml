@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="common_cd_back">Back</string>
+    <string name="common_cd_onboarding_step">Step %1$d of %2$d</string>
     <string name="common_skip">Skip</string>
     <string name="common_continue">Continue</string>
     <string name="common_edit">Edit</string>
     <string name="common_cancel">Cancel</string>
     <string name="common_daily">Daily</string>
     <string name="common_weekly">Weekly</string>
+    <string name="common_schedule_every_day">Every day</string>
+    <string name="common_schedule_weekdays">Weekdays</string>
+    <string name="common_schedule_weekend">Weekend</string>
+    <string name="common_schedule_day_mon">M</string>
+    <string name="common_schedule_day_tue">T</string>
+    <string name="common_schedule_day_wed">W</string>
+    <string name="common_schedule_day_thu">T</string>
+    <string name="common_schedule_day_fri">F</string>
+    <string name="common_schedule_day_sat">S</string>
+    <string name="common_schedule_day_sun">S</string>
     <string name="common_quantitative">Quantitative</string>
     <string name="common_failed">Failed</string>
     <string name="common_placeholder_habit_name">E.g. Drink water</string>
