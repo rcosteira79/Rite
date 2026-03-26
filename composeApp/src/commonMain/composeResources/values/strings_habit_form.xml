@@ -2,7 +2,7 @@
 <resources>
     <string name="habit_form_title_new_habit">New Habit</string>
     <string name="habit_form_title_edit">Edit Habit</string>
-    <string name="habit_form_subtitle_create">Define your path to architectural discipline.</string>
+    <string name="habit_form_subtitle_create">What will you commit to?</string>
     <string name="habit_form_cd_delete">Delete habit</string>
     <string name="habit_form_section_habit_name">HABIT NAME</string>
     <string name="habit_form_section_type">TYPE</string>
