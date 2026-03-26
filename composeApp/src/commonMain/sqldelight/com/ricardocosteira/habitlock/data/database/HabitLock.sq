@@ -66,6 +66,7 @@ CREATE TABLE HabitInstance (
     targetValue INTEGER,
     consecutiveSkipsAtCreation INTEGER NOT NULL DEFAULT 0,
     createdAt TEXT NOT NULL,
+    completedAt TEXT,
     FOREIGN KEY (habitId) REFERENCES Habit(id) ON DELETE CASCADE
 );
 
@@ -248,11 +249,11 @@ getInstancesInDateRange:
 SELECT * FROM HabitInstance WHERE date >= ? AND date <= ?;
 
 insertInstance:
-INSERT INTO HabitInstance (id, habitId, date, status, completedValue, targetValue, consecutiveSkipsAtCreation, createdAt)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO HabitInstance (id, habitId, date, status, completedValue, targetValue, consecutiveSkipsAtCreation, createdAt, completedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 updateInstanceStatus:
-UPDATE HabitInstance SET status = ?, completedValue = ? WHERE id = ?;
+UPDATE HabitInstance SET status = ?, completedValue = ?, completedAt = ? WHERE id = ?;
 
 updateInstanceCompletedValue:
 UPDATE HabitInstance SET completedValue = ? WHERE id = ?;

@@ -14,20 +14,20 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Instant
 
 @Inject
 class HabitInstanceRepositoryImpl(
-    private val database: HabitLockDatabase
+    private val database: HabitLockDatabase,
 ) : HabitInstanceRepository {
-
     private val queries = database.habitLockQueries
 
-    override fun observeInstancesForDate(date: LocalDate): Flow<List<HabitInstance>> {
-        return queries.getInstancesForDate(date.toString())
+    override fun observeInstancesForDate(date: LocalDate): Flow<List<HabitInstance>> =
+        queries
+            .getInstancesForDate(date.toString())
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { list -> list.map { it.toDomain() } }
-    }
 
     override suspend fun getInstancesForDate(date: LocalDate): List<HabitInstance> =
         withContext(Dispatchers.IO) {
@@ -46,10 +46,11 @@ class HabitInstanceRepositoryImpl(
 
     override suspend fun getInstanceForHabitAndDate(
         habitId: String,
-        date: LocalDate
-    ): HabitInstance? = withContext(Dispatchers.IO) {
-        queries.getInstanceForHabitAndDate(habitId, date.toString()).executeAsOneOrNull()?.toDomain()
-    }
+        date: LocalDate,
+    ): HabitInstance? =
+        withContext(Dispatchers.IO) {
+            queries.getInstanceForHabitAndDate(habitId, date.toString()).executeAsOneOrNull()?.toDomain()
+        }
 
     override suspend fun getInstancesForHabit(habitId: String): List<HabitInstance> =
         withContext(Dispatchers.IO) {
@@ -58,14 +59,16 @@ class HabitInstanceRepositoryImpl(
 
     override suspend fun getInstancesInDateRange(
         startDate: LocalDate,
-        endDate: LocalDate
-    ): List<HabitInstance> = withContext(Dispatchers.IO) {
-        queries.getInstancesInDateRange(startDate.toString(), endDate.toString())
-            .executeAsList()
-            .map { it.toDomain() }
-    }
+        endDate: LocalDate,
+    ): List<HabitInstance> =
+        withContext(Dispatchers.IO) {
+            queries
+                .getInstancesInDateRange(startDate.toString(), endDate.toString())
+                .executeAsList()
+                .map { it.toDomain() }
+        }
 
-    override suspend fun createInstance(instance: HabitInstance): Unit = 
+    override suspend fun createInstance(instance: HabitInstance): Unit =
         withContext(Dispatchers.IO) {
             queries.insertInstance(
                 id = instance.id,
@@ -75,30 +78,34 @@ class HabitInstanceRepositoryImpl(
                 completedValue = instance.completedValue?.toLong(),
                 targetValue = instance.targetValue?.toLong(),
                 consecutiveSkipsAtCreation = instance.consecutiveSkipsAtCreation.toLong(),
-                createdAt = instance.createdAt.toString()
+                createdAt = instance.createdAt.toString(),
+                completedAt = instance.completedAt?.toString(),
             )
         }
 
     override suspend fun updateInstanceStatus(
         instanceId: String,
         status: HabitStatus,
-        completedValue: Int?
-    ): Unit = withContext(Dispatchers.IO) {
-        queries.updateInstanceStatus(
-            status = status.name,
-            completedValue = completedValue?.toLong(),
-            id = instanceId
-        )
-    }
+        completedValue: Int?,
+        completedAt: Instant?,
+    ): Unit =
+        withContext(Dispatchers.IO) {
+            queries.updateInstanceStatus(
+                status = status.name,
+                completedValue = completedValue?.toLong(),
+                completedAt = completedAt?.toString(),
+                id = instanceId,
+            )
+        }
 
     override suspend fun updateInstanceCompletedValue(
         instanceId: String,
-        completedValue: Int
-    ): Unit = withContext(Dispatchers.IO) {
-        queries.updateInstanceCompletedValue(
-            completedValue = completedValue.toLong(),
-            id = instanceId
-        )
-    }
+        completedValue: Int,
+    ): Unit =
+        withContext(Dispatchers.IO) {
+            queries.updateInstanceCompletedValue(
+                completedValue = completedValue.toLong(),
+                id = instanceId,
+            )
+        }
 }
-

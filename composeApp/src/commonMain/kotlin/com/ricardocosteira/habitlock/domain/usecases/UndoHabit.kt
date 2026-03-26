@@ -1,7 +1,5 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
-import me.tatarka.inject.annotations.Inject
-
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.UndoPolicy
@@ -9,9 +7,10 @@ import com.ricardocosteira.habitlock.domain.repositories.HabitCompletionEventRep
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
-import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import me.tatarka.inject.annotations.Inject
+import kotlin.time.Clock
 
 /**
  * Undoes a habit completion or skip.
@@ -21,33 +20,36 @@ class UndoHabit(
     private val habitInstanceRepository: HabitInstanceRepository,
     private val habitCompletionEventRepository: HabitCompletionEventRepository,
     private val habitRepository: HabitRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
-
     /**
      * Undo a habit action (completion or skip).
      * Respects user's undo policy.
      */
     suspend fun execute(instanceId: String): Result<HabitInstance> {
-        val instance = habitInstanceRepository.getInstanceById(instanceId)
-            ?: return Result.failure(IllegalArgumentException("Instance not found"))
+        val instance =
+            habitInstanceRepository.getInstanceById(instanceId)
+                ?: return Result.failure(IllegalArgumentException("Instance not found"))
 
-        val user = userRepository.getUser()
-            ?: return Result.failure(IllegalStateException("User not found"))
+        val user =
+            userRepository.getUser()
+                ?: return Result.failure(IllegalStateException("User not found"))
 
         // Check undo policy
         when (user.undoPolicy) {
             UndoPolicy.NONE -> {
                 return Result.failure(UndoNotAllowedException("Undo is disabled"))
             }
+
             UndoPolicy.TODAY_ONLY -> {
                 val today = Clock.System.now().toLocalDate(user.timezone)
                 if (instance.date != today) {
                     return Result.failure(
-                        UndoNotAllowedException("Can only undo today's habits")
+                        UndoNotAllowedException("Can only undo today's habits"),
                     )
                 }
             }
+
             UndoPolicy.ALL_HISTORY -> {
                 // Allowed for all dates
             }
@@ -63,7 +65,7 @@ class UndoHabit(
 
         // Get the completed value before undoing (for score decrement)
         val completedValueToUndo = instance.completedValue ?: 0
-        
+
         // Delete all completion events
         habitCompletionEventRepository.deleteEventsForInstance(instanceId)
 
@@ -71,7 +73,8 @@ class UndoHabit(
         habitInstanceRepository.updateInstanceStatus(
             instanceId = instanceId,
             status = HabitStatus.PENDING,
-            completedValue = 0
+            completedValue = 0,
+            completedAt = null,
         )
 
         // Recalculate streak and score (decrement if was completed)
@@ -81,27 +84,29 @@ class UndoHabit(
                 habitRepository.updateHabitStreak(
                     habitId = habit.id,
                     currentStreak = habit.currentStreak - 1,
-                    longestStreak = habit.longestStreak
+                    longestStreak = habit.longestStreak,
                 )
             }
         }
-        
+
         // Decrement total completions by the completed value
         if (completedValueToUndo > 0) {
             habitRepository.decrementHabitTotalCompletions(
                 habitId = instance.habitId,
-                amount = completedValueToUndo
+                amount = completedValueToUndo,
             )
         }
 
-        val updatedInstance = habitInstanceRepository.getInstanceById(instanceId)
-            ?: return Result.failure(IllegalStateException("Failed to retrieve updated instance"))
+        val updatedInstance =
+            habitInstanceRepository.getInstanceById(instanceId)
+                ?: return Result.failure(IllegalStateException("Failed to retrieve updated instance"))
 
         return Result.success(updatedInstance)
     }
 }
 
-private fun kotlin.time.Instant.toLocalDate(timezone: TimeZone) =
-    this.toLocalDateTime(timezone).date
+private fun kotlin.time.Instant.toLocalDate(timezone: TimeZone) = this.toLocalDateTime(timezone).date
 
-class UndoNotAllowedException(message: String) : Exception(message)
+class UndoNotAllowedException(
+    message: String,
+) : Exception(message)

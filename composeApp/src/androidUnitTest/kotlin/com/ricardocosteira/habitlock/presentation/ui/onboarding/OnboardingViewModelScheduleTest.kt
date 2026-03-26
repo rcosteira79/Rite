@@ -32,6 +32,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.time.Clock
+import kotlin.time.Instant
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class OnboardingViewModelScheduleTest {
@@ -273,6 +274,7 @@ private class FakeHabitInstanceRepository : HabitInstanceRepository {
         instanceId: String,
         status: HabitStatus,
         completedValue: Int?,
+        completedAt: Instant?,
     ) = Unit
 
     override suspend fun updateInstanceCompletedValue(
