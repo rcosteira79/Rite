@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.di.AppScope
 import com.ricardocosteira.habitlock.domain.models.CompletionSource
+import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
 import com.ricardocosteira.habitlock.domain.models.UserStrictnessSettings
@@ -17,6 +18,7 @@ import com.ricardocosteira.habitlock.domain.usecases.ProcessEndOfDay
 import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
 import com.ricardocosteira.habitlock.domain.usecases.SkipLockedException
 import com.ricardocosteira.habitlock.domain.usecases.UndoHabit
+import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.habitlock.presentation.models.mapToTodayHabitUiModel
 import com.ricardocosteira.habitlock.util.toLocalDate
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -191,6 +193,34 @@ class TodayViewModel(
                     }
                 },
                 onFailure = { error ->
+                    _events.emit(TodayEvent.ShowError(error.message))
+                },
+            )
+        }
+    }
+
+    fun incrementHabitProgress(instanceId: String) {
+        viewModelScope.launch {
+            val habit: TodayHabitUiModel =
+                _state.value.habits.find { it.instanceId == instanceId } ?: return@launch
+
+            val result: Result<HabitInstance> =
+                completeHabit.executeQuantitative(
+                    instanceId = instanceId,
+                    deltaValue = habit.defaultIncrement,
+                    source = CompletionSource.IN_APP,
+                )
+
+            result.fold(
+                onSuccess = { updatedInstance: HabitInstance ->
+                    loadTodayHabits()
+                    if (updatedInstance.isQuantitativeComplete()) {
+                        _events.emit(TodayEvent.HabitCompleted)
+                    } else {
+                        _events.emit(TodayEvent.ProgressAdded)
+                    }
+                },
+                onFailure = { error: Throwable ->
                     _events.emit(TodayEvent.ShowError(error.message))
                 },
             )

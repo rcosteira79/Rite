@@ -108,12 +108,7 @@ fun TodayScreen(
         onComplete = viewModel::completeHabit,
         onSkip = viewModel::skipHabit,
         onUndo = viewModel::undoHabit,
-        onIncrementProgress = { instanceId ->
-            val habit = state.habits.find { it.instanceId == instanceId }
-            if (habit != null) {
-                viewModel.completeQuantitativeHabit(instanceId, habit.defaultIncrement)
-            }
-        },
+        onIncrementProgress = viewModel::incrementHabitProgress,
         onCustomProgress = viewModel::showQuantitativeInput,
         onAddHabitClick = viewModel::navigateToCreateHabit,
         onDismissTimezoneWarning = viewModel::dismissTimezoneWarning,
