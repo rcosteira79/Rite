@@ -208,7 +208,7 @@ internal fun HabitFormScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .statusBarsPadding()
-            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .padding(horizontal = 24.dp, vertical = 20.dp)
     ) {
         // Heading + delete icon (edit mode only)
         Row(
@@ -262,14 +262,14 @@ internal fun HabitFormScreen(
 
         // HABIT NAME
         SectionLabel(stringResource(Res.string.habit_form_section_habit_name))
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         UnderlineTextField(
             value = state.name,
             onValueChange = onNameChange,
             placeholder = stringResource(Res.string.common_placeholder_habit_name)
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // TYPE
         SectionLabel(stringResource(Res.string.habit_form_section_type))
@@ -280,7 +280,7 @@ internal fun HabitFormScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // DAILY TARGET
         SectionLabel(stringResource(Res.string.habit_form_section_daily_target))
@@ -330,7 +330,7 @@ internal fun HabitFormScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // SCHEDULE
         Row(
@@ -367,7 +367,7 @@ internal fun HabitFormScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Reminder + Note card
         val reminderSubtitle: String = if (state.hasReminder) {
