@@ -21,9 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,14 +29,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -76,10 +72,7 @@ import habitlock.composeapp.generated.resources.common_failed
 import habitlock.composeapp.generated.resources.common_skip
 import habitlock.composeapp.generated.resources.common_weekly
 import habitlock.composeapp.generated.resources.today_action_archive
-import habitlock.composeapp.generated.resources.today_cd_add_habit
-import habitlock.composeapp.generated.resources.today_cd_calendar
 import habitlock.composeapp.generated.resources.today_cd_complete
-import habitlock.composeapp.generated.resources.today_cd_settings
 import habitlock.composeapp.generated.resources.today_cd_undo
 import habitlock.composeapp.generated.resources.today_empty_state_add_habit
 import habitlock.composeapp.generated.resources.today_empty_state_heading
@@ -116,8 +109,6 @@ private val PROGRESS_ROW_CHIP_SPACING = 10.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayScreen(
-    onCalendarClick: () -> Unit,
-    onSettingsClick: () -> Unit,
     onNavigateToHabitDetail: (String) -> Unit,
     onNavigateToCreateHabit: () -> Unit,
     onEditHabit: (String) -> Unit,
@@ -152,8 +143,6 @@ fun TodayScreen(
 
     TodayScreen(
         state = state,
-        onCalendarClick = onCalendarClick,
-        onSettingsClick = onSettingsClick,
         onHabitClick = viewModel::navigateToHabitDetail,
         onCompleteClick = viewModel::completeHabit,
         onSkipClick = viewModel::skipHabit,
@@ -162,7 +151,6 @@ fun TodayScreen(
         onArchiveClick = viewModel::archiveHabit,
         onAddHabitClick = viewModel::navigateToCreateHabit,
         onDismissTimezoneWarning = viewModel::dismissTimezoneWarning,
-        snackbarHostState = snackbarHostState,
     )
 
     state.showQuantitativeInputFor?.let { instanceId ->
@@ -181,8 +169,6 @@ fun TodayScreen(
 @Composable
 private fun TodayScreen(
     state: TodayState,
-    onCalendarClick: () -> Unit,
-    onSettingsClick: () -> Unit,
     onHabitClick: (String) -> Unit,
     onCompleteClick: (String) -> Unit,
     onSkipClick: (String) -> Unit,
@@ -191,7 +177,6 @@ private fun TodayScreen(
     onArchiveClick: (String) -> Unit,
     onAddHabitClick: () -> Unit,
     onDismissTimezoneWarning: () -> Unit,
-    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -225,28 +210,8 @@ private fun TodayScreen(
                         }
                     }
                 },
-                actions = {
-                    IconButton(onClick = onCalendarClick) {
-                        Icon(
-                            imageVector = Icons.Default.CalendarMonth,
-                            contentDescription = stringResource(Res.string.today_cd_calendar),
-                        )
-                    }
-                    IconButton(onClick = onSettingsClick) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = stringResource(Res.string.today_cd_settings),
-                        )
-                    }
-                },
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onAddHabitClick) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.today_cd_add_habit))
-            }
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         Column(
             modifier =

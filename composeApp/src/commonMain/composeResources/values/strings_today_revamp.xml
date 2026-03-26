@@ -28,8 +28,5 @@
     <string name="today_resolved_goal_reached">Goal reached: %d / %d %s</string>
 
     <!-- Bottom nav -->
-    <string name="nav_today">Today</string>
-    <string name="nav_history">History</string>
-    <string name="nav_settings">Settings</string>
     <string name="nav_cd_add_habit">Add habit</string>
 </resources>
