@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.di.AppScope
 import com.ricardocosteira.habitlock.domain.models.CompletionSource
 import com.ricardocosteira.habitlock.domain.models.HabitType
+import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
+import com.ricardocosteira.habitlock.domain.models.UserStrictnessSettings
+import com.ricardocosteira.habitlock.domain.models.motivationalTitleForDate
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
@@ -25,8 +28,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
-import kotlin.time.Clock
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Clock
 
 /**
  * Scoped to the application lifetime via [AppScope] rather than a
@@ -46,9 +49,8 @@ class TodayViewModel(
     private val processEndOfDay: ProcessEndOfDay,
     private val completeHabit: CompleteHabit,
     private val skipHabit: SkipHabit,
-    private val undoHabit: UndoHabit
+    private val undoHabit: UndoHabit,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(TodayState())
     val state: StateFlow<TodayState> = _state.asStateFlow()
 
@@ -78,26 +80,45 @@ class TodayViewModel(
                     _state.update {
                         it.copy(
                             showTimezoneWarning = true,
-                            previousTimezone = user.previousTimezone.id
+                            previousTimezone = user.previousTimezone.id,
                         )
                     }
                 }
 
+                // Derive timezone and strictness preset
+                val userTimezone: TimeZone = user?.timezone ?: TimeZone.currentSystemDefault()
+
+                val strictnessPreset: StrictnessPreset? =
+                    user?.let {
+                        val settings =
+                            UserStrictnessSettings(
+                                undoPolicy = it.undoPolicy,
+                                maxSnoozesPerHabitPerDay = it.maxSnoozesPerHabitPerDay,
+                                maxConsecutiveSkips = it.maxConsecutiveSkips,
+                                maxSnoozeDurationMinutes = it.maxSnoozeDurationMinutes,
+                            )
+                        StrictnessPreset.fromSettings(settings)
+                    }
+
                 // Get today's instances
-                val today = Clock.System.now().toLocalDate(user?.timezone ?: TimeZone.currentSystemDefault())
+                val today = Clock.System.now().toLocalDate(userTimezone)
                 val instances = habitInstanceRepository.getInstancesForDate(today)
 
+                val motivationalTitle: String = motivationalTitleForDate(today)
+
                 // Map to UI models
-                val habits = instances.mapNotNull { instance ->
-                    val habit = habitRepository.getHabitById(instance.habitId) ?: return@mapNotNull null
-                    val schedule = habitRepository.getScheduleForHabit(habit.id) ?: return@mapNotNull null
-                    mapToTodayHabitUiModel(
-                        instance = instance,
-                        habit = habit,
-                        schedule = schedule,
-                        maxConsecutiveSkips = user?.maxConsecutiveSkips
-                    )
-                }
+                val habits =
+                    instances.mapNotNull { instance ->
+                        val habit = habitRepository.getHabitById(instance.habitId) ?: return@mapNotNull null
+                        val schedule = habitRepository.getScheduleForHabit(habit.id) ?: return@mapNotNull null
+                        mapToTodayHabitUiModel(
+                            instance = instance,
+                            habit = habit,
+                            schedule = schedule,
+                            maxConsecutiveSkips = user?.maxConsecutiveSkips,
+                            userTimezone = userTimezone,
+                        )
+                    }
 
                 val counts = habits.computeCounts()
 
@@ -108,15 +129,15 @@ class TodayViewModel(
                         pendingCount = counts.pendingCount,
                         dailyResolved = counts.dailyResolved,
                         dailyTotal = counts.dailyTotal,
-                        weeklyResolved = counts.weeklyResolved,
-                        weeklyTotal = counts.weeklyTotal
+                        motivationalTitle = motivationalTitle,
+                        strictnessPreset = strictnessPreset,
                     )
                 }
             } catch (e: Exception) {
                 _state.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message
+                        error = e.message,
                     )
                 }
             }
@@ -141,20 +162,24 @@ class TodayViewModel(
                 },
                 onFailure = { error ->
                     _events.emit(TodayEvent.ShowError(error.message))
-                }
+                },
             )
         }
     }
 
-    fun completeQuantitativeHabit(instanceId: String, value: Int) {
+    fun completeQuantitativeHabit(
+        instanceId: String,
+        value: Int,
+    ) {
         viewModelScope.launch {
             _state.update { it.copy(showQuantitativeInputFor = null) }
 
-            val result = completeHabit.executeQuantitative(
-                instanceId = instanceId,
-                deltaValue = value,
-                source = CompletionSource.IN_APP
-            )
+            val result =
+                completeHabit.executeQuantitative(
+                    instanceId = instanceId,
+                    deltaValue = value,
+                    source = CompletionSource.IN_APP,
+                )
 
             result.fold(
                 onSuccess = { updatedInstance ->
@@ -167,7 +192,7 @@ class TodayViewModel(
                 },
                 onFailure = { error ->
                     _events.emit(TodayEvent.ShowError(error.message))
-                }
+                },
             )
         }
     }
@@ -190,7 +215,7 @@ class TodayViewModel(
                         is SkipLockedException -> _events.emit(TodayEvent.SkipLimitReached)
                         else -> _events.emit(TodayEvent.ShowError(error.message))
                     }
-                }
+                },
             )
         }
     }
@@ -206,7 +231,7 @@ class TodayViewModel(
                 },
                 onFailure = { error ->
                     _events.emit(TodayEvent.ShowError(error.message))
-                }
+                },
             )
         }
     }

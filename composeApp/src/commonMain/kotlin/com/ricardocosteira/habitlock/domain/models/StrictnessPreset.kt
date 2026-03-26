@@ -15,7 +15,7 @@ enum class StrictnessPreset {
      * - Longer snooze duration (60 minutes)
      */
     FLEXIBLE,
-    
+
     /**
      * Structure with room for real life (default/recommended).
      * - Undo allowed for today only
@@ -24,7 +24,7 @@ enum class StrictnessPreset {
      * - Moderate snooze duration (30 minutes)
      */
     BALANCED,
-    
+
     /**
      * No excuses, full accountability.
      * - No undo allowed
@@ -32,39 +32,54 @@ enum class StrictnessPreset {
      * - No skips allowed (0)
      * - Short snooze duration (15 minutes)
      */
-    LOCKED;
+    LOCKED,
+
+    ;
 
     /**
      * Converts this preset to user settings.
      */
-    fun toUserSettings(): UserStrictnessSettings {
-        return when (this) {
-            FLEXIBLE -> UserStrictnessSettings(
-                undoPolicy = UndoPolicy.ALL_HISTORY,
-                maxSnoozesPerHabitPerDay = null,
-                maxConsecutiveSkips = null,
-                maxSnoozeDurationMinutes = 60
-            )
-            BALANCED -> UserStrictnessSettings(
-                undoPolicy = UndoPolicy.TODAY_ONLY,
-                maxSnoozesPerHabitPerDay = 3,
-                maxConsecutiveSkips = 2,
-                maxSnoozeDurationMinutes = 30
-            )
-            LOCKED -> UserStrictnessSettings(
-                undoPolicy = UndoPolicy.NONE,
-                maxSnoozesPerHabitPerDay = 1,
-                maxConsecutiveSkips = 0,
-                maxSnoozeDurationMinutes = 15
-            )
+    fun toUserSettings(): UserStrictnessSettings =
+        when (this) {
+            FLEXIBLE -> {
+                UserStrictnessSettings(
+                    undoPolicy = UndoPolicy.ALL_HISTORY,
+                    maxSnoozesPerHabitPerDay = null,
+                    maxConsecutiveSkips = null,
+                    maxSnoozeDurationMinutes = 60,
+                )
+            }
+
+            BALANCED -> {
+                UserStrictnessSettings(
+                    undoPolicy = UndoPolicy.TODAY_ONLY,
+                    maxSnoozesPerHabitPerDay = 3,
+                    maxConsecutiveSkips = 2,
+                    maxSnoozeDurationMinutes = 30,
+                )
+            }
+
+            LOCKED -> {
+                UserStrictnessSettings(
+                    undoPolicy = UndoPolicy.NONE,
+                    maxSnoozesPerHabitPerDay = 1,
+                    maxConsecutiveSkips = 0,
+                    maxSnoozeDurationMinutes = 15,
+                )
+            }
         }
-    }
 
     companion object {
         /**
          * Default preset recommended for most users.
          */
         val DEFAULT = BALANCED
+
+        /**
+         * Reverse-maps user settings back to a preset, or null if the settings
+         * don't match any known preset (i.e. the user customised them).
+         */
+        fun fromSettings(settings: UserStrictnessSettings): StrictnessPreset? = entries.firstOrNull { it.toUserSettings() == settings }
     }
 }
 
@@ -80,7 +95,7 @@ data class UserStrictnessSettings(
     val undoPolicy: UndoPolicy,
     val maxSnoozesPerHabitPerDay: Int?,
     val maxConsecutiveSkips: Int?,
-    val maxSnoozeDurationMinutes: Int
+    val maxSnoozeDurationMinutes: Int,
 ) {
     init {
         if (maxSnoozesPerHabitPerDay != null) {
@@ -116,4 +131,3 @@ data class UserStrictnessSettings(
     val isSkipDisabled: Boolean
         get() = maxConsecutiveSkips == 0
 }
-
