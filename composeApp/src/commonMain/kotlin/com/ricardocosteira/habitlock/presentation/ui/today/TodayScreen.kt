@@ -1,8 +1,5 @@
 package com.ricardocosteira.habitlock.presentation.ui.today
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,27 +10,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -46,35 +35,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
-import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.common_edit
 import habitlock.composeapp.generated.resources.common_error_generic
-import habitlock.composeapp.generated.resources.common_failed
-import habitlock.composeapp.generated.resources.common_skip
-import habitlock.composeapp.generated.resources.today_action_archive
-import habitlock.composeapp.generated.resources.today_cd_complete
-import habitlock.composeapp.generated.resources.today_cd_undo
 import habitlock.composeapp.generated.resources.today_empty_state_add_habit
 import habitlock.composeapp.generated.resources.today_empty_state_heading
 import habitlock.composeapp.generated.resources.today_empty_state_subtext
 import habitlock.composeapp.generated.resources.today_error_skip_limit_reached
-import habitlock.composeapp.generated.resources.today_score
-import habitlock.composeapp.generated.resources.today_section_daily_habits
-import habitlock.composeapp.generated.resources.today_section_suspended_habits
-import habitlock.composeapp.generated.resources.today_section_weekly_habits
-import habitlock.composeapp.generated.resources.today_status_suspended
-import habitlock.composeapp.generated.resources.today_streak
+import habitlock.composeapp.generated.resources.today_section_focus
+import habitlock.composeapp.generated.resources.today_section_this_week
+import habitlock.composeapp.generated.resources.today_section_weekly
 import habitlock.composeapp.generated.resources.today_success_action_undone
 import habitlock.composeapp.generated.resources.today_success_habit_archived
 import habitlock.composeapp.generated.resources.today_success_habit_completed
@@ -83,11 +57,17 @@ import habitlock.composeapp.generated.resources.today_success_progress_added
 import habitlock.composeapp.generated.resources.today_timezone_changed_dismiss
 import habitlock.composeapp.generated.resources.today_timezone_changed_message
 import habitlock.composeapp.generated.resources.today_timezone_changed_title
+import kotlinx.datetime.Month
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Clock
 
-private val SECTION_HEADER_LETTER_SPACING = 0.8.sp
-private val ACCENT_BAR_WIDTH = 3.dp
-private val ACCENT_BAR_CONTENT_START_PADDING = ACCENT_BAR_WIDTH + 16.dp // bar width + standard padding
+private val DIVIDER_ALPHA = 0.3f
+private val DIVIDER_HORIZONTAL_PADDING = 16.dp
+private val BOTTOM_CLEARANCE = 80.dp
+private val TOP_BREATHING_ROOM = 8.dp
+private val SECTION_GAP = 16.dp
 
 @Composable
 fun TodayScreen(
@@ -125,12 +105,16 @@ fun TodayScreen(
 
     TodayScreen(
         state = state,
-        onHabitClick = viewModel::navigateToHabitDetail,
-        onCompleteClick = viewModel::completeHabit,
-        onSkipClick = viewModel::skipHabit,
-        onUndoClick = viewModel::undoHabit,
-        onEditClick = onEditHabit,
-        onArchiveClick = viewModel::archiveHabit,
+        onComplete = viewModel::completeHabit,
+        onSkip = viewModel::skipHabit,
+        onUndo = viewModel::undoHabit,
+        onIncrementProgress = { instanceId ->
+            val habit = state.habits.find { it.instanceId == instanceId }
+            if (habit != null) {
+                viewModel.completeQuantitativeHabit(instanceId, habit.defaultIncrement)
+            }
+        },
+        onCustomProgress = viewModel::showQuantitativeInput,
         onAddHabitClick = viewModel::navigateToCreateHabit,
         onDismissTimezoneWarning = viewModel::dismissTimezoneWarning,
     )
@@ -150,12 +134,11 @@ fun TodayScreen(
 @Composable
 private fun TodayScreen(
     state: TodayState,
-    onHabitClick: (String) -> Unit,
-    onCompleteClick: (String) -> Unit,
-    onSkipClick: (String) -> Unit,
-    onUndoClick: (String) -> Unit,
-    onEditClick: (String) -> Unit,
-    onArchiveClick: (String) -> Unit,
+    onComplete: (String) -> Unit,
+    onSkip: (String) -> Unit,
+    onUndo: (String) -> Unit,
+    onIncrementProgress: (String) -> Unit,
+    onCustomProgress: (String) -> Unit,
     onAddHabitClick: () -> Unit,
     onDismissTimezoneWarning: () -> Unit,
     modifier: Modifier = Modifier,
@@ -164,6 +147,8 @@ private fun TodayScreen(
     val isHeaderCollapsed: Boolean by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex > 0 }
     }
+
+    var expandedCardId: String? by remember { mutableStateOf(null) }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -191,10 +176,18 @@ private fun TodayScreen(
             }
 
             else -> {
-                // Group habits by cadence and status
-                val dailyHabits = state.habits.filter { it.isDaily && !it.isSuspended }
-                val weeklyHabits = state.habits.filter { it.isWeekly && !it.isSuspended }
-                val suspendedHabits = state.habits.filter { it.isSuspended }
+                // Partition habits into groups
+                val dailyHabits: List<TodayHabitUiModel> =
+                    state.habits.filter { it.isDaily && !it.isSuspended }
+                val weeklyHabits: List<TodayHabitUiModel> =
+                    state.habits.filter { it.isWeekly && !it.isSuspended }
+
+                val (pendingDaily: List<TodayHabitUiModel>, resolvedDaily: List<TodayHabitUiModel>) =
+                    dailyHabits.partition { !it.isCompleted && !it.isSkipped && !it.isFailed }
+                val (pendingWeekly: List<TodayHabitUiModel>, resolvedWeekly: List<TodayHabitUiModel>) =
+                    weeklyHabits.partition { !it.isCompleted && !it.isSkipped && !it.isFailed }
+
+                val formattedDate: String = rememberFormattedDate()
 
                 TodayHeader(
                     motivationalTitle = state.motivationalTitle,
@@ -208,109 +201,216 @@ private fun TodayScreen(
                 LazyColumn(
                     state = lazyListState,
                     modifier = Modifier.weight(1f).fillMaxWidth(),
-                    contentPadding = PaddingValues(16.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    // Daily Habits Section
-                    if (dailyHabits.isNotEmpty()) {
-                        item {
-                            Row(
+                    // Top breathing room
+                    item(key = "top_spacer") {
+                        Spacer(modifier = Modifier.height(TOP_BREATHING_ROOM))
+                    }
+
+                    // TODAY'S FOCUS section
+                    item(key = "daily_header") {
+                        SectionHeader(
+                            title = stringResource(Res.string.today_section_focus),
+                            trailingLabel = formattedDate,
+                        )
+                    }
+
+                    items(
+                        items = pendingDaily,
+                        key = { it.instanceId },
+                    ) { habit ->
+                        HabitCard(
+                            habit = habit,
+                            isExpanded = expandedCardId == habit.instanceId,
+                            onToggleExpand = {
+                                expandedCardId =
+                                    if (expandedCardId == habit.instanceId) null else habit.instanceId
+                            },
+                            onComplete = {
+                                if (habit.type == HabitType.BINARY) {
+                                    onComplete(habit.instanceId)
+                                } else {
+                                    onIncrementProgress(habit.instanceId)
+                                }
+                            },
+                            onSkip = { onSkip(habit.instanceId) },
+                            onUndo = { onUndo(habit.instanceId) },
+                            onIncrementProgress = { onIncrementProgress(habit.instanceId) },
+                            onCustomProgress = { onCustomProgress(habit.instanceId) },
+                        )
+                    }
+
+                    if (resolvedDaily.isNotEmpty()) {
+                        item(key = "daily_divider") {
+                            HorizontalDivider(
                                 modifier =
                                     Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                Text(
-                                    text = stringResource(Res.string.today_section_daily_habits),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    letterSpacing = SECTION_HEADER_LETTER_SPACING,
-                                    color = MaterialTheme.colorScheme.primary,
+                                        .alpha(DIVIDER_ALPHA)
+                                        .padding(horizontal = DIVIDER_HORIZONTAL_PADDING),
+                            )
+                        }
+
+                        items(
+                            items = resolvedDaily,
+                            key = { it.instanceId },
+                        ) { habit ->
+                            HabitCard(
+                                habit = habit,
+                                isExpanded = false,
+                                onToggleExpand = {},
+                                onComplete = {},
+                                onSkip = {},
+                                onUndo = { onUndo(habit.instanceId) },
+                                onIncrementProgress = {},
+                                onCustomProgress = {},
+                            )
+                        }
+                    }
+
+                    // WEEKLY GOALS section
+                    if (weeklyHabits.isNotEmpty()) {
+                        item(key = "weekly_spacer") {
+                            Spacer(modifier = Modifier.height(SECTION_GAP))
+                        }
+
+                        item(key = "weekly_header") {
+                            SectionHeader(
+                                title = stringResource(Res.string.today_section_weekly),
+                                trailingLabel = stringResource(Res.string.today_section_this_week),
+                            )
+                        }
+
+                        items(
+                            items = pendingWeekly,
+                            key = { it.instanceId },
+                        ) { habit ->
+                            HabitCard(
+                                habit = habit,
+                                isExpanded = expandedCardId == habit.instanceId,
+                                onToggleExpand = {
+                                    expandedCardId =
+                                        if (expandedCardId == habit.instanceId) null else habit.instanceId
+                                },
+                                onComplete = {
+                                    if (habit.type == HabitType.BINARY) {
+                                        onComplete(habit.instanceId)
+                                    } else {
+                                        onIncrementProgress(habit.instanceId)
+                                    }
+                                },
+                                onSkip = { onSkip(habit.instanceId) },
+                                onUndo = { onUndo(habit.instanceId) },
+                                onIncrementProgress = { onIncrementProgress(habit.instanceId) },
+                                onCustomProgress = { onCustomProgress(habit.instanceId) },
+                            )
+                        }
+
+                        if (resolvedWeekly.isNotEmpty()) {
+                            item(key = "weekly_divider") {
+                                HorizontalDivider(
+                                    modifier =
+                                        Modifier
+                                            .alpha(DIVIDER_ALPHA)
+                                            .padding(horizontal = DIVIDER_HORIZONTAL_PADDING),
                                 )
-                                Text(
-                                    text = "${state.dailyResolved} / ${state.dailyTotal}",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            }
+
+                            items(
+                                items = resolvedWeekly,
+                                key = { it.instanceId },
+                            ) { habit ->
+                                HabitCard(
+                                    habit = habit,
+                                    isExpanded = false,
+                                    onToggleExpand = {},
+                                    onComplete = {},
+                                    onSkip = {},
+                                    onUndo = { onUndo(habit.instanceId) },
+                                    onIncrementProgress = {},
+                                    onCustomProgress = {},
                                 )
                             }
                         }
-                        items(
-                            items = dailyHabits,
-                            key = { it.instanceId },
-                        ) { habit ->
-                            HabitCard(
-                                habit = habit,
-                                onClick = { onHabitClick(habit.instanceId) },
-                                onCompleteClick = { onCompleteClick(habit.instanceId) },
-                                onSkipClick = { onSkipClick(habit.instanceId) },
-                                onUndoClick = { onUndoClick(habit.instanceId) },
-                                onEditClick = { onEditClick(habit.habitId) },
-                                onArchiveClick = { onArchiveClick(habit.habitId) },
-                            )
-                        }
                     }
 
-                    // Weekly Habits Section
-                    if (weeklyHabits.isNotEmpty()) {
-                        item {
-                            Text(
-                                text = stringResource(Res.string.today_section_weekly_habits),
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = SECTION_HEADER_LETTER_SPACING,
-                                color = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.padding(vertical = 8.dp),
-                            )
-                        }
-                        items(
-                            items = weeklyHabits,
-                            key = { it.instanceId },
-                        ) { habit ->
-                            HabitCard(
-                                habit = habit,
-                                onClick = { onHabitClick(habit.instanceId) },
-                                onCompleteClick = { onCompleteClick(habit.instanceId) },
-                                onSkipClick = { onSkipClick(habit.instanceId) },
-                                onUndoClick = { onUndoClick(habit.instanceId) },
-                                onEditClick = { onEditClick(habit.habitId) },
-                                onArchiveClick = { onArchiveClick(habit.habitId) },
-                            )
-                        }
-                    }
-
-                    // Suspended Habits Section
-                    if (suspendedHabits.isNotEmpty()) {
-                        item {
-                            Text(
-                                text = stringResource(Res.string.today_section_suspended_habits),
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = SECTION_HEADER_LETTER_SPACING,
-                                color = MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier.padding(vertical = 8.dp),
-                            )
-                        }
-                        items(
-                            items = suspendedHabits,
-                            key = { it.instanceId },
-                        ) { habit ->
-                            HabitCard(
-                                habit = habit,
-                                onClick = { onHabitClick(habit.instanceId) },
-                                onCompleteClick = { onCompleteClick(habit.instanceId) },
-                                onSkipClick = { onSkipClick(habit.instanceId) },
-                                onUndoClick = { onUndoClick(habit.instanceId) },
-                                onEditClick = { onEditClick(habit.habitId) },
-                                onArchiveClick = { onArchiveClick(habit.habitId) },
-                            )
-                        }
+                    // Bottom clearance for nav bar
+                    item(key = "bottom_spacer") {
+                        Spacer(modifier = Modifier.height(BOTTOM_CLEARANCE))
                     }
                 }
             }
         }
     }
 }
+
+@Composable
+private fun rememberFormattedDate(): String {
+    val now = remember { Clock.System.now() }
+    val localDate =
+        remember(now) {
+            now.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        }
+
+    val monthAbbreviation: String =
+        remember(localDate) {
+            formatMonthAbbreviation(localDate.month)
+        }
+
+    return remember(localDate) { "$monthAbbreviation ${localDate.day}" }
+}
+
+private fun formatMonthAbbreviation(month: Month): String =
+    when (month) {
+        Month.JANUARY -> {
+            "Jan"
+        }
+
+        Month.FEBRUARY -> {
+            "Feb"
+        }
+
+        Month.MARCH -> {
+            "Mar"
+        }
+
+        Month.APRIL -> {
+            "Apr"
+        }
+
+        Month.MAY -> {
+            "May"
+        }
+
+        Month.JUNE -> {
+            "Jun"
+        }
+
+        Month.JULY -> {
+            "Jul"
+        }
+
+        Month.AUGUST -> {
+            "Aug"
+        }
+
+        Month.SEPTEMBER -> {
+            "Sep"
+        }
+
+        Month.OCTOBER -> {
+            "Oct"
+        }
+
+        Month.NOVEMBER -> {
+            "Nov"
+        }
+
+        Month.DECEMBER -> {
+            "Dec"
+        }
+    }
 
 @Composable
 private fun TimezoneWarningBanner(
@@ -380,208 +480,6 @@ private fun EmptyHabitsMessage(onAddHabitClick: () -> Unit) {
                 Icon(Icons.Default.Add, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(stringResource(Res.string.today_empty_state_add_habit))
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun HabitCard(
-    habit: TodayHabitUiModel,
-    onClick: () -> Unit,
-    onCompleteClick: () -> Unit,
-    onSkipClick: () -> Unit,
-    onUndoClick: () -> Unit,
-    onEditClick: () -> Unit,
-    onArchiveClick: () -> Unit,
-) {
-    var showMenu: Boolean by remember { mutableStateOf(false) }
-
-    val cardColor: Color =
-        when (habit.status) {
-            HabitStatus.COMPLETED -> MaterialTheme.colorScheme.primaryContainer
-            HabitStatus.SKIPPED -> MaterialTheme.colorScheme.surfaceVariant
-            HabitStatus.FAILED -> MaterialTheme.colorScheme.errorContainer
-            HabitStatus.SUSPENDED -> MaterialTheme.colorScheme.secondaryContainer
-            HabitStatus.PENDING -> MaterialTheme.colorScheme.surface
-        }
-
-    val isResolved: Boolean =
-        habit.status == HabitStatus.COMPLETED ||
-            habit.status == HabitStatus.SKIPPED ||
-            habit.status == HabitStatus.FAILED
-
-    val accentColor: Color =
-        when {
-            habit.isSuspended -> MaterialTheme.colorScheme.surfaceVariant
-            habit.isDaily && habit.isPending -> MaterialTheme.colorScheme.primary
-            habit.isDaily -> MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
-            habit.isWeekly && habit.isPending -> MaterialTheme.colorScheme.secondary
-            habit.isWeekly -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.35f)
-            else -> MaterialTheme.colorScheme.surfaceVariant
-        }
-
-    // Resolved cards (completed/skipped/failed) are visually dimmed but remain interactive
-    // so users can access the undo action via long-press or the card tap.
-    Card(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .then(if (isResolved) Modifier.alpha(0.65f) else Modifier)
-                .combinedClickable(
-                    onClick = onClick,
-                    onLongClick = { showMenu = true },
-                ),
-        colors = CardDefaults.cardColors(containerColor = cardColor),
-    ) {
-        Box {
-            // Accent bar — rendered first (behind content)
-            Box(
-                modifier =
-                    Modifier
-                        .matchParentSize() // fills Box height without crashing in LazyColumn (unlike fillMaxHeight)
-                        .width(ACCENT_BAR_WIDTH)
-                        .align(Alignment.TopStart)
-                        .background(accentColor),
-            )
-
-            Column(
-                modifier = Modifier.padding(start = ACCENT_BAR_CONTENT_START_PADDING, top = 16.dp, end = 16.dp, bottom = 16.dp),
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = habit.name,
-                            style = MaterialTheme.typography.titleMedium,
-                            textDecoration = if (habit.isCompleted) TextDecoration.LineThrough else null,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-
-                        if (habit.description != null) {
-                            Text(
-                                text = habit.description,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-
-                        // Streak and Score info
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            if (habit.currentStreak > 0) {
-                                Text(
-                                    text = stringResource(Res.string.today_streak, habit.currentStreak),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.primary,
-                                )
-                            }
-
-                            Text(
-                                text = stringResource(Res.string.today_score, habit.scoreText),
-                                style = MaterialTheme.typography.labelSmall,
-                                color =
-                                    when {
-                                        habit.scorePercentage >= 100 -> MaterialTheme.colorScheme.primary
-                                        habit.scorePercentage >= 75 -> MaterialTheme.colorScheme.tertiary
-                                        else -> MaterialTheme.colorScheme.onSurfaceVariant
-                                    },
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    // Action buttons
-                    when (habit.status) {
-                        HabitStatus.PENDING -> {
-                            Row {
-                                if (!habit.isSkipLocked) {
-                                    TextButton(onClick = onSkipClick) {
-                                        Text(stringResource(Res.string.common_skip))
-                                    }
-                                }
-                                OutlinedButton(
-                                    onClick = onCompleteClick,
-                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                                ) {
-                                    Icon(Icons.Default.Check, contentDescription = stringResource(Res.string.today_cd_complete))
-                                }
-                            }
-                        }
-
-                        HabitStatus.COMPLETED, HabitStatus.SKIPPED -> {
-                            IconButton(onClick = onUndoClick) {
-                                Icon(
-                                    Icons.Default.Undo,
-                                    contentDescription = stringResource(Res.string.today_cd_undo),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                        }
-
-                        HabitStatus.SUSPENDED -> {
-                            Text(
-                                text = stringResource(Res.string.today_status_suspended),
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                            )
-                        }
-
-                        HabitStatus.FAILED -> {
-                            Text(
-                                text = stringResource(Res.string.common_failed),
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.error,
-                            )
-                        }
-                    }
-                }
-
-                // Progress bar for quantitative habits
-                if (habit.type == HabitType.QUANTITATIVE && habit.targetValue != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    LinearProgressIndicator(
-                        progress = { habit.progressPercentage },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Text(
-                        text = habit.progressText,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-
-            // Context menu
-            DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false },
-            ) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.common_edit)) },
-                    onClick = {
-                        showMenu = false
-                        onEditClick()
-                    },
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.today_action_archive)) },
-                    onClick = {
-                        showMenu = false
-                        onArchiveClick()
-                    },
-                )
             }
         }
     }

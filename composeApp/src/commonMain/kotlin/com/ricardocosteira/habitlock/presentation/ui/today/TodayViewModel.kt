@@ -197,6 +197,10 @@ class TodayViewModel(
         }
     }
 
+    fun showQuantitativeInput(instanceId: String) {
+        _state.update { it.copy(showQuantitativeInputFor = instanceId) }
+    }
+
     fun dismissQuantitativeInput() {
         _state.update { it.copy(showQuantitativeInputFor = null) }
     }
