@@ -1,5 +1,8 @@
 package com.ricardocosteira.habitlock.presentation.navigation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -11,10 +14,16 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -78,15 +87,36 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
         derivedStateOf { backStack.lastOrNull() is Today }
     }
 
+    val isNavBarVisible: MutableState<Boolean> = remember { mutableStateOf(true) }
+    val nestedScrollConnection: NestedScrollConnection =
+        remember {
+            object : NestedScrollConnection {
+                override fun onPreScroll(
+                    available: Offset,
+                    source: NestedScrollSource,
+                ): Offset {
+                    if (available.y < -1f) isNavBarVisible.value = false
+                    if (available.y > 1f) isNavBarVisible.value = true
+                    return Offset.Zero
+                }
+            }
+        }
+
     Scaffold(
         bottomBar = {
             if (isTopLevel && currentTab != null) {
-                HabitLockBottomNav(
-                    currentTab = currentTab!!,
-                    onTabSelected = { tab ->
-                        handleTabSelection(tab, backStack)
-                    },
-                )
+                AnimatedVisibility(
+                    visible = isNavBarVisible.value,
+                    enter = slideInVertically(initialOffsetY = { it }),
+                    exit = slideOutVertically(targetOffsetY = { it }),
+                ) {
+                    HabitLockBottomNav(
+                        currentTab = currentTab!!,
+                        onTabSelected = { tab ->
+                            handleTabSelection(tab, backStack)
+                        },
+                    )
+                }
             }
         },
         floatingActionButton = {
@@ -107,7 +137,8 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(scaffoldPadding),
+                    .padding(scaffoldPadding)
+                    .nestedScroll(nestedScrollConnection),
             entryProvider =
                 entryProvider {
                     entry<Onboarding> {
