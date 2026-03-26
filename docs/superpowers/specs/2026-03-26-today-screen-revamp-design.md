@@ -13,6 +13,7 @@ Full reimplementation of the Today screen, replacing the current TopAppBar + acc
 - Weekly Reflection / insights card (separate feature)
 - Animated collapsing toolbar transition (follow-up PR — crossfade only for now)
 - Swipe-to-edit/delete on habit cards (follow-up PR)
+- Create/edit habit UI for setting `defaultIncrement` (separate brainstorming session)
 
 ---
 
@@ -28,7 +29,7 @@ Surface in `TodayHabitUiModel` as:
 
 ### 1.1b Default Increment (Quantitative Habits)
 
-Add `defaultIncrement: Int` to `Habit` (quantitative only, defaults to 1). Set during habit creation — the user can optionally pick a standard increment (e.g., 250 for ML, 5 for pages). If not set, defaults to 1.
+Add `defaultIncrement: Int` to `Habit` (quantitative only, defaults to 1). The data model and DB migration are included in this PR so the Today screen can use the value. The create/edit habit UI for setting this field requires its own design iteration and will be handled in a separate brainstorming session. Until then, all habits default to 1.
 
 Surface in `TodayHabitUiModel` as:
 - `defaultIncrement: Int` — used for the quick-add button label ("+{defaultIncrement} {unit}")
@@ -238,7 +239,7 @@ Note: Colors should be consumed via `MaterialTheme.colorScheme` tokens, not hard
 
 Commit sequence (approximate):
 1. Add `completedAt` to domain model, DB, and repository
-2. Add `defaultIncrement` to Habit model, DB, create/edit flow (defaults to 1)
+2. Add `defaultIncrement` to Habit model and DB (defaults to 1, no UI yet)
 3. Add motivational titles pool + pure function
 4. Add strictness preset to TodayState + ViewModel
 5. Rewrite header (collapsing toolbar with crossfade)
