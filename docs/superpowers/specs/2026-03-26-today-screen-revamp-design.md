@@ -26,6 +26,13 @@ Surface in `TodayHabitUiModel` as:
 - `completedAt: Instant?`
 - `completedAtText: String?` — formatted as "07:45 AM"
 
+### 1.1b Default Increment (Quantitative Habits)
+
+Add `defaultIncrement: Int` to `Habit` (quantitative only, defaults to 1). Set during habit creation — the user can optionally pick a standard increment (e.g., 250 for ML, 5 for pages). If not set, defaults to 1.
+
+Surface in `TodayHabitUiModel` as:
+- `defaultIncrement: Int` — used for the quick-add button label ("+{defaultIncrement} {unit}")
+
 ### 1.2 Motivational Titles
 
 A curated pool of motivational titles displayed in the header, rotating once per day. Implemented as a pure function:
@@ -109,7 +116,7 @@ Compact single row with quick actions on the right.
 
 **Quantitative:**
 - Left: progress counter on top (e.g., "10 / 30 PAGES"), habit name below
-- Right: +N button (fixed increment, primary-container bg) + "SKIP" text. Increment value TBD — designs show "+1 PAGE" and "+250 ML", suggesting it may be unit-dependent or user-configurable. Default to 1 for now; revisit if needed.
+- Right: +N button (primary-container bg) + "SKIP" text. Shows "+{defaultIncrement} {unit}" (e.g., "+1 PAGE", "+250 ML"). Increment comes from `Habit.defaultIncrement`.
 - Below: thin progress bar (3dp height)
 
 ### 3.2 Expanded Pending Card
@@ -124,7 +131,7 @@ Full card with prominent action buttons.
 **Quantitative:**
 - Header: progress counter (primary color, bold) + "/ target UNIT" + habit name + status badge
 - Progress bar (8dp height)
-- Action row: +1 UNIT button (flex, primary bg) + CUSTOM button (opens bottom sheet for custom amount) + SKIP button
+- Action row: +N UNIT button (flex, primary bg, uses `defaultIncrement`) + CUSTOM button (opens bottom sheet for custom amount) + SKIP button
 - Undo button: only shown when `completedValue > 0` (reverts last increment)
 - Badge: "IN PROGRESS" when `completedValue > 0`, "PENDING" otherwise
 
@@ -231,13 +238,14 @@ Note: Colors should be consumed via `MaterialTheme.colorScheme` tokens, not hard
 
 Commit sequence (approximate):
 1. Add `completedAt` to domain model, DB, and repository
-2. Add motivational titles pool + pure function
-3. Add strictness preset to TodayState + ViewModel
-4. Rewrite header (collapsing toolbar with crossfade)
-5. Rewrite habit cards (collapsed + expanded pending states)
-6. Add resolved habit rows (completed/skipped/failed)
-7. Restructure LazyColumn sections ("Today's Focus" / "Weekly Goals")
-8. Add NavigationBar + FAB to HabitLockNavigation scaffold
-9. Add scroll-aware nav bar hide/show
-10. Update quantitative input: inline +1 on collapsed, Custom button on expanded → bottom sheet
-11. Clean up removed code (old TopAppBar, old HabitCard, old ProgressRingRow)
+2. Add `defaultIncrement` to Habit model, DB, create/edit flow (defaults to 1)
+3. Add motivational titles pool + pure function
+4. Add strictness preset to TodayState + ViewModel
+5. Rewrite header (collapsing toolbar with crossfade)
+6. Rewrite habit cards (collapsed + expanded pending states)
+7. Add resolved habit rows (completed/skipped/failed)
+8. Restructure LazyColumn sections ("Today's Focus" / "Weekly Goals")
+9. Add NavigationBar + FAB to HabitLockNavigation scaffold
+10. Add scroll-aware nav bar hide/show
+11. Update quantitative input: inline +N on collapsed, Custom button on expanded → bottom sheet
+12. Clean up removed code (old TopAppBar, old HabitCard, old ProgressRingRow)
