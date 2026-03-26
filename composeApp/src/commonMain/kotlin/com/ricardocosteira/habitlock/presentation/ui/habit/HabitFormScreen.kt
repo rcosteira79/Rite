@@ -34,6 +34,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +45,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -55,6 +58,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
 import com.ricardocosteira.habitlock.domain.models.HabitType
@@ -65,8 +69,10 @@ import com.ricardocosteira.habitlock.presentation.ui.components.QuantityStepper
 import com.ricardocosteira.habitlock.presentation.ui.components.SchedulePicker
 import com.ricardocosteira.habitlock.presentation.ui.components.TypeToggle
 import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.common_cancel
 import habitlock.composeapp.generated.resources.common_daily
 import habitlock.composeapp.generated.resources.common_error_generic
+import habitlock.composeapp.generated.resources.common_ok
 import habitlock.composeapp.generated.resources.common_placeholder_habit_name
 import habitlock.composeapp.generated.resources.common_weekly
 import habitlock.composeapp.generated.resources.habit_form_button_discard_changes
@@ -138,6 +144,7 @@ fun HabitFormScreen(
         onSelectedDaysChange = viewModel::updateSelectedDays,
         onQuotaChange = viewModel::updateQuota,
         onHasReminderChange = viewModel::updateHasReminder,
+        onReminderTimeChange = viewModel::updateReminderTime,
         onSaveClick = viewModel::saveHabit,
         onDeleteClick = viewModel::deleteHabit,
         onDiscardDraftClick = viewModel::discardDraft,
@@ -157,6 +164,7 @@ internal fun HabitFormScreen(
     onSelectedDaysChange: (Set<DayOfWeek>) -> Unit,
     onQuotaChange: (String) -> Unit,
     onHasReminderChange: (Boolean) -> Unit,
+    onReminderTimeChange: (LocalTime) -> Unit,
     onSaveClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onDiscardDraftClick: () -> Unit,
@@ -165,6 +173,7 @@ internal fun HabitFormScreen(
 ) {
     var isNoteExpanded by remember { mutableStateOf(false) }
     var isDeleteDialogVisible by remember { mutableStateOf(false) }
+    var isTimePickerVisible by remember { mutableStateOf(false) }
 
     if (state.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -180,6 +189,17 @@ internal fun HabitFormScreen(
                 onDeleteClick()
             },
             onDismiss = { isDeleteDialogVisible = false }
+        )
+    }
+
+    if (isTimePickerVisible) {
+        ReminderTimePickerDialog(
+            initialTime = state.reminderTime ?: LocalTime(9, 0),
+            onConfirm = { time: LocalTime ->
+                onReminderTimeChange(time)
+                isTimePickerVisible = false
+            },
+            onDismiss = { isTimePickerVisible = false }
         )
     }
 
@@ -371,12 +391,19 @@ internal fun HabitFormScreen(
                     },
                     title = stringResource(Res.string.habit_form_reminder_title),
                     subtitle = reminderSubtitle,
-                    onClick = null,
+                    onClick = if (state.hasReminder) {
+                        { isTimePickerVisible = true }
+                    } else {
+                        null
+                    },
                     showTopDivider = false,
                     trailingContent = {
                         Switch(
                             checked = state.hasReminder,
-                            onCheckedChange = onHasReminderChange
+                            onCheckedChange = { checked: Boolean ->
+                                onHasReminderChange(checked)
+                                if (checked) isTimePickerVisible = true
+                            }
                         )
                     },
                     modifier = Modifier.padding(horizontal = 12.dp)
@@ -396,6 +423,7 @@ internal fun HabitFormScreen(
                     },
                     subtitle = if (isNoteExpanded) "" else stringResource(Res.string.habit_form_note_collapsed_subtitle),
                     onClick = { isNoteExpanded = !isNoteExpanded },
+                    showTopDivider = false,
                     trailingContent = null,
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
@@ -558,6 +586,49 @@ private fun ScheduleTypePill(
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
             color = contentColor
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ReminderTimePickerDialog(
+    initialTime: LocalTime,
+    onConfirm: (LocalTime) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val timePickerState = rememberTimePickerState(
+        initialHour = initialTime.hour,
+        initialMinute = initialTime.minute,
+        is24Hour = false
+    )
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TimePicker(state = timePickerState)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text(stringResource(Res.string.common_cancel))
+                    }
+                    TextButton(
+                        onClick = {
+                            onConfirm(LocalTime(timePickerState.hour, timePickerState.minute))
+                        }
+                    ) {
+                        Text(stringResource(Res.string.common_ok))
+                    }
+                }
+            }
+        }
     }
 }
 
