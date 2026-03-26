@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -31,7 +30,6 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -65,6 +63,7 @@ import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.presentation.ui.BackHandler
 import com.ricardocosteira.habitlock.presentation.ui.components.FormListRow
+import com.ricardocosteira.habitlock.presentation.ui.components.PrimaryButton
 import com.ricardocosteira.habitlock.presentation.ui.components.QuantityStepper
 import com.ricardocosteira.habitlock.presentation.ui.components.SchedulePicker
 import com.ricardocosteira.habitlock.presentation.ui.components.TypeToggle
@@ -447,18 +446,9 @@ internal fun HabitFormScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         // Primary CTA
-        Button(
+        PrimaryButton(
             onClick = onSaveClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 56.dp),
-            enabled = state.isValid && !state.isSaving,
-            shape = RoundedCornerShape(28.dp),
-            elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = 4.dp,
-                pressedElevation = 8.dp,
-                disabledElevation = 0.dp
-            )
+            enabled = state.isValid && !state.isSaving
         ) {
             if (state.isSaving) {
                 CircularProgressIndicator(modifier = Modifier.size(20.dp))

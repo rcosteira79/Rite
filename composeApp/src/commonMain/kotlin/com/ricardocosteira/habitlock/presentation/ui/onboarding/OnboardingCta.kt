@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.HabitType
+import com.ricardocosteira.habitlock.presentation.ui.components.PrimaryButton
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.first_habit_button_create
 import habitlock.composeapp.generated.resources.first_habit_button_skip
@@ -32,15 +30,6 @@ import habitlock.composeapp.generated.resources.strictness_cta_continue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-
-private val CtaButtonShape = RoundedCornerShape(12.dp)
-
-@Composable
-private fun ctaButtonColors() =
-    ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary
-    )
 
 @Composable
 private fun CtaContainer(
@@ -82,12 +71,7 @@ internal fun PhilosophyStepCta(
     reduceMotion: Boolean = false
 ) {
     CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
-        Button(
-            onClick = onAdvance,
-            modifier = Modifier.fillMaxWidth(),
-            shape = CtaButtonShape,
-            colors = ctaButtonColors()
-        ) {
+        PrimaryButton(onClick = onAdvance) {
             Text(stringResource(Res.string.philosophy_cta_accept))
         }
     }
@@ -104,12 +88,7 @@ internal fun StrictnessStepCta(
         if (state.isApplyingPreset) {
             CircularProgressIndicator(modifier = Modifier.size(36.dp))
         } else {
-            Button(
-                onClick = onContinue,
-                modifier = Modifier.fillMaxWidth(),
-                shape = CtaButtonShape,
-                colors = ctaButtonColors()
-            ) {
+            PrimaryButton(onClick = onContinue) {
                 Text(stringResource(Res.string.strictness_cta_continue))
             }
         }
@@ -133,13 +112,7 @@ internal fun FirstHabitStepCta(
         if (state.isCreatingHabit) {
             CircularProgressIndicator(modifier = Modifier.size(36.dp))
         } else {
-            Button(
-                onClick = onCreateHabit,
-                enabled = isEnabled,
-                modifier = Modifier.fillMaxWidth(),
-                shape = CtaButtonShape,
-                colors = ctaButtonColors()
-            ) {
+            PrimaryButton(onClick = onCreateHabit, enabled = isEnabled) {
                 Text(stringResource(Res.string.first_habit_button_create))
             }
         }
