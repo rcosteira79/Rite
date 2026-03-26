@@ -12,6 +12,7 @@ data class Habit(
     val type: HabitType,
     val targetValue: Int?,
     val unit: String?,
+    val defaultIncrement: Int = 1,
     val isActive: Boolean,
     val isArchived: Boolean,
     val currentStreak: Int,
@@ -19,17 +20,15 @@ data class Habit(
     val totalCompletions: Int,
     val expectedCompletions: Int,
     val createdAt: Instant,
-    val archivedAt: Instant?
+    val archivedAt: Instant?,
 ) {
     /**
      * Calculates the habit score based on total and expected completions.
      */
-    fun calculateScore(overCompletionCap: Int = HabitScore.DEFAULT_OVER_COMPLETION_CAP): HabitScore {
-        return HabitScore(
+    fun calculateScore(overCompletionCap: Int = HabitScore.DEFAULT_OVER_COMPLETION_CAP): HabitScore =
+        HabitScore(
             totalCompletions = totalCompletions,
             expectedCompletions = expectedCompletions,
-            overCompletionCap = overCompletionCap
+            overCompletionCap = overCompletionCap,
         )
-    }
 }
-

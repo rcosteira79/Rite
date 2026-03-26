@@ -20,6 +20,7 @@ CREATE TABLE Habit (
     type TEXT NOT NULL DEFAULT 'BINARY',
     targetValue INTEGER,
     unit TEXT,
+    defaultIncrement INTEGER NOT NULL DEFAULT 1,
     isActive INTEGER NOT NULL DEFAULT 1,
     isArchived INTEGER NOT NULL DEFAULT 0,
     currentStreak INTEGER NOT NULL DEFAULT 0,
@@ -149,8 +150,8 @@ getHabitById:
 SELECT * FROM Habit WHERE id = ?;
 
 insertHabit:
-INSERT INTO Habit (id, name, description, type, targetValue, unit, isActive, isArchived, currentStreak, longestStreak, totalCompletions, expectedCompletions, createdAt, archivedAt)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO Habit (id, name, description, type, targetValue, unit, defaultIncrement, isActive, isArchived, currentStreak, longestStreak, totalCompletions, expectedCompletions, createdAt, archivedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 updateHabit:
 UPDATE Habit SET

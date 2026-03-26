@@ -56,6 +56,7 @@ object EntityMappers {
             type = HabitType.valueOf(type),
             targetValue = targetValue?.toInt(),
             unit = unit,
+            defaultIncrement = defaultIncrement.toInt(),
             isActive = isActive == 1L,
             isArchived = isArchived == 1L,
             currentStreak = currentStreak.toInt(),

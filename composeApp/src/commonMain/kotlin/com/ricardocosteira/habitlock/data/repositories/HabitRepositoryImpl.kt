@@ -18,7 +18,7 @@ import kotlin.time.Clock
 @Inject
 class HabitRepositoryImpl(
     private val database: HabitLockDatabase,
-    private val ioDispatcher: IoDispatcher
+    private val ioDispatcher: IoDispatcher,
 ) : HabitRepository {
     private val queries = database.habitLockQueries
 
@@ -49,7 +49,7 @@ class HabitRepositoryImpl(
     override suspend fun createHabit(
         habit: Habit,
         schedule: HabitSchedule,
-        reminder: HabitReminder?
+        reminder: HabitReminder?,
     ) {
         withContext(ioDispatcher) {
             database.transaction {
@@ -60,6 +60,7 @@ class HabitRepositoryImpl(
                     type = habit.type.name,
                     targetValue = habit.targetValue?.toLong(),
                     unit = habit.unit,
+                    defaultIncrement = habit.defaultIncrement.toLong(),
                     isActive = if (habit.isActive) 1 else 0,
                     isArchived = if (habit.isArchived) 1 else 0,
                     currentStreak = habit.currentStreak.toLong(),
@@ -67,7 +68,7 @@ class HabitRepositoryImpl(
                     totalCompletions = habit.totalCompletions.toLong(),
                     expectedCompletions = habit.expectedCompletions.toLong(),
                     createdAt = habit.createdAt.toString(),
-                    archivedAt = habit.archivedAt?.toString()
+                    archivedAt = habit.archivedAt?.toString(),
                 )
 
                 queries.insertSchedule(
@@ -78,7 +79,7 @@ class HabitRepositoryImpl(
                     endDate = schedule.endDate?.toString(),
                     quota = schedule.quota.toLong(),
                     weekStartDay = schedule.weekStartDay.name,
-                    specificDays = schedule.specificDays?.joinToString(",") { it.name }
+                    specificDays = schedule.specificDays?.joinToString(",") { it.name },
                 )
 
                 reminder?.let {
@@ -90,7 +91,7 @@ class HabitRepositoryImpl(
                         intervalMinutes = it.intervalMinutes?.toLong(),
                         startTime = it.startTime?.toString(),
                         endTime = it.endTime?.toString(),
-                        isActive = if (it.isActive) 1 else 0
+                        isActive = if (it.isActive) 1 else 0,
                     )
                 }
             }
@@ -108,7 +109,7 @@ class HabitRepositoryImpl(
                 isActive = if (habit.isActive) 1 else 0,
                 isArchived = if (habit.isArchived) 1 else 0,
                 archivedAt = habit.archivedAt?.toString(),
-                id = habit.id
+                id = habit.id,
             )
         }
     }
@@ -116,13 +117,13 @@ class HabitRepositoryImpl(
     override suspend fun updateHabitStreak(
         habitId: String,
         currentStreak: Int,
-        longestStreak: Int
+        longestStreak: Int,
     ) {
         withContext(ioDispatcher) {
             queries.updateHabitStreak(
                 currentStreak = currentStreak.toLong(),
                 longestStreak = longestStreak.toLong(),
-                id = habitId
+                id = habitId,
             )
         }
     }
@@ -130,50 +131,50 @@ class HabitRepositoryImpl(
     override suspend fun updateHabitScore(
         habitId: String,
         totalCompletions: Int,
-        expectedCompletions: Int
+        expectedCompletions: Int,
     ) {
         withContext(ioDispatcher) {
             queries.updateHabitScore(
                 totalCompletions = totalCompletions.toLong(),
                 expectedCompletions = expectedCompletions.toLong(),
-                id = habitId
+                id = habitId,
             )
         }
     }
 
     override suspend fun incrementHabitTotalCompletions(
         habitId: String,
-        amount: Int
+        amount: Int,
     ) {
         withContext(ioDispatcher) {
             queries.incrementHabitTotalCompletions(
                 totalCompletions = amount.toLong(),
-                id = habitId
+                id = habitId,
             )
         }
     }
 
     override suspend fun decrementHabitTotalCompletions(
         habitId: String,
-        amount: Int
+        amount: Int,
     ) {
         withContext(ioDispatcher) {
             queries.decrementHabitTotalCompletions(
                 totalCompletions = amount.toLong(),
                 id = habitId,
-                totalCompletions_ = amount.toLong()
+                totalCompletions_ = amount.toLong(),
             )
         }
     }
 
     override suspend fun incrementHabitExpectedCompletions(
         habitId: String,
-        amount: Int
+        amount: Int,
     ) {
         withContext(ioDispatcher) {
             queries.incrementHabitExpectedCompletions(
                 expectedCompletions = amount.toLong(),
-                id = habitId
+                id = habitId,
             )
         }
     }
@@ -182,7 +183,7 @@ class HabitRepositoryImpl(
         withContext(ioDispatcher) {
             queries.archiveHabit(
                 archivedAt = Clock.System.now().toString(),
-                id = habitId
+                id = habitId,
             )
         }
     }
@@ -213,7 +214,7 @@ class HabitRepositoryImpl(
                 quota = schedule.quota.toLong(),
                 weekStartDay = schedule.weekStartDay.name,
                 specificDays = schedule.specificDays?.joinToString(",") { it.name },
-                id = schedule.id
+                id = schedule.id,
             )
         }
     }
@@ -228,7 +229,7 @@ class HabitRepositoryImpl(
                 endDate = schedule.endDate?.toString(),
                 quota = schedule.quota.toLong(),
                 weekStartDay = schedule.weekStartDay.name,
-                specificDays = schedule.specificDays?.joinToString(",") { it.name }
+                specificDays = schedule.specificDays?.joinToString(",") { it.name },
             )
         }
     }
@@ -247,7 +248,7 @@ class HabitRepositoryImpl(
                 startTime = reminder.startTime?.toString(),
                 endTime = reminder.endTime?.toString(),
                 isActive = if (reminder.isActive) 1 else 0,
-                id = reminder.id
+                id = reminder.id,
             )
         }
     }
@@ -268,7 +269,7 @@ class HabitRepositoryImpl(
                 intervalMinutes = reminder.intervalMinutes?.toLong(),
                 startTime = reminder.startTime?.toString(),
                 endTime = reminder.endTime?.toString(),
-                isActive = if (reminder.isActive) 1 else 0
+                isActive = if (reminder.isActive) 1 else 0,
             )
         }
     }
