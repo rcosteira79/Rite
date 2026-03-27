@@ -211,11 +211,12 @@ internal fun HabitFormScreen(
 
     val scrollState: ScrollState = rememberScrollState()
     val isScrolled: Boolean by remember { derivedStateOf { scrollState.value > 0 } }
+    val filledColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest
     val targetColor: Color =
         if (isScrolled) {
-            MaterialTheme.colorScheme.surfaceContainerHighest
+            filledColor
         } else {
-            Color.Transparent
+            filledColor.copy(alpha = 0f)
         }
     val iconContainerColor: Color by animateColorAsState(
         targetValue = targetColor,
