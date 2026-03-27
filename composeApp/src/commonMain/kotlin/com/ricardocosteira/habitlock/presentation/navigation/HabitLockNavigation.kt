@@ -158,7 +158,7 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(scaffoldPadding)
+                    .padding(bottom = scaffoldPadding.calculateBottomPadding())
                     .then(
                         if (isTodayRoute) {
                             Modifier.nestedScroll(nestedScrollConnection)
