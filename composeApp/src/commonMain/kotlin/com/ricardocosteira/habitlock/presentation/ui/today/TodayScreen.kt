@@ -42,7 +42,6 @@ import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_error_generic
-import habitlock.composeapp.generated.resources.today_empty_state_add_habit
 import habitlock.composeapp.generated.resources.today_empty_state_heading
 import habitlock.composeapp.generated.resources.today_empty_state_subtext
 import habitlock.composeapp.generated.resources.today_error_skip_limit_reached
@@ -110,7 +109,6 @@ fun TodayScreen(
         onUndo = viewModel::undoHabit,
         onIncrementProgress = viewModel::incrementHabitProgress,
         onCustomProgress = viewModel::showQuantitativeInput,
-        onAddHabitClick = viewModel::navigateToCreateHabit,
         onDismissTimezoneWarning = viewModel::dismissTimezoneWarning,
     )
 
@@ -134,7 +132,6 @@ private fun TodayScreen(
     onUndo: (String) -> Unit,
     onIncrementProgress: (String) -> Unit,
     onCustomProgress: (String) -> Unit,
-    onAddHabitClick: () -> Unit,
     onDismissTimezoneWarning: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -167,7 +164,7 @@ private fun TodayScreen(
             }
 
             state.habits.isEmpty() -> {
-                EmptyHabitsMessage(onAddHabitClick = onAddHabitClick)
+                EmptyHabitsMessage()
             }
 
             else -> {
@@ -450,7 +447,7 @@ private fun TimezoneWarningBanner(
 }
 
 @Composable
-private fun EmptyHabitsMessage(onAddHabitClick: () -> Unit) {
+private fun EmptyHabitsMessage() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
@@ -470,12 +467,6 @@ private fun EmptyHabitsMessage(onAddHabitClick: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            TextButton(onClick = onAddHabitClick) {
-                Icon(Icons.Default.Add, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(Res.string.today_empty_state_add_habit))
-            }
         }
     }
 }
