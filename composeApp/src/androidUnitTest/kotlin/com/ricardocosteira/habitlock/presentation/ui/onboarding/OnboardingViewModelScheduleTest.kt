@@ -198,11 +198,17 @@ private class FakeHabitRepository : HabitRepository {
 
     override suspend fun getScheduleForHabit(habitId: String): HabitSchedule? = null
 
+    override suspend fun updateSchedule(schedule: HabitSchedule) = Unit
+
+    override suspend fun createScheduleForHabit(schedule: HabitSchedule) = Unit
+
     override suspend fun getRemindersForHabit(habitId: String): List<HabitReminder> = emptyList()
 
     override suspend fun updateReminder(reminder: HabitReminder) = Unit
 
     override suspend fun deleteReminder(reminderId: String) = Unit
+
+    override suspend fun createReminderForHabit(reminder: HabitReminder) = Unit
 }
 
 private class FakeUserRepository : UserRepository {
