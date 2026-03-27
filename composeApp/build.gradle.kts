@@ -116,6 +116,10 @@ android {
         }
     }
     buildTypes {
+        create("rc") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+        }
         getByName("release") {
             isMinifyEnabled = false
         }
