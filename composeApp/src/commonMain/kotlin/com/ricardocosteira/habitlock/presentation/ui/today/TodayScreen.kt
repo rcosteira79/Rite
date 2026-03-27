@@ -125,7 +125,7 @@ fun TodayScreen(
 }
 
 @Composable
-private fun TodayScreen(
+internal fun TodayScreen(
     state: TodayState,
     onComplete: (String) -> Unit,
     onSkip: (String) -> Unit,
