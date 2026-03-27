@@ -14,6 +14,7 @@ Full reimplementation of the Today screen, replacing the current TopAppBar + acc
 - Animated collapsing toolbar transition (follow-up PR — crossfade only for now)
 - Swipe-to-edit/delete on habit cards (follow-up PR)
 - Create/edit habit UI for setting `defaultIncrement` (separate brainstorming session)
+- Animate title in new/edit habit screens (follow-up PR)
 
 ---
 
