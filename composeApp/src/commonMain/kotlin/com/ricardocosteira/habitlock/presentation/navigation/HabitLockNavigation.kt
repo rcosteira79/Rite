@@ -223,21 +223,19 @@ private fun handleTabSelection(
 ) {
     when (tab) {
         BottomNavTab.TODAY -> {
-            // Pop back to Today (remove everything above it)
-            while (backStack.size > 1) {
-                backStack.removeLastOrNull()
-            }
+            backStack.clear()
+            backStack.add(Today)
         }
 
         BottomNavTab.HISTORY -> {
-            // Replace current top-level with Calendar
-            backStack.removeLastOrNull()
+            backStack.clear()
+            backStack.add(Today)
             backStack.add(Calendar)
         }
 
         BottomNavTab.SETTINGS -> {
-            // Replace current top-level with Settings
-            backStack.removeLastOrNull()
+            backStack.clear()
+            backStack.add(Today)
             backStack.add(Settings)
         }
     }
