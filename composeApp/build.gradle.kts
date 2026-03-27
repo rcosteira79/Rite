@@ -122,7 +122,6 @@ android {
         create("rc") {
             initWith(getByName("release"))
             signingConfig = signingConfigs.getByName("debug")
-            isMinifyEnabled = false
         }
     }
     compileOptions {
