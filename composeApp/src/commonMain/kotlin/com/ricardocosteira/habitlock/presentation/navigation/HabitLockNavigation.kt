@@ -101,8 +101,27 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                     if (available.y > 1f) isNavBarVisible.value = true
                     return Offset.Zero
                 }
+
+                override fun onPostScroll(
+                    consumed: Offset,
+                    available: Offset,
+                    source: NestedScrollSource,
+                ): Offset {
+                    // If scrolling down but content didn't consume it, we've hit the bottom
+                    if (available.y < 0f && consumed.y == 0f) {
+                        isNavBarVisible.value = true
+                    }
+                    return Offset.Zero
+                }
             }
         }
+
+    // Reset nav bar visibility when leaving the Today screen
+    LaunchedEffect(isTodayRoute) {
+        if (!isTodayRoute) {
+            isNavBarVisible.value = true
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -140,7 +159,13 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                 Modifier
                     .fillMaxSize()
                     .padding(scaffoldPadding)
-                    .nestedScroll(nestedScrollConnection),
+                    .then(
+                        if (isTodayRoute) {
+                            Modifier.nestedScroll(nestedScrollConnection)
+                        } else {
+                            Modifier
+                        },
+                    ),
             entryProvider =
                 entryProvider {
                     entry<Onboarding> {
