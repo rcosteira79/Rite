@@ -26,6 +26,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Notifications
@@ -70,6 +71,7 @@ import com.ricardocosteira.habitlock.presentation.ui.components.SchedulePicker
 import com.ricardocosteira.habitlock.presentation.ui.components.TypeToggle
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_cancel
+import habitlock.composeapp.generated.resources.common_cd_back
 import habitlock.composeapp.generated.resources.common_daily
 import habitlock.composeapp.generated.resources.common_error_generic
 import habitlock.composeapp.generated.resources.common_ok
@@ -111,7 +113,7 @@ import org.jetbrains.compose.resources.stringResource
 fun HabitFormScreen(
     habitIdToEdit: String?,
     onNavigateBack: () -> Unit,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
 ) {
     val factory = LocalAppComponent.current.habitFormViewModelFactory
     val viewModel = remember { factory.create(habitIdToEdit) }
@@ -155,7 +157,7 @@ fun HabitFormScreen(
                 HabitFormUiAction.DiscardDraftClicked -> viewModel.discardDraft()
                 HabitFormUiAction.DiscardChangesClicked -> viewModel.discardChanges()
             }
-        }
+        },
     )
 }
 
@@ -163,7 +165,7 @@ fun HabitFormScreen(
 internal fun HabitFormScreen(
     state: HabitFormState,
     onAction: (HabitFormUiAction) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var isNoteExpanded by rememberSaveable { mutableStateOf(false) }
     var isDeleteDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -182,7 +184,7 @@ internal fun HabitFormScreen(
                 isDeleteDialogVisible = false
                 onAction(HabitFormUiAction.DeleteClicked)
             },
-            onDismiss = { isDeleteDialogVisible = false }
+            onDismiss = { isDeleteDialogVisible = false },
         )
     }
 
@@ -193,33 +195,41 @@ internal fun HabitFormScreen(
                 onAction(HabitFormUiAction.ReminderTimeChanged(hour, minute))
                 isTimePickerVisible = false
             },
-            onDismiss = { isTimePickerVisible = false }
+            onDismiss = { isTimePickerVisible = false },
         )
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .statusBarsPadding()
-            .padding(horizontal = 24.dp, vertical = 20.dp)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .statusBarsPadding()
+                .padding(horizontal = 24.dp, vertical = 20.dp),
     ) {
-        // Heading + delete icon (edit mode only)
+        // Back icon + heading + delete icon (edit mode only)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
+            IconButton(onClick = { onAction(HabitFormUiAction.DiscardChangesClicked) }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(Res.string.common_cd_back),
+                )
+            }
             Text(
-                text = if (state.isEditing) {
-                    stringResource(Res.string.habit_form_title_edit)
-                } else {
-                    stringResource(Res.string.habit_form_title_new_habit)
-                },
+                text =
+                    if (state.isEditing) {
+                        stringResource(Res.string.habit_form_title_edit)
+                    } else {
+                        stringResource(Res.string.habit_form_title_new_habit)
+                    },
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
             if (state.isEditing) {
                 IconButton(onClick = { isDeleteDialogVisible = true }) {
@@ -227,7 +237,7 @@ internal fun HabitFormScreen(
                         imageVector = Icons.Outlined.Delete,
                         contentDescription = stringResource(Res.string.habit_form_cd_delete),
                         tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(22.dp),
                     )
                 }
             }
@@ -237,10 +247,11 @@ internal fun HabitFormScreen(
 
         // Accent bar
         Box(
-            modifier = Modifier
-                .width(36.dp)
-                .height(3.dp)
-                .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
+            modifier =
+                Modifier
+                    .width(36.dp)
+                    .height(3.dp)
+                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp)),
         )
 
         if (!state.isEditing) {
@@ -248,7 +259,7 @@ internal fun HabitFormScreen(
             Text(
                 text = stringResource(Res.string.habit_form_subtitle_create),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
@@ -260,7 +271,7 @@ internal fun HabitFormScreen(
         UnderlineTextField(
             value = state.name,
             onValueChange = { onAction(HabitFormUiAction.NameChanged(it)) },
-            placeholder = stringResource(Res.string.common_placeholder_habit_name)
+            placeholder = stringResource(Res.string.common_placeholder_habit_name),
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -271,7 +282,7 @@ internal fun HabitFormScreen(
         TypeToggle(
             selected = state.type,
             onSelectionChange = { onAction(HabitFormUiAction.TypeChanged(it)) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -280,31 +291,33 @@ internal fun HabitFormScreen(
         SectionLabel(Res.string.habit_form_section_daily_target)
         Spacer(modifier = Modifier.height(8.dp))
 
-        val cadence: String = if (state.scheduleType == ScheduleType.DAILY) {
-            stringResource(Res.string.habit_form_cadence_day)
-        } else {
-            stringResource(Res.string.habit_form_cadence_week)
-        }
-        val stepperLabel: String = if (state.type == HabitType.QUANTITATIVE &&
-            state.unit.isNotBlank()
-        ) {
-            "${state.unit} / $cadence"
-        } else {
-            "${stringResource(Res.string.habit_form_stepper_label_times)} / $cadence"
-        }
+        val cadence: String =
+            if (state.scheduleType == ScheduleType.DAILY) {
+                stringResource(Res.string.habit_form_cadence_day)
+            } else {
+                stringResource(Res.string.habit_form_cadence_week)
+            }
+        val stepperLabel: String =
+            if (state.type == HabitType.QUANTITATIVE &&
+                state.unit.isNotBlank()
+            ) {
+                "${state.unit} / $cadence"
+            } else {
+                "${stringResource(Res.string.habit_form_stepper_label_times)} / $cadence"
+            }
 
         QuantityStepper(
             value = state.stepperValue,
             onValueChange = { newValue: Int ->
                 onAction(state.stepperChangeAction(newValue))
             },
-            label = stepperLabel
+            label = stepperLabel,
         )
 
         AnimatedVisibility(
             visible = state.type == HabitType.QUANTITATIVE,
             enter = expandVertically() + fadeIn(),
-            exit = shrinkVertically() + fadeOut()
+            exit = shrinkVertically() + fadeOut(),
         ) {
             Column {
                 Spacer(modifier = Modifier.height(12.dp))
@@ -312,7 +325,7 @@ internal fun HabitFormScreen(
                     value = state.unit,
                     onValueChange = { onAction(HabitFormUiAction.UnitChanged(it)) },
                     label = stringResource(Res.string.habit_form_unit_label),
-                    placeholder = stringResource(Res.string.habit_form_placeholder_unit)
+                    placeholder = stringResource(Res.string.habit_form_placeholder_unit),
                 )
             }
         }
@@ -323,19 +336,19 @@ internal fun HabitFormScreen(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             SectionLabel(Res.string.habit_form_section_schedule)
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 ScheduleTypePill(
                     text = stringResource(Res.string.common_daily),
                     isSelected = state.scheduleType == ScheduleType.DAILY,
-                    onClick = { onAction(HabitFormUiAction.ScheduleTypeChanged(ScheduleType.DAILY)) }
+                    onClick = { onAction(HabitFormUiAction.ScheduleTypeChanged(ScheduleType.DAILY)) },
                 )
                 ScheduleTypePill(
                     text = stringResource(Res.string.common_weekly),
                     isSelected = state.scheduleType == ScheduleType.WEEKLY,
-                    onClick = { onAction(HabitFormUiAction.ScheduleTypeChanged(ScheduleType.WEEKLY)) }
+                    onClick = { onAction(HabitFormUiAction.ScheduleTypeChanged(ScheduleType.WEEKLY)) },
                 )
             }
         }
@@ -343,13 +356,13 @@ internal fun HabitFormScreen(
         AnimatedVisibility(
             visible = state.scheduleType == ScheduleType.WEEKLY,
             enter = expandVertically() + fadeIn(),
-            exit = shrinkVertically() + fadeOut()
+            exit = shrinkVertically() + fadeOut(),
         ) {
             Column {
                 Spacer(modifier = Modifier.height(8.dp))
                 SchedulePicker(
                     selectedDays = state.selectedDays,
-                    onSelectedDaysChange = { onAction(HabitFormUiAction.SelectedDaysChanged(it)) }
+                    onSelectedDaysChange = { onAction(HabitFormUiAction.SelectedDaysChanged(it)) },
                 )
             }
         }
@@ -357,32 +370,35 @@ internal fun HabitFormScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Reminder + Note card
-        val reminderSubtitle: String = if (state.hasReminder) {
-            state.reminderTime?.formatAmPm().orEmpty()
-        } else {
-            stringResource(Res.string.habit_form_reminder_off)
-        }
+        val reminderSubtitle: String =
+            if (state.hasReminder) {
+                state.reminderTime?.formatAmPm().orEmpty()
+            } else {
+                stringResource(Res.string.habit_form_reminder_off)
+            }
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surfaceContainerLow,
             shadowElevation = 1.dp,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Column {
                 DetailRow(
                     icon = Icons.Outlined.Notifications,
-                    iconTint = if (state.hasReminder) {
-                        MaterialTheme.colorScheme.onSurface
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
+                    iconTint =
+                        if (state.hasReminder) {
+                            MaterialTheme.colorScheme.onSurface
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                     title = stringResource(Res.string.habit_form_reminder_title),
                     subtitle = reminderSubtitle,
-                    onClick = if (state.hasReminder) {
-                        { isTimePickerVisible = true }
-                    } else {
-                        null
-                    },
+                    onClick =
+                        if (state.hasReminder) {
+                            { isTimePickerVisible = true }
+                        } else {
+                            null
+                        },
                     showTopDivider = false,
                     trailingContent = {
                         Switch(
@@ -390,42 +406,44 @@ internal fun HabitFormScreen(
                             onCheckedChange = { checked: Boolean ->
                                 onAction(HabitFormUiAction.HasReminderChanged(checked))
                                 if (checked) isTimePickerVisible = true
-                            }
+                            },
                         )
                     },
-                    modifier = Modifier.padding(horizontal = 12.dp)
+                    modifier = Modifier.padding(horizontal = 12.dp),
                 )
 
                 DetailRow(
                     icon = Icons.Outlined.Edit,
-                    iconTint = if (isNoteExpanded) {
-                        MaterialTheme.colorScheme.onSurface
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                    title = if (isNoteExpanded) {
-                        stringResource(Res.string.habit_form_note_expanded_title)
-                    } else {
-                        stringResource(Res.string.habit_form_note_collapsed_title)
-                    },
+                    iconTint =
+                        if (isNoteExpanded) {
+                            MaterialTheme.colorScheme.onSurface
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                    title =
+                        if (isNoteExpanded) {
+                            stringResource(Res.string.habit_form_note_expanded_title)
+                        } else {
+                            stringResource(Res.string.habit_form_note_collapsed_title)
+                        },
                     subtitle = if (isNoteExpanded) "" else stringResource(Res.string.habit_form_note_collapsed_subtitle),
                     onClick = { isNoteExpanded = !isNoteExpanded },
                     showTopDivider = false,
                     trailingContent = null,
-                    modifier = Modifier.padding(horizontal = 12.dp)
+                    modifier = Modifier.padding(horizontal = 12.dp),
                 )
 
                 AnimatedVisibility(
                     visible = isNoteExpanded,
                     enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut()
+                    exit = shrinkVertically() + fadeOut(),
                 ) {
                     UnderlineTextField(
                         value = state.description,
                         onValueChange = { onAction(HabitFormUiAction.DescriptionChanged(it)) },
                         placeholder = "",
                         maxLines = 5,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                     )
                 }
             }
@@ -436,17 +454,18 @@ internal fun HabitFormScreen(
         // Primary CTA
         PrimaryButton(
             onClick = { onAction(HabitFormUiAction.SaveClicked) },
-            enabled = state.isValid && !state.isSaving
+            enabled = state.isValid && !state.isSaving,
         ) {
             if (state.isSaving) {
                 CircularProgressIndicator(modifier = Modifier.size(20.dp))
             } else {
                 Text(
-                    text = if (state.isEditing) {
-                        stringResource(Res.string.habit_form_button_save)
-                    } else {
-                        stringResource(Res.string.habit_form_button_establish)
-                    }
+                    text =
+                        if (state.isEditing) {
+                            stringResource(Res.string.habit_form_button_save)
+                        } else {
+                            stringResource(Res.string.habit_form_button_establish)
+                        },
                 )
             }
         }
@@ -455,20 +474,22 @@ internal fun HabitFormScreen(
 
         // Secondary CTA
         TextButton(
-            onClick = if (state.isEditing) {
-                { onAction(HabitFormUiAction.DiscardChangesClicked) }
-            } else {
-                { onAction(HabitFormUiAction.DiscardDraftClicked) }
-            },
-            modifier = Modifier.fillMaxWidth()
+            onClick =
+                if (state.isEditing) {
+                    { onAction(HabitFormUiAction.DiscardChangesClicked) }
+                } else {
+                    { onAction(HabitFormUiAction.DiscardDraftClicked) }
+                },
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
-                text = if (state.isEditing) {
-                    stringResource(Res.string.habit_form_button_discard_changes)
-                } else {
-                    stringResource(Res.string.habit_form_button_discard_draft)
-                },
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text =
+                    if (state.isEditing) {
+                        stringResource(Res.string.habit_form_button_discard_changes)
+                    } else {
+                        stringResource(Res.string.habit_form_button_discard_draft)
+                    },
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -480,7 +501,7 @@ private fun SectionLabel(resource: StringResource) {
         text = stringResource(resource),
         style = MaterialTheme.typography.labelSmall,
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
 
@@ -491,37 +512,40 @@ private fun UnderlineTextField(
     modifier: Modifier = Modifier,
     placeholder: String = "",
     label: String = "",
-    maxLines: Int = 1
+    maxLines: Int = 1,
 ) {
     TextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.fillMaxWidth(),
-        placeholder = if (placeholder.isNotEmpty()) {
-            { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-        } else {
-            null
-        },
-        label = if (label.isNotEmpty()) {
-            {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        } else {
-            null
-        },
+        placeholder =
+            if (placeholder.isNotEmpty()) {
+                { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+            } else {
+                null
+            },
+        label =
+            if (label.isNotEmpty()) {
+                {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            } else {
+                null
+            },
         shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-            unfocusedIndicatorColor = MaterialTheme.colorScheme.outlineVariant
-        ),
+        colors =
+            TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.outlineVariant,
+            ),
         maxLines = maxLines,
-        singleLine = maxLines == 1
+        singleLine = maxLines == 1,
     )
 }
 
@@ -530,43 +554,46 @@ private fun ScheduleTypePill(
     text: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val isDarkTheme = isSystemInDarkTheme()
     val pillShape = RoundedCornerShape(percent = 50)
-    val backgroundColor = if (isSelected) {
-        MaterialTheme.colorScheme.primaryContainer
-    } else {
-        MaterialTheme.colorScheme.surfaceContainerLow
-    }
-    val contentColor = if (isSelected) {
-        MaterialTheme.colorScheme.onPrimaryContainer
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val backgroundColor =
+        if (isSelected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLow
+        }
+    val contentColor =
+        if (isSelected) {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        }
 
     Box(
-        modifier = modifier
-            .clip(pillShape)
-            .background(backgroundColor)
-            .then(
-                if (!isSelected && isDarkTheme) {
-                    Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, pillShape)
-                } else {
-                    Modifier
-                }
-            ).clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
-            ).padding(horizontal = 12.dp, vertical = 3.dp),
-        contentAlignment = Alignment.Center
+        modifier =
+            modifier
+                .clip(pillShape)
+                .background(backgroundColor)
+                .then(
+                    if (!isSelected && isDarkTheme) {
+                        Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, pillShape)
+                    } else {
+                        Modifier
+                    },
+                ).clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onClick,
+                ).padding(horizontal = 12.dp, vertical = 3.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelSmall,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-            color = contentColor
+            color = contentColor,
         )
     }
 }
@@ -576,33 +603,34 @@ private fun ScheduleTypePill(
 private fun ReminderTimePickerDialog(
     initialTime: LocalTime,
     onConfirm: (hour: Int, minute: Int) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
-    val timePickerState = rememberTimePickerState(
-        initialHour = initialTime.hour,
-        initialMinute = initialTime.minute,
-        is24Hour = false
-    )
+    val timePickerState =
+        rememberTimePickerState(
+            initialHour = initialTime.hour,
+            initialMinute = initialTime.minute,
+            is24Hour = false,
+        )
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surface
+            color = MaterialTheme.colorScheme.surface,
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 TimePicker(state = timePickerState)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.End,
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text(stringResource(Res.string.common_cancel))
                     }
                     TextButton(
-                        onClick = { onConfirm(timePickerState.hour, timePickerState.minute) }
+                        onClick = { onConfirm(timePickerState.hour, timePickerState.minute) },
                     ) {
                         Text(stringResource(Res.string.common_ok))
                     }
@@ -615,7 +643,7 @@ private fun ReminderTimePickerDialog(
 @Composable
 private fun DeleteHabitDialog(
     onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -624,7 +652,7 @@ private fun DeleteHabitDialog(
         confirmButton = {
             TextButton(
                 onClick = onConfirm,
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
             ) {
                 Text(stringResource(Res.string.habit_form_delete_dialog_confirm))
             }
@@ -633,16 +661,17 @@ private fun DeleteHabitDialog(
             TextButton(onClick = onDismiss) {
                 Text(stringResource(Res.string.habit_form_delete_dialog_cancel))
             }
-        }
+        },
     )
 }
 
 private fun LocalTime.formatAmPm(): String {
-    val hour12: Int = when {
-        hour == 0 -> 12
-        hour > 12 -> hour - 12
-        else -> hour
-    }
+    val hour12: Int =
+        when {
+            hour == 0 -> 12
+            hour > 12 -> hour - 12
+            else -> hour
+        }
     val amPm: String = if (hour < 12) "AM" else "PM"
     return "${hour12.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} $amPm"
 }

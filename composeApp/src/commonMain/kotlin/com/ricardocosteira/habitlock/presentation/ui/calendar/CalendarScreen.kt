@@ -34,12 +34,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ricardocosteira.habitlock.di.LocalAppComponent
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ricardocosteira.habitlock.di.LocalAppComponent
 import com.ricardocosteira.habitlock.presentation.models.CalendarDayUiModel
 import com.ricardocosteira.habitlock.presentation.models.DayClassification
 import habitlock.composeapp.generated.resources.Res
@@ -74,7 +74,7 @@ fun CalendarScreen(onBackClick: () -> Unit) {
         onBackClick = onBackClick,
         onPreviousMonth = viewModel::previousMonth,
         onNextMonth = viewModel::nextMonth,
-        onDayClick = { viewModel.selectDay(it.date) }
+        onDayClick = { viewModel.selectDay(it.date) },
     )
 }
 
@@ -86,62 +86,60 @@ private fun CalendarScreen(
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit,
     onDayClick: (CalendarDayUiModel) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.calendar_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.common_cd_back))
-                    }
-                }
             )
-        }
+        },
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
         ) {
             // Stats summary
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "${state.perfectDaysCount}",
                             style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
                         Text(
                             text = stringResource(Res.string.calendar_stats_perfect_days),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "${state.totalDaysTracked}",
                             style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
                         Text(
                             text = stringResource(Res.string.calendar_stats_days_tracked),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
                     }
                 }
@@ -153,19 +151,25 @@ private fun CalendarScreen(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(onClick = onPreviousMonth) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = stringResource(Res.string.calendar_cd_previous_month))
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                        contentDescription = stringResource(Res.string.calendar_cd_previous_month),
+                    )
                 }
 
                 Text(
                     text = "${state.currentMonth.name.lowercase().replaceFirstChar { it.uppercase() }} ${state.currentYear}",
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
                 )
 
                 IconButton(onClick = onNextMonth) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = stringResource(Res.string.calendar_cd_next_month))
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = stringResource(Res.string.calendar_cd_next_month),
+                    )
                 }
             }
 
@@ -173,13 +177,21 @@ private fun CalendarScreen(
 
             // Day of week headers
             Row(modifier = Modifier.fillMaxWidth()) {
-                listOf(stringResource(Res.string.calendar_day_mon), stringResource(Res.string.calendar_day_tue), stringResource(Res.string.calendar_day_wed), stringResource(Res.string.calendar_day_thu), stringResource(Res.string.calendar_day_fri), stringResource(Res.string.calendar_day_sat), stringResource(Res.string.calendar_day_sun)).forEach { day ->
+                listOf(
+                    stringResource(Res.string.calendar_day_mon),
+                    stringResource(Res.string.calendar_day_tue),
+                    stringResource(Res.string.calendar_day_wed),
+                    stringResource(Res.string.calendar_day_thu),
+                    stringResource(Res.string.calendar_day_fri),
+                    stringResource(Res.string.calendar_day_sat),
+                    stringResource(Res.string.calendar_day_sun),
+                ).forEach { day ->
                     Text(
                         text = day,
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -189,7 +201,7 @@ private fun CalendarScreen(
             if (state.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxWidth().weight(1f),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
                 }
@@ -199,10 +211,15 @@ private fun CalendarScreen(
                     columns = GridCells.Fixed(7),
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     // Add empty cells for days before month starts
-                    val firstDayOfWeek = state.days.firstOrNull()?.date?.dayOfWeek?.ordinal ?: 0
+                    val firstDayOfWeek =
+                        state.days
+                            .firstOrNull()
+                            ?.date
+                            ?.dayOfWeek
+                            ?.ordinal ?: 0
                     items(firstDayOfWeek) {
                         Box(modifier = Modifier.aspectRatio(1f))
                     }
@@ -210,7 +227,7 @@ private fun CalendarScreen(
                     items(state.days) { day ->
                         CalendarDayCell(
                             day = day,
-                            onClick = { onDayClick(day) }
+                            onClick = { onDayClick(day) },
                         )
                     }
                 }
@@ -221,11 +238,11 @@ private fun CalendarScreen(
             // Legend
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     LegendItem(color = MaterialTheme.colorScheme.primary, label = stringResource(Res.string.calendar_legend_perfect))
                     LegendItem(color = MaterialTheme.colorScheme.tertiary, label = stringResource(Res.string.calendar_legend_best_effort))
@@ -233,11 +250,17 @@ private fun CalendarScreen(
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
-                    LegendItem(color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f), label = stringResource(Res.string.calendar_legend_rough_day))
+                    LegendItem(
+                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
+                        label = stringResource(Res.string.calendar_legend_rough_day),
+                    )
                     LegendItem(color = MaterialTheme.colorScheme.error, label = stringResource(Res.string.common_failed))
-                    LegendItem(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), label = stringResource(Res.string.calendar_legend_future))
+                    LegendItem(
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        label = stringResource(Res.string.calendar_legend_future),
+                    )
                 }
             }
         }
@@ -247,42 +270,45 @@ private fun CalendarScreen(
 @Composable
 private fun CalendarDayCell(
     day: CalendarDayUiModel,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
-    val backgroundColor = when (day.classification) {
-        DayClassification.PERFECT -> MaterialTheme.colorScheme.primary
-        DayClassification.BEST_EFFORT -> MaterialTheme.colorScheme.tertiary
-        DayClassification.PARTIAL -> MaterialTheme.colorScheme.secondary
-        DayClassification.ROUGH_DAY -> MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
-        DayClassification.FAILED -> MaterialTheme.colorScheme.error
-        DayClassification.FUTURE -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        DayClassification.NONE -> MaterialTheme.colorScheme.surfaceVariant
-    }
+    val backgroundColor =
+        when (day.classification) {
+            DayClassification.PERFECT -> MaterialTheme.colorScheme.primary
+            DayClassification.BEST_EFFORT -> MaterialTheme.colorScheme.tertiary
+            DayClassification.PARTIAL -> MaterialTheme.colorScheme.secondary
+            DayClassification.ROUGH_DAY -> MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+            DayClassification.FAILED -> MaterialTheme.colorScheme.error
+            DayClassification.FUTURE -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            DayClassification.NONE -> MaterialTheme.colorScheme.surfaceVariant
+        }
 
-    val textColor = when (day.classification) {
-        DayClassification.PERFECT -> MaterialTheme.colorScheme.onPrimary
-        DayClassification.BEST_EFFORT -> MaterialTheme.colorScheme.onTertiary
-        DayClassification.PARTIAL -> MaterialTheme.colorScheme.onSecondary
-        DayClassification.ROUGH_DAY -> MaterialTheme.colorScheme.onError
-        DayClassification.FAILED -> MaterialTheme.colorScheme.onError
-        DayClassification.FUTURE -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-        DayClassification.NONE -> MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val textColor =
+        when (day.classification) {
+            DayClassification.PERFECT -> MaterialTheme.colorScheme.onPrimary
+            DayClassification.BEST_EFFORT -> MaterialTheme.colorScheme.onTertiary
+            DayClassification.PARTIAL -> MaterialTheme.colorScheme.onSecondary
+            DayClassification.ROUGH_DAY -> MaterialTheme.colorScheme.onError
+            DayClassification.FAILED -> MaterialTheme.colorScheme.onError
+            DayClassification.FUTURE -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            DayClassification.NONE -> MaterialTheme.colorScheme.onSurfaceVariant
+        }
 
     val isClickable = day.classification !in listOf(DayClassification.NONE, DayClassification.FUTURE)
 
     Box(
-        modifier = Modifier
-            .aspectRatio(1f)
-            .clip(CircleShape)
-            .background(backgroundColor)
-            .clickable(enabled = isClickable, onClick = onClick),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier
+                .aspectRatio(1f)
+                .clip(CircleShape)
+                .background(backgroundColor)
+                .clickable(enabled = isClickable, onClick = onClick),
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = day.date.dayOfMonth.toString(),
             style = MaterialTheme.typography.bodyMedium,
-            color = textColor
+            color = textColor,
         )
     }
 }
@@ -290,23 +316,23 @@ private fun CalendarDayCell(
 @Composable
 private fun LegendItem(
     color: androidx.compose.ui.graphics.Color,
-    label: String
+    label: String,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Box(
-            modifier = Modifier
-                .size(12.dp)
-                .clip(CircleShape)
-                .background(color)
+            modifier =
+                Modifier
+                    .size(12.dp)
+                    .clip(CircleShape)
+                    .background(color),
         )
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
-

@@ -38,15 +38,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ricardocosteira.habitlock.di.LocalAppComponent
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ricardocosteira.habitlock.di.LocalAppComponent
 import com.ricardocosteira.habitlock.domain.models.UndoPolicy
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_cd_back
+import habitlock.composeapp.generated.resources.common_error_generic
 import habitlock.composeapp.generated.resources.settings_archived_habits
 import habitlock.composeapp.generated.resources.settings_info_timezone_label
 import habitlock.composeapp.generated.resources.settings_section_info
@@ -60,9 +61,8 @@ import habitlock.composeapp.generated.resources.settings_snooze_max_duration
 import habitlock.composeapp.generated.resources.settings_snooze_status_limited
 import habitlock.composeapp.generated.resources.settings_snooze_status_unlimited
 import habitlock.composeapp.generated.resources.settings_snooze_unlimited_label
-import habitlock.composeapp.generated.resources.common_error_generic
-import habitlock.composeapp.generated.resources.settings_success_saved
 import habitlock.composeapp.generated.resources.settings_success_daily_summary_updated
+import habitlock.composeapp.generated.resources.settings_success_saved
 import habitlock.composeapp.generated.resources.settings_title
 import habitlock.composeapp.generated.resources.settings_undo_all_description
 import habitlock.composeapp.generated.resources.settings_undo_all_label
@@ -76,7 +76,7 @@ import org.jetbrains.compose.resources.stringResource
 fun SettingsScreen(
     onBackClick: () -> Unit,
     onArchivedHabitsClick: () -> Unit,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
 ) {
     val viewModel = LocalAppComponent.current.settingsViewModel
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -103,7 +103,7 @@ fun SettingsScreen(
         onMaxSnoozeDurationChange = viewModel::updateMaxSnoozeDuration,
         onMaxSnoozesPerDayChange = viewModel::updateMaxSnoozesPerDay,
         onMaxConsecutiveSkipsChange = viewModel::updateMaxConsecutiveSkips,
-        onArchivedHabitsClick = onArchivedHabitsClick
+        onArchivedHabitsClick = onArchivedHabitsClick,
     )
 }
 
@@ -118,37 +118,34 @@ private fun SettingsScreen(
     onMaxSnoozesPerDayChange: (Int?) -> Unit,
     onMaxConsecutiveSkipsChange: (Int?) -> Unit,
     onArchivedHabitsClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.settings_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.common_cd_back))
-                    }
-                }
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         if (state.isLoading) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator()
             }
         } else {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .verticalScroll(rememberScrollState()),
             ) {
                 // Undo Policy Section
                 SettingsSection(title = stringResource(Res.string.settings_section_undo_policy)) {
@@ -157,19 +154,19 @@ private fun SettingsScreen(
                             title = stringResource(Res.string.settings_undo_disabled_label),
                             description = stringResource(Res.string.settings_undo_disabled_description),
                             selected = state.undoPolicy == UndoPolicy.NONE,
-                            onClick = { onUndoPolicyChange(UndoPolicy.NONE) }
+                            onClick = { onUndoPolicyChange(UndoPolicy.NONE) },
                         )
                         UndoPolicyOption(
                             title = stringResource(Res.string.settings_undo_today_label),
                             description = stringResource(Res.string.settings_undo_today_description),
                             selected = state.undoPolicy == UndoPolicy.TODAY_ONLY,
-                            onClick = { onUndoPolicyChange(UndoPolicy.TODAY_ONLY) }
+                            onClick = { onUndoPolicyChange(UndoPolicy.TODAY_ONLY) },
                         )
                         UndoPolicyOption(
                             title = stringResource(Res.string.settings_undo_all_label),
                             description = stringResource(Res.string.settings_undo_all_description),
                             selected = state.undoPolicy == UndoPolicy.ALL_HISTORY,
-                            onClick = { onUndoPolicyChange(UndoPolicy.ALL_HISTORY) }
+                            onClick = { onUndoPolicyChange(UndoPolicy.ALL_HISTORY) },
                         )
                     }
                 }
@@ -181,7 +178,7 @@ private fun SettingsScreen(
                     Column {
                         Text(
                             text = stringResource(Res.string.settings_snooze_max_duration, state.maxSnoozeDurationMinutes),
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
                         )
 
                         var sliderValue by remember(state.maxSnoozeDurationMinutes) {
@@ -193,7 +190,7 @@ private fun SettingsScreen(
                             onValueChange = { sliderValue = it },
                             onValueChangeFinished = { onMaxSnoozeDurationChange(sliderValue.toInt()) },
                             valueRange = 5f..60f,
-                            steps = 10
+                            steps = 10,
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -201,25 +198,31 @@ private fun SettingsScreen(
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Column {
                                 Text(
                                     text = stringResource(Res.string.settings_snooze_unlimited_label),
-                                    style = MaterialTheme.typography.bodyMedium
+                                    style = MaterialTheme.typography.bodyMedium,
                                 )
                                 Text(
-                                    text = if (state.maxSnoozesPerHabitPerDay == null) stringResource(Res.string.settings_snooze_status_unlimited)
-                                           else stringResource(Res.string.settings_snooze_status_limited, state.maxSnoozesPerHabitPerDay),
+                                    text =
+                                        if (state.maxSnoozesPerHabitPerDay ==
+                                            null
+                                        ) {
+                                            stringResource(Res.string.settings_snooze_status_unlimited)
+                                        } else {
+                                            stringResource(Res.string.settings_snooze_status_limited, state.maxSnoozesPerHabitPerDay)
+                                        },
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                             Switch(
                                 checked = state.maxSnoozesPerHabitPerDay == null,
                                 onCheckedChange = { unlimited ->
                                     onMaxSnoozesPerDayChange(if (unlimited) null else 3)
-                                }
+                                },
                             )
                         }
                     }
@@ -232,25 +235,29 @@ private fun SettingsScreen(
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Column {
                             Text(
                                 text = stringResource(Res.string.settings_skip_unlimited_label),
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
                             )
                             Text(
-                                text = if (state.maxConsecutiveSkips == null) stringResource(Res.string.settings_skip_status_unlimited)
-                                       else stringResource(Res.string.settings_skip_status_limited, state.maxConsecutiveSkips),
+                                text =
+                                    if (state.maxConsecutiveSkips == null) {
+                                        stringResource(Res.string.settings_skip_status_unlimited)
+                                    } else {
+                                        stringResource(Res.string.settings_skip_status_limited, state.maxConsecutiveSkips)
+                                    },
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                         Switch(
                             checked = state.maxConsecutiveSkips == null,
                             onCheckedChange = { unlimited ->
                                 onMaxConsecutiveSkipsChange(if (unlimited) null else 2)
-                            }
+                            },
                         )
                     }
                 }
@@ -262,12 +269,12 @@ private fun SettingsScreen(
                     Column {
                         Text(
                             text = stringResource(Res.string.settings_info_timezone_label),
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
                         )
                         Text(
                             text = state.currentTimezone,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -276,21 +283,22 @@ private fun SettingsScreen(
 
                 // Archived Habits Link
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = onArchivedHabitsClick)
-                        .padding(16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onArchivedHabitsClick)
+                            .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = stringResource(Res.string.settings_archived_habits),
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
                     )
                     Icon(
                         Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -301,13 +309,13 @@ private fun SettingsScreen(
 @Composable
 private fun SettingsSection(
     title: String,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
         )
         Spacer(modifier = Modifier.height(12.dp))
         content()
@@ -319,31 +327,30 @@ private fun UndoPolicyOption(
     title: String,
     description: String,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .selectable(
-                selected = selected,
-                onClick = onClick,
-                role = Role.RadioButton
-            )
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .selectable(
+                    selected = selected,
+                    onClick = onClick,
+                    role = Role.RadioButton,
+                ).padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioButton(
             selected = selected,
-            onClick = null
+            onClick = null,
         )
         Column(modifier = Modifier.padding(start = 12.dp)) {
             Text(text = title, style = MaterialTheme.typography.bodyMedium)
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
 }
-
