@@ -37,6 +37,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -45,6 +46,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -161,6 +163,7 @@ fun HabitFormScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HabitFormScreen(
     state: HabitFormState,
@@ -199,26 +202,43 @@ internal fun HabitFormScreen(
         )
     }
 
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .statusBarsPadding()
-                .padding(horizontal = 24.dp, vertical = 20.dp),
-    ) {
-        // Back icon + heading + delete icon (edit mode only)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = { onAction(HabitFormUiAction.DiscardChangesClicked) }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(Res.string.common_cd_back),
+                        )
+                    }
+                },
+                actions = {
+                    if (state.isEditing) {
+                        IconButton(onClick = { isDeleteDialogVisible = true }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = stringResource(Res.string.habit_form_cd_delete),
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(22.dp),
+                            )
+                        }
+                    }
+                },
+            )
+        },
+    ) { paddingValues ->
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(paddingValues)
+                    .padding(horizontal = 24.dp, vertical = 20.dp),
         ) {
-            IconButton(onClick = { onAction(HabitFormUiAction.DiscardChangesClicked) }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(Res.string.common_cd_back),
-                )
-            }
+            // Heading
             Text(
                 text =
                     if (state.isEditing) {
@@ -229,268 +249,257 @@ internal fun HabitFormScreen(
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.weight(1f),
             )
-            if (state.isEditing) {
-                IconButton(onClick = { isDeleteDialogVisible = true }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = stringResource(Res.string.habit_form_cd_delete),
-                        tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(22.dp),
-                    )
-                }
-            }
-        }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Accent bar
-        Box(
-            modifier =
-                Modifier
-                    .width(36.dp)
-                    .height(3.dp)
-                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp)),
-        )
-
-        if (!state.isEditing) {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(Res.string.habit_form_subtitle_create),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+
+            // Accent bar
+            Box(
+                modifier =
+                    Modifier
+                        .width(36.dp)
+                        .height(3.dp)
+                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp)),
             )
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // HABIT NAME
-        SectionLabel(Res.string.habit_form_section_habit_name)
-        Spacer(modifier = Modifier.height(8.dp))
-        UnderlineTextField(
-            value = state.name,
-            onValueChange = { onAction(HabitFormUiAction.NameChanged(it)) },
-            placeholder = stringResource(Res.string.common_placeholder_habit_name),
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // TYPE
-        SectionLabel(Res.string.habit_form_section_type)
-        Spacer(modifier = Modifier.height(8.dp))
-        TypeToggle(
-            selected = state.type,
-            onSelectionChange = { onAction(HabitFormUiAction.TypeChanged(it)) },
-            modifier = Modifier.fillMaxWidth(),
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // DAILY TARGET
-        SectionLabel(Res.string.habit_form_section_daily_target)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        val cadence: String =
-            if (state.scheduleType == ScheduleType.DAILY) {
-                stringResource(Res.string.habit_form_cadence_day)
-            } else {
-                stringResource(Res.string.habit_form_cadence_week)
-            }
-        val stepperLabel: String =
-            if (state.type == HabitType.QUANTITATIVE &&
-                state.unit.isNotBlank()
-            ) {
-                "${state.unit} / $cadence"
-            } else {
-                "${stringResource(Res.string.habit_form_stepper_label_times)} / $cadence"
-            }
-
-        QuantityStepper(
-            value = state.stepperValue,
-            onValueChange = { newValue: Int ->
-                onAction(state.stepperChangeAction(newValue))
-            },
-            label = stepperLabel,
-        )
-
-        AnimatedVisibility(
-            visible = state.type == HabitType.QUANTITATIVE,
-            enter = expandVertically() + fadeIn(),
-            exit = shrinkVertically() + fadeOut(),
-        ) {
-            Column {
-                Spacer(modifier = Modifier.height(12.dp))
-                UnderlineTextField(
-                    value = state.unit,
-                    onValueChange = { onAction(HabitFormUiAction.UnitChanged(it)) },
-                    label = stringResource(Res.string.habit_form_unit_label),
-                    placeholder = stringResource(Res.string.habit_form_placeholder_unit),
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // SCHEDULE
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            SectionLabel(Res.string.habit_form_section_schedule)
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                ScheduleTypePill(
-                    text = stringResource(Res.string.common_daily),
-                    isSelected = state.scheduleType == ScheduleType.DAILY,
-                    onClick = { onAction(HabitFormUiAction.ScheduleTypeChanged(ScheduleType.DAILY)) },
-                )
-                ScheduleTypePill(
-                    text = stringResource(Res.string.common_weekly),
-                    isSelected = state.scheduleType == ScheduleType.WEEKLY,
-                    onClick = { onAction(HabitFormUiAction.ScheduleTypeChanged(ScheduleType.WEEKLY)) },
-                )
-            }
-        }
-
-        AnimatedVisibility(
-            visible = state.scheduleType == ScheduleType.WEEKLY,
-            enter = expandVertically() + fadeIn(),
-            exit = shrinkVertically() + fadeOut(),
-        ) {
-            Column {
+            if (!state.isEditing) {
                 Spacer(modifier = Modifier.height(8.dp))
-                SchedulePicker(
-                    selectedDays = state.selectedDays,
-                    onSelectedDaysChange = { onAction(HabitFormUiAction.SelectedDaysChanged(it)) },
+                Text(
+                    text = stringResource(Res.string.habit_form_subtitle_create),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // Reminder + Note card
-        val reminderSubtitle: String =
-            if (state.hasReminder) {
-                state.reminderTime?.formatAmPm().orEmpty()
-            } else {
-                stringResource(Res.string.habit_form_reminder_off)
-            }
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
-            shadowElevation = 1.dp,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Column {
-                DetailRow(
-                    icon = Icons.Outlined.Notifications,
-                    iconTint =
-                        if (state.hasReminder) {
-                            MaterialTheme.colorScheme.onSurface
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                    title = stringResource(Res.string.habit_form_reminder_title),
-                    subtitle = reminderSubtitle,
-                    onClick =
-                        if (state.hasReminder) {
-                            { isTimePickerVisible = true }
-                        } else {
-                            null
-                        },
-                    showTopDivider = false,
-                    trailingContent = {
-                        Switch(
-                            checked = state.hasReminder,
-                            onCheckedChange = { checked: Boolean ->
-                                onAction(HabitFormUiAction.HasReminderChanged(checked))
-                                if (checked) isTimePickerVisible = true
-                            },
-                        )
-                    },
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                )
+            // HABIT NAME
+            SectionLabel(Res.string.habit_form_section_habit_name)
+            Spacer(modifier = Modifier.height(8.dp))
+            UnderlineTextField(
+                value = state.name,
+                onValueChange = { onAction(HabitFormUiAction.NameChanged(it)) },
+                placeholder = stringResource(Res.string.common_placeholder_habit_name),
+            )
 
-                DetailRow(
-                    icon = Icons.Outlined.Edit,
-                    iconTint =
-                        if (isNoteExpanded) {
-                            MaterialTheme.colorScheme.onSurface
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                    title =
-                        if (isNoteExpanded) {
-                            stringResource(Res.string.habit_form_note_expanded_title)
-                        } else {
-                            stringResource(Res.string.habit_form_note_collapsed_title)
-                        },
-                    subtitle = if (isNoteExpanded) "" else stringResource(Res.string.habit_form_note_collapsed_subtitle),
-                    onClick = { isNoteExpanded = !isNoteExpanded },
-                    showTopDivider = false,
-                    trailingContent = null,
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                )
+            Spacer(modifier = Modifier.height(24.dp))
 
-                AnimatedVisibility(
-                    visible = isNoteExpanded,
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut(),
+            // TYPE
+            SectionLabel(Res.string.habit_form_section_type)
+            Spacer(modifier = Modifier.height(8.dp))
+            TypeToggle(
+                selected = state.type,
+                onSelectionChange = { onAction(HabitFormUiAction.TypeChanged(it)) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // DAILY TARGET
+            SectionLabel(Res.string.habit_form_section_daily_target)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            val cadence: String =
+                if (state.scheduleType == ScheduleType.DAILY) {
+                    stringResource(Res.string.habit_form_cadence_day)
+                } else {
+                    stringResource(Res.string.habit_form_cadence_week)
+                }
+            val stepperLabel: String =
+                if (state.type == HabitType.QUANTITATIVE &&
+                    state.unit.isNotBlank()
                 ) {
+                    "${state.unit} / $cadence"
+                } else {
+                    "${stringResource(Res.string.habit_form_stepper_label_times)} / $cadence"
+                }
+
+            QuantityStepper(
+                value = state.stepperValue,
+                onValueChange = { newValue: Int ->
+                    onAction(state.stepperChangeAction(newValue))
+                },
+                label = stepperLabel,
+            )
+
+            AnimatedVisibility(
+                visible = state.type == HabitType.QUANTITATIVE,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut(),
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.height(12.dp))
                     UnderlineTextField(
-                        value = state.description,
-                        onValueChange = { onAction(HabitFormUiAction.DescriptionChanged(it)) },
-                        placeholder = "",
-                        maxLines = 5,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        value = state.unit,
+                        onValueChange = { onAction(HabitFormUiAction.UnitChanged(it)) },
+                        label = stringResource(Res.string.habit_form_unit_label),
+                        placeholder = stringResource(Res.string.habit_form_placeholder_unit),
                     )
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // Primary CTA
-        PrimaryButton(
-            onClick = { onAction(HabitFormUiAction.SaveClicked) },
-            enabled = state.isValid && !state.isSaving,
-        ) {
-            if (state.isSaving) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp))
-            } else {
+            // SCHEDULE
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SectionLabel(Res.string.habit_form_section_schedule)
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    ScheduleTypePill(
+                        text = stringResource(Res.string.common_daily),
+                        isSelected = state.scheduleType == ScheduleType.DAILY,
+                        onClick = { onAction(HabitFormUiAction.ScheduleTypeChanged(ScheduleType.DAILY)) },
+                    )
+                    ScheduleTypePill(
+                        text = stringResource(Res.string.common_weekly),
+                        isSelected = state.scheduleType == ScheduleType.WEEKLY,
+                        onClick = { onAction(HabitFormUiAction.ScheduleTypeChanged(ScheduleType.WEEKLY)) },
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                visible = state.scheduleType == ScheduleType.WEEKLY,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut(),
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    SchedulePicker(
+                        selectedDays = state.selectedDays,
+                        onSelectedDaysChange = { onAction(HabitFormUiAction.SelectedDaysChanged(it)) },
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Reminder + Note card
+            val reminderSubtitle: String =
+                if (state.hasReminder) {
+                    state.reminderTime?.formatAmPm().orEmpty()
+                } else {
+                    stringResource(Res.string.habit_form_reminder_off)
+                }
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                shadowElevation = 1.dp,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column {
+                    DetailRow(
+                        icon = Icons.Outlined.Notifications,
+                        iconTint =
+                            if (state.hasReminder) {
+                                MaterialTheme.colorScheme.onSurface
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                        title = stringResource(Res.string.habit_form_reminder_title),
+                        subtitle = reminderSubtitle,
+                        onClick =
+                            if (state.hasReminder) {
+                                { isTimePickerVisible = true }
+                            } else {
+                                null
+                            },
+                        showTopDivider = false,
+                        trailingContent = {
+                            Switch(
+                                checked = state.hasReminder,
+                                onCheckedChange = { checked: Boolean ->
+                                    onAction(HabitFormUiAction.HasReminderChanged(checked))
+                                    if (checked) isTimePickerVisible = true
+                                },
+                            )
+                        },
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                    )
+
+                    DetailRow(
+                        icon = Icons.Outlined.Edit,
+                        iconTint =
+                            if (isNoteExpanded) {
+                                MaterialTheme.colorScheme.onSurface
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                        title =
+                            if (isNoteExpanded) {
+                                stringResource(Res.string.habit_form_note_expanded_title)
+                            } else {
+                                stringResource(Res.string.habit_form_note_collapsed_title)
+                            },
+                        subtitle = if (isNoteExpanded) "" else stringResource(Res.string.habit_form_note_collapsed_subtitle),
+                        onClick = { isNoteExpanded = !isNoteExpanded },
+                        showTopDivider = false,
+                        trailingContent = null,
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                    )
+
+                    AnimatedVisibility(
+                        visible = isNoteExpanded,
+                        enter = expandVertically() + fadeIn(),
+                        exit = shrinkVertically() + fadeOut(),
+                    ) {
+                        UnderlineTextField(
+                            value = state.description,
+                            onValueChange = { onAction(HabitFormUiAction.DescriptionChanged(it)) },
+                            placeholder = "",
+                            maxLines = 5,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Primary CTA
+            PrimaryButton(
+                onClick = { onAction(HabitFormUiAction.SaveClicked) },
+                enabled = state.isValid && !state.isSaving,
+            ) {
+                if (state.isSaving) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                } else {
+                    Text(
+                        text =
+                            if (state.isEditing) {
+                                stringResource(Res.string.habit_form_button_save)
+                            } else {
+                                stringResource(Res.string.habit_form_button_establish)
+                            },
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Secondary CTA
+            TextButton(
+                onClick =
+                    if (state.isEditing) {
+                        { onAction(HabitFormUiAction.DiscardChangesClicked) }
+                    } else {
+                        { onAction(HabitFormUiAction.DiscardDraftClicked) }
+                    },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
                 Text(
                     text =
                         if (state.isEditing) {
-                            stringResource(Res.string.habit_form_button_save)
+                            stringResource(Res.string.habit_form_button_discard_changes)
                         } else {
-                            stringResource(Res.string.habit_form_button_establish)
+                            stringResource(Res.string.habit_form_button_discard_draft)
                         },
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Secondary CTA
-        TextButton(
-            onClick =
-                if (state.isEditing) {
-                    { onAction(HabitFormUiAction.DiscardChangesClicked) }
-                } else {
-                    { onAction(HabitFormUiAction.DiscardDraftClicked) }
-                },
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
-                text =
-                    if (state.isEditing) {
-                        stringResource(Res.string.habit_form_button_discard_changes)
-                    } else {
-                        stringResource(Res.string.habit_form_button_discard_draft)
-                    },
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }
