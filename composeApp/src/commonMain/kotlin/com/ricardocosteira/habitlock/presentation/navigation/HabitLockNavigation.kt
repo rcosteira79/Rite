@@ -69,19 +69,21 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
     val snackbarHostState = remember { SnackbarHostState() }
     val appComponent = LocalAppComponent.current
 
-    val currentTab: BottomNavTab? by remember {
+    val currentTab: BottomNavTab by remember {
         derivedStateOf {
-            when (backStack.lastOrNull()) {
-                is Today -> BottomNavTab.TODAY
+            // Find the deepest top-level route in the stack to keep
+            // the correct tab highlighted on non-tab screens
+            val topLevelEntry: NavKey? = backStack.lastOrNull { it as? Route in topLevelRoutes }
+            when (topLevelEntry) {
                 is Calendar -> BottomNavTab.HISTORY
                 is Settings -> BottomNavTab.SETTINGS
-                else -> null
+                else -> BottomNavTab.TODAY
             }
         }
     }
 
-    val isTopLevel: Boolean by remember {
-        derivedStateOf { backStack.lastOrNull() as? Route in topLevelRoutes }
+    val showBottomNav: Boolean by remember {
+        derivedStateOf { backStack.lastOrNull() !is Onboarding }
     }
     val isTodayRoute: Boolean by remember {
         derivedStateOf { backStack.lastOrNull() is Today }
@@ -104,14 +106,14 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
 
     Scaffold(
         bottomBar = {
-            if (isTopLevel && currentTab != null) {
+            if (showBottomNav) {
                 AnimatedVisibility(
                     visible = isNavBarVisible.value,
                     enter = slideInVertically(initialOffsetY = { it }),
                     exit = slideOutVertically(targetOffsetY = { it }),
                 ) {
                     HabitLockBottomNav(
-                        currentTab = currentTab!!,
+                        currentTab = currentTab,
                         onTabSelected = { tab ->
                             handleTabSelection(tab, backStack)
                         },
