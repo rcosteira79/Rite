@@ -8,8 +8,10 @@ import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -31,10 +33,18 @@ fun HabitLockBottomNav(
     onTabSelected: (BottomNavTab) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val navItemColors =
+        NavigationBarItemDefaults.colors(
+            indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+            selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            selectedTextColor = MaterialTheme.colorScheme.primary,
+        )
+
     NavigationBar(modifier = modifier) {
         NavigationBarItem(
             selected = currentTab == BottomNavTab.TODAY,
             onClick = { onTabSelected(BottomNavTab.TODAY) },
+            colors = navItemColors,
             icon = {
                 Icon(
                     imageVector = if (currentTab == BottomNavTab.TODAY) Icons.Filled.CalendarToday else Icons.Outlined.CalendarToday,
@@ -46,6 +56,7 @@ fun HabitLockBottomNav(
         NavigationBarItem(
             selected = currentTab == BottomNavTab.HISTORY,
             onClick = { onTabSelected(BottomNavTab.HISTORY) },
+            colors = navItemColors,
             icon = {
                 Icon(
                     imageVector = if (currentTab == BottomNavTab.HISTORY) Icons.Filled.History else Icons.Outlined.History,
@@ -57,6 +68,7 @@ fun HabitLockBottomNav(
         NavigationBarItem(
             selected = currentTab == BottomNavTab.SETTINGS,
             onClick = { onTabSelected(BottomNavTab.SETTINGS) },
+            colors = navItemColors,
             icon = {
                 Icon(
                     imageVector = if (currentTab == BottomNavTab.SETTINGS) Icons.Filled.Settings else Icons.Outlined.Settings,
