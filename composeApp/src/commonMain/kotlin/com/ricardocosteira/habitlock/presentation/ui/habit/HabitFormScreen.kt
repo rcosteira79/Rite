@@ -50,6 +50,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,7 +63,7 @@ import com.ricardocosteira.habitlock.di.LocalAppComponent
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.presentation.ui.BackHandler
-import com.ricardocosteira.habitlock.presentation.ui.components.FormListRow
+import com.ricardocosteira.habitlock.presentation.ui.components.DetailRow
 import com.ricardocosteira.habitlock.presentation.ui.components.PrimaryButton
 import com.ricardocosteira.habitlock.presentation.ui.components.QuantityStepper
 import com.ricardocosteira.habitlock.presentation.ui.components.SchedulePicker
@@ -85,6 +86,7 @@ import habitlock.composeapp.generated.resources.habit_form_delete_dialog_body
 import habitlock.composeapp.generated.resources.habit_form_delete_dialog_cancel
 import habitlock.composeapp.generated.resources.habit_form_delete_dialog_confirm
 import habitlock.composeapp.generated.resources.habit_form_delete_dialog_title
+import habitlock.composeapp.generated.resources.habit_form_error_habit_not_found
 import habitlock.composeapp.generated.resources.habit_form_error_required_fields
 import habitlock.composeapp.generated.resources.habit_form_note_collapsed_subtitle
 import habitlock.composeapp.generated.resources.habit_form_note_collapsed_title
@@ -101,8 +103,8 @@ import habitlock.composeapp.generated.resources.habit_form_subtitle_create
 import habitlock.composeapp.generated.resources.habit_form_title_edit
 import habitlock.composeapp.generated.resources.habit_form_title_new_habit
 import habitlock.composeapp.generated.resources.habit_form_unit_label
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -117,6 +119,7 @@ fun HabitFormScreen(
 
     val messageRequiredFields = stringResource(Res.string.habit_form_error_required_fields)
     val messageGenericError = stringResource(Res.string.common_error_generic)
+    val messageHabitNotFound = stringResource(Res.string.habit_form_error_habit_not_found)
 
     if (state.isEditing) {
         BackHandler { viewModel.discardChanges() }
@@ -127,6 +130,7 @@ fun HabitFormScreen(
             when (event) {
                 HabitFormEvent.NavigateBack -> onNavigateBack()
                 HabitFormEvent.RequiredFieldsMissing -> snackbarHostState.showSnackbar(messageRequiredFields)
+                HabitFormEvent.HabitNotFound -> snackbarHostState.showSnackbar(messageHabitNotFound)
                 is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(event.message ?: messageGenericError)
             }
         }
@@ -134,45 +138,36 @@ fun HabitFormScreen(
 
     HabitFormScreen(
         state = state,
-        onNameChange = viewModel::updateName,
-        onDescriptionChange = viewModel::updateDescription,
-        onTypeChange = viewModel::updateType,
-        onTargetValueChange = viewModel::updateTargetValue,
-        onUnitChange = viewModel::updateUnit,
-        onScheduleTypeChange = viewModel::updateScheduleType,
-        onSelectedDaysChange = viewModel::updateSelectedDays,
-        onQuotaChange = viewModel::updateQuota,
-        onHasReminderChange = viewModel::updateHasReminder,
-        onReminderTimeChange = viewModel::updateReminderTime,
-        onSaveClick = viewModel::saveHabit,
-        onDeleteClick = viewModel::deleteHabit,
-        onDiscardDraftClick = viewModel::discardDraft,
-        onDiscardChangesClick = viewModel::discardChanges
+        onAction = { action ->
+            when (action) {
+                is HabitFormUiAction.NameChanged -> viewModel.updateName(action.name)
+                is HabitFormUiAction.DescriptionChanged -> viewModel.updateDescription(action.description)
+                is HabitFormUiAction.TypeChanged -> viewModel.updateType(action.type)
+                is HabitFormUiAction.TargetValueChanged -> viewModel.updateTargetValue(action.value)
+                is HabitFormUiAction.UnitChanged -> viewModel.updateUnit(action.unit)
+                is HabitFormUiAction.ScheduleTypeChanged -> viewModel.updateScheduleType(action.scheduleType)
+                is HabitFormUiAction.SelectedDaysChanged -> viewModel.updateSelectedDays(action.days)
+                is HabitFormUiAction.QuotaChanged -> viewModel.updateQuota(action.quota)
+                is HabitFormUiAction.HasReminderChanged -> viewModel.updateHasReminder(action.hasReminder)
+                is HabitFormUiAction.ReminderTimeChanged -> viewModel.updateReminderTime(action.hour, action.minute)
+                HabitFormUiAction.SaveClicked -> viewModel.saveHabit()
+                HabitFormUiAction.DeleteClicked -> viewModel.deleteHabit()
+                HabitFormUiAction.DiscardDraftClicked -> viewModel.discardDraft()
+                HabitFormUiAction.DiscardChangesClicked -> viewModel.discardChanges()
+            }
+        }
     )
 }
 
 @Composable
 internal fun HabitFormScreen(
     state: HabitFormState,
-    onNameChange: (String) -> Unit,
-    onDescriptionChange: (String) -> Unit,
-    onTypeChange: (HabitType) -> Unit,
-    onTargetValueChange: (String) -> Unit,
-    onUnitChange: (String) -> Unit,
-    onScheduleTypeChange: (ScheduleType) -> Unit,
-    onSelectedDaysChange: (Set<DayOfWeek>) -> Unit,
-    onQuotaChange: (String) -> Unit,
-    onHasReminderChange: (Boolean) -> Unit,
-    onReminderTimeChange: (LocalTime) -> Unit,
-    onSaveClick: () -> Unit,
-    onDeleteClick: () -> Unit,
-    onDiscardDraftClick: () -> Unit,
-    onDiscardChangesClick: () -> Unit,
+    onAction: (HabitFormUiAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isNoteExpanded by remember { mutableStateOf(false) }
-    var isDeleteDialogVisible by remember { mutableStateOf(false) }
-    var isTimePickerVisible by remember { mutableStateOf(false) }
+    var isNoteExpanded by rememberSaveable { mutableStateOf(false) }
+    var isDeleteDialogVisible by rememberSaveable { mutableStateOf(false) }
+    var isTimePickerVisible by rememberSaveable { mutableStateOf(false) }
 
     if (state.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -185,7 +180,7 @@ internal fun HabitFormScreen(
         DeleteHabitDialog(
             onConfirm = {
                 isDeleteDialogVisible = false
-                onDeleteClick()
+                onAction(HabitFormUiAction.DeleteClicked)
             },
             onDismiss = { isDeleteDialogVisible = false }
         )
@@ -193,9 +188,9 @@ internal fun HabitFormScreen(
 
     if (isTimePickerVisible) {
         ReminderTimePickerDialog(
-            initialTime = state.reminderTime ?: LocalTime(9, 0),
-            onConfirm = { time: LocalTime ->
-                onReminderTimeChange(time)
+            initialTime = state.resolvedReminderTime,
+            onConfirm = { hour, minute ->
+                onAction(HabitFormUiAction.ReminderTimeChanged(hour, minute))
                 isTimePickerVisible = false
             },
             onDismiss = { isTimePickerVisible = false }
@@ -260,55 +255,48 @@ internal fun HabitFormScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // HABIT NAME
-        SectionLabel(stringResource(Res.string.habit_form_section_habit_name))
+        SectionLabel(Res.string.habit_form_section_habit_name)
         Spacer(modifier = Modifier.height(8.dp))
         UnderlineTextField(
             value = state.name,
-            onValueChange = onNameChange,
+            onValueChange = { onAction(HabitFormUiAction.NameChanged(it)) },
             placeholder = stringResource(Res.string.common_placeholder_habit_name)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // TYPE
-        SectionLabel(stringResource(Res.string.habit_form_section_type))
+        SectionLabel(Res.string.habit_form_section_type)
         Spacer(modifier = Modifier.height(8.dp))
         TypeToggle(
             selected = state.type,
-            onSelectionChange = onTypeChange,
+            onSelectionChange = { onAction(HabitFormUiAction.TypeChanged(it)) },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // DAILY TARGET
-        SectionLabel(stringResource(Res.string.habit_form_section_daily_target))
+        SectionLabel(Res.string.habit_form_section_daily_target)
         Spacer(modifier = Modifier.height(8.dp))
 
-        val stepperValue: Int = if (state.type == HabitType.BINARY) {
-            state.quota.toIntOrNull() ?: 1
-        } else {
-            state.targetValue.toIntOrNull() ?: 1
-        }
         val cadence: String = if (state.scheduleType == ScheduleType.DAILY) {
             stringResource(Res.string.habit_form_cadence_day)
         } else {
             stringResource(Res.string.habit_form_cadence_week)
         }
-        val stepperLabel: String = if (state.type == HabitType.QUANTITATIVE && state.unit.isNotBlank()) {
+        val stepperLabel: String = if (state.type == HabitType.QUANTITATIVE &&
+            state.unit.isNotBlank()
+        ) {
             "${state.unit} / $cadence"
         } else {
             "${stringResource(Res.string.habit_form_stepper_label_times)} / $cadence"
         }
 
         QuantityStepper(
-            value = stepperValue,
+            value = state.stepperValue,
             onValueChange = { newValue: Int ->
-                if (state.type == HabitType.BINARY) {
-                    onQuotaChange(newValue.toString())
-                } else {
-                    onTargetValueChange(newValue.toString())
-                }
+                onAction(state.stepperChangeAction(newValue))
             },
             label = stepperLabel
         )
@@ -322,7 +310,7 @@ internal fun HabitFormScreen(
                 Spacer(modifier = Modifier.height(12.dp))
                 UnderlineTextField(
                     value = state.unit,
-                    onValueChange = onUnitChange,
+                    onValueChange = { onAction(HabitFormUiAction.UnitChanged(it)) },
                     label = stringResource(Res.string.habit_form_unit_label),
                     placeholder = stringResource(Res.string.habit_form_placeholder_unit)
                 )
@@ -337,17 +325,17 @@ internal fun HabitFormScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            SectionLabel(stringResource(Res.string.habit_form_section_schedule))
+            SectionLabel(Res.string.habit_form_section_schedule)
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 ScheduleTypePill(
                     text = stringResource(Res.string.common_daily),
                     isSelected = state.scheduleType == ScheduleType.DAILY,
-                    onClick = { onScheduleTypeChange(ScheduleType.DAILY) }
+                    onClick = { onAction(HabitFormUiAction.ScheduleTypeChanged(ScheduleType.DAILY)) }
                 )
                 ScheduleTypePill(
                     text = stringResource(Res.string.common_weekly),
                     isSelected = state.scheduleType == ScheduleType.WEEKLY,
-                    onClick = { onScheduleTypeChange(ScheduleType.WEEKLY) }
+                    onClick = { onAction(HabitFormUiAction.ScheduleTypeChanged(ScheduleType.WEEKLY)) }
                 )
             }
         }
@@ -361,7 +349,7 @@ internal fun HabitFormScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 SchedulePicker(
                     selectedDays = state.selectedDays,
-                    onSelectedDaysChange = onSelectedDaysChange
+                    onSelectedDaysChange = { onAction(HabitFormUiAction.SelectedDaysChanged(it)) }
                 )
             }
         }
@@ -381,7 +369,7 @@ internal fun HabitFormScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column {
-                FormListRow(
+                DetailRow(
                     icon = Icons.Outlined.Notifications,
                     iconTint = if (state.hasReminder) {
                         MaterialTheme.colorScheme.onSurface
@@ -400,7 +388,7 @@ internal fun HabitFormScreen(
                         Switch(
                             checked = state.hasReminder,
                             onCheckedChange = { checked: Boolean ->
-                                onHasReminderChange(checked)
+                                onAction(HabitFormUiAction.HasReminderChanged(checked))
                                 if (checked) isTimePickerVisible = true
                             }
                         )
@@ -408,7 +396,7 @@ internal fun HabitFormScreen(
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
 
-                FormListRow(
+                DetailRow(
                     icon = Icons.Outlined.Edit,
                     iconTint = if (isNoteExpanded) {
                         MaterialTheme.colorScheme.onSurface
@@ -434,7 +422,7 @@ internal fun HabitFormScreen(
                 ) {
                     UnderlineTextField(
                         value = state.description,
-                        onValueChange = onDescriptionChange,
+                        onValueChange = { onAction(HabitFormUiAction.DescriptionChanged(it)) },
                         placeholder = "",
                         maxLines = 5,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
@@ -447,7 +435,7 @@ internal fun HabitFormScreen(
 
         // Primary CTA
         PrimaryButton(
-            onClick = onSaveClick,
+            onClick = { onAction(HabitFormUiAction.SaveClicked) },
             enabled = state.isValid && !state.isSaving
         ) {
             if (state.isSaving) {
@@ -467,7 +455,11 @@ internal fun HabitFormScreen(
 
         // Secondary CTA
         TextButton(
-            onClick = if (state.isEditing) onDiscardChangesClick else onDiscardDraftClick,
+            onClick = if (state.isEditing) {
+                { onAction(HabitFormUiAction.DiscardChangesClicked) }
+            } else {
+                { onAction(HabitFormUiAction.DiscardDraftClicked) }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
@@ -483,9 +475,9 @@ internal fun HabitFormScreen(
 }
 
 @Composable
-private fun SectionLabel(text: String) {
+private fun SectionLabel(resource: StringResource) {
     Text(
-        text = text,
+        text = stringResource(resource),
         style = MaterialTheme.typography.labelSmall,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -583,7 +575,7 @@ private fun ScheduleTypePill(
 @Composable
 private fun ReminderTimePickerDialog(
     initialTime: LocalTime,
-    onConfirm: (LocalTime) -> Unit,
+    onConfirm: (hour: Int, minute: Int) -> Unit,
     onDismiss: () -> Unit
 ) {
     val timePickerState = rememberTimePickerState(
@@ -610,9 +602,7 @@ private fun ReminderTimePickerDialog(
                         Text(stringResource(Res.string.common_cancel))
                     }
                     TextButton(
-                        onClick = {
-                            onConfirm(LocalTime(timePickerState.hour, timePickerState.minute))
-                        }
+                        onClick = { onConfirm(timePickerState.hour, timePickerState.minute) }
                     ) {
                         Text(stringResource(Res.string.common_ok))
                     }

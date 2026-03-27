@@ -20,9 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.HabitType
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.common_quantitative
-import habitlock.composeapp.generated.resources.habit_form_type_binary_label
+import com.ricardocosteira.habitlock.presentation.ui.labelRes
 import org.jetbrains.compose.resources.stringResource
 
 private val PillShape = RoundedCornerShape(22.dp)
@@ -51,10 +49,7 @@ fun TypeToggle(
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
             }
-            val label = when (type) {
-                HabitType.BINARY -> stringResource(Res.string.habit_form_type_binary_label)
-                HabitType.QUANTITATIVE -> stringResource(Res.string.common_quantitative)
-            }
+            val label = stringResource(type.labelRes)
 
             Box(
                 modifier = Modifier

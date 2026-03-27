@@ -29,6 +29,9 @@ import com.ricardocosteira.habitlock.presentation.ui.onboarding.OnboardingViewMo
 import com.ricardocosteira.habitlock.presentation.ui.settings.SettingsViewModel
 import com.ricardocosteira.habitlock.presentation.ui.startup.StartupViewModel
 import com.ricardocosteira.habitlock.presentation.ui.today.TodayViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
@@ -43,6 +46,11 @@ import me.tatarka.inject.annotations.Provides
 abstract class HabitLockAppComponent(
     @get:Provides val databaseDriverFactory: DatabaseDriverFactory
 ) {
+    // IO Dispatcher (singleton)
+    @AppScope
+    @Provides
+    fun provideIoDispatcher(): IoDispatcher = Dispatchers.IO
+
     // Database (singleton)
     @AppScope
     @Provides

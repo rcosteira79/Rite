@@ -47,4 +47,5 @@
     <string name="habit_form_cadence_week">week</string>
     <string name="habit_form_stepper_label_times">time(s)</string>
     <string name="habit_form_unit_label">UNIT</string>
+    <string name="habit_form_error_habit_not_found">Habit not found</string>
 </resources>

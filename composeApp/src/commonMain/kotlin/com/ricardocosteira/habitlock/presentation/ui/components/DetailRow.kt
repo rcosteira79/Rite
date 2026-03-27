@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 private val IconContainerSize = 36.dp
 
 @Composable
-fun FormListRow(
+fun DetailRow(
     icon: ImageVector,
     iconTint: Color,
     title: String,

@@ -39,17 +39,22 @@ data class HabitFormState(
 
         return nameValid && typeValid && quotaValid && daysValid
     }
-}
 
-/**
- * Events from the Create/Edit Habit screen.
- */
-sealed interface HabitFormEvent {
-    data object NavigateBack : HabitFormEvent
+    val resolvedReminderTime: LocalTime get() = reminderTime ?: DEFAULT_REMINDER_TIME
 
-    data object RequiredFieldsMissing : HabitFormEvent
+    val stepperValue: Int
+        get() = when (type) {
+            HabitType.BINARY -> quota.toIntOrNull() ?: 1
+            HabitType.QUANTITATIVE -> targetValue.toIntOrNull() ?: 1
+        }
 
-    data class ShowError(
-        val message: String?
-    ) : HabitFormEvent
+    fun stepperChangeAction(newValue: Int): HabitFormUiAction =
+        when (type) {
+            HabitType.BINARY -> HabitFormUiAction.QuotaChanged(newValue.toString())
+            HabitType.QUANTITATIVE -> HabitFormUiAction.TargetValueChanged(newValue.toString())
+        }
+
+    companion object {
+        val DEFAULT_REMINDER_TIME = LocalTime(9, 0)
+    }
 }

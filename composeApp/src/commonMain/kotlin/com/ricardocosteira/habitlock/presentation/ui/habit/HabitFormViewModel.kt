@@ -26,6 +26,8 @@ import kotlinx.datetime.TimeZone
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Clock
 
+private class HabitNotFoundException : Exception()
+
 @Inject
 class HabitFormViewModel(
     private val habitRepository: HabitRepository,
@@ -36,8 +38,7 @@ class HabitFormViewModel(
     private val _state = MutableStateFlow(HabitFormState())
 
     private companion object {
-        private const val ERROR_HABIT_NOT_FOUND = "Habit not found"
-        private val DEFAULT_REMINDER_TIME = LocalTime(9, 0)
+        private val DEFAULT_REMINDER_TIME = HabitFormState.DEFAULT_REMINDER_TIME
     }
 
     val state: StateFlow<HabitFormState> = _state.asStateFlow()
@@ -94,7 +95,8 @@ class HabitFormViewModel(
                     }
                     originalState = _state.value
                 } else {
-                    _state.update { it.copy(isLoading = false, error = ERROR_HABIT_NOT_FOUND) }
+                    _events.emit(HabitFormEvent.HabitNotFound)
+                    _state.update { it.copy(isLoading = false) }
                 }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.message) }
@@ -152,8 +154,11 @@ class HabitFormViewModel(
         _state.update { it.copy(reminderType = reminderType) }
     }
 
-    fun updateReminderTime(time: LocalTime) {
-        _state.update { it.copy(reminderTime = time) }
+    fun updateReminderTime(
+        hour: Int,
+        minute: Int
+    ) {
+        _state.update { it.copy(reminderTime = LocalTime(hour, minute)) }
     }
 
     fun updateIntervalMinutes(interval: String) {
@@ -191,24 +196,7 @@ class HabitFormViewModel(
             _state.update { it.copy(isSaving = true) }
 
             try {
-                val reminder = if (currentState.hasReminder) {
-                    HabitReminder(
-                        id = "",
-                        habitId = "",
-                        reminderType = currentState.reminderType,
-                        time = if (currentState.reminderType == ReminderType.FIXED) currentState.reminderTime else null,
-                        intervalMinutes = if (currentState.reminderType == ReminderType.PERIODIC) {
-                            currentState.intervalMinutes.toIntOrNull()
-                        } else {
-                            null
-                        },
-                        startTime = if (currentState.reminderType == ReminderType.PERIODIC) currentState.startTime else null,
-                        endTime = if (currentState.reminderType == ReminderType.PERIODIC) currentState.endTime else null,
-                        isActive = true
-                    )
-                } else {
-                    null
-                }
+                val reminder = buildReminder(currentState)
 
                 if (currentState.isEditing) {
                     updateExistingHabit(currentState, reminder)
@@ -217,11 +205,32 @@ class HabitFormViewModel(
                 }
 
                 _events.emit(HabitFormEvent.NavigateBack)
+            } catch (e: HabitNotFoundException) {
+                _state.update { it.copy(isSaving = false) }
+                _events.emit(HabitFormEvent.HabitNotFound)
             } catch (e: Exception) {
                 _state.update { it.copy(isSaving = false, error = e.message) }
                 _events.emit(HabitFormEvent.ShowError(e.message))
             }
         }
+    }
+
+    private fun buildReminder(state: HabitFormState): HabitReminder? {
+        if (!state.hasReminder) return null
+        return HabitReminder(
+            id = "",
+            habitId = "",
+            reminderType = state.reminderType,
+            time = if (state.reminderType == ReminderType.FIXED) state.reminderTime else null,
+            intervalMinutes = if (state.reminderType == ReminderType.PERIODIC) {
+                state.intervalMinutes.toIntOrNull()
+            } else {
+                null
+            },
+            startTime = if (state.reminderType == ReminderType.PERIODIC) state.startTime else null,
+            endTime = if (state.reminderType == ReminderType.PERIODIC) state.endTime else null,
+            isActive = true
+        )
     }
 
     private suspend fun createNewHabit(
@@ -257,8 +266,7 @@ class HabitFormViewModel(
         reminder: HabitReminder?
     ) {
         val habitId = state.habitId!!
-        val existingHabit = habitRepository.getHabitById(habitId)
-            ?: throw IllegalStateException(ERROR_HABIT_NOT_FOUND)
+        val existingHabit = habitRepository.getHabitById(habitId) ?: throw HabitNotFoundException()
 
         val updatedHabit = existingHabit.copy(
             name = state.name.trim(),

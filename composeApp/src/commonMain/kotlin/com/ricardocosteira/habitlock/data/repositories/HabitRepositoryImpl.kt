@@ -4,12 +4,11 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.ricardocosteira.habitlock.data.database.HabitLockDatabase
 import com.ricardocosteira.habitlock.data.mappers.EntityMappers.toDomain
+import com.ricardocosteira.habitlock.di.IoDispatcher
 import com.ricardocosteira.habitlock.domain.models.Habit
 import com.ricardocosteira.habitlock.domain.models.HabitReminder
 import com.ricardocosteira.habitlock.domain.models.HabitSchedule
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -18,7 +17,8 @@ import kotlin.time.Clock
 
 @Inject
 class HabitRepositoryImpl(
-    private val database: HabitLockDatabase
+    private val database: HabitLockDatabase,
+    private val ioDispatcher: IoDispatcher
 ) : HabitRepository {
     private val queries = database.habitLockQueries
 
@@ -26,23 +26,23 @@ class HabitRepositoryImpl(
         queries
             .getActiveHabits()
             .asFlow()
-            .mapToList(Dispatchers.IO)
+            .mapToList(ioDispatcher)
             .map { list -> list.map { it.toDomain() } }
 
     override fun observeArchivedHabits(): Flow<List<Habit>> =
         queries
             .getArchivedHabits()
             .asFlow()
-            .mapToList(Dispatchers.IO)
+            .mapToList(ioDispatcher)
             .map { list -> list.map { it.toDomain() } }
 
     override suspend fun getActiveHabits(): List<Habit> =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             queries.getActiveHabits().executeAsList().map { it.toDomain() }
         }
 
     override suspend fun getHabitById(habitId: String): Habit? =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             queries.getHabitById(habitId).executeAsOneOrNull()?.toDomain()
         }
 
@@ -50,8 +50,8 @@ class HabitRepositoryImpl(
         habit: Habit,
         schedule: HabitSchedule,
         reminder: HabitReminder?
-    ): Unit =
-        withContext(Dispatchers.IO) {
+    ) {
+        withContext(ioDispatcher) {
             database.transaction {
                 queries.insertHabit(
                     id = habit.id,
@@ -95,9 +95,10 @@ class HabitRepositoryImpl(
                 }
             }
         }
+    }
 
-    override suspend fun updateHabit(habit: Habit): Unit =
-        withContext(Dispatchers.IO) {
+    override suspend fun updateHabit(habit: Habit) {
+        withContext(ioDispatcher) {
             queries.updateHabit(
                 name = habit.name,
                 description = habit.description,
@@ -110,92 +111,101 @@ class HabitRepositoryImpl(
                 id = habit.id
             )
         }
+    }
 
     override suspend fun updateHabitStreak(
         habitId: String,
         currentStreak: Int,
         longestStreak: Int
-    ): Unit =
-        withContext(Dispatchers.IO) {
+    ) {
+        withContext(ioDispatcher) {
             queries.updateHabitStreak(
                 currentStreak = currentStreak.toLong(),
                 longestStreak = longestStreak.toLong(),
                 id = habitId
             )
         }
+    }
 
     override suspend fun updateHabitScore(
         habitId: String,
         totalCompletions: Int,
         expectedCompletions: Int
-    ): Unit =
-        withContext(Dispatchers.IO) {
+    ) {
+        withContext(ioDispatcher) {
             queries.updateHabitScore(
                 totalCompletions = totalCompletions.toLong(),
                 expectedCompletions = expectedCompletions.toLong(),
                 id = habitId
             )
         }
+    }
 
     override suspend fun incrementHabitTotalCompletions(
         habitId: String,
         amount: Int
-    ): Unit =
-        withContext(Dispatchers.IO) {
+    ) {
+        withContext(ioDispatcher) {
             queries.incrementHabitTotalCompletions(
                 totalCompletions = amount.toLong(),
                 id = habitId
             )
         }
+    }
 
     override suspend fun decrementHabitTotalCompletions(
         habitId: String,
         amount: Int
-    ): Unit =
-        withContext(Dispatchers.IO) {
+    ) {
+        withContext(ioDispatcher) {
             queries.decrementHabitTotalCompletions(
                 totalCompletions = amount.toLong(),
                 id = habitId,
                 totalCompletions_ = amount.toLong()
             )
         }
+    }
 
     override suspend fun incrementHabitExpectedCompletions(
         habitId: String,
         amount: Int
-    ): Unit =
-        withContext(Dispatchers.IO) {
+    ) {
+        withContext(ioDispatcher) {
             queries.incrementHabitExpectedCompletions(
                 expectedCompletions = amount.toLong(),
                 id = habitId
             )
         }
+    }
 
-    override suspend fun archiveHabit(habitId: String): Unit =
-        withContext(Dispatchers.IO) {
+    override suspend fun archiveHabit(habitId: String) {
+        withContext(ioDispatcher) {
             queries.archiveHabit(
                 archivedAt = Clock.System.now().toString(),
                 id = habitId
             )
         }
+    }
 
-    override suspend fun unarchiveHabit(habitId: String): Unit =
-        withContext(Dispatchers.IO) {
+    override suspend fun unarchiveHabit(habitId: String) {
+        withContext(ioDispatcher) {
             queries.unarchiveHabit(habitId)
         }
+    }
 
-    override suspend fun deleteHabit(habitId: String): Unit =
-        withContext(Dispatchers.IO) {
+    override suspend fun deleteHabit(habitId: String) {
+        withContext(ioDispatcher) {
             queries.deleteHabit(habitId)
         }
+    }
 
     override suspend fun getScheduleForHabit(habitId: String): HabitSchedule? =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             queries.getScheduleForHabit(habitId).executeAsOneOrNull()?.toDomain()
         }
 
-    override suspend fun updateSchedule(schedule: HabitSchedule): Unit =
-        withContext(Dispatchers.IO) {
+    override suspend fun updateSchedule(schedule: HabitSchedule) {
+        withContext(ioDispatcher) {
             queries.updateSchedule(
                 scheduleType = schedule.scheduleType.name,
                 startDate = schedule.startDate.toString(),
@@ -206,9 +216,10 @@ class HabitRepositoryImpl(
                 id = schedule.id
             )
         }
+    }
 
-    override suspend fun createScheduleForHabit(schedule: HabitSchedule): Unit =
-        withContext(Dispatchers.IO) {
+    override suspend fun createScheduleForHabit(schedule: HabitSchedule) {
+        withContext(ioDispatcher) {
             queries.insertSchedule(
                 id = schedule.id,
                 habitId = schedule.habitId,
@@ -220,14 +231,15 @@ class HabitRepositoryImpl(
                 specificDays = schedule.specificDays?.joinToString(",") { it.name }
             )
         }
+    }
 
     override suspend fun getRemindersForHabit(habitId: String): List<HabitReminder> =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             queries.getRemindersForHabit(habitId).executeAsList().map { it.toDomain() }
         }
 
-    override suspend fun updateReminder(reminder: HabitReminder): Unit =
-        withContext(Dispatchers.IO) {
+    override suspend fun updateReminder(reminder: HabitReminder) {
+        withContext(ioDispatcher) {
             queries.updateReminder(
                 reminderType = reminder.reminderType.name,
                 time = reminder.time?.toString(),
@@ -238,14 +250,16 @@ class HabitRepositoryImpl(
                 id = reminder.id
             )
         }
+    }
 
-    override suspend fun deleteReminder(reminderId: String): Unit =
-        withContext(Dispatchers.IO) {
+    override suspend fun deleteReminder(reminderId: String) {
+        withContext(ioDispatcher) {
             queries.deleteReminder(reminderId)
         }
+    }
 
-    override suspend fun createReminderForHabit(reminder: HabitReminder): Unit =
-        withContext(Dispatchers.IO) {
+    override suspend fun createReminderForHabit(reminder: HabitReminder) {
+        withContext(ioDispatcher) {
             queries.insertReminder(
                 id = reminder.id,
                 habitId = reminder.habitId,
@@ -257,4 +271,5 @@ class HabitRepositoryImpl(
                 isActive = if (reminder.isActive) 1 else 0
             )
         }
+    }
 }

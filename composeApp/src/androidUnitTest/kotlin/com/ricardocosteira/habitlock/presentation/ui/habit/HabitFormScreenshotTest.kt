@@ -34,20 +34,7 @@ class HabitFormScreenshotTest {
                         type = HabitType.BINARY,
                         selectedDays = DayOfWeek.entries.toSet()
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
@@ -64,20 +51,7 @@ class HabitFormScreenshotTest {
                         type = HabitType.BINARY,
                         selectedDays = DayOfWeek.entries.toSet()
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
@@ -97,20 +71,7 @@ class HabitFormScreenshotTest {
                         unit = "km",
                         selectedDays = DayOfWeek.entries.toSet()
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
@@ -128,20 +89,7 @@ class HabitFormScreenshotTest {
                         unit = "km",
                         selectedDays = DayOfWeek.entries.toSet()
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
@@ -160,20 +108,7 @@ class HabitFormScreenshotTest {
                         scheduleType = ScheduleType.WEEKLY,
                         selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
@@ -190,20 +125,7 @@ class HabitFormScreenshotTest {
                         scheduleType = ScheduleType.WEEKLY,
                         selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
@@ -222,20 +144,7 @@ class HabitFormScreenshotTest {
                         description = "Typical intention",
                         selectedDays = DayOfWeek.entries.toSet()
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
@@ -252,20 +161,7 @@ class HabitFormScreenshotTest {
                         description = "Typical intention",
                         selectedDays = DayOfWeek.entries.toSet()
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
@@ -285,20 +181,7 @@ class HabitFormScreenshotTest {
                         reminderTime = LocalTime(9, 0),
                         selectedDays = DayOfWeek.entries.toSet()
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
@@ -316,20 +199,7 @@ class HabitFormScreenshotTest {
                         reminderTime = LocalTime(9, 0),
                         selectedDays = DayOfWeek.entries.toSet()
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
@@ -349,20 +219,7 @@ class HabitFormScreenshotTest {
                         type = HabitType.BINARY,
                         selectedDays = DayOfWeek.entries.toSet()
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
@@ -380,20 +237,7 @@ class HabitFormScreenshotTest {
                         type = HabitType.BINARY,
                         selectedDays = DayOfWeek.entries.toSet()
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
@@ -414,20 +258,7 @@ class HabitFormScreenshotTest {
                         scheduleType = ScheduleType.WEEKLY,
                         selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
@@ -446,20 +277,7 @@ class HabitFormScreenshotTest {
                         scheduleType = ScheduleType.WEEKLY,
                         selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
                     ),
-                    onNameChange = {},
-                    onDescriptionChange = {},
-                    onTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onScheduleTypeChange = {},
-                    onSelectedDaysChange = {},
-                    onQuotaChange = {},
-                    onHasReminderChange = {},
-                    onReminderTimeChange = {},
-                    onSaveClick = {},
-                    onDeleteClick = {},
-                    onDiscardDraftClick = {},
-                    onDiscardChangesClick = {}
+                    onAction = {}
                 )
             }
         }
