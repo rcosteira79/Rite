@@ -1,6 +1,8 @@
 package com.ricardocosteira.habitlock.presentation.ui.habit
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -209,12 +211,17 @@ internal fun HabitFormScreen(
 
     val scrollState: ScrollState = rememberScrollState()
     val isScrolled: Boolean by remember { derivedStateOf { scrollState.value > 0 } }
-    val iconContainerColor: Color =
+    val targetColor: Color =
         if (isScrolled) {
             MaterialTheme.colorScheme.surfaceContainerHighest
         } else {
             Color.Transparent
         }
+    val iconContainerColor: Color by animateColorAsState(
+        targetValue = targetColor,
+        animationSpec = tween(durationMillis = 200),
+        label = "iconContainerColor",
+    )
 
     Scaffold(
         modifier = modifier,
