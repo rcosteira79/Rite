@@ -166,7 +166,7 @@ class TodayViewModel(
                     _events.emit(TodayEvent.HabitCompleted)
                 },
                 onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message))
+                    _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
                 },
             )
         }
@@ -196,7 +196,7 @@ class TodayViewModel(
                     }
                 },
                 onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message))
+                    _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
                 },
             )
         }
@@ -224,7 +224,7 @@ class TodayViewModel(
                     }
                 },
                 onFailure = { error: Throwable ->
-                    _events.emit(TodayEvent.ShowError(error.message))
+                    _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
                 },
             )
         }
@@ -250,7 +250,7 @@ class TodayViewModel(
                 onFailure = { error ->
                     when (error) {
                         is SkipLockedException -> _events.emit(TodayEvent.SkipLimitReached)
-                        else -> _events.emit(TodayEvent.ShowError(error.message))
+                        else -> _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
                     }
                 },
             )
@@ -267,7 +267,7 @@ class TodayViewModel(
                     _events.emit(TodayEvent.ActionUndone)
                 },
                 onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message))
+                    _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
                 },
             )
         }
@@ -280,7 +280,7 @@ class TodayViewModel(
                 loadTodayHabits()
                 _events.emit(TodayEvent.HabitArchived)
             } catch (e: Exception) {
-                _events.emit(TodayEvent.ShowError(e.message))
+                _events.emit(TodayEvent.ShowError(e.message ?: "Something went wrong"))
             }
         }
     }

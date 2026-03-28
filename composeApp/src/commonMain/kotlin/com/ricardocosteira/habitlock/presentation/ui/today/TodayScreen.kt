@@ -50,26 +50,20 @@ import com.ricardocosteira.habitlock.di.LocalAppComponent
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.common_error_generic
 import habitlock.composeapp.generated.resources.habit_lock_logo
 import habitlock.composeapp.generated.resources.today_empty_state_cta
 import habitlock.composeapp.generated.resources.today_empty_state_heading
 import habitlock.composeapp.generated.resources.today_empty_state_subtext
-import habitlock.composeapp.generated.resources.today_error_skip_limit_reached
 import habitlock.composeapp.generated.resources.today_section_focus
 import habitlock.composeapp.generated.resources.today_section_this_week
 import habitlock.composeapp.generated.resources.today_section_weekly
-import habitlock.composeapp.generated.resources.today_success_action_undone
-import habitlock.composeapp.generated.resources.today_success_habit_archived
-import habitlock.composeapp.generated.resources.today_success_habit_completed
-import habitlock.composeapp.generated.resources.today_success_habit_skipped
-import habitlock.composeapp.generated.resources.today_success_progress_added
 import habitlock.composeapp.generated.resources.today_timezone_changed_dismiss
 import habitlock.composeapp.generated.resources.today_timezone_changed_message
 import habitlock.composeapp.generated.resources.today_timezone_changed_title
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
@@ -90,26 +84,24 @@ fun TodayScreen(
     val viewModel = LocalAppComponent.current.todayViewModel
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val messageHabitCompleted = stringResource(Res.string.today_success_habit_completed)
-    val messageProgressAdded = stringResource(Res.string.today_success_progress_added)
-    val messageHabitSkipped = stringResource(Res.string.today_success_habit_skipped)
-    val messageActionUndone = stringResource(Res.string.today_success_action_undone)
-    val messageHabitArchived = stringResource(Res.string.today_success_habit_archived)
-    val messageSkipLimitReached = stringResource(Res.string.today_error_skip_limit_reached)
-    val messageGenericError = stringResource(Res.string.common_error_generic)
-
     LaunchedEffect(viewModel) {
-        viewModel.events.collect { event ->
+        viewModel.events.collect { event: TodayEvent ->
             when (event) {
-                is TodayEvent.NavigateToHabitDetail -> onNavigateToHabitDetail(event.instanceId)
-                TodayEvent.NavigateToCreateHabit -> onNavigateToCreateHabit()
-                TodayEvent.HabitCompleted -> snackbarHostState.showSnackbar(messageHabitCompleted)
-                TodayEvent.ProgressAdded -> snackbarHostState.showSnackbar(messageProgressAdded)
-                TodayEvent.HabitSkipped -> snackbarHostState.showSnackbar(messageHabitSkipped)
-                TodayEvent.ActionUndone -> snackbarHostState.showSnackbar(messageActionUndone)
-                TodayEvent.HabitArchived -> snackbarHostState.showSnackbar(messageHabitArchived)
-                TodayEvent.SkipLimitReached -> snackbarHostState.showSnackbar(messageSkipLimitReached)
-                is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message ?: messageGenericError)
+                is TodayEvent.NavigateToHabitDetail -> {
+                    onNavigateToHabitDetail(event.instanceId)
+                }
+
+                TodayEvent.NavigateToCreateHabit -> {
+                    onNavigateToCreateHabit()
+                }
+
+                is TodayEvent.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(getString(event.messageRes))
+                }
+
+                is TodayEvent.ShowError -> {
+                    snackbarHostState.showSnackbar(event.message)
+                }
             }
         }
     }

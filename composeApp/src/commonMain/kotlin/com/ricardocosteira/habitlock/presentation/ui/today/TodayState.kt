@@ -2,6 +2,14 @@ package com.ricardocosteira.habitlock.presentation.ui.today
 
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.today_error_skip_limit_reached
+import habitlock.composeapp.generated.resources.today_success_action_undone
+import habitlock.composeapp.generated.resources.today_success_habit_archived
+import habitlock.composeapp.generated.resources.today_success_habit_completed
+import habitlock.composeapp.generated.resources.today_success_habit_skipped
+import habitlock.composeapp.generated.resources.today_success_progress_added
+import org.jetbrains.compose.resources.StringResource
 
 /**
  * State for the Today screen.
@@ -30,19 +38,35 @@ sealed interface TodayEvent {
 
     data object NavigateToCreateHabit : TodayEvent
 
-    data object HabitCompleted : TodayEvent
+    sealed interface ShowSnackbar : TodayEvent {
+        val messageRes: StringResource
+    }
 
-    data object ProgressAdded : TodayEvent
+    data object HabitCompleted : ShowSnackbar {
+        override val messageRes: StringResource = Res.string.today_success_habit_completed
+    }
 
-    data object HabitSkipped : TodayEvent
+    data object ProgressAdded : ShowSnackbar {
+        override val messageRes: StringResource = Res.string.today_success_progress_added
+    }
 
-    data object ActionUndone : TodayEvent
+    data object HabitSkipped : ShowSnackbar {
+        override val messageRes: StringResource = Res.string.today_success_habit_skipped
+    }
 
-    data object HabitArchived : TodayEvent
+    data object ActionUndone : ShowSnackbar {
+        override val messageRes: StringResource = Res.string.today_success_action_undone
+    }
 
-    data object SkipLimitReached : TodayEvent
+    data object HabitArchived : ShowSnackbar {
+        override val messageRes: StringResource = Res.string.today_success_habit_archived
+    }
+
+    data object SkipLimitReached : ShowSnackbar {
+        override val messageRes: StringResource = Res.string.today_error_skip_limit_reached
+    }
 
     data class ShowError(
-        val message: String?,
+        val message: String,
     ) : TodayEvent
 }
