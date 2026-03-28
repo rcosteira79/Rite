@@ -30,10 +30,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
+import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
+import com.ricardocosteira.habitlock.presentation.ui.theme.HabitLockThemeFallback
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_skip
 import habitlock.composeapp.generated.resources.today_action_complete
@@ -57,7 +61,6 @@ private val PROGRESS_BAR_CORNER_RADIUS = 99.dp
 
 private val COLLAPSED_VERTICAL_PADDING = 16.dp
 private val COLLAPSED_HORIZONTAL_PADDING = 24.dp
-private val EXPANDED_PADDING = 24.dp
 
 private val HABIT_NAME_COLLAPSED_SIZE = 15.sp
 private val HABIT_NAME_EXPANDED_SIZE = 18.sp
@@ -66,8 +69,9 @@ private val PROGRESS_BAR_COLLAPSED_HEIGHT = 3.dp
 private val PROGRESS_BAR_EXPANDED_HEIGHT = 8.dp
 
 private val RESOLVED_ICON_SIZE = 40.dp
-private val RESOLVED_ALPHA = 0.8f
-private val FAILED_ALPHA = 0.5f
+
+private const val RESOLVED_ALPHA = 0.8f
+private const val FAILED_ALPHA = 0.5f
 
 @Composable
 fun HabitCard(
@@ -126,15 +130,15 @@ private fun PendingHabitCard(
         shape = RoundedCornerShape(CARD_CORNER_RADIUS),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         modifier = modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(CARD_CORNER_RADIUS))
-                .clickable(onClick = onToggleExpand)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(CARD_CORNER_RADIUS))
+            .clickable(onClick = onToggleExpand)
     ) {
         Column(
             modifier = Modifier.padding(
-                    horizontal = COLLAPSED_HORIZONTAL_PADDING,
-                    vertical = COLLAPSED_VERTICAL_PADDING
-                )
+                horizontal = COLLAPSED_HORIZONTAL_PADDING,
+                vertical = COLLAPSED_VERTICAL_PADDING
+            )
         ) {
             // Header row: always visible
             Row(
@@ -149,16 +153,16 @@ private fun PendingHabitCard(
                             Text(
                                 text = "$currentValue",
                                 style = MaterialTheme.typography.headlineSmall.copy(
-                                        fontWeight = FontWeight.Bold
-                                    ),
+                                    fontWeight = FontWeight.Bold
+                                ),
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.width(2.dp))
                             Text(
                                 text = "/ $targetValue $unitText".trim(),
                                 style = MaterialTheme.typography.labelSmall.copy(
-                                        fontWeight = FontWeight.Medium
-                                    ),
+                                    fontWeight = FontWeight.Medium
+                                ),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
@@ -169,9 +173,9 @@ private fun PendingHabitCard(
                     Text(
                         text = habit.name.uppercase(),
                         style = MaterialTheme.typography.titleSmall.copy(
-                                fontSize = if (isExpanded) HABIT_NAME_EXPANDED_SIZE else HABIT_NAME_COLLAPSED_SIZE,
-                                fontWeight = FontWeight.Bold
-                            ),
+                            fontSize = if (isExpanded) HABIT_NAME_EXPANDED_SIZE else HABIT_NAME_COLLAPSED_SIZE,
+                            fontWeight = FontWeight.Bold
+                        ),
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = if (isExpanded) 2 else 1,
                         overflow = TextOverflow.Ellipsis
@@ -200,9 +204,9 @@ private fun PendingHabitCard(
                     ) {
                         if (isQuantitative) {
                             val incrementLabel: String = stringResource(
-                                    Res.string.today_action_increment_short,
-                                    habit.defaultIncrement
-                                )
+                                Res.string.today_action_increment_short,
+                                habit.defaultIncrement
+                            )
                             Surface(
                                 shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
                                 color = MaterialTheme.colorScheme.primaryContainer,
@@ -211,8 +215,8 @@ private fun PendingHabitCard(
                                 Text(
                                     text = incrementLabel,
                                     style = MaterialTheme.typography.labelMedium.copy(
-                                            fontWeight = FontWeight.Bold
-                                        ),
+                                        fontWeight = FontWeight.Bold
+                                    ),
                                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                                 )
@@ -226,8 +230,8 @@ private fun PendingHabitCard(
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = stringResource(
-                                            Res.string.today_action_complete
-                                        ),
+                                        Res.string.today_action_complete
+                                    ),
                                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                     modifier = Modifier.padding(8.dp)
                                 )
@@ -238,23 +242,23 @@ private fun PendingHabitCard(
                             Text(
                                 text = stringResource(Res.string.common_skip).uppercase(),
                                 style = MaterialTheme.typography.labelMedium.copy(
-                                        fontWeight = FontWeight.Bold
-                                    ),
+                                    fontWeight = FontWeight.Bold
+                                ),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier
-                                        .clip(RoundedCornerShape(BUTTON_CORNER_RADIUS))
-                                        .clickable(onClick = onSkip)
-                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                    .clip(RoundedCornerShape(BUTTON_CORNER_RADIUS))
+                                    .clickable(onClick = onSkip)
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
                             )
                         }
                     }
                 } else {
                     StatusBadge(
                         text = if (isQuantitative && hasProgress) {
-                                stringResource(Res.string.today_badge_in_progress)
-                            } else {
-                                stringResource(Res.string.today_badge_pending)
-                            }
+                            stringResource(Res.string.today_badge_in_progress)
+                        } else {
+                            stringResource(Res.string.today_badge_pending)
+                        }
                     )
                 }
             }
@@ -264,21 +268,21 @@ private fun PendingHabitCard(
                 Spacer(modifier = Modifier.height(if (isExpanded) 16.dp else 10.dp))
                 Box(
                     modifier = Modifier
-                            .fillMaxWidth()
+                        .fillMaxWidth()
+                        .height(
+                            if (isExpanded) PROGRESS_BAR_EXPANDED_HEIGHT else PROGRESS_BAR_COLLAPSED_HEIGHT
+                        )
+                        .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(fraction = habit.progressPercentage)
                             .height(
                                 if (isExpanded) PROGRESS_BAR_EXPANDED_HEIGHT else PROGRESS_BAR_COLLAPSED_HEIGHT
                             )
                             .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                ) {
-                    Box(
-                        modifier = Modifier
-                                .fillMaxWidth(fraction = habit.progressPercentage)
-                                .height(
-                                    if (isExpanded) PROGRESS_BAR_EXPANDED_HEIGHT else PROGRESS_BAR_COLLAPSED_HEIGHT
-                                )
-                                .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
                     )
                 }
             }
@@ -292,10 +296,10 @@ private fun PendingHabitCard(
                 ) {
                     if (isQuantitative) {
                         val incrementLabel: String = stringResource(
-                                Res.string.today_action_increment,
-                                habit.defaultIncrement,
-                                unitText
-                            )
+                            Res.string.today_action_increment,
+                            habit.defaultIncrement,
+                            unitText
+                        )
                         ActionButton(
                             text = incrementLabel,
                             onClick = onIncrementProgress,
@@ -355,16 +359,16 @@ private fun ResolvedHabitRow(
     ) {
         Row(
             modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Check icon circle
             Box(
                 modifier = Modifier
-                        .size(RESOLVED_ICON_SIZE)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    .size(RESOLVED_ICON_SIZE)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -382,8 +386,8 @@ private fun ResolvedHabitRow(
                 Text(
                     text = habit.name.uppercase(),
                     style = MaterialTheme.typography.titleSmall.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
+                        fontWeight = FontWeight.Bold
+                    ),
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -391,28 +395,28 @@ private fun ResolvedHabitRow(
                 )
 
                 val subtitle: String = when {
-                        habit.isCompleted -> {
-                            stringResource(
-                                Res.string.today_resolved_completed_at,
-                                habit.completedAtText ?: ""
-                            ).uppercase()
-                        }
-
-                        habit.isSkipped -> {
-                            stringResource(
-                                Res.string.today_resolved_skipped_at,
-                                habit.completedAtText ?: ""
-                            ).uppercase()
-                        }
-
-                        habit.isFailed -> {
-                            stringResource(Res.string.today_resolved_failed).uppercase()
-                        }
-
-                        else -> {
-                            ""
-                        }
+                    habit.isCompleted -> {
+                        stringResource(
+                            Res.string.today_resolved_completed_at,
+                            habit.completedAtText ?: ""
+                        ).uppercase()
                     }
+
+                    habit.isSkipped -> {
+                        stringResource(
+                            Res.string.today_resolved_skipped_at,
+                            habit.completedAtText ?: ""
+                        ).uppercase()
+                    }
+
+                    habit.isFailed -> {
+                        stringResource(Res.string.today_resolved_failed).uppercase()
+                    }
+
+                    else -> {
+                        ""
+                    }
+                }
 
                 Text(
                     text = subtitle,
@@ -445,8 +449,8 @@ private fun StatusBadge(text: String) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.Medium
-                ),
+                fontWeight = FontWeight.Medium
+            ),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         )
@@ -461,16 +465,16 @@ private fun ActionButton(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor: Color = if (isPrimary) {
-            MaterialTheme.colorScheme.primary
-        } else {
-            MaterialTheme.colorScheme.surfaceContainerHighest
-        }
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerHighest
+    }
 
     val textColor: Color = if (isPrimary) {
-            MaterialTheme.colorScheme.onPrimary
-        } else {
-            MaterialTheme.colorScheme.onSurface
-        }
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
 
     Surface(
         shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
@@ -481,17 +485,59 @@ private fun ActionButton(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                    .height(BUTTON_HEIGHT)
-                    .then(if (isPrimary) Modifier.fillMaxWidth() else Modifier)
-                    .padding(horizontal = 16.dp)
+                .height(BUTTON_HEIGHT)
+                .then(if (isPrimary) Modifier.fillMaxWidth() else Modifier)
+                .padding(horizontal = 16.dp)
         ) {
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
+                    fontWeight = FontWeight.Bold
+                ),
                 color = textColor
             )
         }
     }
 }
+
+// --- Previews ---
+
+@Preview
+@Composable
+private fun BinaryCollapsedPreview() {
+    HabitLockThemeFallback {
+        HabitCard(
+            habit = previewBinaryHabit(),
+            isExpanded = false,
+            onToggleExpand = {},
+            onComplete = {},
+            onSkip = {},
+            onUndo = {},
+            onIncrementProgress = {},
+            onCustomProgress = {}
+        )
+    }
+}
+
+private fun previewBinaryHabit(
+    status: HabitStatus = HabitStatus.PENDING,
+    completedAtText: String? = null
+): TodayHabitUiModel = TodayHabitUiModel(
+    instanceId = "preview-1",
+    habitId = "habit-1",
+    name = "Morning Meditation",
+    description = "10 minutes of mindfulness",
+    type = HabitType.BINARY,
+    status = status,
+    completedValue = null,
+    targetValue = null,
+    unit = null,
+    defaultIncrement = 1,
+    progressPercentage = 0f,
+    isSkipLocked = false,
+    currentStreak = 5,
+    longestStreak = 12,
+    scorePercentage = 85,
+    cadence = ScheduleType.DAILY,
+    completedAtText = completedAtText
+)
