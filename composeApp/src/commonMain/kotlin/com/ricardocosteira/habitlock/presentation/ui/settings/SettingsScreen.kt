@@ -91,13 +91,15 @@ fun SettingsScreen(
             when (event) {
                 SettingsEvent.SettingsSaved -> snackbarHostState.showSnackbar(messageSettingsSaved)
 
-                SettingsEvent.DailySummaryUpdated -> snackbarHostState.showSnackbar(
-                    messageDailySummaryUpdated
-                )
+                SettingsEvent.DailySummaryUpdated ->
+                    snackbarHostState.showSnackbar(
+                        messageDailySummaryUpdated
+                    )
 
-                is SettingsEvent.ShowError -> snackbarHostState.showSnackbar(
-                    event.message ?: messageGenericError
-                )
+                is SettingsEvent.ShowError ->
+                    snackbarHostState.showSnackbar(
+                        event.message ?: messageGenericError
+                    )
             }
         }
     }
@@ -159,17 +161,19 @@ private fun SettingsScreen(
                     Column(modifier = Modifier.selectableGroup()) {
                         UndoPolicyOption(
                             title = stringResource(Res.string.settings_undo_disabled_label),
-                            description = stringResource(
-                                Res.string.settings_undo_disabled_description
-                            ),
+                            description =
+                                stringResource(
+                                    Res.string.settings_undo_disabled_description
+                                ),
                             selected = state.undoPolicy == UndoPolicy.NONE,
                             onClick = { onUndoPolicyChange(UndoPolicy.NONE) }
                         )
                         UndoPolicyOption(
                             title = stringResource(Res.string.settings_undo_today_label),
-                            description = stringResource(
-                                Res.string.settings_undo_today_description
-                            ),
+                            description =
+                                stringResource(
+                                    Res.string.settings_undo_today_description
+                                ),
                             selected = state.undoPolicy == UndoPolicy.TODAY_ONLY,
                             onClick = { onUndoPolicyChange(UndoPolicy.TODAY_ONLY) }
                         )
@@ -188,10 +192,11 @@ private fun SettingsScreen(
                 SettingsSection(title = stringResource(Res.string.settings_section_snooze)) {
                     Column {
                         Text(
-                            text = stringResource(
-                                Res.string.settings_snooze_max_duration,
-                                state.maxSnoozeDurationMinutes
-                            ),
+                            text =
+                                stringResource(
+                                    Res.string.settings_snooze_max_duration,
+                                    state.maxSnoozeDurationMinutes
+                                ),
                             style = MaterialTheme.typography.bodyMedium
                         )
 
@@ -218,9 +223,10 @@ private fun SettingsScreen(
                         ) {
                             Column {
                                 Text(
-                                    text = stringResource(
-                                        Res.string.settings_snooze_unlimited_label
-                                    ),
+                                    text =
+                                        stringResource(
+                                            Res.string.settings_snooze_unlimited_label
+                                        ),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 Text(

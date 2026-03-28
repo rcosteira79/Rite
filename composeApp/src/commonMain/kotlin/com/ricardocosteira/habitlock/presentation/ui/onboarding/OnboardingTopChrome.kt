@@ -43,11 +43,12 @@ fun OnboardingTopChrome(currentStep: Int, onSkip: () -> Unit, modifier: Modifier
     ) {
         ProgressDots(
             currentStep = currentStep,
-            modifier = Modifier
-                .weight(1f)
-                .semantics {
-                    contentDescription = stepDescription
-                }
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .semantics {
+                        contentDescription = stepDescription
+                    }
         )
 
         TextButton(onClick = onSkip) {
@@ -69,11 +70,12 @@ private fun ProgressDots(currentStep: Int, modifier: Modifier = Modifier) {
     ) {
         repeat(TOTAL_STEPS) { index ->
             StepDot(
-                state = when {
-                    index < currentStep -> DotState.Done
-                    index == currentStep -> DotState.Active
-                    else -> DotState.Inactive
-                }
+                state =
+                    when {
+                        index < currentStep -> DotState.Done
+                        index == currentStep -> DotState.Active
+                        else -> DotState.Inactive
+                    }
             )
         }
     }
@@ -90,29 +92,32 @@ private fun StepDot(state: DotState, modifier: Modifier = Modifier) {
         label = "dot_width"
     )
 
-    val targetAlpha = if (state == DotState.Inactive) {
-        1f
-    } else if (state == DotState.Done) {
-        DONE_DOT_ALPHA
-    } else {
-        1f
-    }
+    val targetAlpha =
+        if (state == DotState.Inactive) {
+            1f
+        } else if (state == DotState.Done) {
+            DONE_DOT_ALPHA
+        } else {
+            1f
+        }
     val animatedAlpha by animateFloatAsState(
         targetValue = targetAlpha,
         label = "dot_alpha"
     )
 
-    val color = if (state == DotState.Inactive) {
-        MaterialTheme.colorScheme.surfaceVariant
-    } else {
-        MaterialTheme.colorScheme.primary
-    }
+    val color =
+        if (state == DotState.Inactive) {
+            MaterialTheme.colorScheme.surfaceVariant
+        } else {
+            MaterialTheme.colorScheme.primary
+        }
 
     Box(
-        modifier = modifier
-            .width(animatedWidth)
-            .height(6.dp)
-            .alpha(animatedAlpha)
-            .background(color = color, shape = RoundedCornerShape(3.dp))
+        modifier =
+            modifier
+                .width(animatedWidth)
+                .height(6.dp)
+                .alpha(animatedAlpha)
+                .background(color = color, shape = RoundedCornerShape(3.dp))
     )
 }

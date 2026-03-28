@@ -91,9 +91,10 @@ fun TodayScreen(
 
                 TodayEvent.NavigateToCreateHabit -> onNavigateToCreateHabit()
 
-                is TodayEvent.ShowSnackbar -> snackbarHostState.showSnackbar(
-                    getString(event.messageRes)
-                )
+                is TodayEvent.ShowSnackbar ->
+                    snackbarHostState.showSnackbar(
+                        getString(event.messageRes)
+                    )
 
                 is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
             }
@@ -210,8 +211,7 @@ internal fun TodayScreen(
                             habit = habit,
                             isExpanded = habit.instanceId in expandedCardIds,
                             onToggleExpand = {
-                                expandedCardIds =
-                                    if (habit.instanceId in expandedCardIds) {
+                                expandedCardIds = if (habit.instanceId in expandedCardIds) {
                                         expandedCardIds - habit.instanceId
                                     } else {
                                         expandedCardIds + habit.instanceId
@@ -234,8 +234,7 @@ internal fun TodayScreen(
                     if (state.resolvedDaily.isNotEmpty()) {
                         item(key = "daily_divider") {
                             HorizontalDivider(
-                                modifier =
-                                    Modifier
+                                modifier = Modifier
                                         .alpha(DIVIDER_ALPHA)
                                         .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
                             )
@@ -279,8 +278,7 @@ internal fun TodayScreen(
                                 habit = habit,
                                 isExpanded = habit.instanceId in expandedCardIds,
                                 onToggleExpand = {
-                                    expandedCardIds =
-                                        if (habit.instanceId in expandedCardIds) {
+                                    expandedCardIds = if (habit.instanceId in expandedCardIds) {
                                             expandedCardIds - habit.instanceId
                                         } else {
                                             expandedCardIds + habit.instanceId
@@ -303,8 +301,7 @@ internal fun TodayScreen(
                         if (state.resolvedWeekly.isNotEmpty()) {
                             item(key = "weekly_divider") {
                                 HorizontalDivider(
-                                    modifier =
-                                        Modifier
+                                    modifier = Modifier
                                             .alpha(DIVIDER_ALPHA)
                                             .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
                                 )
@@ -341,13 +338,11 @@ internal fun TodayScreen(
 @Composable
 private fun rememberFormattedDate(): String {
     val now = remember { Clock.System.now() }
-    val localDate =
-        remember(now) {
+    val localDate = remember(now) {
             now.toLocalDateTime(TimeZone.currentSystemDefault()).date
         }
 
-    val monthAbbreviation: String =
-        remember(localDate) {
+    val monthAbbreviation: String = remember(localDate) {
             formatMonthAbbreviation(localDate.month)
         }
 
@@ -407,18 +402,15 @@ private fun formatMonthAbbreviation(month: Month): String = when (month) {
 @Composable
 private fun TimezoneWarningBanner(previousTimezone: String?, onDismiss: () -> Unit) {
     Card(
-        modifier =
-            Modifier
+        modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-        colors =
-            CardDefaults.cardColors(
+        colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer
             )
     ) {
         Row(
-            modifier =
-                Modifier
+            modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -432,9 +424,9 @@ private fun TimezoneWarningBanner(previousTimezone: String?, onDismiss: () -> Un
                 )
                 Text(
                     text = stringResource(
-                        Res.string.today_timezone_changed_message,
-                        previousTimezone ?: ""
-                    ),
+                            Res.string.today_timezone_changed_message,
+                            previousTimezone ?: ""
+                        ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onTertiaryContainer
                 )
@@ -457,8 +449,7 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
         Image(
             painter = painterResource(Res.drawable.habit_lock_logo),
             contentDescription = null,
-            modifier =
-                Modifier
+            modifier = Modifier
                     .size(160.dp)
                     .clip(RoundedCornerShape(32.dp))
                     .background(
@@ -493,8 +484,7 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
         Button(
             onClick = onAddFirstHabit,
             shape = RoundedCornerShape(16.dp),
-            colors =
-                ButtonDefaults.buttonColors(
+            colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),

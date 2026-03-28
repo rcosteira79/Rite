@@ -53,8 +53,8 @@ fun QuantitativeInputBottomSheet(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
+                    .fillMaxWidth()
+                    .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -76,21 +76,21 @@ fun QuantitativeInputBottomSheet(
             if (habit.targetValue != null) {
                 Text(
                     text = if (habit.unit !=
-                        null
-                    ) {
-                        stringResource(
-                            Res.string.quantitative_input_current_with_unit,
-                            habit.completedValue ?: 0,
-                            habit.targetValue,
-                            habit.unit
-                        )
-                    } else {
-                        stringResource(
-                            Res.string.quantitative_input_current_no_unit,
-                            habit.completedValue ?: 0,
-                            habit.targetValue
-                        )
-                    },
+                            null
+                        ) {
+                            stringResource(
+                                Res.string.quantitative_input_current_with_unit,
+                                habit.completedValue ?: 0,
+                                habit.targetValue,
+                                habit.unit
+                            )
+                        } else {
+                            stringResource(
+                                Res.string.quantitative_input_current_no_unit,
+                                habit.completedValue ?: 0,
+                                habit.targetValue
+                            )
+                        },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

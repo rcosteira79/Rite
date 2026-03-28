@@ -69,9 +69,10 @@ fun StrictnessStep(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -85,13 +86,14 @@ fun StrictnessStep(
         Spacer(modifier = Modifier.height(14.dp))
 
         Box(
-            modifier = Modifier
-                .width(36.dp)
-                .height(3.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(2.dp)
-                )
+            modifier =
+                Modifier
+                    .width(36.dp)
+                    .height(3.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(2.dp)
+                    )
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -125,11 +127,12 @@ private fun PresetCard(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.primaryContainer
-        } else {
-            MaterialTheme.colorScheme.surfaceContainerLow
-        },
+        targetValue =
+            if (isSelected) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceContainerLow
+            },
         animationSpec = if (reduceMotion) snap() else tween(200),
         label = "presetCardBackground"
     )
@@ -144,45 +147,47 @@ private fun PresetCard(
     )
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .then(
-                if (isSelected) {
-                    Modifier.shadow(
-                        elevation = 8.dp,
-                        shape = RoundedCornerShape(cornerRadius)
-                    )
-                } else {
-                    Modifier
-                }
-            ).clip(RoundedCornerShape(cornerRadius))
-            .border(
-                width = 1.dp,
-                color = if (isSelected) {
-                    MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f)
-                } else {
-                    MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-                },
-                shape = RoundedCornerShape(cornerRadius)
-            ).background(backgroundColor)
-            .then(
-                if (isSelected) {
-                    Modifier.background(
-                        Brush.verticalGradient(
-                            listOf(Color.Transparent, Color.Black.copy(alpha = 0.25f))
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .then(
+                    if (isSelected) {
+                        Modifier.shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(cornerRadius)
                         )
-                    )
-                } else {
-                    Modifier
-                }
-            ).animateContentSize(animationSpec = tween(200))
-            .clickable { onClick() }
-            .semantics {
-                role = Role.RadioButton
-                selected = isSelected
-                stateDescription =
-                    if (isSelected) selectedStateDescription else notSelectedStateDescription
-            }.padding(16.dp)
+                    } else {
+                        Modifier
+                    }
+                ).clip(RoundedCornerShape(cornerRadius))
+                .border(
+                    width = 1.dp,
+                    color =
+                        if (isSelected) {
+                            MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f)
+                        } else {
+                            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                        },
+                    shape = RoundedCornerShape(cornerRadius)
+                ).background(backgroundColor)
+                .then(
+                    if (isSelected) {
+                        Modifier.background(
+                            Brush.verticalGradient(
+                                listOf(Color.Transparent, Color.Black.copy(alpha = 0.25f))
+                            )
+                        )
+                    } else {
+                        Modifier
+                    }
+                ).animateContentSize(animationSpec = tween(200))
+                .clickable { onClick() }
+                .semantics {
+                    role = Role.RadioButton
+                    selected = isSelected
+                    stateDescription =
+                        if (isSelected) selectedStateDescription else notSelectedStateDescription
+                }.padding(16.dp)
     ) {
         if (isSelected) {
             // onPrimaryContainer: Forest Discipline #FFFFFF / Stoic Night #E5E2DF
@@ -201,19 +206,21 @@ private fun PresetCard(
                 )
                 if (preset.isRecommended) {
                     Box(
-                        modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = cardContent.copy(alpha = 0.5f),
-                                shape = RoundedCornerShape(percent = 50)
-                            ).padding(horizontal = 12.dp, vertical = 3.dp)
+                        modifier =
+                            Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = cardContent.copy(alpha = 0.5f),
+                                    shape = RoundedCornerShape(percent = 50)
+                                ).padding(horizontal = 12.dp, vertical = 3.dp)
                     ) {
                         Text(
                             text = stringResource(Res.string.strictness_badge_recommended),
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 0.12.sp
-                            ),
+                            style =
+                                MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 0.12.sp
+                                ),
                             color = cardContent.copy(alpha = 0.8f)
                         )
                     }
@@ -252,9 +259,10 @@ private fun PresetCard(
                     )
                     Text(
                         text = rule.value,
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.SemiBold
-                        ),
+                        style =
+                            MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.SemiBold
+                            ),
                         color = cardContent
                     )
                 }
@@ -265,11 +273,12 @@ private fun PresetCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                val iconTint = if (preset == OnboardingStrictnessPreset.LOCKED) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                }
+                val iconTint =
+                    if (preset == OnboardingStrictnessPreset.LOCKED) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
                 Icon(
                     imageVector = preset.icon(),
                     contentDescription = null,
@@ -280,9 +289,10 @@ private fun PresetCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = preset.label,
-                        style = MaterialTheme.typography.titleSmall.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
+                        style =
+                            MaterialTheme.typography.titleSmall.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(

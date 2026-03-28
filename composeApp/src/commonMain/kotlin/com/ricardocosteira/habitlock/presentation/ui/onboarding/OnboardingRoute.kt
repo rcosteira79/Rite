@@ -34,13 +34,15 @@ fun OnboardingRoute(
 
                 OnboardingEvent.EmptyHabitName -> snackbarHostState.showSnackbar(messageEmptyName)
 
-                OnboardingEvent.MissingTargetValue -> snackbarHostState.showSnackbar(
-                    messageMissingTarget
-                )
+                OnboardingEvent.MissingTargetValue ->
+                    snackbarHostState.showSnackbar(
+                        messageMissingTarget
+                    )
 
-                OnboardingEvent.InvalidTargetValue -> snackbarHostState.showSnackbar(
-                    messageInvalidTarget
-                )
+                OnboardingEvent.InvalidTargetValue ->
+                    snackbarHostState.showSnackbar(
+                        messageInvalidTarget
+                    )
             }
         }
     }

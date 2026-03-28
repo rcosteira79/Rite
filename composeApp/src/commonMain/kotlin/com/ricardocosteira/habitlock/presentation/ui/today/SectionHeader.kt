@@ -16,8 +16,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun SectionHeader(title: String, trailingLabel: String, modifier: Modifier = Modifier) {
     Row(
-        modifier =
-            modifier
+        modifier = modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -25,8 +24,7 @@ fun SectionHeader(title: String, trailingLabel: String, modifier: Modifier = Mod
     ) {
         Text(
             text = title,
-            style =
-                MaterialTheme.typography.titleLarge.copy(
+            style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
                 ),
@@ -34,8 +32,7 @@ fun SectionHeader(title: String, trailingLabel: String, modifier: Modifier = Mod
         )
         Text(
             text = trailingLabel.uppercase(),
-            style =
-                MaterialTheme.typography.labelSmall.copy(
+            style = MaterialTheme.typography.labelSmall.copy(
                     fontWeight = FontWeight.Medium,
                     letterSpacing = 2.sp
                 ),

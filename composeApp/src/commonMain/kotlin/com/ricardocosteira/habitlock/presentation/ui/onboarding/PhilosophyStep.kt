@@ -64,16 +64,17 @@ fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false)
     Box(modifier = modifier.fillMaxSize().padding(horizontal = 24.dp)) {
         // Architectural background ring — decorative, non-interactive
         Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .offset(x = 120.dp, y = (-160).dp)
-                .requiredSize(420.dp)
-                .graphicsLayer { rotationZ = 12f }
-                .border(
-                    width = 40.dp,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                    shape = CircleShape
-                )
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = 120.dp, y = (-160).dp)
+                    .requiredSize(420.dp)
+                    .graphicsLayer { rotationZ = 12f }
+                    .border(
+                        width = 40.dp,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                        shape = CircleShape
+                    )
         )
 
         Column(modifier = Modifier.fillMaxSize()) {
@@ -81,27 +82,30 @@ fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false)
 
             Text(
                 text = stringResource(Res.string.philosophy_heading),
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    fontWeight = FontWeight.ExtraBold
-                ),
+                style =
+                    MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.ExtraBold
+                    ),
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .alpha(headlineAlpha.value)
-                    .graphicsLayer { translationY = headlineTranslateY.value.dp.toPx() }
-                    .semantics { heading() }
+                modifier =
+                    Modifier
+                        .alpha(headlineAlpha.value)
+                        .graphicsLayer { translationY = headlineTranslateY.value.dp.toPx() }
+                        .semantics { heading() }
             )
 
             Spacer(modifier = Modifier.height(14.dp))
 
             // Animated accent line
             Box(
-                modifier = Modifier
-                    .width((36 * accentWidth.value).dp)
-                    .height(3.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(2.dp)
-                    )
+                modifier =
+                    Modifier
+                        .width((36 * accentWidth.value).dp)
+                        .height(3.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(2.dp)
+                        )
             )
 
             Spacer(modifier = Modifier.height(16.dp))

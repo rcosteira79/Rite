@@ -47,13 +47,14 @@ fun HabitLockBottomNav(
             colors = navItemColors,
             icon = {
                 Icon(
-                    imageVector = if (currentTab ==
-                        BottomNavTab.TODAY
-                    ) {
-                        Icons.Filled.CalendarToday
-                    } else {
-                        Icons.Outlined.CalendarToday
-                    },
+                    imageVector =
+                        if (currentTab ==
+                            BottomNavTab.TODAY
+                        ) {
+                            Icons.Filled.CalendarToday
+                        } else {
+                            Icons.Outlined.CalendarToday
+                        },
                     contentDescription = stringResource(Res.string.nav_today)
                 )
             },
@@ -65,13 +66,14 @@ fun HabitLockBottomNav(
             colors = navItemColors,
             icon = {
                 Icon(
-                    imageVector = if (currentTab ==
-                        BottomNavTab.HISTORY
-                    ) {
-                        Icons.Filled.History
-                    } else {
-                        Icons.Outlined.History
-                    },
+                    imageVector =
+                        if (currentTab ==
+                            BottomNavTab.HISTORY
+                        ) {
+                            Icons.Filled.History
+                        } else {
+                            Icons.Outlined.History
+                        },
                     contentDescription = stringResource(Res.string.nav_history)
                 )
             },
@@ -83,13 +85,14 @@ fun HabitLockBottomNav(
             colors = navItemColors,
             icon = {
                 Icon(
-                    imageVector = if (currentTab ==
-                        BottomNavTab.SETTINGS
-                    ) {
-                        Icons.Filled.Settings
-                    } else {
-                        Icons.Outlined.Settings
-                    },
+                    imageVector =
+                        if (currentTab ==
+                            BottomNavTab.SETTINGS
+                        ) {
+                            Icons.Filled.Settings
+                        } else {
+                            Icons.Outlined.Settings
+                        },
                     contentDescription = stringResource(Res.string.nav_settings)
                 )
             },

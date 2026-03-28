@@ -119,36 +119,40 @@ class OnboardingViewModel(
 
             val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
-            val targetValue = if (habitType == HabitType.QUANTITATIVE) {
-                _state.value.targetValue
-                    .trim()
-                    .toIntOrNull()
-            } else {
-                null
-            }
+            val targetValue =
+                if (habitType == HabitType.QUANTITATIVE) {
+                    _state.value.targetValue
+                        .trim()
+                        .toIntOrNull()
+                } else {
+                    null
+                }
 
-            val unit = if (habitType == HabitType.QUANTITATIVE && _state.value.unit.isNotBlank()) {
-                _state.value.unit.trim()
-            } else {
-                null
-            }
+            val unit =
+                if (habitType == HabitType.QUANTITATIVE && _state.value.unit.isNotBlank()) {
+                    _state.value.unit.trim()
+                } else {
+                    null
+                }
 
             val selectedDays = _state.value.selectedDays
             val specificDays: Set<DayOfWeek>? =
                 if (selectedDays.size == DayOfWeek.entries.size) null else selectedDays
 
-            val result = createHabit.execute(
-                params = CreateHabit.CreateHabitParams(
-                    name = habitName,
-                    description = null,
-                    type = habitType,
-                    targetValue = targetValue,
-                    unit = unit,
-                    specificDays = specificDays,
-                    reminder = null
-                ),
-                startDate = today
-            )
+            val result =
+                createHabit.execute(
+                    params =
+                        CreateHabit.CreateHabitParams(
+                            name = habitName,
+                            description = null,
+                            type = habitType,
+                            targetValue = targetValue,
+                            unit = unit,
+                            specificDays = specificDays,
+                            reminder = null
+                        ),
+                    startDate = today
+                )
 
             result.fold(
                 onSuccess = {

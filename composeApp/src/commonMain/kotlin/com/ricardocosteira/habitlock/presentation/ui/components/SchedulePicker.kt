@@ -61,15 +61,16 @@ private fun SchedulePreset.labelRes(): StringResource = when (this) {
 }
 
 private val DayOfWeek.labelRes: StringResource
-    get() = when (this) {
-        DayOfWeek.MONDAY -> Res.string.common_schedule_day_mon
-        DayOfWeek.TUESDAY -> Res.string.common_schedule_day_tue
-        DayOfWeek.WEDNESDAY -> Res.string.common_schedule_day_wed
-        DayOfWeek.THURSDAY -> Res.string.common_schedule_day_thu
-        DayOfWeek.FRIDAY -> Res.string.common_schedule_day_fri
-        DayOfWeek.SATURDAY -> Res.string.common_schedule_day_sat
-        DayOfWeek.SUNDAY -> Res.string.common_schedule_day_sun
-    }
+    get() =
+        when (this) {
+            DayOfWeek.MONDAY -> Res.string.common_schedule_day_mon
+            DayOfWeek.TUESDAY -> Res.string.common_schedule_day_tue
+            DayOfWeek.WEDNESDAY -> Res.string.common_schedule_day_wed
+            DayOfWeek.THURSDAY -> Res.string.common_schedule_day_thu
+            DayOfWeek.FRIDAY -> Res.string.common_schedule_day_fri
+            DayOfWeek.SATURDAY -> Res.string.common_schedule_day_sat
+            DayOfWeek.SUNDAY -> Res.string.common_schedule_day_sun
+        }
 
 /**
  * Schedule picker with three preset pills (Every day / Weekdays / Weekend) and
@@ -123,26 +124,29 @@ private fun PresetPill(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = if (isSelected) {
-        MaterialTheme.colorScheme.primaryContainer
-    } else {
-        MaterialTheme.colorScheme.surfaceContainerHighest
-    }
-    val contentColor = if (isSelected) {
-        MaterialTheme.colorScheme.onPrimaryContainer
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val backgroundColor =
+        if (isSelected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerHighest
+        }
+    val contentColor =
+        if (isSelected) {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        }
 
     Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(percent = 50))
-            .background(backgroundColor)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
-            ).padding(horizontal = 10.dp, vertical = 4.dp),
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(percent = 50))
+                .background(backgroundColor)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onClick
+                ).padding(horizontal = 10.dp, vertical = 4.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -161,27 +165,30 @@ private fun DayChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = if (isSelected) {
-        MaterialTheme.colorScheme.primaryContainer
-    } else {
-        MaterialTheme.colorScheme.surfaceContainerHighest
-    }
-    val contentColor = if (isSelected) {
-        MaterialTheme.colorScheme.onPrimaryContainer
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val backgroundColor =
+        if (isSelected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerHighest
+        }
+    val contentColor =
+        if (isSelected) {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        }
 
     Box(
-        modifier = modifier
-            .size(DayChipSize)
-            .clip(CircleShape)
-            .background(backgroundColor)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
-            ),
+        modifier =
+            modifier
+                .size(DayChipSize)
+                .clip(CircleShape)
+                .background(backgroundColor)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onClick
+                ),
         contentAlignment = Alignment.Center
     ) {
         Text(

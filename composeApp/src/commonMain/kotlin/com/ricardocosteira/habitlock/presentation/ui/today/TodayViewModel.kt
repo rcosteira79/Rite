@@ -95,8 +95,7 @@ class TodayViewModel(
 
                 val strictnessPreset: StrictnessPreset? =
                     user?.let {
-                        val settings =
-                            UserStrictnessSettings(
+                        val settings = UserStrictnessSettings(
                                 undoPolicy = it.undoPolicy,
                                 maxSnoozesPerHabitPerDay = it.maxSnoozesPerHabitPerDay,
                                 maxConsecutiveSkips = it.maxConsecutiveSkips,
@@ -115,11 +114,9 @@ class TodayViewModel(
                 val habits: ImmutableList<TodayHabitUiModel> =
                     instances
                         .mapNotNull { instance ->
-                            val habit =
-                                habitRepository.getHabitById(instance.habitId)
+                            val habit = habitRepository.getHabitById(instance.habitId)
                                     ?: return@mapNotNull null
-                            val schedule =
-                                habitRepository.getScheduleForHabit(habit.id)
+                            val schedule = habitRepository.getScheduleForHabit(habit.id)
                                     ?: return@mapNotNull null
                             mapToTodayHabitUiModel(
                                 instance = instance,
@@ -139,14 +136,16 @@ class TodayViewModel(
                         HabitStatus.FAILED
                     )
 
-                val dailyHabits: List<TodayHabitUiModel> = habits.filter {
-                    it.isDaily &&
-                        !it.isSuspended
-                }
-                val weeklyHabits: List<TodayHabitUiModel> = habits.filter {
-                    it.isWeekly &&
-                        !it.isSuspended
-                }
+                val dailyHabits: List<TodayHabitUiModel> =
+                    habits.filter {
+                        it.isDaily &&
+                            !it.isSuspended
+                    }
+                val weeklyHabits: List<TodayHabitUiModel> =
+                    habits.filter {
+                        it.isWeekly &&
+                            !it.isSuspended
+                    }
 
                 val (pendingDaily: List<TodayHabitUiModel>, resolvedDaily: List<TodayHabitUiModel>) =
                     dailyHabits.partition { it.status !in resolvedStatuses }
@@ -209,8 +208,7 @@ class TodayViewModel(
         viewModelScope.launch {
             _state.update { it.copy(showQuantitativeInputFor = null) }
 
-            val result =
-                completeHabit.executeQuantitative(
+            val result = completeHabit.executeQuantitative(
                     instanceId = instanceId,
                     deltaValue = value,
                     source = CompletionSource.IN_APP
@@ -234,8 +232,7 @@ class TodayViewModel(
 
     fun incrementHabitProgress(instanceId: String) {
         viewModelScope.launch {
-            val habit: TodayHabitUiModel =
-                _state.value.habits.find { it.instanceId == instanceId } ?: return@launch
+            val habit: TodayHabitUiModel = _state.value.habits.find { it.instanceId == instanceId } ?: return@launch
 
             val result: Result<HabitInstance> =
                 completeHabit.executeQuantitative(
@@ -281,9 +278,10 @@ class TodayViewModel(
                     when (error) {
                         is SkipLockedException -> _events.emit(TodayEvent.SkipLimitReached)
 
-                        else -> _events.emit(
-                            TodayEvent.ShowError(error.message ?: "Something went wrong")
-                        )
+                        else ->
+                            _events.emit(
+                                TodayEvent.ShowError(error.message ?: "Something went wrong")
+                            )
                     }
                 }
             )

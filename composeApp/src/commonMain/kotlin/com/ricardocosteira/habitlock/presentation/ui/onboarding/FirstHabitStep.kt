@@ -85,10 +85,11 @@ fun FirstHabitStep(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 16.dp)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
         Text(
             text = stringResource(Res.string.first_habit_heading),
@@ -100,13 +101,14 @@ fun FirstHabitStep(
         Spacer(modifier = Modifier.height(14.dp))
 
         Box(
-            modifier = Modifier
-                .width(36.dp)
-                .height(3.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(2.dp)
-                )
+            modifier =
+                Modifier
+                    .width(36.dp)
+                    .height(3.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(2.dp)
+                    )
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -202,29 +204,33 @@ private fun HabitTypeCard(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        border = if (isSelected) {
-            BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer)
-        } else {
-            BorderStroke(2.dp, Color.Transparent)
-        },
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.surfaceContainerHighest
+        border =
+            if (isSelected) {
+                BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer)
             } else {
-                MaterialTheme.colorScheme.surfaceContainerLow
-            }
-        )
+                BorderStroke(2.dp, Color.Transparent)
+            },
+        colors =
+            CardDefaults.cardColors(
+                containerColor =
+                    if (isSelected) {
+                        MaterialTheme.colorScheme.surfaceContainerHighest
+                    } else {
+                        MaterialTheme.colorScheme.surfaceContainerLow
+                    }
+            )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(HabitTypeCardIconSize),
-                tint = if (isSelected) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                }
+                tint =
+                    if (isSelected) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(

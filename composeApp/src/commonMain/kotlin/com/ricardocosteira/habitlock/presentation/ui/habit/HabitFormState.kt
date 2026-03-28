@@ -44,10 +44,11 @@ data class HabitFormState(
     val resolvedReminderTime: LocalTime get() = reminderTime ?: DEFAULT_REMINDER_TIME
 
     val stepperValue: Int
-        get() = when (type) {
-            HabitType.BINARY -> quota.toIntOrNull() ?: 1
-            HabitType.QUANTITATIVE -> targetValue.toIntOrNull() ?: 1
-        }
+        get() =
+            when (type) {
+                HabitType.BINARY -> quota.toIntOrNull() ?: 1
+                HabitType.QUANTITATIVE -> targetValue.toIntOrNull() ?: 1
+            }
 
     fun stepperChangeAction(newValue: Int): HabitFormUiAction = when (type) {
         HabitType.BINARY -> HabitFormUiAction.QuotaChanged(newValue.toString())

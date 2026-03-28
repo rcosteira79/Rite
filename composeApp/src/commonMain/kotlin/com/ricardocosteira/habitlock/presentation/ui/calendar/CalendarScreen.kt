@@ -306,9 +306,10 @@ private fun CalendarDayCell(day: CalendarDayUiModel, onClick: () -> Unit) {
 
             DayClassification.FAILED -> MaterialTheme.colorScheme.onError
 
-            DayClassification.FUTURE -> MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                alpha = 0.5f
-            )
+            DayClassification.FUTURE ->
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                    alpha = 0.5f
+                )
 
             DayClassification.NONE -> MaterialTheme.colorScheme.onSurfaceVariant
         }

@@ -56,8 +56,9 @@ class CalendarViewModel(
 
     fun previousMonth() {
         val current = _state.value
-        val newDate = LocalDate(current.currentYear, current.currentMonth, 1)
-            .minus(DatePeriod(months = 1))
+        val newDate =
+            LocalDate(current.currentYear, current.currentMonth, 1)
+                .minus(DatePeriod(months = 1))
         _state.update {
             it.copy(
                 currentMonth = newDate.month,
@@ -69,8 +70,9 @@ class CalendarViewModel(
 
     fun nextMonth() {
         val current = _state.value
-        val newDate = LocalDate(current.currentYear, current.currentMonth, 1)
-            .plus(DatePeriod(months = 1))
+        val newDate =
+            LocalDate(current.currentYear, current.currentMonth, 1)
+                .plus(DatePeriod(months = 1))
         _state.update {
             it.copy(
                 currentMonth = newDate.month,
@@ -113,22 +115,24 @@ class CalendarViewModel(
                     if (dayInstances.isNotEmpty()) {
                         trackedCount++
 
-                        val completedCount = dayInstances.count {
-                            it.status == HabitStatus.COMPLETED
-                        }
+                        val completedCount =
+                            dayInstances.count {
+                                it.status == HabitStatus.COMPLETED
+                            }
                         val skippedCount = dayInstances.count { it.status == HabitStatus.SKIPPED }
                         val failedCount = dayInstances.count { it.status == HabitStatus.FAILED }
 
-                        val classification = when {
-                            failedCount > 0 -> DayClassification.FAILED
+                        val classification =
+                            when {
+                                failedCount > 0 -> DayClassification.FAILED
 
-                            completedCount + skippedCount == dayInstances.size -> {
-                                perfectCount++
-                                DayClassification.PERFECT
+                                completedCount + skippedCount == dayInstances.size -> {
+                                    perfectCount++
+                                    DayClassification.PERFECT
+                                }
+
+                                else -> DayClassification.PARTIAL
                             }
-
-                            else -> DayClassification.PARTIAL
-                        }
 
                         days.add(
                             CalendarDayUiModel(

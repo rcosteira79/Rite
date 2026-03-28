@@ -141,15 +141,17 @@ fun HabitFormScreen(
             when (event) {
                 HabitFormEvent.NavigateBack -> onNavigateBack()
 
-                HabitFormEvent.RequiredFieldsMissing -> snackbarHostState.showSnackbar(
-                    messageRequiredFields
-                )
+                HabitFormEvent.RequiredFieldsMissing ->
+                    snackbarHostState.showSnackbar(
+                        messageRequiredFields
+                    )
 
                 HabitFormEvent.HabitNotFound -> snackbarHostState.showSnackbar(messageHabitNotFound)
 
-                is HabitFormEvent.ShowError -> snackbarHostState.showSnackbar(
-                    event.message ?: messageGenericError
-                )
+                is HabitFormEvent.ShowError ->
+                    snackbarHostState.showSnackbar(
+                        event.message ?: messageGenericError
+                    )
             }
         }
     }
@@ -160,9 +162,10 @@ fun HabitFormScreen(
             when (action) {
                 is HabitFormUiAction.NameChanged -> viewModel.updateName(action.name)
 
-                is HabitFormUiAction.DescriptionChanged -> viewModel.updateDescription(
-                    action.description
-                )
+                is HabitFormUiAction.DescriptionChanged ->
+                    viewModel.updateDescription(
+                        action.description
+                    )
 
                 is HabitFormUiAction.TypeChanged -> viewModel.updateType(action.type)
 
@@ -170,24 +173,28 @@ fun HabitFormScreen(
 
                 is HabitFormUiAction.UnitChanged -> viewModel.updateUnit(action.unit)
 
-                is HabitFormUiAction.ScheduleTypeChanged -> viewModel.updateScheduleType(
-                    action.scheduleType
-                )
+                is HabitFormUiAction.ScheduleTypeChanged ->
+                    viewModel.updateScheduleType(
+                        action.scheduleType
+                    )
 
-                is HabitFormUiAction.SelectedDaysChanged -> viewModel.updateSelectedDays(
-                    action.days
-                )
+                is HabitFormUiAction.SelectedDaysChanged ->
+                    viewModel.updateSelectedDays(
+                        action.days
+                    )
 
                 is HabitFormUiAction.QuotaChanged -> viewModel.updateQuota(action.quota)
 
-                is HabitFormUiAction.HasReminderChanged -> viewModel.updateHasReminder(
-                    action.hasReminder
-                )
+                is HabitFormUiAction.HasReminderChanged ->
+                    viewModel.updateHasReminder(
+                        action.hasReminder
+                    )
 
-                is HabitFormUiAction.ReminderTimeChanged -> viewModel.updateReminderTime(
-                    action.hour,
-                    action.minute
-                )
+                is HabitFormUiAction.ReminderTimeChanged ->
+                    viewModel.updateReminderTime(
+                        action.hour,
+                        action.minute
+                    )
 
                 HabitFormUiAction.SaveClicked -> viewModel.saveHabit()
 
@@ -263,9 +270,10 @@ internal fun HabitFormScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = { onAction(HabitFormUiAction.DiscardChangesClicked) },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = iconContainerColor
-                        )
+                        colors =
+                            IconButtonDefaults.iconButtonColors(
+                                containerColor = iconContainerColor
+                            )
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -277,15 +285,17 @@ internal fun HabitFormScreen(
                     if (state.isEditing) {
                         IconButton(
                             onClick = { isDeleteDialogVisible = true },
-                            colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = iconContainerColor
-                            )
+                            colors =
+                                IconButtonDefaults.iconButtonColors(
+                                    containerColor = iconContainerColor
+                                )
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Delete,
-                                contentDescription = stringResource(
-                                    Res.string.habit_form_cd_delete
-                                ),
+                                contentDescription =
+                                    stringResource(
+                                        Res.string.habit_form_cd_delete
+                                    ),
                                 tint = MaterialTheme.colorScheme.error,
                                 modifier = Modifier.size(22.dp)
                             )
@@ -511,13 +521,14 @@ internal fun HabitFormScreen(
                             } else {
                                 stringResource(Res.string.habit_form_note_collapsed_title)
                             },
-                        subtitle = if (isNoteExpanded) {
-                            ""
-                        } else {
-                            stringResource(
-                                Res.string.habit_form_note_collapsed_subtitle
-                            )
-                        },
+                        subtitle =
+                            if (isNoteExpanded) {
+                                ""
+                            } else {
+                                stringResource(
+                                    Res.string.habit_form_note_collapsed_subtitle
+                                )
+                            },
                         onClick = { isNoteExpanded = !isNoteExpanded },
                         showTopDivider = false,
                         trailingContent = null,
@@ -741,9 +752,10 @@ private fun DeleteHabitDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         confirmButton = {
             TextButton(
                 onClick = onConfirm,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colorScheme.error
-                )
+                colors =
+                    ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
             ) {
                 Text(stringResource(Res.string.habit_form_delete_dialog_confirm))
             }
