@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.di.AppScope
 import com.ricardocosteira.habitlock.domain.models.CompletionSource
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
+import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
 import com.ricardocosteira.habitlock.domain.models.UserStrictnessSettings
@@ -127,9 +128,28 @@ class TodayViewModel(
 
                 val counts: TodayCounts = habits.computeCounts()
 
+                val resolvedStatuses: Set<HabitStatus> =
+                    setOf(
+                        HabitStatus.COMPLETED,
+                        HabitStatus.SKIPPED,
+                        HabitStatus.FAILED,
+                    )
+
+                val dailyHabits: List<TodayHabitUiModel> = habits.filter { it.isDaily && !it.isSuspended }
+                val weeklyHabits: List<TodayHabitUiModel> = habits.filter { it.isWeekly && !it.isSuspended }
+
+                val (pendingDaily: List<TodayHabitUiModel>, resolvedDaily: List<TodayHabitUiModel>) =
+                    dailyHabits.partition { it.status !in resolvedStatuses }
+                val (pendingWeekly: List<TodayHabitUiModel>, resolvedWeekly: List<TodayHabitUiModel>) =
+                    weeklyHabits.partition { it.status !in resolvedStatuses }
+
                 _state.update {
                     it.copy(
                         habits = habits,
+                        pendingDaily = pendingDaily.toImmutableList(),
+                        resolvedDaily = resolvedDaily.toImmutableList(),
+                        pendingWeekly = pendingWeekly.toImmutableList(),
+                        resolvedWeekly = resolvedWeekly.toImmutableList(),
                         isLoading = false,
                         pendingCount = counts.pendingCount,
                         dailyResolved = counts.dailyResolved,

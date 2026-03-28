@@ -176,17 +176,6 @@ internal fun TodayScreen(
             }
 
             else -> {
-                // Partition habits into groups
-                val dailyHabits: List<TodayHabitUiModel> =
-                    state.habits.filter { it.isDaily && !it.isSuspended }
-                val weeklyHabits: List<TodayHabitUiModel> =
-                    state.habits.filter { it.isWeekly && !it.isSuspended }
-
-                val (pendingDaily: List<TodayHabitUiModel>, resolvedDaily: List<TodayHabitUiModel>) =
-                    dailyHabits.partition { !it.isCompleted && !it.isSkipped && !it.isFailed }
-                val (pendingWeekly: List<TodayHabitUiModel>, resolvedWeekly: List<TodayHabitUiModel>) =
-                    weeklyHabits.partition { !it.isCompleted && !it.isSkipped && !it.isFailed }
-
                 val formattedDate: String = rememberFormattedDate()
 
                 LazyColumn(
@@ -209,7 +198,7 @@ internal fun TodayScreen(
                     }
 
                     items(
-                        items = pendingDaily,
+                        items = state.pendingDaily,
                         key = { it.instanceId },
                     ) { habit ->
                         HabitCard(
@@ -237,7 +226,7 @@ internal fun TodayScreen(
                         )
                     }
 
-                    if (resolvedDaily.isNotEmpty()) {
+                    if (state.resolvedDaily.isNotEmpty()) {
                         item(key = "daily_divider") {
                             HorizontalDivider(
                                 modifier =
@@ -248,7 +237,7 @@ internal fun TodayScreen(
                         }
 
                         items(
-                            items = resolvedDaily,
+                            items = state.resolvedDaily,
                             key = { it.instanceId },
                         ) { habit ->
                             HabitCard(
@@ -265,7 +254,7 @@ internal fun TodayScreen(
                     }
 
                     // WEEKLY GOALS section
-                    if (weeklyHabits.isNotEmpty()) {
+                    if ((state.pendingWeekly.isNotEmpty() || state.resolvedWeekly.isNotEmpty())) {
                         item(key = "weekly_spacer") {
                             Spacer(modifier = Modifier.height(SECTION_GAP))
                         }
@@ -278,7 +267,7 @@ internal fun TodayScreen(
                         }
 
                         items(
-                            items = pendingWeekly,
+                            items = state.pendingWeekly,
                             key = { it.instanceId },
                         ) { habit ->
                             HabitCard(
@@ -306,7 +295,7 @@ internal fun TodayScreen(
                             )
                         }
 
-                        if (resolvedWeekly.isNotEmpty()) {
+                        if (state.resolvedWeekly.isNotEmpty()) {
                             item(key = "weekly_divider") {
                                 HorizontalDivider(
                                     modifier =
@@ -317,7 +306,7 @@ internal fun TodayScreen(
                             }
 
                             items(
-                                items = resolvedWeekly,
+                                items = state.resolvedWeekly,
                                 key = { it.instanceId },
                             ) { habit ->
                                 HabitCard(

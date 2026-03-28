@@ -18,6 +18,10 @@ import org.jetbrains.compose.resources.StringResource
  */
 data class TodayState(
     val habits: ImmutableList<TodayHabitUiModel> = persistentListOf(),
+    val pendingDaily: ImmutableList<TodayHabitUiModel> = persistentListOf(),
+    val resolvedDaily: ImmutableList<TodayHabitUiModel> = persistentListOf(),
+    val pendingWeekly: ImmutableList<TodayHabitUiModel> = persistentListOf(),
+    val resolvedWeekly: ImmutableList<TodayHabitUiModel> = persistentListOf(),
     val isLoading: Boolean = true,
     val showTimezoneWarning: Boolean = false,
     val previousTimezone: String? = null,
