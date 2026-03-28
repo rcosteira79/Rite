@@ -1,15 +1,5 @@
 package com.ricardocosteira.habitlock.presentation.ui.today
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -207,12 +197,8 @@ private fun PendingHabitCard(
 
                 Spacer(modifier = Modifier.width(ACTION_ROW_GAP))
 
-                // Collapsed quick actions
-                AnimatedVisibility(
-                    visible = !isExpanded,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                ) {
+                // Collapsed: quick actions / Expanded: badge
+                if (!isExpanded) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
                         verticalAlignment = Alignment.CenterVertically,
@@ -269,14 +255,7 @@ private fun PendingHabitCard(
                             )
                         }
                     }
-                }
-
-                // Expanded badge
-                AnimatedVisibility(
-                    visible = isExpanded,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                ) {
+                } else {
                     StatusBadge(
                         text =
                             if (isQuantitative && hasProgress) {
@@ -310,61 +289,55 @@ private fun PendingHabitCard(
                 }
             }
 
-            // Expanded action buttons (slide in from bottom)
-            AnimatedVisibility(
-                visible = isExpanded,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut(),
-            ) {
-                Column {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
-                    ) {
-                        if (isQuantitative) {
-                            val incrementLabel: String =
-                                stringResource(
-                                    Res.string.today_action_increment,
-                                    habit.defaultIncrement,
-                                    unitText,
-                                )
-                            ActionButton(
-                                text = incrementLabel,
-                                onClick = onIncrementProgress,
-                                isPrimary = true,
-                                modifier = Modifier.weight(1f),
+            // Expanded action buttons
+            if (isExpanded) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
+                ) {
+                    if (isQuantitative) {
+                        val incrementLabel: String =
+                            stringResource(
+                                Res.string.today_action_increment,
+                                habit.defaultIncrement,
+                                unitText,
                             )
-                            ActionButton(
-                                text = stringResource(Res.string.today_action_custom),
-                                onClick = onCustomProgress,
-                                isPrimary = false,
-                            )
-                        } else {
-                            ActionButton(
-                                text = stringResource(Res.string.today_action_complete),
-                                onClick = onComplete,
-                                isPrimary = true,
-                                modifier = Modifier.weight(1f),
-                            )
-                        }
+                        ActionButton(
+                            text = incrementLabel,
+                            onClick = onIncrementProgress,
+                            isPrimary = true,
+                            modifier = Modifier.weight(1f),
+                        )
+                        ActionButton(
+                            text = stringResource(Res.string.today_action_custom),
+                            onClick = onCustomProgress,
+                            isPrimary = false,
+                        )
+                    } else {
+                        ActionButton(
+                            text = stringResource(Res.string.today_action_complete),
+                            onClick = onComplete,
+                            isPrimary = true,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
 
-                        if (!habit.isSkipLocked) {
-                            ActionButton(
-                                text = stringResource(Res.string.common_skip),
-                                onClick = onSkip,
-                                isPrimary = false,
-                            )
-                        }
+                    if (!habit.isSkipLocked) {
+                        ActionButton(
+                            text = stringResource(Res.string.common_skip),
+                            onClick = onSkip,
+                            isPrimary = false,
+                        )
+                    }
 
-                        if (isQuantitative && hasProgress) {
-                            IconButton(onClick = onUndo) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.Undo,
-                                    contentDescription = stringResource(Res.string.today_cd_undo),
-                                    tint = MaterialTheme.colorScheme.onSurface,
-                                )
-                            }
+                    if (isQuantitative && hasProgress) {
+                        IconButton(onClick = onUndo) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Undo,
+                                contentDescription = stringResource(Res.string.today_cd_undo),
+                                tint = MaterialTheme.colorScheme.onSurface,
+                            )
                         }
                     }
                 }
