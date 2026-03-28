@@ -186,7 +186,7 @@ class TodayViewModel(
             result.fold(
                 onSuccess = {
                     loadTodayHabits()
-                    _events.emit(TodayEvent.HabitCompleted)
+                    // No snackbar — card state change is the feedback
                 },
                 onFailure = { error ->
                     _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
@@ -213,9 +213,9 @@ class TodayViewModel(
                 onSuccess = { updatedInstance ->
                     loadTodayHabits()
                     if (updatedInstance.isQuantitativeComplete()) {
-                        _events.emit(TodayEvent.HabitCompleted)
+                        // No snackbar — card state change is the feedback
                     } else {
-                        _events.emit(TodayEvent.ProgressAdded)
+                        // No snackbar — progress bar update is the feedback
                     }
                 },
                 onFailure = { error ->
@@ -241,9 +241,9 @@ class TodayViewModel(
                 onSuccess = { updatedInstance: HabitInstance ->
                     loadTodayHabits()
                     if (updatedInstance.isQuantitativeComplete()) {
-                        _events.emit(TodayEvent.HabitCompleted)
+                        // No snackbar — card state change is the feedback
                     } else {
-                        _events.emit(TodayEvent.ProgressAdded)
+                        // No snackbar — progress bar update is the feedback
                     }
                 },
                 onFailure = { error: Throwable ->
@@ -268,7 +268,7 @@ class TodayViewModel(
             result.fold(
                 onSuccess = {
                     loadTodayHabits()
-                    _events.emit(TodayEvent.HabitSkipped)
+                    // No snackbar — card state change is the feedback
                 },
                 onFailure = { error ->
                     when (error) {
@@ -287,7 +287,7 @@ class TodayViewModel(
             result.fold(
                 onSuccess = {
                     loadTodayHabits()
-                    _events.emit(TodayEvent.ActionUndone)
+                    // No snackbar — card state revert is the feedback
                 },
                 onFailure = { error ->
                     _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
@@ -301,7 +301,7 @@ class TodayViewModel(
             try {
                 habitRepository.archiveHabit(habitId)
                 loadTodayHabits()
-                _events.emit(TodayEvent.HabitArchived)
+                // No snackbar — habit disappears from the list
             } catch (e: Exception) {
                 _events.emit(TodayEvent.ShowError(e.message ?: "Something went wrong"))
             }

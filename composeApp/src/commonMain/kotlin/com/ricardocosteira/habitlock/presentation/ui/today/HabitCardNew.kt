@@ -69,6 +69,7 @@ private val RESOLVED_ICON_SIZE = 40.dp
 private val RESOLVED_ALPHA = 0.8f
 private val FAILED_ALPHA = 0.5f
 
+@TraceRecomposition
 @Composable
 fun HabitCard(
     habit: TodayHabitUiModel,
@@ -79,7 +80,7 @@ fun HabitCard(
     onUndo: () -> Unit,
     onIncrementProgress: () -> Unit,
     onCustomProgress: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val isResolved: Boolean = habit.isCompleted || habit.isSkipped || habit.isFailed
 
