@@ -154,7 +154,7 @@ internal fun TodayScreen(
         derivedStateOf { lazyListState.firstVisibleItemIndex > 0 }
     }
 
-    var expandedCardId: String? by remember { mutableStateOf(null) }
+    var expandedCardIds: Set<String> by remember { mutableStateOf(emptySet()) }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -233,10 +233,14 @@ internal fun TodayScreen(
                     ) { habit ->
                         HabitCard(
                             habit = habit,
-                            isExpanded = expandedCardId == habit.instanceId,
+                            isExpanded = habit.instanceId in expandedCardIds,
                             onToggleExpand = {
-                                expandedCardId =
-                                    if (expandedCardId == habit.instanceId) null else habit.instanceId
+                                expandedCardIds =
+                                    if (habit.instanceId in expandedCardIds) {
+                                        expandedCardIds - habit.instanceId
+                                    } else {
+                                        expandedCardIds + habit.instanceId
+                                    }
                             },
                             onComplete = {
                                 if (habit.type == HabitType.BINARY) {
@@ -298,10 +302,14 @@ internal fun TodayScreen(
                         ) { habit ->
                             HabitCard(
                                 habit = habit,
-                                isExpanded = expandedCardId == habit.instanceId,
+                                isExpanded = habit.instanceId in expandedCardIds,
                                 onToggleExpand = {
-                                    expandedCardId =
-                                        if (expandedCardId == habit.instanceId) null else habit.instanceId
+                                    expandedCardIds =
+                                        if (habit.instanceId in expandedCardIds) {
+                                            expandedCardIds - habit.instanceId
+                                        } else {
+                                            expandedCardIds + habit.instanceId
+                                        }
                                 },
                                 onComplete = {
                                     if (habit.type == HabitType.BINARY) {

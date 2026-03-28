@@ -1,9 +1,8 @@
 package com.ricardocosteira.habitlock.presentation.ui.today
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -94,31 +93,40 @@ fun HabitCard(
             modifier = modifier,
         )
     } else {
-        AnimatedContent(
-            targetState = isExpanded,
-            transitionSpec = { fadeIn() togetherWith fadeOut() },
-            modifier = modifier,
-            label = "habit_card_expand",
-        ) { expanded ->
-            if (expanded) {
-                ExpandedPendingCard(
-                    habit = habit,
-                    onToggleExpand = onToggleExpand,
-                    onComplete = onComplete,
-                    onSkip = onSkip,
-                    onUndo = onUndo,
-                    onIncrementProgress = onIncrementProgress,
-                    onCustomProgress = onCustomProgress,
-                )
-            } else {
-                CollapsedPendingCard(
-                    habit = habit,
-                    onToggleExpand = onToggleExpand,
-                    onComplete = onComplete,
-                    onSkip = onSkip,
-                    onIncrementProgress = onIncrementProgress,
-                )
-            }
+        if (isExpanded) {
+            ExpandedPendingCard(
+                habit = habit,
+                onToggleExpand = onToggleExpand,
+                onComplete = onComplete,
+                onSkip = onSkip,
+                onUndo = onUndo,
+                onIncrementProgress = onIncrementProgress,
+                onCustomProgress = onCustomProgress,
+                modifier =
+                    modifier.animateContentSize(
+                        animationSpec =
+                            spring(
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                                stiffness = Spring.StiffnessLow,
+                            ),
+                    ),
+            )
+        } else {
+            CollapsedPendingCard(
+                habit = habit,
+                onToggleExpand = onToggleExpand,
+                onComplete = onComplete,
+                onSkip = onSkip,
+                onIncrementProgress = onIncrementProgress,
+                modifier =
+                    modifier.animateContentSize(
+                        animationSpec =
+                            spring(
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                                stiffness = Spring.StiffnessLow,
+                            ),
+                    ),
+            )
         }
     }
 }
@@ -130,12 +138,13 @@ private fun CollapsedPendingCard(
     onComplete: () -> Unit,
     onSkip: () -> Unit,
     onIncrementProgress: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Surface(
         shape = RoundedCornerShape(CARD_CORNER_RADIUS),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(CARD_CORNER_RADIUS))
                 .clickable(onClick = onToggleExpand),
@@ -369,12 +378,13 @@ private fun ExpandedPendingCard(
     onUndo: () -> Unit,
     onIncrementProgress: () -> Unit,
     onCustomProgress: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Surface(
         shape = RoundedCornerShape(CARD_CORNER_RADIUS),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(CARD_CORNER_RADIUS))
                 .clickable(onClick = onToggleExpand),
@@ -418,16 +428,6 @@ private fun ExpandedBinaryContent(
         verticalAlignment = Alignment.Top,
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            if (habit.description != null) {
-                Text(
-                    text = habit.description.uppercase(),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-            }
-
             Text(
                 text = habit.name.uppercase(),
                 style =
@@ -439,6 +439,16 @@ private fun ExpandedBinaryContent(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
+
+            if (habit.description != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = habit.description.uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
 
         Spacer(modifier = Modifier.width(ACTION_ROW_GAP))
