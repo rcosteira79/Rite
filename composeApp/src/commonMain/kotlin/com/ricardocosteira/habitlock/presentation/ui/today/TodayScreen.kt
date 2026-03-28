@@ -51,7 +51,7 @@ import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_error_generic
-import habitlock.composeapp.generated.resources.ic_launcher_foreground
+import habitlock.composeapp.generated.resources.habit_lock_logo
 import habitlock.composeapp.generated.resources.today_empty_state_cta
 import habitlock.composeapp.generated.resources.today_empty_state_heading
 import habitlock.composeapp.generated.resources.today_empty_state_subtext
@@ -473,7 +473,7 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
     ) {
         // App icon
         Image(
-            painter = painterResource(Res.drawable.ic_launcher_foreground),
+            painter = painterResource(Res.drawable.habit_lock_logo),
             contentDescription = null,
             modifier =
                 Modifier
