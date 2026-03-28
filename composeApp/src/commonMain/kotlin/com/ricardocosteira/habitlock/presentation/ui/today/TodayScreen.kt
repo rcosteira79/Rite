@@ -212,10 +212,10 @@ internal fun TodayScreen(
                             isExpanded = habit.instanceId in expandedCardIds,
                             onToggleExpand = {
                                 expandedCardIds = if (habit.instanceId in expandedCardIds) {
-                                        expandedCardIds - habit.instanceId
-                                    } else {
-                                        expandedCardIds + habit.instanceId
-                                    }
+                                    expandedCardIds - habit.instanceId
+                                } else {
+                                    expandedCardIds + habit.instanceId
+                                }
                             },
                             onComplete = {
                                 if (habit.type == HabitType.BINARY) {
@@ -235,8 +235,8 @@ internal fun TodayScreen(
                         item(key = "daily_divider") {
                             HorizontalDivider(
                                 modifier = Modifier
-                                        .alpha(DIVIDER_ALPHA)
-                                        .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
+                                    .alpha(DIVIDER_ALPHA)
+                                    .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
                             )
                         }
 
@@ -279,10 +279,10 @@ internal fun TodayScreen(
                                 isExpanded = habit.instanceId in expandedCardIds,
                                 onToggleExpand = {
                                     expandedCardIds = if (habit.instanceId in expandedCardIds) {
-                                            expandedCardIds - habit.instanceId
-                                        } else {
-                                            expandedCardIds + habit.instanceId
-                                        }
+                                        expandedCardIds - habit.instanceId
+                                    } else {
+                                        expandedCardIds + habit.instanceId
+                                    }
                                 },
                                 onComplete = {
                                     if (habit.type == HabitType.BINARY) {
@@ -302,8 +302,8 @@ internal fun TodayScreen(
                             item(key = "weekly_divider") {
                                 HorizontalDivider(
                                     modifier = Modifier
-                                            .alpha(DIVIDER_ALPHA)
-                                            .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
+                                        .alpha(DIVIDER_ALPHA)
+                                        .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
                                 )
                             }
 
@@ -339,12 +339,12 @@ internal fun TodayScreen(
 private fun rememberFormattedDate(): String {
     val now = remember { Clock.System.now() }
     val localDate = remember(now) {
-            now.toLocalDateTime(TimeZone.currentSystemDefault()).date
-        }
+        now.toLocalDateTime(TimeZone.currentSystemDefault()).date
+    }
 
     val monthAbbreviation: String = remember(localDate) {
-            formatMonthAbbreviation(localDate.month)
-        }
+        formatMonthAbbreviation(localDate.month)
+    }
 
     return remember(localDate) { "$monthAbbreviation ${localDate.day}" }
 }
@@ -403,16 +403,16 @@ private fun formatMonthAbbreviation(month: Month): String = when (month) {
 private fun TimezoneWarningBanner(previousTimezone: String?, onDismiss: () -> Unit) {
     Card(
         modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer
-            )
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        )
     ) {
         Row(
             modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                .fillMaxWidth()
+                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -424,9 +424,9 @@ private fun TimezoneWarningBanner(previousTimezone: String?, onDismiss: () -> Un
                 )
                 Text(
                     text = stringResource(
-                            Res.string.today_timezone_changed_message,
-                            previousTimezone ?: ""
-                        ),
+                        Res.string.today_timezone_changed_message,
+                        previousTimezone ?: ""
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onTertiaryContainer
                 )
@@ -450,11 +450,11 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
             painter = painterResource(Res.drawable.habit_lock_logo),
             contentDescription = null,
             modifier = Modifier
-                    .size(160.dp)
-                    .clip(RoundedCornerShape(32.dp))
-                    .background(
-                        MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)
-                    )
+                .size(160.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .background(
+                    MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)
+                )
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -485,9 +485,9 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
             onClick = onAddFirstHabit,
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                ),
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ),
             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
         ) {
             Icon(

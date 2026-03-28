@@ -119,14 +119,14 @@ private fun ExpandedHeader(
 ) {
     Row(
         modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(
-                    start = EXPANDED_HORIZONTAL_PADDING,
-                    end = EXPANDED_HORIZONTAL_PADDING,
-                    top = EXPANDED_TOP_PADDING,
-                    bottom = 16.dp
-                ),
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(
+                start = EXPANDED_HORIZONTAL_PADDING,
+                end = EXPANDED_HORIZONTAL_PADDING,
+                top = EXPANDED_TOP_PADDING,
+                bottom = 16.dp
+            ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
@@ -137,26 +137,26 @@ private fun ExpandedHeader(
             Text(
                 text = motivationalTitle,
                 style = MaterialTheme.typography.headlineLarge.copy(
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        lineHeight = 32.sp
-                    ),
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    lineHeight = 32.sp
+                ),
                 color = MaterialTheme.colorScheme.primary
             )
 
             val subtitleText: String = if (!hasHabits) {
-                    stringResource(Res.string.today_header_no_habits)
-                } else if (pendingCount > 0) {
-                    stringResource(Res.string.today_header_remaining, pendingCount)
-                } else {
-                    stringResource(Res.string.today_header_all_done)
-                }
+                stringResource(Res.string.today_header_no_habits)
+            } else if (pendingCount > 0) {
+                stringResource(Res.string.today_header_remaining, pendingCount)
+            } else {
+                stringResource(Res.string.today_header_all_done)
+            }
 
             Text(
                 text = subtitleText,
                 style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Medium
-                    ),
+                    fontWeight = FontWeight.Medium
+                ),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
@@ -187,14 +187,14 @@ private fun CollapsedHeader(
 ) {
     Row(
         modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(
-                    start = COLLAPSED_HORIZONTAL_PADDING,
-                    end = COLLAPSED_HORIZONTAL_PADDING,
-                    top = COLLAPSED_TOP_PADDING,
-                    bottom = COLLAPSED_BOTTOM_PADDING
-                ),
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(
+                start = COLLAPSED_HORIZONTAL_PADDING,
+                end = COLLAPSED_HORIZONTAL_PADDING,
+                top = COLLAPSED_TOP_PADDING,
+                bottom = COLLAPSED_BOTTOM_PADDING
+            ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -204,9 +204,9 @@ private fun CollapsedHeader(
             Text(
                 text = motivationalTitle,
                 style = MaterialTheme.typography.headlineSmall.copy(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.ExtraBold
-                    ),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold
+                ),
                 color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -219,12 +219,12 @@ private fun CollapsedHeader(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 val subtitleText: String = if (!hasHabits) {
-                        stringResource(Res.string.today_header_no_habits)
-                    } else if (pendingCount > 0) {
-                        stringResource(Res.string.today_header_remaining, pendingCount)
-                    } else {
-                        stringResource(Res.string.today_header_all_done)
-                    }
+                    stringResource(Res.string.today_header_no_habits)
+                } else if (pendingCount > 0) {
+                    stringResource(Res.string.today_header_remaining, pendingCount)
+                } else {
+                    stringResource(Res.string.today_header_all_done)
+                }
 
                 Text(
                     text = subtitleText,
@@ -243,10 +243,10 @@ private fun CollapsedHeader(
 
         if (dailyTotal > 0) {
             val percentage: Int = if (dailyTotal > 0) {
-                    (dailyResolved * PERCENTAGE_MULTIPLIER) / dailyTotal
-                } else {
-                    0
-                }
+                (dailyResolved * PERCENTAGE_MULTIPLIER) / dailyTotal
+            } else {
+                0
+            }
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -254,17 +254,17 @@ private fun CollapsedHeader(
                 Text(
                     text = "$percentage%",
                     style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.ExtraBold
-                        ),
+                        fontWeight = FontWeight.ExtraBold
+                    ),
                     color = MaterialTheme.colorScheme.primary
                 )
 
                 Text(
                     text = stringResource(Res.string.today_header_done_label).uppercase(),
                     style = MaterialTheme.typography.labelSmall.copy(
-                            letterSpacing = 1.5.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
+                        letterSpacing = 1.5.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -280,16 +280,16 @@ private fun StrictnessPresetPill(preset: StrictnessPreset, isCompact: Boolean = 
         shape = RoundedCornerShape(PILL_CORNER_PERCENT),
         color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = PILL_BACKGROUND_ALPHA),
         modifier = Modifier.border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = PILL_BORDER_ALPHA),
-                shape = RoundedCornerShape(PILL_CORNER_PERCENT)
-            )
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = PILL_BORDER_ALPHA),
+            shape = RoundedCornerShape(PILL_CORNER_PERCENT)
+        )
     ) {
         Row(
             modifier = Modifier.padding(
-                    horizontal = if (isCompact) 8.dp else 16.dp,
-                    vertical = if (isCompact) 2.dp else 6.dp
-                ),
+                horizontal = if (isCompact) 8.dp else 16.dp,
+                vertical = if (isCompact) 2.dp else 6.dp
+            ),
             horizontalArrangement = Arrangement.spacedBy(if (isCompact) 4.dp else 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -300,9 +300,9 @@ private fun StrictnessPresetPill(preset: StrictnessPreset, isCompact: Boolean = 
             Text(
                 text = presetName,
                 style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 0.8.sp
-                    ),
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.8.sp
+                ),
                 color = MaterialTheme.colorScheme.primary
             )
         }
@@ -316,12 +316,12 @@ private fun PulsingDot(modifier: Modifier = Modifier) {
         initialValue = PULSING_DOT_MAX_ALPHA,
         targetValue = PULSING_DOT_MIN_ALPHA,
         animationSpec = infiniteRepeatable(
-                animation = tween(
-                        durationMillis = PULSING_DOT_DURATION_MS,
-                        easing = LinearEasing
-                    ),
-                repeatMode = RepeatMode.Reverse
+            animation = tween(
+                durationMillis = PULSING_DOT_DURATION_MS,
+                easing = LinearEasing
             ),
+            repeatMode = RepeatMode.Reverse
+        ),
         label = "PulsingDotAlpha"
     )
 
@@ -338,15 +338,15 @@ private fun PulsingDot(modifier: Modifier = Modifier) {
 @Composable
 private fun DailyProgressRing(dailyResolved: Int, dailyTotal: Int) {
     val percentage: Int = if (dailyTotal > 0) {
-            (dailyResolved * PERCENTAGE_MULTIPLIER) / dailyTotal
-        } else {
-            0
-        }
+        (dailyResolved * PERCENTAGE_MULTIPLIER) / dailyTotal
+    } else {
+        0
+    }
     val sweepAngle: Float = if (dailyTotal > 0) {
-            FULL_CIRCLE_DEGREES * dailyResolved / dailyTotal
-        } else {
-            0f
-        }
+        FULL_CIRCLE_DEGREES * dailyResolved / dailyTotal
+    } else {
+        0f
+    }
 
     val trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
     val progressColor = MaterialTheme.colorScheme.primary
@@ -362,9 +362,9 @@ private fun DailyProgressRing(dailyResolved: Int, dailyTotal: Int) {
                 val strokeWidthPx: Float = PROGRESS_RING_STROKE_WIDTH.toPx()
                 val radius: Float = (size.minDimension - strokeWidthPx) / 2f
                 val topLeft = Offset(
-                        x = center.x - radius,
-                        y = center.y - radius
-                    )
+                    x = center.x - radius,
+                    y = center.y - radius
+                )
                 val arcSize = Size(radius * 2, radius * 2)
 
                 drawArc(
@@ -394,17 +394,17 @@ private fun DailyProgressRing(dailyResolved: Int, dailyTotal: Int) {
                 Text(
                     text = "$percentage%",
                     style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.ExtraBold
-                        ),
+                        fontWeight = FontWeight.ExtraBold
+                    ),
                     color = MaterialTheme.colorScheme.primary
                 )
 
                 Text(
                     text = stringResource(Res.string.today_header_day_label).uppercase(),
                     style = MaterialTheme.typography.labelSmall.copy(
-                            letterSpacing = 2.sp,
-                            fontWeight = FontWeight.ExtraBold
-                        ),
+                        letterSpacing = 2.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }

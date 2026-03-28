@@ -17,25 +17,25 @@ import androidx.compose.ui.unit.sp
 fun SectionHeader(title: String, trailingLabel: String, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
-                ),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            ),
             color = MaterialTheme.colorScheme.primary
         )
         Text(
             text = trailingLabel.uppercase(),
             style = MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.Medium,
-                    letterSpacing = 2.sp
-                ),
+                fontWeight = FontWeight.Medium,
+                letterSpacing = 2.sp
+            ),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }

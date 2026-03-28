@@ -96,11 +96,11 @@ class TodayViewModel(
                 val strictnessPreset: StrictnessPreset? =
                     user?.let {
                         val settings = UserStrictnessSettings(
-                                undoPolicy = it.undoPolicy,
-                                maxSnoozesPerHabitPerDay = it.maxSnoozesPerHabitPerDay,
-                                maxConsecutiveSkips = it.maxConsecutiveSkips,
-                                maxSnoozeDurationMinutes = it.maxSnoozeDurationMinutes
-                            )
+                            undoPolicy = it.undoPolicy,
+                            maxSnoozesPerHabitPerDay = it.maxSnoozesPerHabitPerDay,
+                            maxConsecutiveSkips = it.maxConsecutiveSkips,
+                            maxSnoozeDurationMinutes = it.maxSnoozeDurationMinutes
+                        )
                         StrictnessPreset.fromSettings(settings)
                     }
 
@@ -115,9 +115,9 @@ class TodayViewModel(
                     instances
                         .mapNotNull { instance ->
                             val habit = habitRepository.getHabitById(instance.habitId)
-                                    ?: return@mapNotNull null
+                                ?: return@mapNotNull null
                             val schedule = habitRepository.getScheduleForHabit(habit.id)
-                                    ?: return@mapNotNull null
+                                ?: return@mapNotNull null
                             mapToTodayHabitUiModel(
                                 instance = instance,
                                 habit = habit,
@@ -209,10 +209,10 @@ class TodayViewModel(
             _state.update { it.copy(showQuantitativeInputFor = null) }
 
             val result = completeHabit.executeQuantitative(
-                    instanceId = instanceId,
-                    deltaValue = value,
-                    source = CompletionSource.IN_APP
-                )
+                instanceId = instanceId,
+                deltaValue = value,
+                source = CompletionSource.IN_APP
+            )
 
             result.fold(
                 onSuccess = { updatedInstance ->
@@ -232,7 +232,8 @@ class TodayViewModel(
 
     fun incrementHabitProgress(instanceId: String) {
         viewModelScope.launch {
-            val habit: TodayHabitUiModel = _state.value.habits.find { it.instanceId == instanceId } ?: return@launch
+            val habit: TodayHabitUiModel =
+                _state.value.habits.find { it.instanceId == instanceId } ?: return@launch
 
             val result: Result<HabitInstance> =
                 completeHabit.executeQuantitative(
