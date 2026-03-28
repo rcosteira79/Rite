@@ -178,6 +178,7 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                             onFinished = {
                                 backStack.clear()
                                 backStack.add(Today)
+                                appComponent.todayViewModel.loadTodayHabits()
                             },
                         )
                     }
