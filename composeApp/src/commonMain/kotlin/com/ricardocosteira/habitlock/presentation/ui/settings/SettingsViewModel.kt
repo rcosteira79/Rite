@@ -26,9 +26,7 @@ import me.tatarka.inject.annotations.Inject
  */
 @AppScope
 @Inject
-class SettingsViewModel(
-    private val userRepository: UserRepository
-) : ViewModel() {
+class SettingsViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())
     val state: StateFlow<SettingsState> = _state.asStateFlow()

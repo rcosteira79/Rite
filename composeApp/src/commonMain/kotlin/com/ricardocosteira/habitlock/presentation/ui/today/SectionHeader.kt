@@ -14,36 +14,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SectionHeader(
-    title: String,
-    trailingLabel: String,
-    modifier: Modifier = Modifier,
-) {
+fun SectionHeader(title: String, trailingLabel: String, modifier: Modifier = Modifier) {
     Row(
         modifier =
             modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = title,
             style =
                 MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
+                    fontSize = 20.sp
                 ),
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.primary
         )
         Text(
             text = trailingLabel.uppercase(),
             style =
                 MaterialTheme.typography.labelSmall.copy(
                     fontWeight = FontWeight.Medium,
-                    letterSpacing = 2.sp,
+                    letterSpacing = 2.sp
                 ),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

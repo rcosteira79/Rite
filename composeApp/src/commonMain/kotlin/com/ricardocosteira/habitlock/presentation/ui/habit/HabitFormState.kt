@@ -33,7 +33,8 @@ data class HabitFormState(
 
     val isValid: Boolean get() {
         val nameValid = name.isNotBlank()
-        val typeValid = type == HabitType.BINARY || targetValue.toIntOrNull()?.let { it > 0 } == true
+        val typeValid =
+            type == HabitType.BINARY || targetValue.toIntOrNull()?.let { it > 0 } == true
         val quotaValid = quota.toIntOrNull()?.let { it > 0 } == true
         val daysValid = scheduleType == ScheduleType.DAILY || selectedDays.isNotEmpty()
 
@@ -48,11 +49,10 @@ data class HabitFormState(
             HabitType.QUANTITATIVE -> targetValue.toIntOrNull() ?: 1
         }
 
-    fun stepperChangeAction(newValue: Int): HabitFormUiAction =
-        when (type) {
-            HabitType.BINARY -> HabitFormUiAction.QuotaChanged(newValue.toString())
-            HabitType.QUANTITATIVE -> HabitFormUiAction.TargetValueChanged(newValue.toString())
-        }
+    fun stepperChangeAction(newValue: Int): HabitFormUiAction = when (type) {
+        HabitType.BINARY -> HabitFormUiAction.QuotaChanged(newValue.toString())
+        HabitType.QUANTITATIVE -> HabitFormUiAction.TargetValueChanged(newValue.toString())
+    }
 
     companion object {
         val DEFAULT_REMINDER_TIME = LocalTime(9, 0)

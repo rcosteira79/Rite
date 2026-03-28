@@ -10,7 +10,5 @@ sealed interface HabitFormEvent {
 
     data object HabitNotFound : HabitFormEvent
 
-    data class ShowError(
-        val message: String?
-    ) : HabitFormEvent
+    data class ShowError(val message: String?) : HabitFormEvent
 }

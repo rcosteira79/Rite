@@ -103,7 +103,7 @@ internal val LightColorScheme =
         onErrorContainer = ForestOnErrorContainer,
         inverseSurface = ForestInverseSurface,
         inverseOnSurface = ForestInverseOnSurface,
-        inversePrimary = ForestInversePrimary,
+        inversePrimary = ForestInversePrimary
     )
 
 internal val DarkColorScheme =
@@ -132,19 +132,19 @@ internal val DarkColorScheme =
         outline = ForestDarkOutline,
         outlineVariant = ForestDarkOutlineVariant,
         background = ForestDarkBackground,
-        onBackground = ForestDarkOnBackground,
+        onBackground = ForestDarkOnBackground
     )
 
 @Composable
 expect fun HabitLockTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit,
+    content: @Composable () -> Unit
 )
 
 @Composable
 fun HabitLockThemeFallback(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit,
+    content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
     MaterialTheme(colorScheme = colorScheme, typography = habitLockTypography()) {

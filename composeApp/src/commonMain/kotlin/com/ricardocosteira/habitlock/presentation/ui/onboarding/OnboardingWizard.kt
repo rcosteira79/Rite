@@ -50,7 +50,9 @@ fun OnboardingWizard(
 ) {
     BackHandler(enabled = currentStep > 0) { onStepChange(currentStep - 1) }
 
-    Scaffold(modifier = modifier.fillMaxSize(), snackbarHost = { SnackbarHost(snackbarHostState) }) { innerPadding ->
+    Scaffold(modifier = modifier.fillMaxSize(), snackbarHost = {
+        SnackbarHost(snackbarHostState)
+    }) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             OnboardingTopChrome(
                 currentStep = currentStep,
@@ -67,7 +69,10 @@ fun OnboardingWizard(
                     Column(modifier = Modifier.fillMaxSize()) {
                         when (step) {
                             0 -> {
-                                PhilosophyStep(modifier = Modifier.weight(1f).fillMaxWidth(), reduceMotion = true)
+                                PhilosophyStep(
+                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                    reduceMotion = true
+                                )
                                 PhilosophyStepCta(
                                     onAdvance = { onStepChange(step + 1) },
                                     modifier = Modifier.fillMaxWidth(),
@@ -121,11 +126,15 @@ fun OnboardingWizard(
                     transitionSpec = {
                         val isForward = targetState > initialState
                         val enterSlide =
-                            slideInHorizontally(tween(ENTER_DURATION_MS, easing = EmphasizedDecelerate)) {
+                            slideInHorizontally(
+                                tween(ENTER_DURATION_MS, easing = EmphasizedDecelerate)
+                            ) {
                                 if (isForward) it else -it
                             } + fadeIn(tween(ENTER_DURATION_MS))
                         val exitSlide =
-                            slideOutHorizontally(tween(EXIT_DURATION_MS, easing = EmphasizedAccelerate)) {
+                            slideOutHorizontally(
+                                tween(EXIT_DURATION_MS, easing = EmphasizedAccelerate)
+                            ) {
                                 if (isForward) -it else it
                             } + fadeOut(tween(EXIT_DURATION_MS))
                         enterSlide togetherWith exitSlide

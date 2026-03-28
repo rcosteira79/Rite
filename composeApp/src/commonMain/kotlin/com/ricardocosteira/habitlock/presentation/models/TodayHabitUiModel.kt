@@ -6,10 +6,10 @@ import com.ricardocosteira.habitlock.domain.models.HabitSchedule
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
+import kotlin.time.Instant
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Instant
 
 /**
  * UI model for displaying a habit on the Today screen.
@@ -31,7 +31,7 @@ data class TodayHabitUiModel(
     val longestStreak: Int,
     val scorePercentage: Int,
     val cadence: ScheduleType,
-    val completedAtText: String?,
+    val completedAtText: String?
 ) {
     val isCompleted: Boolean get() = status == HabitStatus.COMPLETED
     val isSkipped: Boolean get() = status == HabitStatus.SKIPPED
@@ -61,7 +61,7 @@ fun mapToTodayHabitUiModel(
     habit: Habit,
     schedule: HabitSchedule,
     maxConsecutiveSkips: Int?,
-    userTimezone: TimeZone,
+    userTimezone: TimeZone
 ): TodayHabitUiModel {
     val score = habit.calculateScore()
     return TodayHabitUiModel(
@@ -81,14 +81,11 @@ fun mapToTodayHabitUiModel(
         longestStreak = habit.longestStreak,
         scorePercentage = score.percentage,
         cadence = schedule.scheduleType,
-        completedAtText = instance.completedAt?.let { formatCompletedAtTime(it, userTimezone) },
+        completedAtText = instance.completedAt?.let { formatCompletedAtTime(it, userTimezone) }
     )
 }
 
-private fun formatCompletedAtTime(
-    instant: Instant,
-    timezone: TimeZone,
-): String {
+private fun formatCompletedAtTime(instant: Instant, timezone: TimeZone): String {
     val localTime: LocalTime = instant.toLocalDateTime(timezone).time
     val hour: Int = if (localTime.hour % 12 == 0) 12 else localTime.hour % 12
     val minute: String = localTime.minute.toString().padStart(2, '0')

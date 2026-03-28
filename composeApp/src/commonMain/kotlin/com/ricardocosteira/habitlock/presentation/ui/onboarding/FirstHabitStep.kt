@@ -62,14 +62,13 @@ private val OnboardingTextFieldShape = RoundedCornerShape(topStart = 12.dp, topE
 private val HabitTypeCardIconSize = 26.dp
 
 @Composable
-private fun onboardingTextFieldColors(): TextFieldColors =
-    TextFieldDefaults.colors(
-        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-        focusedIndicatorColor = Color.Transparent,
-        unfocusedIndicatorColor = Color.Transparent,
-        disabledIndicatorColor = Color.Transparent
-    )
+private fun onboardingTextFieldColors(): TextFieldColors = TextFieldDefaults.colors(
+    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+    focusedIndicatorColor = Color.Transparent,
+    unfocusedIndicatorColor = Color.Transparent,
+    disabledIndicatorColor = Color.Transparent
+)
 
 @Composable
 fun FirstHabitStep(
@@ -104,7 +103,10 @@ fun FirstHabitStep(
             modifier = Modifier
                 .width(36.dp)
                 .height(3.dp)
-                .background(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(2.dp))
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(2.dp)
+                )
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -164,7 +166,9 @@ fun FirstHabitStep(
                         value = unit,
                         onValueChange = onUnitChange,
                         label = { Text(stringResource(Res.string.first_habit_label_unit)) },
-                        placeholder = { Text(stringResource(Res.string.first_habit_placeholder_unit)) },
+                        placeholder = {
+                            Text(stringResource(Res.string.first_habit_placeholder_unit))
+                        },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         shape = OnboardingTextFieldShape,

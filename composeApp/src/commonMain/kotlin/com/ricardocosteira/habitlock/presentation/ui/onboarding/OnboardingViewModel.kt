@@ -10,6 +10,7 @@ import com.ricardocosteira.habitlock.domain.usecases.ApplyStrictnessPreset
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabit
 import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabits
 import com.ricardocosteira.habitlock.util.todayIn
+import kotlin.time.Clock
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -21,7 +22,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.TimeZone
 import me.tatarka.inject.annotations.Inject
-import kotlin.time.Clock
 
 /**
  * Scoped to the application lifetime via [AppScope] rather than a
@@ -188,10 +188,9 @@ class OnboardingViewModel(
         _state.update { it.copy(error = null) }
     }
 
-    private fun OnboardingStrictnessPreset.toDomain(): StrictnessPreset =
-        when (this) {
-            OnboardingStrictnessPreset.FLEXIBLE -> StrictnessPreset.FLEXIBLE
-            OnboardingStrictnessPreset.BALANCED -> StrictnessPreset.BALANCED
-            OnboardingStrictnessPreset.LOCKED -> StrictnessPreset.LOCKED
-        }
+    private fun OnboardingStrictnessPreset.toDomain(): StrictnessPreset = when (this) {
+        OnboardingStrictnessPreset.FLEXIBLE -> StrictnessPreset.FLEXIBLE
+        OnboardingStrictnessPreset.BALANCED -> StrictnessPreset.BALANCED
+        OnboardingStrictnessPreset.LOCKED -> StrictnessPreset.LOCKED
+    }
 }

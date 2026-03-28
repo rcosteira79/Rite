@@ -9,6 +9,7 @@ import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import com.ricardocosteira.habitlock.presentation.models.CalendarDayUiModel
 import com.ricardocosteira.habitlock.presentation.models.DayClassification
 import com.ricardocosteira.habitlock.util.toLocalDate
+import kotlin.time.Clock
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,6 @@ import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
-import kotlin.time.Clock
 import me.tatarka.inject.annotations.Inject
 
 /**
@@ -113,16 +113,20 @@ class CalendarViewModel(
                     if (dayInstances.isNotEmpty()) {
                         trackedCount++
 
-                        val completedCount = dayInstances.count { it.status == HabitStatus.COMPLETED }
+                        val completedCount = dayInstances.count {
+                            it.status == HabitStatus.COMPLETED
+                        }
                         val skippedCount = dayInstances.count { it.status == HabitStatus.SKIPPED }
                         val failedCount = dayInstances.count { it.status == HabitStatus.FAILED }
 
                         val classification = when {
                             failedCount > 0 -> DayClassification.FAILED
+
                             completedCount + skippedCount == dayInstances.size -> {
                                 perfectCount++
                                 DayClassification.PERFECT
                             }
+
                             else -> DayClassification.PARTIAL
                         }
 
@@ -166,4 +170,3 @@ class CalendarViewModel(
         }
     }
 }
-

@@ -87,7 +87,7 @@ fun HabitCard(
         ResolvedHabitRow(
             habit = habit,
             onUndo = onUndo,
-            modifier = modifier,
+            modifier = modifier
         )
     } else {
         PendingHabitCard(
@@ -99,7 +99,7 @@ fun HabitCard(
             onUndo = onUndo,
             onIncrementProgress = onIncrementProgress,
             onCustomProgress = onCustomProgress,
-            modifier = modifier,
+            modifier = modifier
         )
     }
 }
@@ -114,7 +114,7 @@ private fun PendingHabitCard(
     onUndo: () -> Unit,
     onIncrementProgress: () -> Unit,
     onCustomProgress: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val currentValue: Int = habit.completedValue ?: 0
     val targetValue: Int = habit.targetValue ?: 0
@@ -125,24 +125,23 @@ private fun PendingHabitCard(
     Surface(
         shape = RoundedCornerShape(CARD_CORNER_RADIUS),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(CARD_CORNER_RADIUS))
-                .clickable(onClick = onToggleExpand),
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(CARD_CORNER_RADIUS))
+            .clickable(onClick = onToggleExpand)
     ) {
         Column(
             modifier =
                 Modifier.padding(
                     horizontal = COLLAPSED_HORIZONTAL_PADDING,
-                    vertical = COLLAPSED_VERTICAL_PADDING,
-                ),
+                    vertical = COLLAPSED_VERTICAL_PADDING
+                )
         ) {
             // Header row: always visible
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     // Quantitative: progress counter
@@ -150,21 +149,19 @@ private fun PendingHabitCard(
                         Row(verticalAlignment = Alignment.Bottom) {
                             Text(
                                 text = "$currentValue",
-                                style =
-                                    MaterialTheme.typography.headlineSmall.copy(
-                                        fontWeight = FontWeight.Bold,
-                                    ),
-                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.width(2.dp))
                             Text(
                                 text = "/ $targetValue $unitText".trim(),
-                                style =
-                                    MaterialTheme.typography.labelSmall.copy(
-                                        fontWeight = FontWeight.Medium,
-                                    ),
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Medium
+                                ),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(bottom = 4.dp),
+                                modifier = Modifier.padding(bottom = 4.dp)
                             )
                         }
                     }
@@ -172,14 +169,13 @@ private fun PendingHabitCard(
                     // Habit name: always visible
                     Text(
                         text = habit.name.uppercase(),
-                        style =
-                            MaterialTheme.typography.titleSmall.copy(
-                                fontSize = if (isExpanded) HABIT_NAME_EXPANDED_SIZE else HABIT_NAME_COLLAPSED_SIZE,
-                                fontWeight = FontWeight.Bold,
-                            ),
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontSize = if (isExpanded) HABIT_NAME_EXPANDED_SIZE else HABIT_NAME_COLLAPSED_SIZE,
+                            fontWeight = FontWeight.Bold
+                        ),
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = if (isExpanded) 2 else 1,
-                        overflow = TextOverflow.Ellipsis,
+                        overflow = TextOverflow.Ellipsis
                     )
 
                     // Description: always visible if present
@@ -190,7 +186,7 @@ private fun PendingHabitCard(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = if (isExpanded) 2 else 1,
-                            overflow = TextOverflow.Ellipsis,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -201,40 +197,40 @@ private fun PendingHabitCard(
                 if (!isExpanded) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
-                        verticalAlignment = Alignment.CenterVertically,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         if (isQuantitative) {
-                            val incrementLabel: String =
-                                stringResource(
-                                    Res.string.today_action_increment_short,
-                                    habit.defaultIncrement,
-                                )
+                            val incrementLabel: String = stringResource(
+                                Res.string.today_action_increment_short,
+                                habit.defaultIncrement
+                            )
                             Surface(
                                 shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
                                 color = MaterialTheme.colorScheme.primaryContainer,
-                                onClick = onIncrementProgress,
+                                onClick = onIncrementProgress
                             ) {
                                 Text(
                                     text = incrementLabel,
-                                    style =
-                                        MaterialTheme.typography.labelMedium.copy(
-                                            fontWeight = FontWeight.Bold,
-                                        ),
+                                    style = MaterialTheme.typography.labelMedium.copy(
+                                        fontWeight = FontWeight.Bold
+                                    ),
                                     color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                                 )
                             }
                         } else {
                             Surface(
                                 shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
                                 color = MaterialTheme.colorScheme.primaryContainer,
-                                onClick = onComplete,
+                                onClick = onComplete
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
-                                    contentDescription = stringResource(Res.string.today_action_complete),
+                                    contentDescription = stringResource(
+                                        Res.string.today_action_complete
+                                    ),
                                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    modifier = Modifier.padding(8.dp),
+                                    modifier = Modifier.padding(8.dp)
                                 )
                             }
                         }
@@ -242,16 +238,14 @@ private fun PendingHabitCard(
                         if (!habit.isSkipLocked) {
                             Text(
                                 text = stringResource(Res.string.common_skip).uppercase(),
-                                style =
-                                    MaterialTheme.typography.labelMedium.copy(
-                                        fontWeight = FontWeight.Bold,
-                                    ),
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier =
-                                    Modifier
-                                        .clip(RoundedCornerShape(BUTTON_CORNER_RADIUS))
-                                        .clickable(onClick = onSkip)
-                                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(BUTTON_CORNER_RADIUS))
+                                    .clickable(onClick = onSkip)
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
                             )
                         }
                     }
@@ -262,7 +256,7 @@ private fun PendingHabitCard(
                                 stringResource(Res.string.today_badge_in_progress)
                             } else {
                                 stringResource(Res.string.today_badge_pending)
-                            },
+                            }
                     )
                 }
             }
@@ -271,20 +265,22 @@ private fun PendingHabitCard(
             if (isQuantitative) {
                 Spacer(modifier = Modifier.height(if (isExpanded) 16.dp else 10.dp))
                 Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(if (isExpanded) PROGRESS_BAR_EXPANDED_HEIGHT else PROGRESS_BAR_COLLAPSED_HEIGHT)
-                            .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                            .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(
+                            if (isExpanded) PROGRESS_BAR_EXPANDED_HEIGHT else PROGRESS_BAR_COLLAPSED_HEIGHT
+                        )
+                        .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                 ) {
                     Box(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth(fraction = habit.progressPercentage)
-                                .height(if (isExpanded) PROGRESS_BAR_EXPANDED_HEIGHT else PROGRESS_BAR_COLLAPSED_HEIGHT)
-                                .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
+                        modifier = Modifier
+                            .fillMaxWidth(fraction = habit.progressPercentage)
+                            .height(
+                                if (isExpanded) PROGRESS_BAR_EXPANDED_HEIGHT else PROGRESS_BAR_COLLAPSED_HEIGHT
+                            )
+                            .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
                     )
                 }
             }
@@ -294,32 +290,31 @@ private fun PendingHabitCard(
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
+                    horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP)
                 ) {
                     if (isQuantitative) {
-                        val incrementLabel: String =
-                            stringResource(
-                                Res.string.today_action_increment,
-                                habit.defaultIncrement,
-                                unitText,
-                            )
+                        val incrementLabel: String = stringResource(
+                            Res.string.today_action_increment,
+                            habit.defaultIncrement,
+                            unitText
+                        )
                         ActionButton(
                             text = incrementLabel,
                             onClick = onIncrementProgress,
                             isPrimary = true,
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.weight(1f)
                         )
                         ActionButton(
                             text = stringResource(Res.string.today_action_custom),
                             onClick = onCustomProgress,
-                            isPrimary = false,
+                            isPrimary = false
                         )
                     } else {
                         ActionButton(
                             text = stringResource(Res.string.today_action_complete),
                             onClick = onComplete,
                             isPrimary = true,
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.weight(1f)
                         )
                     }
 
@@ -327,7 +322,7 @@ private fun PendingHabitCard(
                         ActionButton(
                             text = stringResource(Res.string.common_skip),
                             onClick = onSkip,
-                            isPrimary = false,
+                            isPrimary = false
                         )
                     }
 
@@ -336,7 +331,7 @@ private fun PendingHabitCard(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Undo,
                                 contentDescription = stringResource(Res.string.today_cd_undo),
-                                tint = MaterialTheme.colorScheme.onSurface,
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -353,7 +348,7 @@ private fun CollapsedPendingCard(
     onComplete: () -> Unit,
     onSkip: () -> Unit,
     onIncrementProgress: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Surface(
         shape = RoundedCornerShape(CARD_CORNER_RADIUS),
@@ -362,21 +357,21 @@ private fun CollapsedPendingCard(
             modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(CARD_CORNER_RADIUS))
-                .clickable(onClick = onToggleExpand),
+                .clickable(onClick = onToggleExpand)
     ) {
         Column(
             modifier =
                 Modifier.padding(
                     horizontal = COLLAPSED_HORIZONTAL_PADDING,
-                    vertical = COLLAPSED_VERTICAL_PADDING,
-                ),
+                    vertical = COLLAPSED_VERTICAL_PADDING
+                )
         ) {
             when (habit.type) {
                 HabitType.BINARY -> {
                     CollapsedBinaryContent(
                         habit = habit,
                         onComplete = onComplete,
-                        onSkip = onSkip,
+                        onSkip = onSkip
                     )
                 }
 
@@ -384,7 +379,7 @@ private fun CollapsedPendingCard(
                     CollapsedQuantitativeContent(
                         habit = habit,
                         onIncrementProgress = onIncrementProgress,
-                        onSkip = onSkip,
+                        onSkip = onSkip
                     )
                 }
             }
@@ -396,12 +391,12 @@ private fun CollapsedPendingCard(
 private fun CollapsedBinaryContent(
     habit: TodayHabitUiModel,
     onComplete: () -> Unit,
-    onSkip: () -> Unit,
+    onSkip: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -409,11 +404,11 @@ private fun CollapsedBinaryContent(
                 style =
                     MaterialTheme.typography.titleSmall.copy(
                         fontSize = HABIT_NAME_COLLAPSED_SIZE,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Bold
                     ),
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                overflow = TextOverflow.Ellipsis
             )
 
             if (habit.description != null) {
@@ -422,7 +417,7 @@ private fun CollapsedBinaryContent(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
@@ -431,18 +426,18 @@ private fun CollapsedBinaryContent(
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
                 shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
                 color = MaterialTheme.colorScheme.primaryContainer,
-                onClick = onComplete,
+                onClick = onComplete
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = stringResource(Res.string.today_action_complete),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier.padding(8.dp)
                 )
             }
 
@@ -451,14 +446,14 @@ private fun CollapsedBinaryContent(
                     text = stringResource(Res.string.common_skip).uppercase(),
                     style =
                         MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Bold
                         ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier =
                         Modifier
                             .clip(RoundedCornerShape(BUTTON_CORNER_RADIUS))
                             .clickable(onClick = onSkip)
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                 )
             }
         }
@@ -469,7 +464,7 @@ private fun CollapsedBinaryContent(
 private fun CollapsedQuantitativeContent(
     habit: TodayHabitUiModel,
     onIncrementProgress: () -> Unit,
-    onSkip: () -> Unit,
+    onSkip: () -> Unit
 ) {
     val currentValue: Int = habit.completedValue ?: 0
     val targetValue: Int = habit.targetValue ?: 0
@@ -479,7 +474,7 @@ private fun CollapsedQuantitativeContent(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.Bottom) {
@@ -487,9 +482,9 @@ private fun CollapsedQuantitativeContent(
                         text = "$currentValue",
                         style =
                             MaterialTheme.typography.headlineSmall.copy(
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.Bold
                             ),
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.primary
                     )
 
                     Spacer(modifier = Modifier.width(2.dp))
@@ -498,10 +493,10 @@ private fun CollapsedQuantitativeContent(
                         text = "/ $targetValue $unitText".trim(),
                         style =
                             MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Medium,
+                                fontWeight = FontWeight.Medium
                             ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 4.dp),
+                        modifier = Modifier.padding(bottom = 4.dp)
                     )
                 }
 
@@ -510,11 +505,11 @@ private fun CollapsedQuantitativeContent(
                     style =
                         MaterialTheme.typography.titleSmall.copy(
                             fontSize = HABIT_NAME_COLLAPSED_SIZE,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Bold
                         ),
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
@@ -522,25 +517,25 @@ private fun CollapsedQuantitativeContent(
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
                     shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
                     color = MaterialTheme.colorScheme.primaryContainer,
-                    onClick = onIncrementProgress,
+                    onClick = onIncrementProgress
                 ) {
                     Text(
                         text =
                             stringResource(
                                 Res.string.today_action_increment_short,
-                                habit.defaultIncrement,
+                                habit.defaultIncrement
                             ),
                         style =
                             MaterialTheme.typography.labelLarge.copy(
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.Bold
                             ),
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
                     )
                 }
 
@@ -549,14 +544,14 @@ private fun CollapsedQuantitativeContent(
                         text = stringResource(Res.string.common_skip).uppercase(),
                         style =
                             MaterialTheme.typography.labelMedium.copy(
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.Bold
                             ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier =
                             Modifier
                                 .clip(RoundedCornerShape(BUTTON_CORNER_RADIUS))
                                 .clickable(onClick = onSkip)
-                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
             }
@@ -570,7 +565,7 @@ private fun CollapsedQuantitativeContent(
                     .fillMaxWidth()
                     .height(PROGRESS_BAR_COLLAPSED_HEIGHT)
                     .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                    .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
         ) {
             Box(
                 modifier =
@@ -578,7 +573,7 @@ private fun CollapsedQuantitativeContent(
                         .fillMaxWidth(fraction = habit.progressPercentage.coerceIn(0f, 1f))
                         .height(PROGRESS_BAR_COLLAPSED_HEIGHT)
                         .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
             )
         }
     }
@@ -593,7 +588,7 @@ private fun ExpandedPendingCard(
     onUndo: () -> Unit,
     onIncrementProgress: () -> Unit,
     onCustomProgress: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Surface(
         shape = RoundedCornerShape(CARD_CORNER_RADIUS),
@@ -602,17 +597,17 @@ private fun ExpandedPendingCard(
             modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(CARD_CORNER_RADIUS))
-                .clickable(onClick = onToggleExpand),
+                .clickable(onClick = onToggleExpand)
     ) {
         Column(
-            modifier = Modifier.padding(EXPANDED_PADDING),
+            modifier = Modifier.padding(EXPANDED_PADDING)
         ) {
             when (habit.type) {
                 HabitType.BINARY -> {
                     ExpandedBinaryContent(
                         habit = habit,
                         onComplete = onComplete,
-                        onSkip = onSkip,
+                        onSkip = onSkip
                     )
                 }
 
@@ -622,7 +617,7 @@ private fun ExpandedPendingCard(
                         onSkip = onSkip,
                         onUndo = onUndo,
                         onIncrementProgress = onIncrementProgress,
-                        onCustomProgress = onCustomProgress,
+                        onCustomProgress = onCustomProgress
                     )
                 }
             }
@@ -634,13 +629,13 @@ private fun ExpandedPendingCard(
 private fun ExpandedBinaryContent(
     habit: TodayHabitUiModel,
     onComplete: () -> Unit,
-    onSkip: () -> Unit,
+    onSkip: () -> Unit
 ) {
     // Header row
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top,
+        verticalAlignment = Alignment.Top
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -648,11 +643,11 @@ private fun ExpandedBinaryContent(
                 style =
                     MaterialTheme.typography.headlineSmall.copy(
                         fontSize = HABIT_NAME_EXPANDED_SIZE,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Bold
                     ),
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+                overflow = TextOverflow.Ellipsis
             )
 
             if (habit.description != null) {
@@ -661,7 +656,7 @@ private fun ExpandedBinaryContent(
                 Text(
                     text = habit.description.uppercase(),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -676,13 +671,13 @@ private fun ExpandedBinaryContent(
     // Action row
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
+        horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP)
     ) {
         ActionButton(
             text = stringResource(Res.string.today_action_complete).uppercase(),
             onClick = onComplete,
             isPrimary = true,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f)
         )
 
         if (!habit.isSkipLocked) {
@@ -690,7 +685,7 @@ private fun ExpandedBinaryContent(
                 text = stringResource(Res.string.common_skip).uppercase(),
                 onClick = onSkip,
                 isPrimary = false,
-                modifier = Modifier,
+                modifier = Modifier
             )
         }
     }
@@ -702,7 +697,7 @@ private fun ExpandedQuantitativeContent(
     onSkip: () -> Unit,
     onUndo: () -> Unit,
     onIncrementProgress: () -> Unit,
-    onCustomProgress: () -> Unit,
+    onCustomProgress: () -> Unit
 ) {
     val currentValue: Int = habit.completedValue ?: 0
     val targetValue: Int = habit.targetValue ?: 0
@@ -713,7 +708,7 @@ private fun ExpandedQuantitativeContent(
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top,
+        verticalAlignment = Alignment.Top
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.Bottom) {
@@ -721,9 +716,9 @@ private fun ExpandedQuantitativeContent(
                     text = "$currentValue",
                     style =
                         MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Bold
                         ),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.primary
                 )
 
                 Spacer(modifier = Modifier.width(2.dp))
@@ -732,10 +727,10 @@ private fun ExpandedQuantitativeContent(
                     text = "/ $targetValue $unitText".trim(),
                     style =
                         MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Medium,
+                            fontWeight = FontWeight.Medium
                         ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 4.dp),
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
 
@@ -746,11 +741,11 @@ private fun ExpandedQuantitativeContent(
                 style =
                     MaterialTheme.typography.headlineSmall.copy(
                         fontSize = HABIT_NAME_EXPANDED_SIZE,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Bold
                     ),
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
@@ -774,7 +769,7 @@ private fun ExpandedQuantitativeContent(
                 .fillMaxWidth()
                 .height(PROGRESS_BAR_EXPANDED_HEIGHT)
                 .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
     ) {
         Box(
             modifier =
@@ -782,7 +777,7 @@ private fun ExpandedQuantitativeContent(
                     .fillMaxWidth(fraction = habit.progressPercentage.coerceIn(0f, 1f))
                     .height(PROGRESS_BAR_EXPANDED_HEIGHT)
                     .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
         )
     }
 
@@ -792,25 +787,25 @@ private fun ExpandedQuantitativeContent(
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         ActionButton(
             text =
                 stringResource(
                     Res.string.today_action_increment,
                     habit.defaultIncrement,
-                    unitText,
+                    unitText
                 ).trim(),
             onClick = onIncrementProgress,
             isPrimary = true,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f)
         )
 
         ActionButton(
             text = stringResource(Res.string.today_action_custom).uppercase(),
             onClick = onCustomProgress,
             isPrimary = false,
-            modifier = Modifier,
+            modifier = Modifier
         )
 
         if (!habit.isSkipLocked) {
@@ -818,7 +813,7 @@ private fun ExpandedQuantitativeContent(
                 text = stringResource(Res.string.common_skip).uppercase(),
                 onClick = onSkip,
                 isPrimary = false,
-                modifier = Modifier,
+                modifier = Modifier
             )
         }
 
@@ -827,7 +822,7 @@ private fun ExpandedQuantitativeContent(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Undo,
                     contentDescription = stringResource(Res.string.today_cd_undo),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -838,7 +833,7 @@ private fun ExpandedQuantitativeContent(
 private fun ResolvedHabitRow(
     habit: TodayHabitUiModel,
     onUndo: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val isFailed: Boolean = habit.isFailed
     val rowAlpha: Float = if (isFailed) FAILED_ALPHA else RESOLVED_ALPHA
@@ -846,14 +841,14 @@ private fun ResolvedHabitRow(
     Surface(
         shape = RoundedCornerShape(RESOLVED_CORNER_RADIUS),
         color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = rowAlpha),
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth()
     ) {
         Row(
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             // Check icon circle
             Box(
@@ -862,13 +857,13 @@ private fun ResolvedHabitRow(
                         .size(RESOLVED_ICON_SIZE)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center,
+                contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(20.dp)
                 )
             }
 
@@ -880,12 +875,12 @@ private fun ResolvedHabitRow(
                     text = habit.name.uppercase(),
                     style =
                         MaterialTheme.typography.titleSmall.copy(
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Bold
                         ),
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = if (isFailed) Modifier.alpha(FAILED_ALPHA) else Modifier,
+                    modifier = if (isFailed) Modifier.alpha(FAILED_ALPHA) else Modifier
                 )
 
                 val subtitle: String =
@@ -893,14 +888,14 @@ private fun ResolvedHabitRow(
                         habit.isCompleted -> {
                             stringResource(
                                 Res.string.today_resolved_completed_at,
-                                habit.completedAtText ?: "",
+                                habit.completedAtText ?: ""
                             ).uppercase()
                         }
 
                         habit.isSkipped -> {
                             stringResource(
                                 Res.string.today_resolved_skipped_at,
-                                habit.completedAtText ?: "",
+                                habit.completedAtText ?: ""
                             ).uppercase()
                         }
 
@@ -917,7 +912,7 @@ private fun ResolvedHabitRow(
                     text = subtitle,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                    modifier = if (isFailed) Modifier.alpha(FAILED_ALPHA) else Modifier,
+                    modifier = if (isFailed) Modifier.alpha(FAILED_ALPHA) else Modifier
                 )
             }
 
@@ -927,7 +922,7 @@ private fun ResolvedHabitRow(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.Undo,
                         contentDescription = stringResource(Res.string.today_cd_undo),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
@@ -939,16 +934,16 @@ private fun ResolvedHabitRow(
 private fun StatusBadge(text: String) {
     Surface(
         shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        color = MaterialTheme.colorScheme.surfaceContainerHighest
     ) {
         Text(
             text = text,
             style =
                 MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Medium
                 ),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         )
     }
 }
@@ -958,7 +953,7 @@ private fun ActionButton(
     text: String,
     onClick: () -> Unit,
     isPrimary: Boolean,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val backgroundColor: Color =
         if (isPrimary) {
@@ -978,7 +973,7 @@ private fun ActionButton(
         shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
         color = backgroundColor,
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -986,15 +981,15 @@ private fun ActionButton(
                 Modifier
                     .height(BUTTON_HEIGHT)
                     .then(if (isPrimary) Modifier.fillMaxWidth() else Modifier)
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
         ) {
             Text(
                 text = text,
                 style =
                     MaterialTheme.typography.labelLarge.copy(
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Bold
                     ),
-                color = textColor,
+                color = textColor
             )
         }
     }

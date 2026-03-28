@@ -74,7 +74,11 @@ fun DetailRow(
                     .background(MaterialTheme.colorScheme.surfaceContainerLow)
                     .then(
                         if (isDarkTheme) {
-                            Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
+                            Modifier.border(
+                                1.dp,
+                                MaterialTheme.colorScheme.outlineVariant,
+                                CircleShape
+                            )
                         } else {
                             Modifier
                         }

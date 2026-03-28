@@ -12,6 +12,7 @@ import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabit
 import com.ricardocosteira.habitlock.domain.usecases.UuidProvider
 import com.ricardocosteira.habitlock.util.toLocalDate
+import kotlin.time.Clock
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -24,7 +25,6 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import me.tatarka.inject.annotations.Inject
-import kotlin.time.Clock
 
 private class HabitNotFoundException : Exception()
 
@@ -116,7 +116,13 @@ class HabitFormViewModel(
         _state.update {
             it.copy(
                 type = type,
-                reminderType = if (type == HabitType.QUANTITATIVE) ReminderType.PERIODIC else ReminderType.FIXED
+                reminderType = if (type ==
+                    HabitType.QUANTITATIVE
+                ) {
+                    ReminderType.PERIODIC
+                } else {
+                    ReminderType.FIXED
+                }
             )
         }
     }
@@ -145,7 +151,13 @@ class HabitFormViewModel(
         _state.update {
             it.copy(
                 hasReminder = hasReminder,
-                reminderTime = if (hasReminder && it.reminderTime == null) DEFAULT_REMINDER_TIME else it.reminderTime
+                reminderTime = if (hasReminder &&
+                    it.reminderTime == null
+                ) {
+                    DEFAULT_REMINDER_TIME
+                } else {
+                    it.reminderTime
+                }
             )
         }
     }
@@ -154,10 +166,7 @@ class HabitFormViewModel(
         _state.update { it.copy(reminderType = reminderType) }
     }
 
-    fun updateReminderTime(
-        hour: Int,
-        minute: Int
-    ) {
+    fun updateReminderTime(hour: Int, minute: Int) {
         _state.update { it.copy(reminderTime = LocalTime(hour, minute)) }
     }
 
@@ -233,12 +242,15 @@ class HabitFormViewModel(
         )
     }
 
-    private suspend fun createNewHabit(
-        state: HabitFormState,
-        reminder: HabitReminder?
-    ) {
+    private suspend fun createNewHabit(state: HabitFormState, reminder: HabitReminder?) {
         val today = Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
-        val specificDays = if (state.scheduleType == ScheduleType.WEEKLY) state.selectedDays else null
+        val specificDays = if (state.scheduleType ==
+            ScheduleType.WEEKLY
+        ) {
+            state.selectedDays
+        } else {
+            null
+        }
 
         createHabit
             .execute(
@@ -261,10 +273,7 @@ class HabitFormViewModel(
             ).getOrThrow()
     }
 
-    private suspend fun updateExistingHabit(
-        state: HabitFormState,
-        reminder: HabitReminder?
-    ) {
+    private suspend fun updateExistingHabit(state: HabitFormState, reminder: HabitReminder?) {
         val habitId = state.habitId!!
         val existingHabit = habitRepository.getHabitById(habitId) ?: throw HabitNotFoundException()
 
@@ -282,7 +291,13 @@ class HabitFormViewModel(
 
         habitRepository.updateHabit(updatedHabit)
 
-        val specificDays = if (state.scheduleType == ScheduleType.WEEKLY) state.selectedDays else null
+        val specificDays = if (state.scheduleType ==
+            ScheduleType.WEEKLY
+        ) {
+            state.selectedDays
+        } else {
+            null
+        }
         val existingSchedule = habitRepository.getScheduleForHabit(habitId)
 
         if (existingSchedule != null) {

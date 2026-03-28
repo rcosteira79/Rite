@@ -75,7 +75,22 @@ fun QuantitativeInputBottomSheet(
             // Current progress
             if (habit.targetValue != null) {
                 Text(
-                    text = if (habit.unit != null) stringResource(Res.string.quantitative_input_current_with_unit, habit.completedValue ?: 0, habit.targetValue, habit.unit) else stringResource(Res.string.quantitative_input_current_no_unit, habit.completedValue ?: 0, habit.targetValue),
+                    text = if (habit.unit !=
+                        null
+                    ) {
+                        stringResource(
+                            Res.string.quantitative_input_current_with_unit,
+                            habit.completedValue ?: 0,
+                            habit.targetValue,
+                            habit.unit
+                        )
+                    } else {
+                        stringResource(
+                            Res.string.quantitative_input_current_no_unit,
+                            habit.completedValue ?: 0,
+                            habit.targetValue
+                        )
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -157,4 +172,3 @@ fun QuantitativeInputBottomSheet(
         }
     }
 }
-

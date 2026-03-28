@@ -60,13 +60,13 @@ import habitlock.composeapp.generated.resources.today_section_weekly
 import habitlock.composeapp.generated.resources.today_timezone_changed_dismiss
 import habitlock.composeapp.generated.resources.today_timezone_changed_message
 import habitlock.composeapp.generated.resources.today_timezone_changed_title
+import kotlin.time.Clock
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import kotlin.time.Clock
 
 private val DIVIDER_ALPHA = 0.3f
 private val DIVIDER_HORIZONTAL_PADDING = 16.dp
@@ -79,7 +79,7 @@ fun TodayScreen(
     onNavigateToHabitDetail: (String) -> Unit,
     onNavigateToCreateHabit: () -> Unit,
     onEditHabit: (String) -> Unit,
-    snackbarHostState: SnackbarHostState,
+    snackbarHostState: SnackbarHostState
 ) {
     val viewModel = LocalAppComponent.current.todayViewModel
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -88,8 +88,13 @@ fun TodayScreen(
         viewModel.events.collect { event: TodayEvent ->
             when (event) {
                 is TodayEvent.NavigateToHabitDetail -> onNavigateToHabitDetail(event.instanceId)
+
                 TodayEvent.NavigateToCreateHabit -> onNavigateToCreateHabit()
-                is TodayEvent.ShowSnackbar -> snackbarHostState.showSnackbar(getString(event.messageRes))
+
+                is TodayEvent.ShowSnackbar -> snackbarHostState.showSnackbar(
+                    getString(event.messageRes)
+                )
+
                 is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
             }
         }
@@ -103,7 +108,7 @@ fun TodayScreen(
         onIncrementProgress = viewModel::incrementHabitProgress,
         onCustomProgress = viewModel::showQuantitativeInput,
         onDismissTimezoneWarning = viewModel::dismissTimezoneWarning,
-        onAddFirstHabit = onNavigateToCreateHabit,
+        onAddFirstHabit = onNavigateToCreateHabit
     )
 
     state.showQuantitativeInputFor?.let { instanceId ->
@@ -112,7 +117,7 @@ fun TodayScreen(
             QuantitativeInputBottomSheet(
                 habit = habit,
                 onConfirm = { value -> viewModel.completeQuantitativeHabit(instanceId, value) },
-                onDismiss = viewModel::dismissQuantitativeInput,
+                onDismiss = viewModel::dismissQuantitativeInput
             )
         }
     }
@@ -128,7 +133,7 @@ internal fun TodayScreen(
     onCustomProgress: (String) -> Unit,
     onDismissTimezoneWarning: () -> Unit,
     onAddFirstHabit: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
     val isHeaderCollapsed: Boolean by remember {
@@ -138,13 +143,13 @@ internal fun TodayScreen(
     var expandedCardIds: Set<String> by remember { mutableStateOf(emptySet()) }
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize()
     ) {
         // Timezone warning banner
         if (state.showTimezoneWarning) {
             TimezoneWarningBanner(
                 previousTimezone = state.previousTimezone,
-                onDismiss = onDismissTimezoneWarning,
+                onDismiss = onDismissTimezoneWarning
             )
         }
 
@@ -157,7 +162,7 @@ internal fun TodayScreen(
                 strictnessPreset = state.strictnessPreset,
                 dailyResolved = state.dailyResolved,
                 dailyTotal = state.dailyTotal,
-                isCollapsed = isHeaderCollapsed,
+                isCollapsed = isHeaderCollapsed
             )
         }
 
@@ -165,7 +170,7 @@ internal fun TodayScreen(
             state.isLoading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
+                    contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
                 }
@@ -182,7 +187,7 @@ internal fun TodayScreen(
                     state = lazyListState,
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     // Top breathing room
                     item(key = "top_spacer") {
@@ -193,13 +198,13 @@ internal fun TodayScreen(
                     item(key = "daily_header") {
                         SectionHeader(
                             title = stringResource(Res.string.today_section_focus),
-                            trailingLabel = formattedDate,
+                            trailingLabel = formattedDate
                         )
                     }
 
                     items(
                         items = state.pendingDaily,
-                        key = { it.instanceId },
+                        key = { it.instanceId }
                     ) { habit ->
                         HabitCard(
                             habit = habit,
@@ -222,7 +227,7 @@ internal fun TodayScreen(
                             onSkip = { onSkip(habit.instanceId) },
                             onUndo = { onUndo(habit.instanceId) },
                             onIncrementProgress = { onIncrementProgress(habit.instanceId) },
-                            onCustomProgress = { onCustomProgress(habit.instanceId) },
+                            onCustomProgress = { onCustomProgress(habit.instanceId) }
                         )
                     }
 
@@ -232,13 +237,13 @@ internal fun TodayScreen(
                                 modifier =
                                     Modifier
                                         .alpha(DIVIDER_ALPHA)
-                                        .padding(horizontal = DIVIDER_HORIZONTAL_PADDING),
+                                        .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
                             )
                         }
 
                         items(
                             items = state.resolvedDaily,
-                            key = { it.instanceId },
+                            key = { it.instanceId }
                         ) { habit ->
                             HabitCard(
                                 habit = habit,
@@ -248,7 +253,7 @@ internal fun TodayScreen(
                                 onSkip = {},
                                 onUndo = { onUndo(habit.instanceId) },
                                 onIncrementProgress = {},
-                                onCustomProgress = {},
+                                onCustomProgress = {}
                             )
                         }
                     }
@@ -262,13 +267,13 @@ internal fun TodayScreen(
                         item(key = "weekly_header") {
                             SectionHeader(
                                 title = stringResource(Res.string.today_section_weekly),
-                                trailingLabel = stringResource(Res.string.today_section_this_week),
+                                trailingLabel = stringResource(Res.string.today_section_this_week)
                             )
                         }
 
                         items(
                             items = state.pendingWeekly,
-                            key = { it.instanceId },
+                            key = { it.instanceId }
                         ) { habit ->
                             HabitCard(
                                 habit = habit,
@@ -291,7 +296,7 @@ internal fun TodayScreen(
                                 onSkip = { onSkip(habit.instanceId) },
                                 onUndo = { onUndo(habit.instanceId) },
                                 onIncrementProgress = { onIncrementProgress(habit.instanceId) },
-                                onCustomProgress = { onCustomProgress(habit.instanceId) },
+                                onCustomProgress = { onCustomProgress(habit.instanceId) }
                             )
                         }
 
@@ -301,13 +306,13 @@ internal fun TodayScreen(
                                     modifier =
                                         Modifier
                                             .alpha(DIVIDER_ALPHA)
-                                            .padding(horizontal = DIVIDER_HORIZONTAL_PADDING),
+                                            .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
                                 )
                             }
 
                             items(
                                 items = state.resolvedWeekly,
-                                key = { it.instanceId },
+                                key = { it.instanceId }
                             ) { habit ->
                                 HabitCard(
                                     habit = habit,
@@ -317,7 +322,7 @@ internal fun TodayScreen(
                                     onSkip = {},
                                     onUndo = { onUndo(habit.instanceId) },
                                     onIncrementProgress = {},
-                                    onCustomProgress = {},
+                                    onCustomProgress = {}
                                 )
                             }
                         }
@@ -349,62 +354,58 @@ private fun rememberFormattedDate(): String {
     return remember(localDate) { "$monthAbbreviation ${localDate.day}" }
 }
 
-private fun formatMonthAbbreviation(month: Month): String =
-    when (month) {
-        Month.JANUARY -> {
-            "Jan"
-        }
-
-        Month.FEBRUARY -> {
-            "Feb"
-        }
-
-        Month.MARCH -> {
-            "Mar"
-        }
-
-        Month.APRIL -> {
-            "Apr"
-        }
-
-        Month.MAY -> {
-            "May"
-        }
-
-        Month.JUNE -> {
-            "Jun"
-        }
-
-        Month.JULY -> {
-            "Jul"
-        }
-
-        Month.AUGUST -> {
-            "Aug"
-        }
-
-        Month.SEPTEMBER -> {
-            "Sep"
-        }
-
-        Month.OCTOBER -> {
-            "Oct"
-        }
-
-        Month.NOVEMBER -> {
-            "Nov"
-        }
-
-        Month.DECEMBER -> {
-            "Dec"
-        }
+private fun formatMonthAbbreviation(month: Month): String = when (month) {
+    Month.JANUARY -> {
+        "Jan"
     }
 
+    Month.FEBRUARY -> {
+        "Feb"
+    }
+
+    Month.MARCH -> {
+        "Mar"
+    }
+
+    Month.APRIL -> {
+        "Apr"
+    }
+
+    Month.MAY -> {
+        "May"
+    }
+
+    Month.JUNE -> {
+        "Jun"
+    }
+
+    Month.JULY -> {
+        "Jul"
+    }
+
+    Month.AUGUST -> {
+        "Aug"
+    }
+
+    Month.SEPTEMBER -> {
+        "Sep"
+    }
+
+    Month.OCTOBER -> {
+        "Oct"
+    }
+
+    Month.NOVEMBER -> {
+        "Nov"
+    }
+
+    Month.DECEMBER -> {
+        "Dec"
+    }
+}
+
 @Composable
-private fun TimezoneWarningBanner(
-    previousTimezone: String?,
-    onDismiss: () -> Unit,
-) {
+private fun TimezoneWarningBanner(previousTimezone: String?, onDismiss: () -> Unit) {
     Card(
         modifier =
             Modifier
@@ -412,8 +413,8 @@ private fun TimezoneWarningBanner(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
         colors =
             CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-            ),
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer
+            )
     ) {
         Row(
             modifier =
@@ -421,18 +422,21 @@ private fun TimezoneWarningBanner(
                     .fillMaxWidth()
                     .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = stringResource(Res.string.today_timezone_changed_title),
                     style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
                 )
                 Text(
-                    text = stringResource(Res.string.today_timezone_changed_message, previousTimezone ?: ""),
+                    text = stringResource(
+                        Res.string.today_timezone_changed_message,
+                        previousTimezone ?: ""
+                    ),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
                 )
             }
             TextButton(onClick = onDismiss) {
@@ -447,7 +451,7 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Center
     ) {
         // App icon
         Image(
@@ -457,7 +461,9 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
                 Modifier
                     .size(160.dp)
                     .clip(RoundedCornerShape(32.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)),
+                    .background(
+                        MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)
+                    )
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -467,7 +473,7 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
             text = stringResource(Res.string.today_empty_state_heading),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -478,7 +484,7 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 48.dp),
+            modifier = Modifier.padding(horizontal = 48.dp)
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -490,20 +496,20 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
             colors =
                 ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = stringResource(Res.string.today_empty_state_cta),
                 style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Bold
             )
         }
     }

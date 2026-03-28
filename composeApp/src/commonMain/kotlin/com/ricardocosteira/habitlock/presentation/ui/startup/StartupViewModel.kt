@@ -2,6 +2,7 @@ package com.ricardocosteira.habitlock.presentation.ui.startup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ricardocosteira.habitlock.di.AppScope
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,7 +10,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import me.tatarka.inject.annotations.Inject
-import com.ricardocosteira.habitlock.di.AppScope
 
 /**
  * Scoped to the application lifetime via [AppScope] rather than a
@@ -21,9 +21,7 @@ import com.ricardocosteira.habitlock.di.AppScope
  */
 @AppScope
 @Inject
-class StartupViewModel(
-    private val userRepository: UserRepository
-) : ViewModel() {
+class StartupViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     private val _state = MutableStateFlow<StartupState>(StartupState.Loading)
     val state: StateFlow<StartupState> = _state.asStateFlow()
@@ -39,7 +37,8 @@ class StartupViewModel(
                 userRepository.createDefaultUser(TimeZone.currentSystemDefault())
                 _state.value = StartupState.Ready(isOnboardingCompleted = false)
             } else {
-                _state.value = StartupState.Ready(isOnboardingCompleted = user.isOnboardingCompleted)
+                _state.value =
+                    StartupState.Ready(isOnboardingCompleted = user.isOnboardingCompleted)
             }
         }
     }

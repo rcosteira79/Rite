@@ -94,10 +94,7 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
     val nestedScrollConnection: NestedScrollConnection =
         remember {
             object : NestedScrollConnection {
-                override fun onPreScroll(
-                    available: Offset,
-                    source: NestedScrollSource,
-                ): Offset {
+                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                     if (available.y < -1f) isNavBarVisible.value = false
                     if (available.y > 1f) isNavBarVisible.value = true
                     return Offset.Zero
@@ -106,7 +103,7 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                 override fun onPostScroll(
                     consumed: Offset,
                     available: Offset,
-                    source: NestedScrollSource,
+                    source: NestedScrollSource
                 ): Offset {
                     // If scrolling down but content didn't consume it, we've hit the bottom
                     if (available.y < 0f && consumed.y == 0f) {
@@ -130,13 +127,13 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                 AnimatedVisibility(
                     visible = isNavBarVisible.value,
                     enter = slideInVertically(initialOffsetY = { it }),
-                    exit = slideOutVertically(targetOffsetY = { it }),
+                    exit = slideOutVertically(targetOffsetY = { it })
                 ) {
                     HabitLockBottomNav(
                         currentTab = currentTab,
                         onTabSelected = { tab ->
                             handleTabSelection(tab, backStack)
-                        },
+                        }
                     )
                 }
             }
@@ -148,12 +145,12 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                 FloatingActionButton(onClick = { backStack.add(CreateHabit) }) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(Res.string.today_cd_add_habit),
+                        contentDescription = stringResource(Res.string.today_cd_add_habit)
                     )
                 }
             }
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { scaffoldPadding ->
         NavDisplay(
             backStack = backStack,
@@ -167,7 +164,7 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                             Modifier.nestedScroll(nestedScrollConnection)
                         } else {
                             Modifier
-                        },
+                        }
                     ),
             entryProvider =
                 entryProvider {
@@ -179,7 +176,7 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                                 backStack.clear()
                                 backStack.add(Today)
                                 appComponent.todayViewModel.loadTodayHabits()
-                            },
+                            }
                         )
                     }
 
@@ -188,7 +185,7 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                             onNavigateToHabitDetail = { backStack.add(HabitDetail(it)) },
                             onNavigateToCreateHabit = { backStack.add(CreateHabit) },
                             onEditHabit = { backStack.add(EditHabit(it)) },
-                            snackbarHostState = snackbarHostState,
+                            snackbarHostState = snackbarHostState
                         )
                     }
 
@@ -200,14 +197,14 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                         SettingsScreen(
                             onBackClick = backStack::removeLastOrNull,
                             onArchivedHabitsClick = { backStack.add(ArchivedHabits) },
-                            snackbarHostState = snackbarHostState,
+                            snackbarHostState = snackbarHostState
                         )
                     }
 
                     entry<ArchivedHabits> {
                         ArchivedHabitsScreen(
                             onBackClick = backStack::removeLastOrNull,
-                            snackbarHostState = snackbarHostState,
+                            snackbarHostState = snackbarHostState
                         )
                     }
 
@@ -221,7 +218,7 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                                 backStack.removeLastOrNull()
                                 todayViewModel.loadTodayHabits()
                             },
-                            snackbarHostState = snackbarHostState,
+                            snackbarHostState = snackbarHostState
                         )
                     }
 
@@ -233,7 +230,7 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                                 backStack.removeLastOrNull()
                                 todayViewModel.loadTodayHabits()
                             },
-                            snackbarHostState = snackbarHostState,
+                            snackbarHostState = snackbarHostState
                         )
                     }
 
@@ -243,15 +240,12 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                             backStack.removeLastOrNull()
                         }
                     }
-                },
+                }
         )
     }
 }
 
-private fun handleTabSelection(
-    tab: BottomNavTab,
-    backStack: MutableList<NavKey>,
-) {
+private fun handleTabSelection(tab: BottomNavTab, backStack: MutableList<NavKey>) {
     when (tab) {
         BottomNavTab.TODAY -> {
             backStack.clear()

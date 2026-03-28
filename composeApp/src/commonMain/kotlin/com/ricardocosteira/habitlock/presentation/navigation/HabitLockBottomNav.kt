@@ -24,20 +24,20 @@ import org.jetbrains.compose.resources.stringResource
 enum class BottomNavTab {
     TODAY,
     HISTORY,
-    SETTINGS,
+    SETTINGS
 }
 
 @Composable
 fun HabitLockBottomNav(
     currentTab: BottomNavTab,
     onTabSelected: (BottomNavTab) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val navItemColors =
         NavigationBarItemDefaults.colors(
             indicatorColor = MaterialTheme.colorScheme.primaryContainer,
             selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            selectedTextColor = MaterialTheme.colorScheme.primary,
+            selectedTextColor = MaterialTheme.colorScheme.primary
         )
 
     NavigationBar(modifier = modifier) {
@@ -47,11 +47,17 @@ fun HabitLockBottomNav(
             colors = navItemColors,
             icon = {
                 Icon(
-                    imageVector = if (currentTab == BottomNavTab.TODAY) Icons.Filled.CalendarToday else Icons.Outlined.CalendarToday,
-                    contentDescription = stringResource(Res.string.nav_today),
+                    imageVector = if (currentTab ==
+                        BottomNavTab.TODAY
+                    ) {
+                        Icons.Filled.CalendarToday
+                    } else {
+                        Icons.Outlined.CalendarToday
+                    },
+                    contentDescription = stringResource(Res.string.nav_today)
                 )
             },
-            label = { Text(stringResource(Res.string.nav_today)) },
+            label = { Text(stringResource(Res.string.nav_today)) }
         )
         NavigationBarItem(
             selected = currentTab == BottomNavTab.HISTORY,
@@ -59,11 +65,17 @@ fun HabitLockBottomNav(
             colors = navItemColors,
             icon = {
                 Icon(
-                    imageVector = if (currentTab == BottomNavTab.HISTORY) Icons.Filled.History else Icons.Outlined.History,
-                    contentDescription = stringResource(Res.string.nav_history),
+                    imageVector = if (currentTab ==
+                        BottomNavTab.HISTORY
+                    ) {
+                        Icons.Filled.History
+                    } else {
+                        Icons.Outlined.History
+                    },
+                    contentDescription = stringResource(Res.string.nav_history)
                 )
             },
-            label = { Text(stringResource(Res.string.nav_history)) },
+            label = { Text(stringResource(Res.string.nav_history)) }
         )
         NavigationBarItem(
             selected = currentTab == BottomNavTab.SETTINGS,
@@ -71,11 +83,17 @@ fun HabitLockBottomNav(
             colors = navItemColors,
             icon = {
                 Icon(
-                    imageVector = if (currentTab == BottomNavTab.SETTINGS) Icons.Filled.Settings else Icons.Outlined.Settings,
-                    contentDescription = stringResource(Res.string.nav_settings),
+                    imageVector = if (currentTab ==
+                        BottomNavTab.SETTINGS
+                    ) {
+                        Icons.Filled.Settings
+                    } else {
+                        Icons.Outlined.Settings
+                    },
+                    contentDescription = stringResource(Res.string.nav_settings)
                 )
             },
-            label = { Text(stringResource(Res.string.nav_settings)) },
+            label = { Text(stringResource(Res.string.nav_settings)) }
         )
     }
 }

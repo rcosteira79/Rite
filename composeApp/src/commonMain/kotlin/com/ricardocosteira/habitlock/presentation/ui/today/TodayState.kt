@@ -26,16 +26,14 @@ data class TodayState(
     val dailyResolved: Int = 0,
     val dailyTotal: Int = 0,
     val motivationalTitle: String = "",
-    val strictnessPreset: StrictnessPreset? = null,
+    val strictnessPreset: StrictnessPreset? = null
 )
 
 /**
  * Events from the Today screen.
  */
 sealed interface TodayEvent {
-    data class NavigateToHabitDetail(
-        val instanceId: String,
-    ) : TodayEvent
+    data class NavigateToHabitDetail(val instanceId: String) : TodayEvent
 
     data object NavigateToCreateHabit : TodayEvent
 
@@ -47,7 +45,5 @@ sealed interface TodayEvent {
         override val messageRes: StringResource = Res.string.today_error_skip_limit_reached
     }
 
-    data class ShowError(
-        val message: String,
-    ) : TodayEvent
+    data class ShowError(val message: String) : TodayEvent
 }
