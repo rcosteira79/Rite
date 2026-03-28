@@ -1,8 +1,13 @@
 package com.ricardocosteira.habitlock.presentation.ui.today
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -93,40 +98,273 @@ fun HabitCard(
             modifier = modifier,
         )
     } else {
-        if (isExpanded) {
-            ExpandedPendingCard(
-                habit = habit,
-                onToggleExpand = onToggleExpand,
-                onComplete = onComplete,
-                onSkip = onSkip,
-                onUndo = onUndo,
-                onIncrementProgress = onIncrementProgress,
-                onCustomProgress = onCustomProgress,
-                modifier =
-                    modifier.animateContentSize(
-                        animationSpec =
-                            spring(
-                                dampingRatio = Spring.DampingRatioLowBouncy,
-                                stiffness = Spring.StiffnessLow,
+        PendingHabitCard(
+            habit = habit,
+            isExpanded = isExpanded,
+            onToggleExpand = onToggleExpand,
+            onComplete = onComplete,
+            onSkip = onSkip,
+            onUndo = onUndo,
+            onIncrementProgress = onIncrementProgress,
+            onCustomProgress = onCustomProgress,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun PendingHabitCard(
+    habit: TodayHabitUiModel,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit,
+    onComplete: () -> Unit,
+    onSkip: () -> Unit,
+    onUndo: () -> Unit,
+    onIncrementProgress: () -> Unit,
+    onCustomProgress: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val currentValue: Int = habit.completedValue ?: 0
+    val targetValue: Int = habit.targetValue ?: 0
+    val unitText: String = habit.unit?.uppercase() ?: ""
+    val isQuantitative: Boolean = habit.type == HabitType.QUANTITATIVE
+    val hasProgress: Boolean = currentValue > 0
+
+    Surface(
+        shape = RoundedCornerShape(CARD_CORNER_RADIUS),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .animateContentSize(
+                    animationSpec =
+                        spring(
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                            stiffness = Spring.StiffnessMediumLow,
+                        ),
+                ).clip(RoundedCornerShape(CARD_CORNER_RADIUS))
+                .clickable(onClick = onToggleExpand),
+    ) {
+        Column(
+            modifier =
+                Modifier.padding(
+                    horizontal = if (isExpanded) EXPANDED_PADDING else COLLAPSED_HORIZONTAL_PADDING,
+                    vertical = if (isExpanded) EXPANDED_PADDING else COLLAPSED_VERTICAL_PADDING,
+                ),
+        ) {
+            // Header row: always visible
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    // Quantitative: progress counter
+                    if (isQuantitative) {
+                        Row(verticalAlignment = Alignment.Bottom) {
+                            Text(
+                                text = "$currentValue",
+                                style =
+                                    MaterialTheme.typography.headlineSmall.copy(
+                                        fontWeight = FontWeight.Bold,
+                                    ),
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Text(
+                                text = "/ $targetValue $unitText".trim(),
+                                style =
+                                    MaterialTheme.typography.labelSmall.copy(
+                                        fontWeight = FontWeight.Medium,
+                                    ),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(bottom = 4.dp),
+                            )
+                        }
+                    }
+
+                    // Habit name: always visible
+                    Text(
+                        text = habit.name.uppercase(),
+                        style =
+                            MaterialTheme.typography.titleSmall.copy(
+                                fontSize = if (isExpanded) HABIT_NAME_EXPANDED_SIZE else HABIT_NAME_COLLAPSED_SIZE,
+                                fontWeight = FontWeight.Bold,
                             ),
-                    ),
-            )
-        } else {
-            CollapsedPendingCard(
-                habit = habit,
-                onToggleExpand = onToggleExpand,
-                onComplete = onComplete,
-                onSkip = onSkip,
-                onIncrementProgress = onIncrementProgress,
-                modifier =
-                    modifier.animateContentSize(
-                        animationSpec =
-                            spring(
-                                dampingRatio = Spring.DampingRatioLowBouncy,
-                                stiffness = Spring.StiffnessLow,
-                            ),
-                    ),
-            )
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = if (isExpanded) 2 else 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    // Description: always visible if present
+                    if (habit.description != null) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = if (isExpanded) habit.description.uppercase() else habit.description,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = if (isExpanded) 2 else 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(ACTION_ROW_GAP))
+
+                // Collapsed quick actions (hidden when expanded)
+                AnimatedVisibility(visible = !isExpanded) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (isQuantitative) {
+                            val incrementLabel: String =
+                                stringResource(
+                                    Res.string.today_action_increment_short,
+                                    habit.defaultIncrement,
+                                )
+                            Surface(
+                                shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                onClick = onIncrementProgress,
+                            ) {
+                                Text(
+                                    text = incrementLabel,
+                                    style =
+                                        MaterialTheme.typography.labelMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                        ),
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                )
+                            }
+                        } else {
+                            Surface(
+                                shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                onClick = onComplete,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = stringResource(Res.string.today_action_complete),
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.padding(8.dp),
+                                )
+                            }
+                        }
+
+                        if (!habit.isSkipLocked) {
+                            Text(
+                                text = stringResource(Res.string.common_skip).uppercase(),
+                                style =
+                                    MaterialTheme.typography.labelMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                    ),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier =
+                                    Modifier
+                                        .clip(RoundedCornerShape(BUTTON_CORNER_RADIUS))
+                                        .clickable(onClick = onSkip)
+                                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                            )
+                        }
+                    }
+                }
+
+                // Expanded badge (shown when expanded)
+                AnimatedVisibility(visible = isExpanded) {
+                    StatusBadge(
+                        text =
+                            if (isQuantitative && hasProgress) {
+                                stringResource(Res.string.today_badge_in_progress)
+                            } else {
+                                stringResource(Res.string.today_badge_pending)
+                            },
+                    )
+                }
+            }
+
+            // Progress bar: quantitative only, height animates
+            if (isQuantitative) {
+                Spacer(modifier = Modifier.height(if (isExpanded) 16.dp else 10.dp))
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(if (isExpanded) PROGRESS_BAR_EXPANDED_HEIGHT else PROGRESS_BAR_COLLAPSED_HEIGHT)
+                            .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
+                            .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(fraction = habit.progressPercentage)
+                                .height(if (isExpanded) PROGRESS_BAR_EXPANDED_HEIGHT else PROGRESS_BAR_COLLAPSED_HEIGHT)
+                                .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
+                    )
+                }
+            }
+
+            // Expanded action buttons (slide in from bottom)
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut(),
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
+                    ) {
+                        if (isQuantitative) {
+                            val incrementLabel: String =
+                                stringResource(
+                                    Res.string.today_action_increment,
+                                    habit.defaultIncrement,
+                                    unitText,
+                                )
+                            ActionButton(
+                                text = incrementLabel,
+                                onClick = onIncrementProgress,
+                                isPrimary = true,
+                                modifier = Modifier.weight(1f),
+                            )
+                            ActionButton(
+                                text = stringResource(Res.string.today_action_custom),
+                                onClick = onCustomProgress,
+                                isPrimary = false,
+                            )
+                        } else {
+                            ActionButton(
+                                text = stringResource(Res.string.today_action_complete),
+                                onClick = onComplete,
+                                isPrimary = true,
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
+
+                        if (!habit.isSkipLocked) {
+                            ActionButton(
+                                text = stringResource(Res.string.common_skip),
+                                onClick = onSkip,
+                                isPrimary = false,
+                            )
+                        }
+
+                        if (isQuantitative && hasProgress) {
+                            IconButton(onClick = onUndo) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.Undo,
+                                    contentDescription = stringResource(Res.string.today_cd_undo),
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
