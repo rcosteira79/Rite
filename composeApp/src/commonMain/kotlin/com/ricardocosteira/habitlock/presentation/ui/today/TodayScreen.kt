@@ -167,6 +167,18 @@ internal fun TodayScreen(
             )
         }
 
+        // Header shows on all non-loading states
+        if (!state.isLoading) {
+            TodayHeader(
+                motivationalTitle = state.motivationalTitle,
+                pendingCount = state.pendingCount,
+                strictnessPreset = state.strictnessPreset,
+                dailyResolved = state.dailyResolved,
+                dailyTotal = state.dailyTotal,
+                isCollapsed = isHeaderCollapsed,
+            )
+        }
+
         when {
             state.isLoading -> {
                 Box(
@@ -194,15 +206,6 @@ internal fun TodayScreen(
                     weeklyHabits.partition { !it.isCompleted && !it.isSkipped && !it.isFailed }
 
                 val formattedDate: String = rememberFormattedDate()
-
-                TodayHeader(
-                    motivationalTitle = state.motivationalTitle,
-                    pendingCount = state.pendingCount,
-                    strictnessPreset = state.strictnessPreset,
-                    dailyResolved = state.dailyResolved,
-                    dailyTotal = state.dailyTotal,
-                    isCollapsed = isHeaderCollapsed,
-                )
 
                 LazyColumn(
                     state = lazyListState,
