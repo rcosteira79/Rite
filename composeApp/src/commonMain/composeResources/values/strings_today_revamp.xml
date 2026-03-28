@@ -3,6 +3,7 @@
     <!-- Header -->
     <string name="today_header_remaining">%d habits remaining today</string>
     <string name="today_header_all_done">All done for today!</string>
+    <string name="today_header_no_habits">No habits scheduled yet</string>
     <string name="today_header_day_label">Day</string>
     <string name="today_header_done_label">Done</string>
 

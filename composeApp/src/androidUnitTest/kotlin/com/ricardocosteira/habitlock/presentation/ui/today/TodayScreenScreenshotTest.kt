@@ -37,6 +37,7 @@ class TodayScreenScreenshotTest {
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
+                    onAddFirstHabit = {},
                 )
             }
         }
@@ -55,6 +56,7 @@ class TodayScreenScreenshotTest {
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
+                    onAddFirstHabit = {},
                 )
             }
         }
@@ -75,6 +77,7 @@ class TodayScreenScreenshotTest {
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
+                    onAddFirstHabit = {},
                 )
             }
         }
@@ -93,6 +96,7 @@ class TodayScreenScreenshotTest {
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
+                    onAddFirstHabit = {},
                 )
             }
         }
@@ -113,6 +117,7 @@ class TodayScreenScreenshotTest {
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
+                    onAddFirstHabit = {},
                 )
             }
         }
@@ -131,6 +136,7 @@ class TodayScreenScreenshotTest {
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
+                    onAddFirstHabit = {},
                 )
             }
         }
@@ -151,6 +157,7 @@ class TodayScreenScreenshotTest {
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
+                    onAddFirstHabit = {},
                 )
             }
         }
@@ -169,6 +176,7 @@ class TodayScreenScreenshotTest {
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
+                    onAddFirstHabit = {},
                 )
             }
         }
@@ -189,6 +197,7 @@ class TodayScreenScreenshotTest {
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
+                    onAddFirstHabit = {},
                 )
             }
         }
@@ -207,6 +216,7 @@ class TodayScreenScreenshotTest {
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
+                    onAddFirstHabit = {},
                 )
             }
         }
@@ -227,6 +237,7 @@ class TodayScreenScreenshotTest {
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
+                    onAddFirstHabit = {},
                 )
             }
         }
@@ -245,6 +256,7 @@ class TodayScreenScreenshotTest {
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
+                    onAddFirstHabit = {},
                 )
             }
         }

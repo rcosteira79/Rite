@@ -44,6 +44,7 @@ import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.today_header_all_done
 import habitlock.composeapp.generated.resources.today_header_day_label
 import habitlock.composeapp.generated.resources.today_header_done_label
+import habitlock.composeapp.generated.resources.today_header_no_habits
 import habitlock.composeapp.generated.resources.today_header_remaining
 import org.jetbrains.compose.resources.stringResource
 
@@ -71,6 +72,7 @@ private const val PERCENTAGE_MULTIPLIER = 100
 fun TodayHeader(
     motivationalTitle: String,
     pendingCount: Int,
+    hasHabits: Boolean,
     strictnessPreset: StrictnessPreset?,
     dailyResolved: Int,
     dailyTotal: Int,
@@ -87,6 +89,7 @@ fun TodayHeader(
             CollapsedHeader(
                 motivationalTitle = motivationalTitle,
                 pendingCount = pendingCount,
+                hasHabits = hasHabits,
                 strictnessPreset = strictnessPreset,
                 dailyResolved = dailyResolved,
                 dailyTotal = dailyTotal,
@@ -95,6 +98,7 @@ fun TodayHeader(
             ExpandedHeader(
                 motivationalTitle = motivationalTitle,
                 pendingCount = pendingCount,
+                hasHabits = hasHabits,
                 strictnessPreset = strictnessPreset,
                 dailyResolved = dailyResolved,
                 dailyTotal = dailyTotal,
@@ -107,6 +111,7 @@ fun TodayHeader(
 private fun ExpandedHeader(
     motivationalTitle: String,
     pendingCount: Int,
+    hasHabits: Boolean,
     strictnessPreset: StrictnessPreset?,
     dailyResolved: Int,
     dailyTotal: Int,
@@ -140,7 +145,9 @@ private fun ExpandedHeader(
             )
 
             val subtitleText: String =
-                if (pendingCount > 0) {
+                if (!hasHabits) {
+                    stringResource(Res.string.today_header_no_habits)
+                } else if (pendingCount > 0) {
                     stringResource(Res.string.today_header_remaining, pendingCount)
                 } else {
                     stringResource(Res.string.today_header_all_done)
@@ -175,6 +182,7 @@ private fun ExpandedHeader(
 private fun CollapsedHeader(
     motivationalTitle: String,
     pendingCount: Int,
+    hasHabits: Boolean,
     strictnessPreset: StrictnessPreset?,
     dailyResolved: Int,
     dailyTotal: Int,
@@ -214,7 +222,9 @@ private fun CollapsedHeader(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 val subtitleText: String =
-                    if (pendingCount > 0) {
+                    if (!hasHabits) {
+                        stringResource(Res.string.today_header_no_habits)
+                    } else if (pendingCount > 0) {
                         stringResource(Res.string.today_header_remaining, pendingCount)
                     } else {
                         stringResource(Res.string.today_header_all_done)

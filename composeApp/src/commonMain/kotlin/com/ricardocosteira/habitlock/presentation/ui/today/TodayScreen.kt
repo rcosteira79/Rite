@@ -172,6 +172,7 @@ internal fun TodayScreen(
             TodayHeader(
                 motivationalTitle = state.motivationalTitle,
                 pendingCount = state.pendingCount,
+                hasHabits = state.habits.isNotEmpty(),
                 strictnessPreset = state.strictnessPreset,
                 dailyResolved = state.dailyResolved,
                 dailyTotal = state.dailyTotal,
