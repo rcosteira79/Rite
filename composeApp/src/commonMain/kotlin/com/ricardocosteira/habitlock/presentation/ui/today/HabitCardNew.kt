@@ -143,10 +143,17 @@ private fun PendingHabitCard(
     ) {
         Column(
             modifier =
-                Modifier.padding(
-                    horizontal = if (isExpanded) EXPANDED_PADDING else COLLAPSED_HORIZONTAL_PADDING,
-                    vertical = if (isExpanded) EXPANDED_PADDING else COLLAPSED_VERTICAL_PADDING,
-                ),
+                Modifier
+                    .animateContentSize(
+                        animationSpec =
+                            spring(
+                                dampingRatio = Spring.DampingRatioNoBouncy,
+                                stiffness = Spring.StiffnessMediumLow,
+                            ),
+                    ).padding(
+                        horizontal = if (isExpanded) EXPANDED_PADDING else COLLAPSED_HORIZONTAL_PADDING,
+                        vertical = if (isExpanded) EXPANDED_PADDING else COLLAPSED_VERTICAL_PADDING,
+                    ),
         ) {
             // Header row: always visible
             Row(
@@ -210,8 +217,8 @@ private fun PendingHabitCard(
                 // Collapsed quick actions (slide in/out from right)
                 AnimatedVisibility(
                     visible = !isExpanded,
-                    enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(),
-                    exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
+                    enter = slideInHorizontally(initialOffsetX = { it / 3 }) + fadeIn(),
+                    exit = slideOutHorizontally(targetOffsetX = { it / 3 }) + fadeOut(),
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
@@ -274,8 +281,8 @@ private fun PendingHabitCard(
                 // Expanded badge (slide in from right)
                 AnimatedVisibility(
                     visible = isExpanded,
-                    enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(),
-                    exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
+                    enter = slideInHorizontally(initialOffsetX = { it / 3 }) + fadeIn(),
+                    exit = slideOutHorizontally(targetOffsetX = { it / 3 }) + fadeOut(),
                 ) {
                     StatusBadge(
                         text =
