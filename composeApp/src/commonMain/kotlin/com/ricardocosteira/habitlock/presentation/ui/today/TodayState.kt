@@ -9,13 +9,15 @@ import habitlock.composeapp.generated.resources.today_success_habit_archived
 import habitlock.composeapp.generated.resources.today_success_habit_completed
 import habitlock.composeapp.generated.resources.today_success_habit_skipped
 import habitlock.composeapp.generated.resources.today_success_progress_added
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.StringResource
 
 /**
  * State for the Today screen.
  */
 data class TodayState(
-    val habits: List<TodayHabitUiModel> = emptyList(),
+    val habits: ImmutableList<TodayHabitUiModel> = persistentListOf(),
     val isLoading: Boolean = true,
     val showTimezoneWarning: Boolean = false,
     val previousTimezone: String? = null,

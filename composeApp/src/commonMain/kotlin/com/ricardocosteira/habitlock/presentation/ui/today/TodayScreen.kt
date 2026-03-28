@@ -87,21 +87,10 @@ fun TodayScreen(
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event: TodayEvent ->
             when (event) {
-                is TodayEvent.NavigateToHabitDetail -> {
-                    onNavigateToHabitDetail(event.instanceId)
-                }
-
-                TodayEvent.NavigateToCreateHabit -> {
-                    onNavigateToCreateHabit()
-                }
-
-                is TodayEvent.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(getString(event.messageRes))
-                }
-
-                is TodayEvent.ShowError -> {
-                    snackbarHostState.showSnackbar(event.message)
-                }
+                is TodayEvent.NavigateToHabitDetail -> onNavigateToHabitDetail(event.instanceId)
+                TodayEvent.NavigateToCreateHabit -> onNavigateToCreateHabit()
+                is TodayEvent.ShowSnackbar -> snackbarHostState.showSnackbar(getString(event.messageRes))
+                is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
             }
         }
     }

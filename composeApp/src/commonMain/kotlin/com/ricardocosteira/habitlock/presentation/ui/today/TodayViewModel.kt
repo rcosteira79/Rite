@@ -21,6 +21,8 @@ import com.ricardocosteira.habitlock.domain.usecases.UndoHabit
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.habitlock.presentation.models.mapToTodayHabitUiModel
 import com.ricardocosteira.habitlock.util.toLocalDate
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -109,20 +111,21 @@ class TodayViewModel(
                 val motivationalTitle: String = motivationalTitleForDate(today)
 
                 // Map to UI models
-                val habits =
-                    instances.mapNotNull { instance ->
-                        val habit = habitRepository.getHabitById(instance.habitId) ?: return@mapNotNull null
-                        val schedule = habitRepository.getScheduleForHabit(habit.id) ?: return@mapNotNull null
-                        mapToTodayHabitUiModel(
-                            instance = instance,
-                            habit = habit,
-                            schedule = schedule,
-                            maxConsecutiveSkips = user?.maxConsecutiveSkips,
-                            userTimezone = userTimezone,
-                        )
-                    }
+                val habits: ImmutableList<TodayHabitUiModel> =
+                    instances
+                        .mapNotNull { instance ->
+                            val habit = habitRepository.getHabitById(instance.habitId) ?: return@mapNotNull null
+                            val schedule = habitRepository.getScheduleForHabit(habit.id) ?: return@mapNotNull null
+                            mapToTodayHabitUiModel(
+                                instance = instance,
+                                habit = habit,
+                                schedule = schedule,
+                                maxConsecutiveSkips = user?.maxConsecutiveSkips,
+                                userTimezone = userTimezone,
+                            )
+                        }.toImmutableList()
 
-                val counts = habits.computeCounts()
+                val counts: TodayCounts = habits.computeCounts()
 
                 _state.update {
                     it.copy(
