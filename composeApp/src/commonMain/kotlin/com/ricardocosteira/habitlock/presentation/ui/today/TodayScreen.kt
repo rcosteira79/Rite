@@ -1,5 +1,10 @@
 package com.ricardocosteira.habitlock.presentation.ui.today
 
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,8 +48,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
@@ -464,69 +472,134 @@ private fun TimezoneWarningBanner(
     }
 }
 
+private const val SPLASH_ICON_INITIAL_SIZE = 240
+private const val SPLASH_ICON_FINAL_SIZE = 160
+private const val SPLASH_ICON_INITIAL_CORNER_PERCENT = 50
+private const val SPLASH_ICON_FINAL_CORNER_DP = 32
+private const val SPLASH_ANIM_DURATION_MS = 600
+private const val SPLASH_CONTENT_FADE_DELAY_MS = 300
+private const val SPLASH_CONTENT_FADE_DURATION_MS = 400
+
 @Composable
 private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        // App icon
-        Image(
-            painter = painterResource(Res.drawable.ic_launcher_foreground),
-            contentDescription = null,
+    val animationStarted: MutableState<Boolean> = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) { animationStarted.value = true }
+
+    // Icon animation: size shrinks, corner radius changes from circle to rounded square
+    val iconSize: Dp by animateDpAsState(
+        targetValue = if (animationStarted.value) SPLASH_ICON_FINAL_SIZE.dp else SPLASH_ICON_INITIAL_SIZE.dp,
+        animationSpec = tween(durationMillis = SPLASH_ANIM_DURATION_MS, easing = EaseOutCubic),
+        label = "iconSize",
+    )
+    val cornerRadius: Int by animateIntAsState(
+        targetValue = if (animationStarted.value) SPLASH_ICON_FINAL_CORNER_DP else SPLASH_ICON_INITIAL_CORNER_PERCENT,
+        animationSpec = tween(durationMillis = SPLASH_ANIM_DURATION_MS, easing = EaseOutCubic),
+        label = "cornerRadius",
+    )
+
+    // Background fade: green → transparent
+    val overlayAlpha: Float by animateFloatAsState(
+        targetValue = if (animationStarted.value) 0f else 1f,
+        animationSpec = tween(durationMillis = SPLASH_ANIM_DURATION_MS, easing = EaseOutCubic),
+        label = "overlayAlpha",
+    )
+
+    // Content fade in (delayed)
+    val contentAlpha: Float by animateFloatAsState(
+        targetValue = if (animationStarted.value) 1f else 0f,
+        animationSpec =
+            tween(
+                durationMillis = SPLASH_CONTENT_FADE_DURATION_MS,
+                delayMillis = SPLASH_CONTENT_FADE_DELAY_MS,
+                easing = EaseOutCubic,
+            ),
+        label = "contentAlpha",
+    )
+
+    val splashColor: Color = MaterialTheme.colorScheme.primaryContainer
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Main content
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            // App icon — animates from splash size/shape to final
+            Image(
+                painter = painterResource(Res.drawable.ic_launcher_foreground),
+                contentDescription = null,
+                modifier =
+                    Modifier
+                        .size(iconSize)
+                        .clip(
+                            if (animationStarted.value) {
+                                RoundedCornerShape(cornerRadius.dp)
+                            } else {
+                                RoundedCornerShape(cornerRadius)
+                            },
+                        ).background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)),
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Everything below fades in with delay
+            Column(
+                modifier = Modifier.alpha(contentAlpha),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = stringResource(Res.string.today_empty_state_heading),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = stringResource(Res.string.today_empty_state_subtext),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 48.dp),
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Button(
+                    onClick = onAddFirstHabit,
+                    shape = RoundedCornerShape(16.dp),
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        ),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(Res.string.today_empty_state_cta),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
+        }
+
+        // Green overlay — matches splash, fades out
+        Box(
             modifier =
                 Modifier
-                    .size(160.dp)
-                    .clip(RoundedCornerShape(32.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)),
+                    .fillMaxSize()
+                    .alpha(overlayAlpha)
+                    .background(splashColor),
         )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Heading
-        Text(
-            text = stringResource(Res.string.today_empty_state_heading),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Subtext
-        Text(
-            text = stringResource(Res.string.today_empty_state_subtext),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 48.dp),
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // CTA button
-        Button(
-            onClick = onAddFirstHabit,
-            shape = RoundedCornerShape(16.dp),
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                ),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(Res.string.today_empty_state_cta),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-            )
-        }
     }
 }
