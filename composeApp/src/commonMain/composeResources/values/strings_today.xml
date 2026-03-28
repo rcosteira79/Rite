@@ -2,7 +2,7 @@
 <resources>
     <string name="today_cd_add_habit">Add Habit</string>
     <string name="today_timezone_changed_title">Timezone changed</string>
-    <string name="today_timezone_changed_message">Your timezone has changed from %s. Past data remains unchanged.</string>
+    <string name="today_timezone_changed_message">Your timezone has changed from %1$s. Past data remains unchanged.</string>
     <string name="today_timezone_changed_dismiss">Dismiss</string>
     <string name="today_empty_state_heading">Structure your day.</string>
     <string name="today_empty_state_subtext">Commit to your first habit and begin the path of intentional discipline.</string>
@@ -16,9 +16,9 @@
     <string name="today_success_habit_skipped">Habit skipped</string>
     <string name="today_success_action_undone">Action undone</string>
     <string name="today_success_habit_archived">Habit archived</string>
-    <string name="today_error_skip_limit_reached">You\'ve reached the skip limit. Time to do this one!</string>
+    <string name="today_error_skip_limit_reached">You've reached the skip limit. Time to do this one!</string>
     <plurals name="today_subtitle_habits_to_go">
-        <item quantity="one">%d habit to go</item>
-        <item quantity="other">%d habits to go</item>
+        <item quantity="one">%1$d habit to go</item>
+        <item quantity="other">%1$d habits to go</item>
     </plurals>
 </resources>
