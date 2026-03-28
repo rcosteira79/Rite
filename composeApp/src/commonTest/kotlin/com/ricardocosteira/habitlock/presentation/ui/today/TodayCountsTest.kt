@@ -29,7 +29,6 @@ class TodayCountsTest {
             longestStreak = 0,
             scorePercentage = 0,
             cadence = cadence,
-            completedAt = null,
             completedAtText = null,
         )
 

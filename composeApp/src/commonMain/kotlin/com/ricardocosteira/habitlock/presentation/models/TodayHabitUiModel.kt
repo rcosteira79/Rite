@@ -31,7 +31,6 @@ data class TodayHabitUiModel(
     val longestStreak: Int,
     val scorePercentage: Int,
     val cadence: ScheduleType,
-    val completedAt: Instant?,
     val completedAtText: String?,
 ) {
     val isCompleted: Boolean get() = status == HabitStatus.COMPLETED
@@ -82,7 +81,6 @@ fun mapToTodayHabitUiModel(
         longestStreak = habit.longestStreak,
         scorePercentage = score.percentage,
         cadence = schedule.scheduleType,
-        completedAt = instance.completedAt,
         completedAtText = instance.completedAt?.let { formatCompletedAtTime(it, userTimezone) },
     )
 }

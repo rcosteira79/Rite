@@ -490,7 +490,6 @@ class TodayScreenScreenshotTest {
             longestStreak = 12,
             scorePercentage = 85,
             cadence = cadence,
-            completedAt = null,
             completedAtText = completedAtText,
         )
 }
