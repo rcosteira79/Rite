@@ -24,6 +24,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -141,7 +142,9 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
             }
         },
         floatingActionButton = {
-            if (isTodayRoute) {
+            val todayState by appComponent.todayViewModel.state.collectAsStateWithLifecycle()
+            val showFab: Boolean = isTodayRoute && todayState.habits.isNotEmpty()
+            if (showFab) {
                 FloatingActionButton(onClick = { backStack.add(CreateHabit) }) {
                     Icon(
                         imageVector = Icons.Default.Add,

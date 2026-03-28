@@ -1,5 +1,7 @@
 package com.ricardocosteira.habitlock.presentation.ui.today
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,12 +12,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,6 +41,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
@@ -42,6 +51,8 @@ import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_error_generic
+import habitlock.composeapp.generated.resources.ic_launcher_foreground
+import habitlock.composeapp.generated.resources.today_empty_state_cta
 import habitlock.composeapp.generated.resources.today_empty_state_heading
 import habitlock.composeapp.generated.resources.today_empty_state_subtext
 import habitlock.composeapp.generated.resources.today_error_skip_limit_reached
@@ -59,6 +70,7 @@ import habitlock.composeapp.generated.resources.today_timezone_changed_title
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 
@@ -110,6 +122,7 @@ fun TodayScreen(
         onIncrementProgress = viewModel::incrementHabitProgress,
         onCustomProgress = viewModel::showQuantitativeInput,
         onDismissTimezoneWarning = viewModel::dismissTimezoneWarning,
+        onAddFirstHabit = onNavigateToCreateHabit,
     )
 
     state.showQuantitativeInputFor?.let { instanceId ->
@@ -133,6 +146,7 @@ internal fun TodayScreen(
     onIncrementProgress: (String) -> Unit,
     onCustomProgress: (String) -> Unit,
     onDismissTimezoneWarning: () -> Unit,
+    onAddFirstHabit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
@@ -164,7 +178,7 @@ internal fun TodayScreen(
             }
 
             state.habits.isEmpty() -> {
-                EmptyHabitsMessage()
+                EmptyHabitsMessage(onAddFirstHabit = onAddFirstHabit)
             }
 
             else -> {
@@ -447,25 +461,67 @@ private fun TimezoneWarningBanner(
 }
 
 @Composable
-private fun EmptyHabitsMessage() {
-    Box(
+private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
+    Column(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+        // App icon
+        Image(
+            painter = painterResource(Res.drawable.ic_launcher_foreground),
+            contentDescription = null,
+            modifier =
+                Modifier
+                    .size(160.dp)
+                    .clip(RoundedCornerShape(32.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)),
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Heading
+        Text(
+            text = stringResource(Res.string.today_empty_state_heading),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Subtext
+        Text(
+            text = stringResource(Res.string.today_empty_state_subtext),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 48.dp),
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // CTA button
+        Button(
+            onClick = onAddFirstHabit,
+            shape = RoundedCornerShape(16.dp),
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                ),
+            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
         ) {
-            Text(
-                text = stringResource(Res.string.today_empty_state_heading),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = stringResource(Res.string.today_empty_state_subtext),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                text = stringResource(Res.string.today_empty_state_cta),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
             )
         }
     }

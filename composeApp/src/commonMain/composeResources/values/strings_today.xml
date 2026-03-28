@@ -4,8 +4,9 @@
     <string name="today_timezone_changed_title">Timezone changed</string>
     <string name="today_timezone_changed_message">Your timezone has changed from %s. Past data remains unchanged.</string>
     <string name="today_timezone_changed_dismiss">Dismiss</string>
-    <string name="today_empty_state_heading">Your day is a blank page</string>
-    <string name="today_empty_state_subtext">Tap + to define what matters</string>
+    <string name="today_empty_state_heading">Structure your day.</string>
+    <string name="today_empty_state_subtext">Commit to your first habit and begin the path of intentional discipline.</string>
+    <string name="today_empty_state_cta">Add Your First Habit</string>
     <string name="today_cd_complete">Complete</string>
     <string name="today_cd_undo">Undo</string>
     <string name="today_status_suspended">Suspended</string>
