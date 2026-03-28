@@ -8,6 +8,8 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -136,13 +138,7 @@ private fun PendingHabitCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .animateContentSize(
-                    animationSpec =
-                        spring(
-                            dampingRatio = Spring.DampingRatioNoBouncy,
-                            stiffness = Spring.StiffnessMediumLow,
-                        ),
-                ).clip(RoundedCornerShape(CARD_CORNER_RADIUS))
+                .clip(RoundedCornerShape(CARD_CORNER_RADIUS))
                 .clickable(onClick = onToggleExpand),
     ) {
         Column(
@@ -211,8 +207,12 @@ private fun PendingHabitCard(
 
                 Spacer(modifier = Modifier.width(ACTION_ROW_GAP))
 
-                // Collapsed quick actions (hidden when expanded)
-                AnimatedVisibility(visible = !isExpanded) {
+                // Collapsed quick actions (slide in/out from right)
+                AnimatedVisibility(
+                    visible = !isExpanded,
+                    enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(),
+                    exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
+                ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
                         verticalAlignment = Alignment.CenterVertically,
@@ -271,8 +271,12 @@ private fun PendingHabitCard(
                     }
                 }
 
-                // Expanded badge (shown when expanded)
-                AnimatedVisibility(visible = isExpanded) {
+                // Expanded badge (slide in from right)
+                AnimatedVisibility(
+                    visible = isExpanded,
+                    enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(),
+                    exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
+                ) {
                     StatusBadge(
                         text =
                             if (isQuantitative && hasProgress) {
