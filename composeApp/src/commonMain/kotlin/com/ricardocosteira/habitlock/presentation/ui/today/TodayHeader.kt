@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -120,6 +121,7 @@ private fun ExpandedHeader(
         modifier =
             Modifier
                 .fillMaxWidth()
+                .statusBarsPadding()
                 .padding(
                     start = EXPANDED_HORIZONTAL_PADDING,
                     end = EXPANDED_HORIZONTAL_PADDING,
@@ -191,6 +193,7 @@ private fun CollapsedHeader(
         modifier =
             Modifier
                 .fillMaxWidth()
+                .statusBarsPadding()
                 .padding(
                     start = COLLAPSED_HORIZONTAL_PADDING,
                     end = COLLAPSED_HORIZONTAL_PADDING,

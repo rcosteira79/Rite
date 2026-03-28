@@ -136,10 +136,13 @@ class TodayViewModel(
                     )
                 }
             } catch (e: Exception) {
+                val fallbackTimezone: TimeZone = TimeZone.currentSystemDefault()
+                val today = Clock.System.now().toLocalDate(fallbackTimezone)
                 _state.update {
                     it.copy(
                         isLoading = false,
                         error = e.message,
+                        motivationalTitle = motivationalTitleForDate(today),
                     )
                 }
             }
