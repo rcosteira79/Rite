@@ -1,14 +1,9 @@
 package com.ricardocosteira.habitlock.presentation.navigation
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -21,10 +16,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -95,7 +90,7 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
         remember {
             object : NestedScrollConnection {
                 override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                    if (available.y < -1f) isNavBarVisible.value = false
+                    // Show immediately on scroll up
                     if (available.y > 1f) isNavBarVisible.value = true
                     return Offset.Zero
                 }
@@ -105,7 +100,12 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                     available: Offset,
                     source: NestedScrollSource
                 ): Offset {
-                    // If scrolling down but content didn't consume it, we've hit the bottom
+                    // Hide only when content actually scrolled down AND fully consumed
+                    // the gesture (available ≈ 0 means no bounce-back will happen).
+                    if (consumed.y < -1f && available.y > -1f) {
+                        isNavBarVisible.value = false
+                    }
+                    // Show when hitting the bottom (content can't scroll further)
                     if (available.y < 0f && consumed.y == 0f) {
                         isNavBarVisible.value = true
                     }
@@ -124,30 +124,23 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
     Scaffold(
         bottomBar = {
             if (showBottomNav) {
-                AnimatedVisibility(
-                    visible = isNavBarVisible.value,
-                    enter = slideInVertically(initialOffsetY = { it }),
-                    exit = slideOutVertically(targetOffsetY = { it })
-                ) {
-                    HabitLockBottomNav(
-                        currentTab = currentTab,
-                        onTabSelected = { tab ->
-                            handleTabSelection(tab, backStack)
-                        }
-                    )
-                }
-            }
-        },
-        floatingActionButton = {
-            val todayState by appComponent.todayViewModel.state.collectAsStateWithLifecycle()
-            val showFab: Boolean = isTodayRoute && todayState.habits.isNotEmpty()
-            if (showFab) {
-                FloatingActionButton(onClick = { backStack.add(CreateHabit) }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(Res.string.today_cd_add_habit)
-                    )
-                }
+                // graphicsLayer-only slide keeps layout space reserved even when
+                // hidden, preventing a feedback loop where hiding the bar resizes
+                // the content area and bounces the scroll back.
+                val navBarOffsetY by animateFloatAsState(
+                    targetValue = if (isNavBarVisible.value) 0f else 1f,
+                    animationSpec = tween(durationMillis = 200),
+                    label = "nav-bar-offset"
+                )
+                HabitLockBottomNav(
+                    currentTab = currentTab,
+                    onTabSelected = { tab ->
+                        handleTabSelection(tab, backStack)
+                    },
+                    modifier = Modifier.graphicsLayer {
+                        translationY = size.height * navBarOffsetY
+                    }
+                )
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }

@@ -25,9 +25,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -42,15 +45,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
+import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
+import com.ricardocosteira.habitlock.presentation.ui.components.toolbar.DynamicCollapsingToolbar
+import com.ricardocosteira.habitlock.presentation.ui.components.toolbar.pinnedExitUntilCollapsedToolbarSpec
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.habit_lock_logo
+import habitlock.composeapp.generated.resources.today_cd_add_habit
 import habitlock.composeapp.generated.resources.today_empty_state_cta
 import habitlock.composeapp.generated.resources.today_empty_state_heading
 import habitlock.composeapp.generated.resources.today_empty_state_subtext
@@ -106,6 +114,7 @@ fun TodayScreen(
         onComplete = viewModel::completeHabit,
         onSkip = viewModel::skipHabit,
         onUndo = viewModel::undoHabit,
+        onUndoLastIncrement = viewModel::undoLastIncrement,
         onIncrementProgress = viewModel::incrementHabitProgress,
         onCustomProgress = viewModel::showQuantitativeInput,
         onDismissTimezoneWarning = viewModel::dismissTimezoneWarning,
@@ -124,12 +133,14 @@ fun TodayScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TodayScreen(
     state: TodayState,
     onComplete: (String) -> Unit,
     onSkip: (String) -> Unit,
     onUndo: (String) -> Unit,
+    onUndoLastIncrement: (String) -> Unit,
     onIncrementProgress: (String) -> Unit,
     onCustomProgress: (String) -> Unit,
     onDismissTimezoneWarning: () -> Unit,
@@ -137,40 +148,58 @@ internal fun TodayScreen(
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
-    val isHeaderCollapsed: Boolean by remember {
-        derivedStateOf { lazyListState.firstVisibleItemIndex > 0 }
-    }
+    val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec()
 
     var expandedCardIds: Set<String> by remember { mutableStateOf(emptySet()) }
 
-    Column(
+    Scaffold(
+        topBar = {
+            Column {
+                if (state.showTimezoneWarning) {
+                    TimezoneWarningBanner(
+                        previousTimezone = state.previousTimezone,
+                        onDismiss = onDismissTimezoneWarning
+                    )
+                }
+                if (!state.isLoading) {
+                    DynamicCollapsingToolbar(
+                        toolbarSpec = toolbarSpec,
+                        backgroundColor = MaterialTheme.colorScheme.background,
+                        centerContent = false,
+                        collapsedElevation = 0.dp
+                    ) { scrollProgress ->
+                        TodayHeader(
+                            motivationalTitle = state.motivationalTitle,
+                            pendingCount = state.pendingCount,
+                            hasHabits = state.habits.isNotEmpty(),
+                            strictnessPreset = state.strictnessPreset,
+                            dailyProgressDisplay = state.dailyProgressDisplay,
+                            dailyProgressExact = state.dailyProgressExact,
+                            dailyTotal = state.dailyTotal,
+                            isCollapsed = scrollProgress > 0.5f
+                        )
+                    }
+                }
+            }
+        },
+        floatingActionButton = {
+            if (state.habits.isNotEmpty()) {
+                FloatingActionButton(onClick = onAddFirstHabit) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(Res.string.today_cd_add_habit)
+                    )
+                }
+            }
+        },
         modifier = modifier.fillMaxSize()
-    ) {
-        // Timezone warning banner
-        if (state.showTimezoneWarning) {
-            TimezoneWarningBanner(
-                previousTimezone = state.previousTimezone,
-                onDismiss = onDismissTimezoneWarning
-            )
-        }
-
-        // Header shows on all non-loading states
-        if (!state.isLoading) {
-            TodayHeader(
-                motivationalTitle = state.motivationalTitle,
-                pendingCount = state.pendingCount,
-                hasHabits = state.habits.isNotEmpty(),
-                strictnessPreset = state.strictnessPreset,
-                dailyResolved = state.dailyResolved,
-                dailyTotal = state.dailyTotal,
-                isCollapsed = isHeaderCollapsed
-            )
-        }
-
+    ) { scaffoldPadding ->
         when {
             state.isLoading -> {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(scaffoldPadding),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
@@ -186,15 +215,17 @@ internal fun TodayScreen(
 
                 LazyColumn(
                     state = lazyListState,
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .nestedScroll(toolbarSpec.nestedScrollConnection),
+                    contentPadding = PaddingValues(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = scaffoldPadding.calculateTopPadding() + TOP_BREATHING_ROOM,
+                        bottom = scaffoldPadding.calculateBottomPadding() + BOTTOM_CLEARANCE
+                    ),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Top breathing room
-                    item(key = "top_spacer") {
-                        Spacer(modifier = Modifier.height(TOP_BREATHING_ROOM))
-                    }
-
                     // TODAY'S FOCUS section
                     item(key = "daily_header") {
                         SectionHeader(
@@ -210,6 +241,7 @@ internal fun TodayScreen(
                         HabitCard(
                             habit = habit,
                             isExpanded = habit.instanceId in expandedCardIds,
+                            modifier = Modifier.animateItem(),
                             onToggleExpand = {
                                 expandedCardIds = if (habit.instanceId in expandedCardIds) {
                                     expandedCardIds - habit.instanceId
@@ -225,7 +257,15 @@ internal fun TodayScreen(
                                 }
                             },
                             onSkip = { onSkip(habit.instanceId) },
-                            onUndo = { onUndo(habit.instanceId) },
+                            onUndo = {
+                                if (habit.type == HabitType.QUANTITATIVE &&
+                                    habit.status == HabitStatus.PENDING
+                                ) {
+                                    onUndoLastIncrement(habit.instanceId)
+                                } else {
+                                    onUndo(habit.instanceId)
+                                }
+                            },
                             onIncrementProgress = { onIncrementProgress(habit.instanceId) },
                             onCustomProgress = { onCustomProgress(habit.instanceId) }
                         )
@@ -247,6 +287,7 @@ internal fun TodayScreen(
                             HabitCard(
                                 habit = habit,
                                 isExpanded = false,
+                                modifier = Modifier.animateItem(),
                                 onToggleExpand = {},
                                 onComplete = {},
                                 onSkip = {},
@@ -292,7 +333,15 @@ internal fun TodayScreen(
                                     }
                                 },
                                 onSkip = { onSkip(habit.instanceId) },
-                                onUndo = { onUndo(habit.instanceId) },
+                                onUndo = {
+                                    if (habit.type == HabitType.QUANTITATIVE &&
+                                        habit.status == HabitStatus.PENDING
+                                    ) {
+                                        onUndoLastIncrement(habit.instanceId)
+                                    } else {
+                                        onUndo(habit.instanceId)
+                                    }
+                                },
                                 onIncrementProgress = { onIncrementProgress(habit.instanceId) },
                                 onCustomProgress = { onCustomProgress(habit.instanceId) }
                             )
@@ -323,11 +372,6 @@ internal fun TodayScreen(
                                 )
                             }
                         }
-                    }
-
-                    // Bottom clearance for nav bar
-                    item(key = "bottom_spacer") {
-                        Spacer(modifier = Modifier.height(BOTTOM_CLEARANCE))
                     }
                 }
             }
