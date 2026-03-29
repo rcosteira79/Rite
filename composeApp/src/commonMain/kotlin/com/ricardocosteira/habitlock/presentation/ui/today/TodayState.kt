@@ -23,7 +23,8 @@ data class TodayState(
     val error: String? = null,
     val showQuantitativeInputFor: String? = null,
     val pendingCount: Int = 0,
-    val dailyResolved: Int = 0,
+    val dailyProgressDisplay: Int = 0,
+    val dailyProgressExact: Float = 0f,
     val dailyTotal: Int = 0,
     val motivationalTitle: String = "",
     val strictnessPreset: StrictnessPreset? = null

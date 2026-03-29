@@ -5,6 +5,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -68,6 +69,7 @@ private const val TRACK_ALPHA = 0.15f
 private const val FULL_CIRCLE_DEGREES = 360f
 private const val ARC_START_ANGLE = -90f
 private const val PERCENTAGE_MULTIPLIER = 100
+private const val PROGRESS_ANIMATION_DURATION = 400
 
 @Composable
 fun TodayHeader(
@@ -75,7 +77,8 @@ fun TodayHeader(
     pendingCount: Int,
     hasHabits: Boolean,
     strictnessPreset: StrictnessPreset?,
-    dailyResolved: Int,
+    dailyProgressDisplay: Int,
+    dailyProgressExact: Float,
     dailyTotal: Int,
     isCollapsed: Boolean,
     modifier: Modifier = Modifier
@@ -92,7 +95,8 @@ fun TodayHeader(
                 pendingCount = pendingCount,
                 hasHabits = hasHabits,
                 strictnessPreset = strictnessPreset,
-                dailyResolved = dailyResolved,
+                dailyProgressDisplay = dailyProgressDisplay,
+                dailyProgressExact = dailyProgressExact,
                 dailyTotal = dailyTotal
             )
         } else {
@@ -101,7 +105,8 @@ fun TodayHeader(
                 pendingCount = pendingCount,
                 hasHabits = hasHabits,
                 strictnessPreset = strictnessPreset,
-                dailyResolved = dailyResolved,
+                dailyProgressDisplay = dailyProgressDisplay,
+                dailyProgressExact = dailyProgressExact,
                 dailyTotal = dailyTotal
             )
         }
@@ -114,7 +119,8 @@ private fun ExpandedHeader(
     pendingCount: Int,
     hasHabits: Boolean,
     strictnessPreset: StrictnessPreset?,
-    dailyResolved: Int,
+    dailyProgressDisplay: Int,
+    dailyProgressExact: Float,
     dailyTotal: Int
 ) {
     Row(
@@ -169,7 +175,8 @@ private fun ExpandedHeader(
 
         if (dailyTotal > 0) {
             DailyProgressRing(
-                dailyResolved = dailyResolved,
+                dailyProgressDisplay = dailyProgressDisplay,
+                dailyProgressExact = dailyProgressExact,
                 dailyTotal = dailyTotal
             )
         }
@@ -182,7 +189,8 @@ private fun CollapsedHeader(
     pendingCount: Int,
     hasHabits: Boolean,
     strictnessPreset: StrictnessPreset?,
-    dailyResolved: Int,
+    dailyProgressDisplay: Int,
+    dailyProgressExact: Float,
     dailyTotal: Int
 ) {
     Row(
@@ -243,7 +251,7 @@ private fun CollapsedHeader(
 
         if (dailyTotal > 0) {
             val percentage: Int = if (dailyTotal > 0) {
-                (dailyResolved * PERCENTAGE_MULTIPLIER) / dailyTotal
+                (dailyProgressExact * PERCENTAGE_MULTIPLIER / dailyTotal).toInt()
             } else {
                 0
             }
@@ -336,17 +344,26 @@ private fun PulsingDot(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun DailyProgressRing(dailyResolved: Int, dailyTotal: Int) {
+private fun DailyProgressRing(
+    dailyProgressDisplay: Int,
+    dailyProgressExact: Float,
+    dailyTotal: Int
+) {
     val percentage: Int = if (dailyTotal > 0) {
-        (dailyResolved * PERCENTAGE_MULTIPLIER) / dailyTotal
+        (dailyProgressExact * PERCENTAGE_MULTIPLIER / dailyTotal).toInt()
     } else {
         0
     }
-    val sweepAngle: Float = if (dailyTotal > 0) {
-        FULL_CIRCLE_DEGREES * dailyResolved / dailyTotal
+    val targetSweepAngle: Float = if (dailyTotal > 0) {
+        FULL_CIRCLE_DEGREES * dailyProgressExact / dailyTotal
     } else {
         0f
     }
+    val sweepAngle: Float by animateFloatAsState(
+        targetValue = targetSweepAngle,
+        animationSpec = tween(durationMillis = PROGRESS_ANIMATION_DURATION),
+        label = "progress-ring"
+    )
 
     val trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
     val progressColor = MaterialTheme.colorScheme.primary
