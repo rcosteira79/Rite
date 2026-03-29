@@ -7,8 +7,8 @@ import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.repositories.HabitCompletionEventRepository
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
-import me.tatarka.inject.annotations.Inject
 import kotlin.time.Clock
+import me.tatarka.inject.annotations.Inject
 
 /**
  * Completes a habit instance (binary or quantitative).
@@ -17,18 +17,14 @@ import kotlin.time.Clock
 class CompleteHabit(
     private val habitInstanceRepository: HabitInstanceRepository,
     private val habitRepository: HabitRepository,
-    private val habitCompletionEventRepository: HabitCompletionEventRepository,
+    private val habitCompletionEventRepository: HabitCompletionEventRepository
 ) {
     /**
      * Complete a binary habit.
      */
-    suspend fun executeBinary(
-        instanceId: String,
-        source: CompletionSource,
-    ): Result<HabitInstance> {
-        val instance =
-            habitInstanceRepository.getInstanceById(instanceId)
-                ?: return Result.failure(IllegalArgumentException("Instance not found"))
+    suspend fun executeBinary(instanceId: String, source: CompletionSource): Result<HabitInstance> {
+        val instance = habitInstanceRepository.getInstanceById(instanceId)
+            ?: return Result.failure(IllegalArgumentException("Instance not found"))
 
         if (instance.status == HabitStatus.SUSPENDED) {
             return Result.failure(IllegalStateException("Cannot complete suspended habit"))
@@ -42,7 +38,7 @@ class CompleteHabit(
         habitCompletionEventRepository.recordEvent(
             instanceId = instanceId,
             deltaValue = 1,
-            source = source,
+            source = source
         )
 
         // Update instance status
@@ -50,16 +46,17 @@ class CompleteHabit(
             instanceId = instanceId,
             status = HabitStatus.COMPLETED,
             completedValue = 1,
-            completedAt = Clock.System.now(),
+            completedAt = Clock.System.now()
         )
 
         // Update streak and score
         updateStreak(instance.habitId)
         incrementTotalCompletions(instance.habitId, amount = 1)
 
-        val updatedInstance =
-            habitInstanceRepository.getInstanceById(instanceId)
-                ?: return Result.failure(IllegalStateException("Failed to retrieve updated instance"))
+        val updatedInstance = habitInstanceRepository.getInstanceById(instanceId)
+            ?: return Result.failure(
+                IllegalStateException("Failed to retrieve updated instance")
+            )
 
         return Result.success(updatedInstance)
     }
@@ -71,11 +68,10 @@ class CompleteHabit(
     suspend fun executeQuantitative(
         instanceId: String,
         deltaValue: Int,
-        source: CompletionSource,
+        source: CompletionSource
     ): Result<HabitInstance> {
-        val instance =
-            habitInstanceRepository.getInstanceById(instanceId)
-                ?: return Result.failure(IllegalArgumentException("Instance not found"))
+        val instance = habitInstanceRepository.getInstanceById(instanceId)
+            ?: return Result.failure(IllegalArgumentException("Instance not found"))
 
         if (instance.status == HabitStatus.SUSPENDED) {
             return Result.failure(IllegalStateException("Cannot complete suspended habit"))
@@ -93,7 +89,7 @@ class CompleteHabit(
         habitCompletionEventRepository.recordEvent(
             instanceId = instanceId,
             deltaValue = deltaValue,
-            source = source,
+            source = source
         )
 
         // Calculate new total
@@ -107,7 +103,7 @@ class CompleteHabit(
             instanceId = instanceId,
             status = newStatus,
             completedValue = newCompletedValue,
-            completedAt = if (isComplete) Clock.System.now() else null,
+            completedAt = if (isComplete) Clock.System.now() else null
         )
 
         // Update score (always increment, even for partial progress)
@@ -117,17 +113,15 @@ class CompleteHabit(
             updateStreak(instance.habitId)
         }
 
-        val updatedInstance =
-            habitInstanceRepository.getInstanceById(instanceId)
-                ?: return Result.failure(IllegalStateException("Failed to retrieve updated instance"))
+        val updatedInstance = habitInstanceRepository.getInstanceById(instanceId)
+            ?: return Result.failure(
+                IllegalStateException("Failed to retrieve updated instance")
+            )
 
         return Result.success(updatedInstance)
     }
 
-    private fun checkQuantitativeComplete(
-        completedValue: Int,
-        targetValue: Int?,
-    ): Boolean =
+    private fun checkQuantitativeComplete(completedValue: Int, targetValue: Int?): Boolean =
         if (targetValue != null) {
             completedValue >= targetValue
         } else {
@@ -142,14 +136,11 @@ class CompleteHabit(
         habitRepository.updateHabitStreak(
             habitId = habitId,
             currentStreak = newCurrentStreak,
-            longestStreak = newLongestStreak,
+            longestStreak = newLongestStreak
         )
     }
 
-    private suspend fun incrementTotalCompletions(
-        habitId: String,
-        amount: Int,
-    ) {
+    private suspend fun incrementTotalCompletions(habitId: String, amount: Int) {
         habitRepository.incrementHabitTotalCompletions(habitId, amount)
     }
 }

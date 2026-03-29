@@ -125,18 +125,16 @@ fun OnboardingWizard(
                     targetState = currentStep,
                     transitionSpec = {
                         val isForward = targetState > initialState
-                        val enterSlide =
-                            slideInHorizontally(
-                                tween(ENTER_DURATION_MS, easing = EmphasizedDecelerate)
-                            ) {
-                                if (isForward) it else -it
-                            } + fadeIn(tween(ENTER_DURATION_MS))
-                        val exitSlide =
-                            slideOutHorizontally(
-                                tween(EXIT_DURATION_MS, easing = EmphasizedAccelerate)
-                            ) {
-                                if (isForward) -it else it
-                            } + fadeOut(tween(EXIT_DURATION_MS))
+                        val enterSlide = slideInHorizontally(
+                            tween(ENTER_DURATION_MS, easing = EmphasizedDecelerate)
+                        ) {
+                            if (isForward) it else -it
+                        } + fadeIn(tween(ENTER_DURATION_MS))
+                        val exitSlide = slideOutHorizontally(
+                            tween(EXIT_DURATION_MS, easing = EmphasizedAccelerate)
+                        ) {
+                            if (isForward) -it else it
+                        } + fadeOut(tween(EXIT_DURATION_MS))
                         enterSlide togetherWith exitSlide
                     },
                     modifier = Modifier.fillMaxWidth().weight(1f),

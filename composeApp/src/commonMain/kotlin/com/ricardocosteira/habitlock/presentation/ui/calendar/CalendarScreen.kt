@@ -216,12 +216,11 @@ private fun CalendarScreen(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     // Add empty cells for days before month starts
-                    val firstDayOfWeek =
-                        state.days
-                            .firstOrNull()
-                            ?.date
-                            ?.dayOfWeek
-                            ?.ordinal ?: 0
+                    val firstDayOfWeek = state.days
+                        .firstOrNull()
+                        ?.date
+                        ?.dayOfWeek
+                        ?.ordinal ?: 0
                     items(firstDayOfWeek) {
                         Box(modifier = Modifier.aspectRatio(1f))
                     }
@@ -283,36 +282,34 @@ private fun CalendarScreen(
 
 @Composable
 private fun CalendarDayCell(day: CalendarDayUiModel, onClick: () -> Unit) {
-    val backgroundColor =
-        when (day.classification) {
-            DayClassification.PERFECT -> MaterialTheme.colorScheme.primary
-            DayClassification.BEST_EFFORT -> MaterialTheme.colorScheme.tertiary
-            DayClassification.PARTIAL -> MaterialTheme.colorScheme.secondary
-            DayClassification.ROUGH_DAY -> MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
-            DayClassification.FAILED -> MaterialTheme.colorScheme.error
-            DayClassification.FUTURE -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-            DayClassification.NONE -> MaterialTheme.colorScheme.surfaceVariant
-        }
+    val backgroundColor = when (day.classification) {
+        DayClassification.PERFECT -> MaterialTheme.colorScheme.primary
+        DayClassification.BEST_EFFORT -> MaterialTheme.colorScheme.tertiary
+        DayClassification.PARTIAL -> MaterialTheme.colorScheme.secondary
+        DayClassification.ROUGH_DAY -> MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+        DayClassification.FAILED -> MaterialTheme.colorScheme.error
+        DayClassification.FUTURE -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        DayClassification.NONE -> MaterialTheme.colorScheme.surfaceVariant
+    }
 
-    val textColor =
-        when (day.classification) {
-            DayClassification.PERFECT -> MaterialTheme.colorScheme.onPrimary
+    val textColor = when (day.classification) {
+        DayClassification.PERFECT -> MaterialTheme.colorScheme.onPrimary
 
-            DayClassification.BEST_EFFORT -> MaterialTheme.colorScheme.onTertiary
+        DayClassification.BEST_EFFORT -> MaterialTheme.colorScheme.onTertiary
 
-            DayClassification.PARTIAL -> MaterialTheme.colorScheme.onSecondary
+        DayClassification.PARTIAL -> MaterialTheme.colorScheme.onSecondary
 
-            DayClassification.ROUGH_DAY -> MaterialTheme.colorScheme.onError
+        DayClassification.ROUGH_DAY -> MaterialTheme.colorScheme.onError
 
-            DayClassification.FAILED -> MaterialTheme.colorScheme.onError
+        DayClassification.FAILED -> MaterialTheme.colorScheme.onError
 
-            DayClassification.FUTURE ->
-                MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                    alpha = 0.5f
-                )
+        DayClassification.FUTURE ->
+            MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                alpha = 0.5f
+            )
 
-            DayClassification.NONE -> MaterialTheme.colorScheme.onSurfaceVariant
-        }
+        DayClassification.NONE -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
 
     val isClickable =
         day.classification !in listOf(DayClassification.NONE, DayClassification.FUTURE)

@@ -2,9 +2,9 @@ package com.ricardocosteira.habitlock.domain.repositories
 
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
+import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
-import kotlin.time.Instant
 
 /**
  * Repository for habit instances (daily occurrences).
@@ -33,10 +33,7 @@ interface HabitInstanceRepository {
     /**
      * Get the instance for a specific habit on a specific date.
      */
-    suspend fun getInstanceForHabitAndDate(
-        habitId: String,
-        date: LocalDate,
-    ): HabitInstance?
+    suspend fun getInstanceForHabitAndDate(habitId: String, date: LocalDate): HabitInstance?
 
     /**
      * Get all instances for a habit (for history/streaks).
@@ -48,7 +45,7 @@ interface HabitInstanceRepository {
      */
     suspend fun getInstancesInDateRange(
         startDate: LocalDate,
-        endDate: LocalDate,
+        endDate: LocalDate
     ): List<HabitInstance>
 
     /**
@@ -63,14 +60,11 @@ interface HabitInstanceRepository {
         instanceId: String,
         status: HabitStatus,
         completedValue: Int?,
-        completedAt: Instant?,
+        completedAt: Instant?
     )
 
     /**
      * Update just the completed value of an instance.
      */
-    suspend fun updateInstanceCompletedValue(
-        instanceId: String,
-        completedValue: Int,
-    )
+    suspend fun updateInstanceCompletedValue(instanceId: String, completedValue: Int)
 }

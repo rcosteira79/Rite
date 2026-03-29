@@ -6,13 +6,13 @@ import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import com.ricardocosteira.habitlock.util.toLocalDate
+import kotlin.time.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import me.tatarka.inject.annotations.Inject
-import kotlin.time.Clock
 
 /**
  * Processes end-of-day/end-of-week failure for habits.
@@ -23,7 +23,7 @@ import kotlin.time.Clock
 class ProcessEndOfDay(
     private val userRepository: UserRepository,
     private val habitInstanceRepository: HabitInstanceRepository,
-    private val habitRepository: HabitRepository,
+    private val habitRepository: HabitRepository
 ) {
     /**
      * Process end-of-day for the previous day and end-of-week for weekly habits.
@@ -61,14 +61,14 @@ class ProcessEndOfDay(
                     instanceId = instance.id,
                     status = HabitStatus.FAILED,
                     completedValue = instance.completedValue,
-                    completedAt = null,
+                    completedAt = null
                 )
 
                 // Reset streak for failed habit
                 habitRepository.updateHabitStreak(
                     habitId = habit.id,
                     currentStreak = 0,
-                    longestStreak = habit.longestStreak,
+                    longestStreak = habit.longestStreak
                 )
 
                 failedCount++
@@ -97,14 +97,15 @@ class ProcessEndOfDay(
                     val lastWeekStart = today.minus(7, DateTimeUnit.DAY)
 
                     // Check if there's an instance from last week
-                    val lastWeekInstance =
-                        habitInstanceRepository.getInstanceForHabitAndDate(
-                            habitId = habit.id,
-                            date = lastWeekStart,
-                        )
+                    val lastWeekInstance = habitInstanceRepository.getInstanceForHabitAndDate(
+                        habitId = habit.id,
+                        date = lastWeekStart
+                    )
 
                     // Only process PENDING instances (skip SUSPENDED)
-                    if (lastWeekInstance != null && lastWeekInstance.status == HabitStatus.PENDING) {
+                    if (lastWeekInstance != null &&
+                        lastWeekInstance.status == HabitStatus.PENDING
+                    ) {
                         // Check if quota was not met
                         val completedValue = lastWeekInstance.completedValue ?: 0
                         val quota = lastWeekInstance.targetValue ?: 1
@@ -114,14 +115,14 @@ class ProcessEndOfDay(
                                 instanceId = lastWeekInstance.id,
                                 status = HabitStatus.FAILED,
                                 completedValue = completedValue,
-                                completedAt = null,
+                                completedAt = null
                             )
 
                             // Reset streak for failed habit
                             habitRepository.updateHabitStreak(
                                 habitId = habit.id,
                                 currentStreak = 0,
-                                longestStreak = habit.longestStreak,
+                                longestStreak = habit.longestStreak
                             )
 
                             failedCount++
@@ -131,7 +132,7 @@ class ProcessEndOfDay(
                                 instanceId = lastWeekInstance.id,
                                 status = HabitStatus.COMPLETED,
                                 completedValue = completedValue,
-                                completedAt = Clock.System.now(),
+                                completedAt = Clock.System.now()
                             )
                         }
                     }

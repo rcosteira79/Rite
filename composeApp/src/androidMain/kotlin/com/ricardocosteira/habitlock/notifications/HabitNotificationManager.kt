@@ -19,10 +19,10 @@ import com.ricardocosteira.habitlock.domain.models.HabitType
  * - Grace period warnings
  * - Daily summary notifications (optional)
  */
-class HabitNotificationManager(
-    private val context: Context,
-) {
-    private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+class HabitNotificationManager(private val context: Context) {
+    private val notificationManager = context.getSystemService(
+        Context.NOTIFICATION_SERVICE
+    ) as NotificationManager
 
     /**
      * Shows a habit reminder notification.
@@ -33,10 +33,7 @@ class HabitNotificationManager(
      * @param instance The habit instance to remind about
      * @param habit The habit details
      */
-    fun showHabitReminder(
-        instance: HabitInstance,
-        habit: Habit,
-    ) {
+    fun showHabitReminder(instance: HabitInstance, habit: Habit) {
         val notification = buildHabitReminderNotification(instance, habit)
         val notificationId = getNotificationId(instance.id)
         notificationManager.notify(notificationId, notification)
@@ -49,10 +46,7 @@ class HabitNotificationManager(
      * @param instance The habit instance in grace period
      * @param habit The habit details
      */
-    fun showGracePeriodNotification(
-        instance: HabitInstance,
-        habit: Habit,
-    ) {
+    fun showGracePeriodNotification(instance: HabitInstance, habit: Habit) {
         val notification = buildGracePeriodNotification(instance, habit)
         val notificationId = getGracePeriodNotificationId(instance.id)
         notificationManager.notify(notificationId, notification)
@@ -66,11 +60,7 @@ class HabitNotificationManager(
      * @param totalCount Total number of habits for the day
      * @param perfectDay Whether all habits were completed
      */
-    fun showDailySummary(
-        completedCount: Int,
-        totalCount: Int,
-        perfectDay: Boolean,
-    ) {
+    fun showDailySummary(completedCount: Int, totalCount: Int, perfectDay: Boolean) {
         val notification = buildDailySummaryNotification(completedCount, totalCount, perfectDay)
         notificationManager.notify(NotificationChannels.NOTIFICATION_ID_DAILY_SUMMARY, notification)
     }
@@ -116,46 +106,42 @@ class HabitNotificationManager(
 
     private fun buildHabitReminderNotification(
         instance: HabitInstance,
-        habit: Habit,
+        habit: Habit
     ): Notification {
         // Intent to open the app
-        val openAppIntent =
-            Intent(context, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            }
-        val openAppPendingIntent =
-            PendingIntent.getActivity(
-                context,
-                instance.id.hashCode(),
-                openAppIntent,
-                PendingIntent.FLAG_IMMUTABLE,
-            )
+        val openAppIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val openAppPendingIntent = PendingIntent.getActivity(
+            context,
+            instance.id.hashCode(),
+            openAppIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
 
         // Build notification title and content based on habit type
         val title = habit.name
-        val content =
-            when (habit.type) {
-                HabitType.BINARY -> {
-                    "Time to complete your habit"
-                }
-
-                HabitType.QUANTITATIVE -> {
-                    val progress = instance.currentProgress
-                    val quota = habit.targetValue ?: 1
-                    "Progress: $progress / $quota"
-                }
+        val content = when (habit.type) {
+            HabitType.BINARY -> {
+                "Time to complete your habit"
             }
 
-        val builder =
-            NotificationCompat
-                .Builder(context, NotificationChannels.CHANNEL_HABITS)
-                .setSmallIcon(R.mipmap.ic_launcher_foreground)
-                .setContentTitle(title)
-                .setContentText(content)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_REMINDER)
-                .setAutoCancel(true)
-                .setContentIntent(openAppPendingIntent)
+            HabitType.QUANTITATIVE -> {
+                val progress = instance.currentProgress
+                val quota = habit.targetValue ?: 1
+                "Progress: $progress / $quota"
+            }
+        }
+
+        val builder = NotificationCompat
+            .Builder(context, NotificationChannels.CHANNEL_HABITS)
+            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+            .setContentTitle(title)
+            .setContentText(content)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setAutoCancel(true)
+            .setContentIntent(openAppPendingIntent)
 
         // Add action buttons based on habit type
         when (habit.type) {
@@ -174,36 +160,30 @@ class HabitNotificationManager(
         return builder.build()
     }
 
-    private fun buildGracePeriodNotification(
-        instance: HabitInstance,
-        habit: Habit,
-    ): Notification {
+    private fun buildGracePeriodNotification(instance: HabitInstance, habit: Habit): Notification {
         // Intent to open the app
-        val openAppIntent =
-            Intent(context, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            }
-        val openAppPendingIntent =
-            PendingIntent.getActivity(
-                context,
-                instance.id.hashCode(),
-                openAppIntent,
-                PendingIntent.FLAG_IMMUTABLE,
-            )
+        val openAppIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val openAppPendingIntent = PendingIntent.getActivity(
+            context,
+            instance.id.hashCode(),
+            openAppIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
 
         val title = "⚠️ ${habit.name}"
         val content = "Last chance! This habit will be marked as failed soon."
 
-        val builder =
-            NotificationCompat
-                .Builder(context, NotificationChannels.CHANNEL_GRACE_PERIOD)
-                .setSmallIcon(R.mipmap.ic_launcher_foreground)
-                .setContentTitle(title)
-                .setContentText(content)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_REMINDER)
-                .setAutoCancel(true)
-                .setContentIntent(openAppPendingIntent)
+        val builder = NotificationCompat
+            .Builder(context, NotificationChannels.CHANNEL_GRACE_PERIOD)
+            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+            .setContentTitle(title)
+            .setContentText(content)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setAutoCancel(true)
+            .setContentIntent(openAppPendingIntent)
 
         // Add action buttons
         when (habit.type) {
@@ -224,34 +204,30 @@ class HabitNotificationManager(
     private fun buildDailySummaryNotification(
         completedCount: Int,
         totalCount: Int,
-        perfectDay: Boolean,
+        perfectDay: Boolean
     ): Notification {
         // Intent to open the app
-        val openAppIntent =
-            Intent(context, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            }
-        val openAppPendingIntent =
-            PendingIntent.getActivity(
-                context,
-                NotificationChannels.NOTIFICATION_ID_DAILY_SUMMARY,
-                openAppIntent,
-                PendingIntent.FLAG_IMMUTABLE,
-            )
+        val openAppIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val openAppPendingIntent = PendingIntent.getActivity(
+            context,
+            NotificationChannels.NOTIFICATION_ID_DAILY_SUMMARY,
+            openAppIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
 
-        val title =
-            if (perfectDay) {
-                "🎉 Perfect day!"
-            } else {
-                "Daily Summary"
-            }
+        val title = if (perfectDay) {
+            "🎉 Perfect day!"
+        } else {
+            "Daily Summary"
+        }
 
-        val content =
-            if (perfectDay) {
-                "You completed all $totalCount habits today!"
-            } else {
-                "You completed $completedCount out of $totalCount habits today."
-            }
+        val content = if (perfectDay) {
+            "You completed all $totalCount habits today!"
+        } else {
+            "You completed $completedCount out of $totalCount habits today."
+        }
 
         return NotificationCompat
             .Builder(context, NotificationChannels.CHANNEL_DAILY_SUMMARY)
@@ -267,101 +243,90 @@ class HabitNotificationManager(
 
     private fun createCompleteAction(
         instanceId: String,
-        habitId: String,
+        habitId: String
     ): NotificationCompat.Action {
-        val intent =
-            Intent(context, NotificationActionReceiver::class.java).apply {
-                action = NotificationActionReceiver.ACTION_COMPLETE
-                putExtra(NotificationActionReceiver.EXTRA_INSTANCE_ID, instanceId)
-                putExtra(NotificationActionReceiver.EXTRA_HABIT_ID, habitId)
-            }
+        val intent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = NotificationActionReceiver.ACTION_COMPLETE
+            putExtra(NotificationActionReceiver.EXTRA_INSTANCE_ID, instanceId)
+            putExtra(NotificationActionReceiver.EXTRA_HABIT_ID, habitId)
+        }
 
-        val pendingIntent =
-            PendingIntent.getBroadcast(
-                context,
-                instanceId.hashCode(),
-                intent,
-                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE,
-            )
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            instanceId.hashCode(),
+            intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         return NotificationCompat.Action
             .Builder(
                 0, // No icon for now
                 "Complete",
-                pendingIntent,
+                pendingIntent
             ).build()
     }
 
-    private fun createAddOneAction(
-        instanceId: String,
-        habitId: String,
-    ): NotificationCompat.Action {
-        val intent =
-            Intent(context, NotificationActionReceiver::class.java).apply {
-                action = NotificationActionReceiver.ACTION_ADD_ONE
-                putExtra(NotificationActionReceiver.EXTRA_INSTANCE_ID, instanceId)
-                putExtra(NotificationActionReceiver.EXTRA_HABIT_ID, habitId)
-            }
+    private fun createAddOneAction(instanceId: String, habitId: String): NotificationCompat.Action {
+        val intent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = NotificationActionReceiver.ACTION_ADD_ONE
+            putExtra(NotificationActionReceiver.EXTRA_INSTANCE_ID, instanceId)
+            putExtra(NotificationActionReceiver.EXTRA_HABIT_ID, habitId)
+        }
 
-        val pendingIntent =
-            PendingIntent.getBroadcast(
-                context,
-                instanceId.hashCode(),
-                intent,
-                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE,
-            )
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            instanceId.hashCode(),
+            intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         return NotificationCompat.Action
             .Builder(
                 0, // No icon for now
                 "+1",
-                pendingIntent,
+                pendingIntent
             ).build()
     }
 
     private fun createSnoozeAction(instanceId: String): NotificationCompat.Action {
-        val intent =
-            Intent(context, NotificationActionReceiver::class.java).apply {
-                action = NotificationActionReceiver.ACTION_SNOOZE
-                putExtra(NotificationActionReceiver.EXTRA_INSTANCE_ID, instanceId)
-            }
+        val intent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = NotificationActionReceiver.ACTION_SNOOZE
+            putExtra(NotificationActionReceiver.EXTRA_INSTANCE_ID, instanceId)
+        }
 
-        val pendingIntent =
-            PendingIntent.getBroadcast(
-                context,
-                instanceId.hashCode() + 1, // Different request code
-                intent,
-                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE,
-            )
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            instanceId.hashCode() + 1, // Different request code
+            intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         return NotificationCompat.Action
             .Builder(
                 0, // No icon for now
                 "Snooze",
-                pendingIntent,
+                pendingIntent
             ).build()
     }
 
     private fun createSkipAction(instanceId: String): NotificationCompat.Action {
-        val intent =
-            Intent(context, NotificationActionReceiver::class.java).apply {
-                action = NotificationActionReceiver.ACTION_SKIP
-                putExtra(NotificationActionReceiver.EXTRA_INSTANCE_ID, instanceId)
-            }
+        val intent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = NotificationActionReceiver.ACTION_SKIP
+            putExtra(NotificationActionReceiver.EXTRA_INSTANCE_ID, instanceId)
+        }
 
-        val pendingIntent =
-            PendingIntent.getBroadcast(
-                context,
-                instanceId.hashCode() + 2, // Different request code
-                intent,
-                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE,
-            )
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            instanceId.hashCode() + 2, // Different request code
+            intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         return NotificationCompat.Action
             .Builder(
                 0, // No icon for now
                 "Skip",
-                pendingIntent,
+                pendingIntent
             ).build()
     }
 

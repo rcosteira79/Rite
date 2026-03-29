@@ -39,35 +39,34 @@ enum class StrictnessPreset {
     /**
      * Converts this preset to user settings.
      */
-    fun toUserSettings(): UserStrictnessSettings =
-        when (this) {
-            FLEXIBLE -> {
-                UserStrictnessSettings(
-                    undoPolicy = UndoPolicy.ALL_HISTORY,
-                    maxSnoozesPerHabitPerDay = null,
-                    maxConsecutiveSkips = null,
-                    maxSnoozeDurationMinutes = 60,
-                )
-            }
-
-            BALANCED -> {
-                UserStrictnessSettings(
-                    undoPolicy = UndoPolicy.TODAY_ONLY,
-                    maxSnoozesPerHabitPerDay = 3,
-                    maxConsecutiveSkips = 2,
-                    maxSnoozeDurationMinutes = 30,
-                )
-            }
-
-            LOCKED -> {
-                UserStrictnessSettings(
-                    undoPolicy = UndoPolicy.NONE,
-                    maxSnoozesPerHabitPerDay = 1,
-                    maxConsecutiveSkips = 0,
-                    maxSnoozeDurationMinutes = 15,
-                )
-            }
+    fun toUserSettings(): UserStrictnessSettings = when (this) {
+        FLEXIBLE -> {
+            UserStrictnessSettings(
+                undoPolicy = UndoPolicy.ALL_HISTORY,
+                maxSnoozesPerHabitPerDay = null,
+                maxConsecutiveSkips = null,
+                maxSnoozeDurationMinutes = 60
+            )
         }
+
+        BALANCED -> {
+            UserStrictnessSettings(
+                undoPolicy = UndoPolicy.TODAY_ONLY,
+                maxSnoozesPerHabitPerDay = 3,
+                maxConsecutiveSkips = 2,
+                maxSnoozeDurationMinutes = 30
+            )
+        }
+
+        LOCKED -> {
+            UserStrictnessSettings(
+                undoPolicy = UndoPolicy.NONE,
+                maxSnoozesPerHabitPerDay = 1,
+                maxConsecutiveSkips = 0,
+                maxSnoozeDurationMinutes = 15
+            )
+        }
+    }
 
     companion object {
         /**
@@ -79,7 +78,11 @@ enum class StrictnessPreset {
          * Reverse-maps user settings back to a preset, or null if the settings
          * don't match any known preset (i.e. the user customised them).
          */
-        fun fromSettings(settings: UserStrictnessSettings): StrictnessPreset? = entries.firstOrNull { it.toUserSettings() == settings }
+        fun fromSettings(settings: UserStrictnessSettings): StrictnessPreset? =
+            entries.firstOrNull {
+                it.toUserSettings() ==
+                    settings
+            }
     }
 }
 
@@ -95,7 +98,7 @@ data class UserStrictnessSettings(
     val undoPolicy: UndoPolicy,
     val maxSnoozesPerHabitPerDay: Int?,
     val maxConsecutiveSkips: Int?,
-    val maxSnoozeDurationMinutes: Int,
+    val maxSnoozeDurationMinutes: Int
 ) {
     init {
         if (maxSnoozesPerHabitPerDay != null) {

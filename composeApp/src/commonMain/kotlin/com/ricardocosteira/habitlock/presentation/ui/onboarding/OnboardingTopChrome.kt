@@ -92,25 +92,23 @@ private fun StepDot(state: DotState, modifier: Modifier = Modifier) {
         label = "dot_width"
     )
 
-    val targetAlpha =
-        if (state == DotState.Inactive) {
-            1f
-        } else if (state == DotState.Done) {
-            DONE_DOT_ALPHA
-        } else {
-            1f
-        }
+    val targetAlpha = if (state == DotState.Inactive) {
+        1f
+    } else if (state == DotState.Done) {
+        DONE_DOT_ALPHA
+    } else {
+        1f
+    }
     val animatedAlpha by animateFloatAsState(
         targetValue = targetAlpha,
         label = "dot_alpha"
     )
 
-    val color =
-        if (state == DotState.Inactive) {
-            MaterialTheme.colorScheme.surfaceVariant
-        } else {
-            MaterialTheme.colorScheme.primary
-        }
+    val color = if (state == DotState.Inactive) {
+        MaterialTheme.colorScheme.surfaceVariant
+    } else {
+        MaterialTheme.colorScheme.primary
+    }
 
     Box(
         modifier =

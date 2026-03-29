@@ -250,12 +250,11 @@ internal fun HabitFormScreen(
     val scrollState: ScrollState = rememberScrollState()
     val isScrolled: Boolean by remember { derivedStateOf { scrollState.value > 0 } }
     val filledColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest
-    val targetColor: Color =
-        if (isScrolled) {
-            filledColor
-        } else {
-            filledColor.copy(alpha = 0f)
-        }
+    val targetColor: Color = if (isScrolled) {
+        filledColor
+    } else {
+        filledColor.copy(alpha = 0f)
+    }
     val iconContainerColor: Color by animateColorAsState(
         targetValue = targetColor,
         animationSpec = tween(durationMillis = 200),
@@ -380,20 +379,18 @@ internal fun HabitFormScreen(
             SectionLabel(Res.string.habit_form_section_daily_target)
             Spacer(modifier = Modifier.height(8.dp))
 
-            val cadence: String =
-                if (state.scheduleType == ScheduleType.DAILY) {
-                    stringResource(Res.string.habit_form_cadence_day)
-                } else {
-                    stringResource(Res.string.habit_form_cadence_week)
-                }
-            val stepperLabel: String =
-                if (state.type == HabitType.QUANTITATIVE &&
-                    state.unit.isNotBlank()
-                ) {
-                    "${state.unit} / $cadence"
-                } else {
-                    "${stringResource(Res.string.habit_form_stepper_label_times)} / $cadence"
-                }
+            val cadence: String = if (state.scheduleType == ScheduleType.DAILY) {
+                stringResource(Res.string.habit_form_cadence_day)
+            } else {
+                stringResource(Res.string.habit_form_cadence_week)
+            }
+            val stepperLabel: String = if (state.type == HabitType.QUANTITATIVE &&
+                state.unit.isNotBlank()
+            ) {
+                "${state.unit} / $cadence"
+            } else {
+                "${stringResource(Res.string.habit_form_stepper_label_times)} / $cadence"
+            }
 
             QuantityStepper(
                 value = state.stepperValue,
@@ -465,12 +462,11 @@ internal fun HabitFormScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Reminder + Note card
-            val reminderSubtitle: String =
-                if (state.hasReminder) {
-                    state.reminderTime?.formatAmPm().orEmpty()
-                } else {
-                    stringResource(Res.string.habit_form_reminder_off)
-                }
+            val reminderSubtitle: String = if (state.hasReminder) {
+                state.reminderTime?.formatAmPm().orEmpty()
+            } else {
+                stringResource(Res.string.habit_form_reminder_off)
+            }
             Surface(
                 shape = RoundedCornerShape(16.dp),
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -661,18 +657,16 @@ private fun ScheduleTypePill(
 ) {
     val isDarkTheme = isSystemInDarkTheme()
     val pillShape = RoundedCornerShape(percent = 50)
-    val backgroundColor =
-        if (isSelected) {
-            MaterialTheme.colorScheme.primaryContainer
-        } else {
-            MaterialTheme.colorScheme.surfaceContainerLow
-        }
-    val contentColor =
-        if (isSelected) {
-            MaterialTheme.colorScheme.onPrimaryContainer
-        } else {
-            MaterialTheme.colorScheme.onSurfaceVariant
-        }
+    val backgroundColor = if (isSelected) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerLow
+    }
+    val contentColor = if (isSelected) {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
 
     Box(
         modifier =
@@ -708,12 +702,11 @@ private fun ReminderTimePickerDialog(
     onConfirm: (hour: Int, minute: Int) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val timePickerState =
-        rememberTimePickerState(
-            initialHour = initialTime.hour,
-            initialMinute = initialTime.minute,
-            is24Hour = false
-        )
+    val timePickerState = rememberTimePickerState(
+        initialHour = initialTime.hour,
+        initialMinute = initialTime.minute,
+        is24Hour = false
+    )
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -769,12 +762,11 @@ private fun DeleteHabitDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
 }
 
 private fun LocalTime.formatAmPm(): String {
-    val hour12: Int =
-        when {
-            hour == 0 -> 12
-            hour > 12 -> hour - 12
-            else -> hour
-        }
+    val hour12: Int = when {
+        hour == 0 -> 12
+        hour > 12 -> hour - 12
+        else -> hour
+    }
     val amPm: String = if (hour < 12) "AM" else "PM"
     return "${hour12.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} $amPm"
 }

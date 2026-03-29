@@ -273,12 +273,11 @@ private fun PresetCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                val iconTint =
-                    if (preset == OnboardingStrictnessPreset.LOCKED) {
-                        MaterialTheme.colorScheme.error
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    }
+                val iconTint = if (preset == OnboardingStrictnessPreset.LOCKED) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
                 Icon(
                     imageVector = preset.icon(),
                     contentDescription = null,

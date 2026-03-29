@@ -247,14 +247,13 @@ class HabitFormViewModel(
 
     private suspend fun createNewHabit(state: HabitFormState, reminder: HabitReminder?) {
         val today = Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
-        val specificDays =
-            if (state.scheduleType ==
-                ScheduleType.WEEKLY
-            ) {
-                state.selectedDays
-            } else {
-                null
-            }
+        val specificDays = if (state.scheduleType ==
+            ScheduleType.WEEKLY
+        ) {
+            state.selectedDays
+        } else {
+            null
+        }
 
         createHabit
             .execute(
@@ -283,30 +282,28 @@ class HabitFormViewModel(
         val habitId = state.habitId!!
         val existingHabit = habitRepository.getHabitById(habitId) ?: throw HabitNotFoundException()
 
-        val updatedHabit =
-            existingHabit.copy(
-                name = state.name.trim(),
-                description = state.description.trim().takeIf { it.isNotEmpty() },
-                type = state.type,
-                targetValue =
-                    if (state.type == HabitType.QUANTITATIVE) {
-                        state.targetValue.toIntOrNull()
-                    } else {
-                        null
-                    },
-                unit = state.unit.trim().takeIf { it.isNotEmpty() }
-            )
+        val updatedHabit = existingHabit.copy(
+            name = state.name.trim(),
+            description = state.description.trim().takeIf { it.isNotEmpty() },
+            type = state.type,
+            targetValue =
+                if (state.type == HabitType.QUANTITATIVE) {
+                    state.targetValue.toIntOrNull()
+                } else {
+                    null
+                },
+            unit = state.unit.trim().takeIf { it.isNotEmpty() }
+        )
 
         habitRepository.updateHabit(updatedHabit)
 
-        val specificDays =
-            if (state.scheduleType ==
-                ScheduleType.WEEKLY
-            ) {
-                state.selectedDays
-            } else {
-                null
-            }
+        val specificDays = if (state.scheduleType ==
+            ScheduleType.WEEKLY
+        ) {
+            state.selectedDays
+        } else {
+            null
+        }
         val existingSchedule = habitRepository.getScheduleForHabit(habitId)
 
         if (existingSchedule != null) {

@@ -39,22 +39,21 @@ import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import org.jetbrains.compose.resources.stringResource
 
-private val savedStateConfig: SavedStateConfiguration =
-    SavedStateConfiguration {
-        serializersModule =
-            SerializersModule {
-                polymorphic(NavKey::class) {
-                    subclass(Onboarding::class)
-                    subclass(Today::class)
-                    subclass(HabitDetail::class)
-                    subclass(CreateHabit::class)
-                    subclass(EditHabit::class)
-                    subclass(Calendar::class)
-                    subclass(ArchivedHabits::class)
-                    subclass(Settings::class)
-                }
+private val savedStateConfig: SavedStateConfiguration = SavedStateConfiguration {
+    serializersModule =
+        SerializersModule {
+            polymorphic(NavKey::class) {
+                subclass(Onboarding::class)
+                subclass(Today::class)
+                subclass(HabitDetail::class)
+                subclass(CreateHabit::class)
+                subclass(EditHabit::class)
+                subclass(Calendar::class)
+                subclass(ArchivedHabits::class)
+                subclass(Settings::class)
             }
-    }
+        }
+}
 
 private val topLevelRoutes: Set<Route> = setOf(Today, Calendar, Settings)
 
@@ -86,33 +85,32 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
     }
 
     val isNavBarVisible: MutableState<Boolean> = remember { mutableStateOf(true) }
-    val nestedScrollConnection: NestedScrollConnection =
-        remember {
-            object : NestedScrollConnection {
-                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                    // Show immediately on scroll up
-                    if (available.y > 1f) isNavBarVisible.value = true
-                    return Offset.Zero
-                }
+    val nestedScrollConnection: NestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                // Show immediately on scroll up
+                if (available.y > 1f) isNavBarVisible.value = true
+                return Offset.Zero
+            }
 
-                override fun onPostScroll(
-                    consumed: Offset,
-                    available: Offset,
-                    source: NestedScrollSource
-                ): Offset {
-                    // Hide only when content actually scrolled down AND fully consumed
-                    // the gesture (available ≈ 0 means no bounce-back will happen).
-                    if (consumed.y < -1f && available.y > -1f) {
-                        isNavBarVisible.value = false
-                    }
-                    // Show when hitting the bottom (content can't scroll further)
-                    if (available.y < 0f && consumed.y == 0f) {
-                        isNavBarVisible.value = true
-                    }
-                    return Offset.Zero
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource
+            ): Offset {
+                // Hide only when content actually scrolled down AND fully consumed
+                // the gesture (available ≈ 0 means no bounce-back will happen).
+                if (consumed.y < -1f && available.y > -1f) {
+                    isNavBarVisible.value = false
                 }
+                // Show when hitting the bottom (content can't scroll further)
+                if (available.y < 0f && consumed.y == 0f) {
+                    isNavBarVisible.value = true
+                }
+                return Offset.Zero
             }
         }
+    }
 
     // Reset nav bar visibility when leaving the Today screen
     LaunchedEffect(isTodayRoute) {

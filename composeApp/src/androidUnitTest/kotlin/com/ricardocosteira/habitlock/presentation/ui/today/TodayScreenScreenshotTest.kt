@@ -319,57 +319,56 @@ class TodayScreenScreenshotTest {
     )
 
     private fun mixedState(): TodayState {
-        val habits: List<TodayHabitUiModel> =
-            listOf(
-                buildHabit(
-                    instanceId = "1",
-                    name = "Read 30 Pages",
-                    type = HabitType.QUANTITATIVE,
-                    status = HabitStatus.PENDING,
-                    completedValue = 10,
-                    targetValue = 30,
-                    unit = "pages",
-                    defaultIncrement = 1,
-                    progressPercentage = 0.33f,
-                    cadence = ScheduleType.DAILY
-                ),
-                buildHabit(
-                    instanceId = "2",
-                    name = "Evening Walk",
-                    description = "06:00 PM — Neighborhood",
-                    type = HabitType.BINARY,
-                    status = HabitStatus.PENDING,
-                    cadence = ScheduleType.DAILY
-                ),
-                buildHabit(
-                    instanceId = "3",
-                    name = "Morning Meditation",
-                    type = HabitType.BINARY,
-                    status = HabitStatus.COMPLETED,
-                    completedAtText = "7:45 AM",
-                    cadence = ScheduleType.DAILY
-                ),
-                buildHabit(
-                    instanceId = "4",
-                    name = "Deep Work Blocks",
-                    type = HabitType.QUANTITATIVE,
-                    status = HabitStatus.PENDING,
-                    completedValue = 4,
-                    targetValue = 5,
-                    unit = "blocks",
-                    defaultIncrement = 1,
-                    progressPercentage = 0.8f,
-                    cadence = ScheduleType.WEEKLY
-                ),
-                buildHabit(
-                    instanceId = "5",
-                    name = "Gym Session",
-                    type = HabitType.BINARY,
-                    status = HabitStatus.COMPLETED,
-                    completedAtText = "6:30 PM",
-                    cadence = ScheduleType.WEEKLY
-                )
+        val habits: List<TodayHabitUiModel> = listOf(
+            buildHabit(
+                instanceId = "1",
+                name = "Read 30 Pages",
+                type = HabitType.QUANTITATIVE,
+                status = HabitStatus.PENDING,
+                completedValue = 10,
+                targetValue = 30,
+                unit = "pages",
+                defaultIncrement = 1,
+                progressPercentage = 0.33f,
+                cadence = ScheduleType.DAILY
+            ),
+            buildHabit(
+                instanceId = "2",
+                name = "Evening Walk",
+                description = "06:00 PM — Neighborhood",
+                type = HabitType.BINARY,
+                status = HabitStatus.PENDING,
+                cadence = ScheduleType.DAILY
+            ),
+            buildHabit(
+                instanceId = "3",
+                name = "Morning Meditation",
+                type = HabitType.BINARY,
+                status = HabitStatus.COMPLETED,
+                completedAtText = "7:45 AM",
+                cadence = ScheduleType.DAILY
+            ),
+            buildHabit(
+                instanceId = "4",
+                name = "Deep Work Blocks",
+                type = HabitType.QUANTITATIVE,
+                status = HabitStatus.PENDING,
+                completedValue = 4,
+                targetValue = 5,
+                unit = "blocks",
+                defaultIncrement = 1,
+                progressPercentage = 0.8f,
+                cadence = ScheduleType.WEEKLY
+            ),
+            buildHabit(
+                instanceId = "5",
+                name = "Gym Session",
+                type = HabitType.BINARY,
+                status = HabitStatus.COMPLETED,
+                completedAtText = "6:30 PM",
+                cadence = ScheduleType.WEEKLY
             )
+        )
 
         return TodayState(
             isLoading = false,

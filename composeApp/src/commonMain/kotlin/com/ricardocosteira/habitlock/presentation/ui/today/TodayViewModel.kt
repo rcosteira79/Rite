@@ -100,16 +100,15 @@ class TodayViewModel(
                 // Derive timezone and strictness preset
                 val userTimezone: TimeZone = user?.timezone ?: TimeZone.currentSystemDefault()
 
-                val strictnessPreset: StrictnessPreset? =
-                    user?.let {
-                        val settings = UserStrictnessSettings(
-                            undoPolicy = it.undoPolicy,
-                            maxSnoozesPerHabitPerDay = it.maxSnoozesPerHabitPerDay,
-                            maxConsecutiveSkips = it.maxConsecutiveSkips,
-                            maxSnoozeDurationMinutes = it.maxSnoozeDurationMinutes
-                        )
-                        StrictnessPreset.fromSettings(settings)
-                    }
+                val strictnessPreset: StrictnessPreset? = user?.let {
+                    val settings = UserStrictnessSettings(
+                        undoPolicy = it.undoPolicy,
+                        maxSnoozesPerHabitPerDay = it.maxSnoozesPerHabitPerDay,
+                        maxConsecutiveSkips = it.maxConsecutiveSkips,
+                        maxSnoozeDurationMinutes = it.maxSnoozeDurationMinutes
+                    )
+                    StrictnessPreset.fromSettings(settings)
+                }
 
                 // Get today's instances
                 val today = Clock.System.now().toLocalDate(userTimezone)
@@ -118,41 +117,37 @@ class TodayViewModel(
                 val motivationalTitle: String = motivationalTitleForDate(today)
 
                 // Map to UI models
-                val habits: ImmutableList<TodayHabitUiModel> =
-                    instances
-                        .mapNotNull { instance ->
-                            val habit = habitRepository.getHabitById(instance.habitId)
-                                ?: return@mapNotNull null
-                            val schedule = habitRepository.getScheduleForHabit(habit.id)
-                                ?: return@mapNotNull null
-                            mapToTodayHabitUiModel(
-                                instance = instance,
-                                habit = habit,
-                                schedule = schedule,
-                                maxConsecutiveSkips = user?.maxConsecutiveSkips,
-                                userTimezone = userTimezone
-                            )
-                        }.toImmutableList()
+                val habits: ImmutableList<TodayHabitUiModel> = instances
+                    .mapNotNull { instance ->
+                        val habit = habitRepository.getHabitById(instance.habitId)
+                            ?: return@mapNotNull null
+                        val schedule = habitRepository.getScheduleForHabit(habit.id)
+                            ?: return@mapNotNull null
+                        mapToTodayHabitUiModel(
+                            instance = instance,
+                            habit = habit,
+                            schedule = schedule,
+                            maxConsecutiveSkips = user?.maxConsecutiveSkips,
+                            userTimezone = userTimezone
+                        )
+                    }.toImmutableList()
 
                 val counts: TodayCounts = habits.computeCounts()
 
-                val resolvedStatuses: Set<HabitStatus> =
-                    setOf(
-                        HabitStatus.COMPLETED,
-                        HabitStatus.SKIPPED,
-                        HabitStatus.FAILED
-                    )
+                val resolvedStatuses: Set<HabitStatus> = setOf(
+                    HabitStatus.COMPLETED,
+                    HabitStatus.SKIPPED,
+                    HabitStatus.FAILED
+                )
 
-                val dailyHabits: List<TodayHabitUiModel> =
-                    habits.filter {
-                        it.isDaily &&
-                            !it.isSuspended
-                    }
-                val weeklyHabits: List<TodayHabitUiModel> =
-                    habits.filter {
-                        it.isWeekly &&
-                            !it.isSuspended
-                    }
+                val dailyHabits: List<TodayHabitUiModel> = habits.filter {
+                    it.isDaily &&
+                        !it.isSuspended
+                }
+                val weeklyHabits: List<TodayHabitUiModel> = habits.filter {
+                    it.isWeekly &&
+                        !it.isSuspended
+                }
 
                 val (pendingDaily: List<TodayHabitUiModel>, resolvedDaily: List<TodayHabitUiModel>) =
                     dailyHabits.partition { it.status !in resolvedStatuses }
@@ -243,12 +238,11 @@ class TodayViewModel(
             val habit: TodayHabitUiModel =
                 _state.value.habits.find { it.instanceId == instanceId } ?: return@launch
 
-            val result: Result<HabitInstance> =
-                completeHabit.executeQuantitative(
-                    instanceId = instanceId,
-                    deltaValue = habit.defaultIncrement,
-                    source = CompletionSource.IN_APP
-                )
+            val result: Result<HabitInstance> = completeHabit.executeQuantitative(
+                instanceId = instanceId,
+                deltaValue = habit.defaultIncrement,
+                source = CompletionSource.IN_APP
+            )
 
             result.fold(
                 onSuccess = { updatedInstance: HabitInstance ->

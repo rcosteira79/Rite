@@ -1,7 +1,7 @@
 package com.ricardocosteira.habitlock.domain.models
 
-import kotlinx.datetime.LocalDate
 import kotlin.time.Instant
+import kotlinx.datetime.LocalDate
 
 /**
  * Represents one habit instance on a specific day.
@@ -16,7 +16,7 @@ data class HabitInstance(
     val targetValue: Int?,
     val consecutiveSkipsAtCreation: Int,
     val createdAt: Instant,
-    val completedAt: Instant? = null,
+    val completedAt: Instant? = null
 ) {
     /**
      * Whether skip is disabled due to reaching the consecutive skip limit.

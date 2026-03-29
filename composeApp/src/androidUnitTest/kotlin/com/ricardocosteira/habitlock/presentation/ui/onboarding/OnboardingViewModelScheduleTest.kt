@@ -16,6 +16,11 @@ import com.ricardocosteira.habitlock.domain.usecases.ApplyStrictnessPreset
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabit
 import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabits
 import com.ricardocosteira.habitlock.domain.usecases.UuidProvider
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -28,11 +33,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import org.junit.After
 import org.junit.Before
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
-import kotlin.time.Clock
-import kotlin.time.Instant
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class OnboardingViewModelScheduleTest {
@@ -56,75 +56,69 @@ class OnboardingViewModelScheduleTest {
 
     private val createHabit = CreateHabit(fakeHabitRepository, fakeUuidProvider)
     private val applyStrictnessPreset = ApplyStrictnessPreset(fakeUserRepository)
-    private val generateDailyHabits =
-        GenerateDailyHabits(
-            fakeUserRepository,
-            fakeHabitRepository,
-            fakeHabitInstanceRepository,
-            fakeLeavePeriodRepository,
-            fakeUuidProvider,
+    private val generateDailyHabits = GenerateDailyHabits(
+        fakeUserRepository,
+        fakeHabitRepository,
+        fakeHabitInstanceRepository,
+        fakeLeavePeriodRepository,
+        fakeUuidProvider
+    )
+
+    private fun buildViewModel(): OnboardingViewModel = OnboardingViewModel(
+        userRepository = fakeUserRepository,
+        applyStrictnessPreset = applyStrictnessPreset,
+        createHabit = createHabit,
+        generateDailyHabits = generateDailyHabits
+    )
+
+    @Test
+    fun `given all seven days selected when creating habit then specificDays is null`() = runTest {
+        // Given — default state is all 7 days
+        val viewModel = buildViewModel()
+        viewModel.updateHabitName("Run")
+
+        // When
+        viewModel.createFirstHabit()
+
+        // Then
+        assertNull(fakeHabitRepository.capturedSchedule?.specificDays)
+    }
+
+    @Test
+    fun `given weekdays selected when creating habit then specificDays is mon to fri`() = runTest {
+        // Given
+        val viewModel = buildViewModel()
+        viewModel.updateHabitName("Run")
+        val inputDays = setOf(
+            DayOfWeek.MONDAY,
+            DayOfWeek.TUESDAY,
+            DayOfWeek.WEDNESDAY,
+            DayOfWeek.THURSDAY,
+            DayOfWeek.FRIDAY
         )
+        viewModel.updateSelectedDays(inputDays)
 
-    private fun buildViewModel(): OnboardingViewModel =
-        OnboardingViewModel(
-            userRepository = fakeUserRepository,
-            applyStrictnessPreset = applyStrictnessPreset,
-            createHabit = createHabit,
-            generateDailyHabits = generateDailyHabits,
-        )
+        // When
+        viewModel.createFirstHabit()
 
-    @Test
-    fun `given all seven days selected when creating habit then specificDays is null`() =
-        runTest {
-            // Given — default state is all 7 days
-            val viewModel = buildViewModel()
-            viewModel.updateHabitName("Run")
-
-            // When
-            viewModel.createFirstHabit()
-
-            // Then
-            assertNull(fakeHabitRepository.capturedSchedule?.specificDays)
-        }
+        // Then
+        assertEquals(inputDays, fakeHabitRepository.capturedSchedule?.specificDays)
+    }
 
     @Test
-    fun `given weekdays selected when creating habit then specificDays is mon to fri`() =
-        runTest {
-            // Given
-            val viewModel = buildViewModel()
-            viewModel.updateHabitName("Run")
-            val inputDays =
-                setOf(
-                    DayOfWeek.MONDAY,
-                    DayOfWeek.TUESDAY,
-                    DayOfWeek.WEDNESDAY,
-                    DayOfWeek.THURSDAY,
-                    DayOfWeek.FRIDAY,
-                )
-            viewModel.updateSelectedDays(inputDays)
+    fun `given weekends selected when creating habit then specificDays is sat and sun`() = runTest {
+        // Given
+        val viewModel = buildViewModel()
+        viewModel.updateHabitName("Rest")
+        val inputDays = setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
+        viewModel.updateSelectedDays(inputDays)
 
-            // When
-            viewModel.createFirstHabit()
+        // When
+        viewModel.createFirstHabit()
 
-            // Then
-            assertEquals(inputDays, fakeHabitRepository.capturedSchedule?.specificDays)
-        }
-
-    @Test
-    fun `given weekends selected when creating habit then specificDays is sat and sun`() =
-        runTest {
-            // Given
-            val viewModel = buildViewModel()
-            viewModel.updateHabitName("Rest")
-            val inputDays = setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
-            viewModel.updateSelectedDays(inputDays)
-
-            // When
-            viewModel.createFirstHabit()
-
-            // Then
-            assertEquals(inputDays, fakeHabitRepository.capturedSchedule?.specificDays)
-        }
+        // Then
+        assertEquals(inputDays, fakeHabitRepository.capturedSchedule?.specificDays)
+    }
 
     @Test
     fun `given custom days selected when creating habit then specificDays matches selection`() =
@@ -149,7 +143,7 @@ private class FakeHabitRepository : HabitRepository {
     override suspend fun createHabit(
         habit: Habit,
         schedule: HabitSchedule,
-        reminder: HabitReminder?,
+        reminder: HabitReminder?
     ) {
         capturedSchedule = schedule
     }
@@ -167,29 +161,20 @@ private class FakeHabitRepository : HabitRepository {
     override suspend fun updateHabitStreak(
         habitId: String,
         currentStreak: Int,
-        longestStreak: Int,
+        longestStreak: Int
     ) = Unit
 
     override suspend fun updateHabitScore(
         habitId: String,
         totalCompletions: Int,
-        expectedCompletions: Int,
+        expectedCompletions: Int
     ) = Unit
 
-    override suspend fun incrementHabitTotalCompletions(
-        habitId: String,
-        amount: Int,
-    ) = Unit
+    override suspend fun incrementHabitTotalCompletions(habitId: String, amount: Int) = Unit
 
-    override suspend fun decrementHabitTotalCompletions(
-        habitId: String,
-        amount: Int,
-    ) = Unit
+    override suspend fun decrementHabitTotalCompletions(habitId: String, amount: Int) = Unit
 
-    override suspend fun incrementHabitExpectedCompletions(
-        habitId: String,
-        amount: Int,
-    ) = Unit
+    override suspend fun incrementHabitExpectedCompletions(habitId: String, amount: Int) = Unit
 
     override suspend fun archiveHabit(habitId: String) = Unit
 
@@ -213,19 +198,18 @@ private class FakeHabitRepository : HabitRepository {
 }
 
 private class FakeUserRepository : UserRepository {
-    private val user =
-        User(
-            id = "user-1",
-            timezone = TimeZone.UTC,
-            previousTimezone = null,
-            undoPolicy = UndoPolicy.TODAY_ONLY,
-            maxSnoozeDurationMinutes = 30,
-            maxSnoozesPerHabitPerDay = 3,
-            maxConsecutiveSkips = 2,
-            isOnboardingCompleted = false,
-            dailySummaryTime = null,
-            createdAt = Clock.System.now(),
-        )
+    private val user = User(
+        id = "user-1",
+        timezone = TimeZone.UTC,
+        previousTimezone = null,
+        undoPolicy = UndoPolicy.TODAY_ONLY,
+        maxSnoozeDurationMinutes = 30,
+        maxSnoozesPerHabitPerDay = 3,
+        maxConsecutiveSkips = 2,
+        isOnboardingCompleted = false,
+        dailySummaryTime = null,
+        createdAt = Clock.System.now()
+    )
 
     override fun observeUser(): Flow<User?> = flowOf(user)
 
@@ -238,34 +222,33 @@ private class FakeUserRepository : UserRepository {
     override suspend fun updateTimezone(
         userId: String,
         newTimezone: TimeZone,
-        previousTimezone: TimeZone,
+        previousTimezone: TimeZone
     ) = Unit
 
-    override suspend fun setOnboardingCompleted(
-        userId: String,
-        isCompleted: Boolean,
-    ) = Unit
+    override suspend fun setOnboardingCompleted(userId: String, isCompleted: Boolean) = Unit
 }
 
 private class FakeHabitInstanceRepository : HabitInstanceRepository {
-    override fun observeInstancesForDate(date: LocalDate): Flow<List<HabitInstance>> = flowOf(emptyList())
+    override fun observeInstancesForDate(date: LocalDate): Flow<List<HabitInstance>> =
+        flowOf(emptyList())
 
     override suspend fun getInstancesForDate(date: LocalDate): List<HabitInstance> = emptyList()
 
-    override suspend fun getPendingInstancesForDate(date: LocalDate): List<HabitInstance> = emptyList()
+    override suspend fun getPendingInstancesForDate(date: LocalDate): List<HabitInstance> =
+        emptyList()
 
     override suspend fun getInstanceById(instanceId: String): HabitInstance? = null
 
     override suspend fun getInstanceForHabitAndDate(
         habitId: String,
-        date: LocalDate,
+        date: LocalDate
     ): HabitInstance? = null
 
     override suspend fun getInstancesForHabit(habitId: String): List<HabitInstance> = emptyList()
 
     override suspend fun getInstancesInDateRange(
         startDate: LocalDate,
-        endDate: LocalDate,
+        endDate: LocalDate
     ): List<HabitInstance> = emptyList()
 
     override suspend fun createInstance(instance: HabitInstance) = Unit
@@ -274,13 +257,11 @@ private class FakeHabitInstanceRepository : HabitInstanceRepository {
         instanceId: String,
         status: HabitStatus,
         completedValue: Int?,
-        completedAt: Instant?,
+        completedAt: Instant?
     ) = Unit
 
-    override suspend fun updateInstanceCompletedValue(
-        instanceId: String,
-        completedValue: Int,
-    ) = Unit
+    override suspend fun updateInstanceCompletedValue(instanceId: String, completedValue: Int) =
+        Unit
 }
 
 private class FakeLeavePeriodRepository : LeavePeriodRepository {
@@ -290,19 +271,13 @@ private class FakeLeavePeriodRepository : LeavePeriodRepository {
 
     override suspend fun getLeavePeriodsByHabit(habitId: String): List<LeavePeriod> = emptyList()
 
-    override suspend fun getActiveLeavePeriod(
-        habitId: String,
-        date: LocalDate,
-    ): LeavePeriod? = null
+    override suspend fun getActiveLeavePeriod(habitId: String, date: LocalDate): LeavePeriod? = null
 
     override suspend fun getAllActiveLeavePeriods(date: LocalDate): List<LeavePeriod> = emptyList()
 
     override suspend fun updateLeavePeriod(leavePeriod: LeavePeriod) = Unit
 
-    override suspend fun endLeavePeriod(
-        id: String,
-        endDate: LocalDate,
-    ) = Unit
+    override suspend fun endLeavePeriod(id: String, endDate: LocalDate) = Unit
 
     override suspend fun deleteLeavePeriod(id: String) = Unit
 

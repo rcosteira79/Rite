@@ -10,12 +10,11 @@ data class TodayCounts(
     val dailyTotal: Int = 0
 )
 
-private val resolvedStatuses: Set<HabitStatus> =
-    setOf(
-        HabitStatus.COMPLETED,
-        HabitStatus.SKIPPED,
-        HabitStatus.FAILED
-    )
+private val resolvedStatuses: Set<HabitStatus> = setOf(
+    HabitStatus.COMPLETED,
+    HabitStatus.SKIPPED,
+    HabitStatus.FAILED
+)
 
 /**
  * Computes daily progress counting each resolved habit as 100% and each

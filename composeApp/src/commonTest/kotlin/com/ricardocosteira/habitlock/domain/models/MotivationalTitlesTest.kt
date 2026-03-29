@@ -1,9 +1,9 @@
 package com.ricardocosteira.habitlock.domain.models
 
-import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.datetime.LocalDate
 
 class MotivationalTitlesTest {
     @Test
@@ -23,11 +23,10 @@ class MotivationalTitlesTest {
 
     @Test
     fun given_different_dates_when_getting_titles_then_not_all_are_the_same() {
-        val titles =
-            (1..30)
-                .map { day ->
-                    motivationalTitleForDate(LocalDate(2026, 3, day))
-                }.toSet()
+        val titles = (1..30)
+            .map { day ->
+                motivationalTitleForDate(LocalDate(2026, 3, day))
+            }.toSet()
         assertTrue(titles.size > 1, "Expected different titles for different dates, got: $titles")
     }
 }
