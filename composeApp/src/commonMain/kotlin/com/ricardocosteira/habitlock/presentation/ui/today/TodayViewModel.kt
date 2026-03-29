@@ -19,6 +19,7 @@ import com.ricardocosteira.habitlock.domain.usecases.ProcessEndOfDay
 import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
 import com.ricardocosteira.habitlock.domain.usecases.SkipLockedException
 import com.ricardocosteira.habitlock.domain.usecases.UndoHabit
+import com.ricardocosteira.habitlock.domain.usecases.UndoLastIncrement
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.habitlock.presentation.models.mapToTodayHabitUiModel
 import com.ricardocosteira.habitlock.util.toLocalDate
@@ -54,7 +55,8 @@ class TodayViewModel(
     private val processEndOfDay: ProcessEndOfDay,
     private val completeHabit: CompleteHabit,
     private val skipHabit: SkipHabit,
-    private val undoHabit: UndoHabit
+    private val undoHabit: UndoHabit,
+    private val undoLastIncrement: UndoLastIncrement
 ) : ViewModel() {
     private val _state = MutableStateFlow(TodayState())
     val state: StateFlow<TodayState> = _state.asStateFlow()
@@ -68,7 +70,12 @@ class TodayViewModel(
 
     fun loadTodayHabits() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
+            // Only show loading spinner on initial load, not on refreshes
+            // after actions (complete, skip, undo) to avoid full-screen flash.
+            val isInitialLoad: Boolean = _state.value.habits.isEmpty()
+            if (isInitialLoad) {
+                _state.update { it.copy(isLoading = true) }
+            }
 
             try {
                 // Process end of day first
@@ -161,7 +168,8 @@ class TodayViewModel(
                         resolvedWeekly = resolvedWeekly.toImmutableList(),
                         isLoading = false,
                         pendingCount = counts.pendingCount,
-                        dailyResolved = counts.dailyResolved,
+                        dailyProgressDisplay = counts.dailyProgressDisplay,
+                        dailyProgressExact = counts.dailyProgressExact,
                         dailyTotal = counts.dailyTotal,
                         motivationalTitle = motivationalTitle,
                         strictnessPreset = strictnessPreset
@@ -298,6 +306,19 @@ class TodayViewModel(
                     loadTodayHabits()
                     // No snackbar — card state revert is the feedback
                 },
+                onFailure = { error ->
+                    _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+                }
+            )
+        }
+    }
+
+    fun undoLastIncrement(instanceId: String) {
+        viewModelScope.launch {
+            val result = undoLastIncrement.execute(instanceId)
+
+            result.fold(
+                onSuccess = { loadTodayHabits() },
                 onFailure = { error ->
                     _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
                 }
