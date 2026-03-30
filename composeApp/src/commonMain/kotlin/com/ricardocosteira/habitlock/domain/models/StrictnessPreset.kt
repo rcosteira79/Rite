@@ -80,8 +80,7 @@ enum class StrictnessPreset {
          */
         fun fromSettings(settings: UserStrictnessSettings): StrictnessPreset? =
             entries.firstOrNull {
-                it.toUserSettings() ==
-                    settings
+                it.toUserSettings() == settings
             }
     }
 }

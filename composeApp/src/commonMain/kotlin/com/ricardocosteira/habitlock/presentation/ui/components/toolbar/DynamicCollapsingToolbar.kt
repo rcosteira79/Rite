@@ -224,13 +224,11 @@ private fun CollapsingToolbarLayout(
 
             contentPlaceable.placeRelative(
                 x = baseX,
-                y =
-                    (layoutHeight - contentPlaceable.height) / 2
+                y = (layoutHeight - contentPlaceable.height) / 2
             )
             dividerPlaceable.placeRelative(
                 x = 0,
-                y =
-                    contentPlaceable.height - dividerPlaceable.height
+                y = contentPlaceable.height - dividerPlaceable.height
             )
         }
     }

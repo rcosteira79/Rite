@@ -136,15 +136,14 @@ private fun PresetPill(
     }
 
     Box(
-        modifier =
-            modifier
-                .clip(RoundedCornerShape(percent = 50))
-                .background(backgroundColor)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onClick
-                ).padding(horizontal = 10.dp, vertical = 4.dp),
+        modifier = modifier
+            .clip(RoundedCornerShape(percent = 50))
+            .background(backgroundColor)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            ).padding(horizontal = 10.dp, vertical = 4.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -175,16 +174,15 @@ private fun DayChip(
     }
 
     Box(
-        modifier =
-            modifier
-                .size(DayChipSize)
-                .clip(CircleShape)
-                .background(backgroundColor)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onClick
-                ),
+        modifier = modifier
+            .size(DayChipSize)
+            .clip(CircleShape)
+            .background(backgroundColor)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            ),
         contentAlignment = Alignment.Center
     ) {
         Text(

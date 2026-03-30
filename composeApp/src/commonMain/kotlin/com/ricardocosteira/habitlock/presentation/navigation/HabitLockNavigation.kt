@@ -40,19 +40,18 @@ import kotlinx.serialization.modules.subclass
 import org.jetbrains.compose.resources.stringResource
 
 private val savedStateConfig: SavedStateConfiguration = SavedStateConfiguration {
-    serializersModule =
-        SerializersModule {
-            polymorphic(NavKey::class) {
-                subclass(Onboarding::class)
-                subclass(Today::class)
-                subclass(HabitDetail::class)
-                subclass(CreateHabit::class)
-                subclass(EditHabit::class)
-                subclass(Calendar::class)
-                subclass(ArchivedHabits::class)
-                subclass(Settings::class)
-            }
+    serializersModule = SerializersModule {
+        polymorphic(NavKey::class) {
+            subclass(Onboarding::class)
+            subclass(Today::class)
+            subclass(HabitDetail::class)
+            subclass(CreateHabit::class)
+            subclass(EditHabit::class)
+            subclass(Calendar::class)
+            subclass(ArchivedHabits::class)
+            subclass(Settings::class)
         }
+    }
 }
 
 private val topLevelRoutes: Set<Route> = setOf(Today, Calendar, Settings)
@@ -146,92 +145,90 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
         NavDisplay(
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(bottom = scaffoldPadding.calculateBottomPadding())
-                    .then(
-                        if (isTodayRoute) {
-                            Modifier.nestedScroll(nestedScrollConnection)
-                        } else {
-                            Modifier
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = scaffoldPadding.calculateBottomPadding())
+                .then(
+                    if (isTodayRoute) {
+                        Modifier.nestedScroll(nestedScrollConnection)
+                    } else {
+                        Modifier
+                    }
+                ),
+            entryProvider = entryProvider {
+                entry<Onboarding> {
+                    OnboardingRoute(
+                        viewModel = appComponent.onboardingViewModel,
+                        snackbarHostState = snackbarHostState,
+                        onFinished = {
+                            backStack.clear()
+                            backStack.add(Today)
+                            appComponent.todayViewModel.loadTodayHabits()
                         }
-                    ),
-            entryProvider =
-                entryProvider {
-                    entry<Onboarding> {
-                        OnboardingRoute(
-                            viewModel = appComponent.onboardingViewModel,
-                            snackbarHostState = snackbarHostState,
-                            onFinished = {
-                                backStack.clear()
-                                backStack.add(Today)
-                                appComponent.todayViewModel.loadTodayHabits()
-                            }
-                        )
-                    }
+                    )
+                }
 
-                    entry<Today> {
-                        TodayScreen(
-                            onNavigateToHabitDetail = { backStack.add(HabitDetail(it)) },
-                            onNavigateToCreateHabit = { backStack.add(CreateHabit) },
-                            onEditHabit = { backStack.add(EditHabit(it)) },
-                            snackbarHostState = snackbarHostState
-                        )
-                    }
+                entry<Today> {
+                    TodayScreen(
+                        onNavigateToHabitDetail = { backStack.add(HabitDetail(it)) },
+                        onNavigateToCreateHabit = { backStack.add(CreateHabit) },
+                        onEditHabit = { backStack.add(EditHabit(it)) },
+                        snackbarHostState = snackbarHostState
+                    )
+                }
 
-                    entry<Calendar> {
-                        CalendarScreen(onBackClick = backStack::removeLastOrNull)
-                    }
+                entry<Calendar> {
+                    CalendarScreen(onBackClick = backStack::removeLastOrNull)
+                }
 
-                    entry<Settings> {
-                        SettingsScreen(
-                            onBackClick = backStack::removeLastOrNull,
-                            onArchivedHabitsClick = { backStack.add(ArchivedHabits) },
-                            snackbarHostState = snackbarHostState
-                        )
-                    }
+                entry<Settings> {
+                    SettingsScreen(
+                        onBackClick = backStack::removeLastOrNull,
+                        onArchivedHabitsClick = { backStack.add(ArchivedHabits) },
+                        snackbarHostState = snackbarHostState
+                    )
+                }
 
-                    entry<ArchivedHabits> {
-                        ArchivedHabitsScreen(
-                            onBackClick = backStack::removeLastOrNull,
-                            snackbarHostState = snackbarHostState
-                        )
-                    }
+                entry<ArchivedHabits> {
+                    ArchivedHabitsScreen(
+                        onBackClick = backStack::removeLastOrNull,
+                        snackbarHostState = snackbarHostState
+                    )
+                }
 
-                    entry<CreateHabit> {
-                        // Capture todayViewModel inside the @Composable lambda — required because
-                        // LocalAppComponent.current cannot be called from a non-composable callback.
-                        val todayViewModel = LocalAppComponent.current.todayViewModel
-                        HabitFormScreen(
-                            habitIdToEdit = null,
-                            onNavigateBack = {
-                                backStack.removeLastOrNull()
-                                todayViewModel.loadTodayHabits()
-                            },
-                            snackbarHostState = snackbarHostState
-                        )
-                    }
-
-                    entry<EditHabit> { route ->
-                        val todayViewModel = LocalAppComponent.current.todayViewModel
-                        HabitFormScreen(
-                            habitIdToEdit = route.habitId,
-                            onNavigateBack = {
-                                backStack.removeLastOrNull()
-                                todayViewModel.loadTodayHabits()
-                            },
-                            snackbarHostState = snackbarHostState
-                        )
-                    }
-
-                    entry<HabitDetail> {
-                        // TODO: Implement habit detail screen
-                        LaunchedEffect(Unit) {
+                entry<CreateHabit> {
+                    // Capture todayViewModel inside the @Composable lambda — required because
+                    // LocalAppComponent.current cannot be called from a non-composable callback.
+                    val todayViewModel = LocalAppComponent.current.todayViewModel
+                    HabitFormScreen(
+                        habitIdToEdit = null,
+                        onNavigateBack = {
                             backStack.removeLastOrNull()
-                        }
+                            todayViewModel.loadTodayHabits()
+                        },
+                        snackbarHostState = snackbarHostState
+                    )
+                }
+
+                entry<EditHabit> { route ->
+                    val todayViewModel = LocalAppComponent.current.todayViewModel
+                    HabitFormScreen(
+                        habitIdToEdit = route.habitId,
+                        onNavigateBack = {
+                            backStack.removeLastOrNull()
+                            todayViewModel.loadTodayHabits()
+                        },
+                        snackbarHostState = snackbarHostState
+                    )
+                }
+
+                entry<HabitDetail> {
+                    // TODO: Implement habit detail screen
+                    LaunchedEffect(Unit) {
+                        backStack.removeLastOrNull()
                     }
                 }
+            }
         )
     }
 }

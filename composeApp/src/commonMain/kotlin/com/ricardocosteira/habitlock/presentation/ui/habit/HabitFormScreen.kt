@@ -269,10 +269,9 @@ internal fun HabitFormScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = { onAction(HabitFormUiAction.DiscardChangesClicked) },
-                        colors =
-                            IconButtonDefaults.iconButtonColors(
-                                containerColor = iconContainerColor
-                            )
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = iconContainerColor
+                        )
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -284,48 +283,43 @@ internal fun HabitFormScreen(
                     if (state.isEditing) {
                         IconButton(
                             onClick = { isDeleteDialogVisible = true },
-                            colors =
-                                IconButtonDefaults.iconButtonColors(
-                                    containerColor = iconContainerColor
-                                )
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = iconContainerColor
+                            )
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Delete,
-                                contentDescription =
-                                    stringResource(
-                                        Res.string.habit_form_cd_delete
-                                    ),
+                                contentDescription = stringResource(
+                                    Res.string.habit_form_cd_delete
+                                ),
                                 tint = MaterialTheme.colorScheme.error,
                                 modifier = Modifier.size(22.dp)
                             )
                         }
                     }
                 },
-                colors =
-                    TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        scrolledContainerColor = Color.Transparent
-                    )
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = Color.Transparent
+                )
             )
         }
     ) { paddingValues ->
         Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .padding(top = paddingValues.calculateTopPadding())
-                    .padding(bottom = paddingValues.calculateBottomPadding())
-                    .padding(horizontal = 24.dp, vertical = 20.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(top = paddingValues.calculateTopPadding())
+                .padding(bottom = paddingValues.calculateBottomPadding())
+                .padding(horizontal = 24.dp, vertical = 20.dp)
         ) {
             // Heading
             Text(
-                text =
-                    if (state.isEditing) {
-                        stringResource(Res.string.habit_form_title_edit)
-                    } else {
-                        stringResource(Res.string.habit_form_title_new_habit)
-                    },
+                text = if (state.isEditing) {
+                    stringResource(Res.string.habit_form_title_edit)
+                } else {
+                    stringResource(Res.string.habit_form_title_new_habit)
+                },
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -335,11 +329,10 @@ internal fun HabitFormScreen(
 
             // Accent bar
             Box(
-                modifier =
-                    Modifier
-                        .width(36.dp)
-                        .height(3.dp)
-                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
+                modifier = Modifier
+                    .width(36.dp)
+                    .height(3.dp)
+                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
             )
 
             if (!state.isEditing) {
@@ -476,20 +469,18 @@ internal fun HabitFormScreen(
                 Column {
                     DetailRow(
                         icon = Icons.Outlined.Notifications,
-                        iconTint =
-                            if (state.hasReminder) {
-                                MaterialTheme.colorScheme.onSurface
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            },
+                        iconTint = if (state.hasReminder) {
+                            MaterialTheme.colorScheme.onSurface
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                         title = stringResource(Res.string.habit_form_reminder_title),
                         subtitle = reminderSubtitle,
-                        onClick =
-                            if (state.hasReminder) {
-                                { isTimePickerVisible = true }
-                            } else {
-                                null
-                            },
+                        onClick = if (state.hasReminder) {
+                            { isTimePickerVisible = true }
+                        } else {
+                            null
+                        },
                         showTopDivider = false,
                         trailingContent = {
                             Switch(
@@ -505,26 +496,21 @@ internal fun HabitFormScreen(
 
                     DetailRow(
                         icon = Icons.Outlined.Edit,
-                        iconTint =
-                            if (isNoteExpanded) {
-                                MaterialTheme.colorScheme.onSurface
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            },
-                        title =
-                            if (isNoteExpanded) {
-                                stringResource(Res.string.habit_form_note_expanded_title)
-                            } else {
-                                stringResource(Res.string.habit_form_note_collapsed_title)
-                            },
-                        subtitle =
-                            if (isNoteExpanded) {
-                                ""
-                            } else {
-                                stringResource(
-                                    Res.string.habit_form_note_collapsed_subtitle
-                                )
-                            },
+                        iconTint = if (isNoteExpanded) {
+                            MaterialTheme.colorScheme.onSurface
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        title = if (isNoteExpanded) {
+                            stringResource(Res.string.habit_form_note_expanded_title)
+                        } else {
+                            stringResource(Res.string.habit_form_note_collapsed_title)
+                        },
+                        subtitle = if (isNoteExpanded) {
+                            ""
+                        } else {
+                            stringResource(Res.string.habit_form_note_collapsed_subtitle)
+                        },
                         onClick = { isNoteExpanded = !isNoteExpanded },
                         showTopDivider = false,
                         trailingContent = null,
@@ -558,12 +544,11 @@ internal fun HabitFormScreen(
                     CircularProgressIndicator(modifier = Modifier.size(20.dp))
                 } else {
                     Text(
-                        text =
-                            if (state.isEditing) {
-                                stringResource(Res.string.habit_form_button_save)
-                            } else {
-                                stringResource(Res.string.habit_form_button_establish)
-                            }
+                        text = if (state.isEditing) {
+                            stringResource(Res.string.habit_form_button_save)
+                        } else {
+                            stringResource(Res.string.habit_form_button_establish)
+                        }
                     )
                 }
             }
@@ -572,21 +557,19 @@ internal fun HabitFormScreen(
 
             // Secondary CTA
             TextButton(
-                onClick =
-                    if (state.isEditing) {
-                        { onAction(HabitFormUiAction.DiscardChangesClicked) }
-                    } else {
-                        { onAction(HabitFormUiAction.DiscardDraftClicked) }
-                    },
+                onClick = if (state.isEditing) {
+                    { onAction(HabitFormUiAction.DiscardChangesClicked) }
+                } else {
+                    { onAction(HabitFormUiAction.DiscardDraftClicked) }
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text =
-                        if (state.isEditing) {
-                            stringResource(Res.string.habit_form_button_discard_changes)
-                        } else {
-                            stringResource(Res.string.habit_form_button_discard_draft)
-                        },
+                    text = if (state.isEditing) {
+                        stringResource(Res.string.habit_form_button_discard_changes)
+                    } else {
+                        stringResource(Res.string.habit_form_button_discard_draft)
+                    },
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -617,32 +600,29 @@ private fun UnderlineTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.fillMaxWidth(),
-        placeholder =
-            if (placeholder.isNotEmpty()) {
-                { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-            } else {
-                null
-            },
-        label =
-            if (label.isNotEmpty()) {
-                {
-                    Text(
-                        text = label,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            } else {
-                null
-            },
+        placeholder = if (placeholder.isNotEmpty()) {
+            { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        } else {
+            null
+        },
+        label = if (label.isNotEmpty()) {
+            {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        } else {
+            null
+        },
         shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
-        colors =
-            TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.outlineVariant
-            ),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+            unfocusedIndicatorColor = MaterialTheme.colorScheme.outlineVariant
+        ),
         maxLines = maxLines,
         singleLine = maxLines == 1
     )
@@ -669,21 +649,20 @@ private fun ScheduleTypePill(
     }
 
     Box(
-        modifier =
-            modifier
-                .clip(pillShape)
-                .background(backgroundColor)
-                .then(
-                    if (!isSelected && isDarkTheme) {
-                        Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, pillShape)
-                    } else {
-                        Modifier
-                    }
-                ).clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onClick
-                ).padding(horizontal = 12.dp, vertical = 3.dp),
+        modifier = modifier
+            .clip(pillShape)
+            .background(backgroundColor)
+            .then(
+                if (!isSelected && isDarkTheme) {
+                    Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, pillShape)
+                } else {
+                    Modifier
+                }
+            ).clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            ).padding(horizontal = 12.dp, vertical = 3.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -745,10 +724,9 @@ private fun DeleteHabitDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         confirmButton = {
             TextButton(
                 onClick = onConfirm,
-                colors =
-                    ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
-                    )
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error
+                )
             ) {
                 Text(stringResource(Res.string.habit_form_delete_dialog_confirm))
             }

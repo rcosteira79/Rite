@@ -26,7 +26,7 @@ data class TodayState(
     val dailyProgressDisplay: Int = 0,
     val dailyProgressExact: Float = 0f,
     val dailyTotal: Int = 0,
-    val motivationalTitle: String = "",
+    val motivationalTitleRes: StringResource? = null,
     val strictnessPreset: StrictnessPreset? = null
 )
 

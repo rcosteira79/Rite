@@ -140,40 +140,36 @@ private fun SettingsScreen(
     ) { paddingValues ->
         if (state.isLoading) {
             Box(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
         } else {
             Column(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .verticalScroll(rememberScrollState())
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
             ) {
                 // Undo Policy Section
                 SettingsSection(title = stringResource(Res.string.settings_section_undo_policy)) {
                     Column(modifier = Modifier.selectableGroup()) {
                         UndoPolicyOption(
                             title = stringResource(Res.string.settings_undo_disabled_label),
-                            description =
-                                stringResource(
-                                    Res.string.settings_undo_disabled_description
-                                ),
+                            description = stringResource(
+                                Res.string.settings_undo_disabled_description
+                            ),
                             selected = state.undoPolicy == UndoPolicy.NONE,
                             onClick = { onUndoPolicyChange(UndoPolicy.NONE) }
                         )
                         UndoPolicyOption(
                             title = stringResource(Res.string.settings_undo_today_label),
-                            description =
-                                stringResource(
-                                    Res.string.settings_undo_today_description
-                                ),
+                            description = stringResource(
+                                Res.string.settings_undo_today_description
+                            ),
                             selected = state.undoPolicy == UndoPolicy.TODAY_ONLY,
                             onClick = { onUndoPolicyChange(UndoPolicy.TODAY_ONLY) }
                         )
@@ -192,11 +188,10 @@ private fun SettingsScreen(
                 SettingsSection(title = stringResource(Res.string.settings_section_snooze)) {
                     Column {
                         Text(
-                            text =
-                                stringResource(
-                                    Res.string.settings_snooze_max_duration,
-                                    state.maxSnoozeDurationMinutes
-                                ),
+                            text = stringResource(
+                                Res.string.settings_snooze_max_duration,
+                                state.maxSnoozeDurationMinutes
+                            ),
                             style = MaterialTheme.typography.bodyMedium
                         )
 
@@ -223,26 +218,22 @@ private fun SettingsScreen(
                         ) {
                             Column {
                                 Text(
-                                    text =
-                                        stringResource(
-                                            Res.string.settings_snooze_unlimited_label
-                                        ),
+                                    text = stringResource(
+                                        Res.string.settings_snooze_unlimited_label
+                                    ),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 Text(
-                                    text =
-                                        if (state.maxSnoozesPerHabitPerDay ==
-                                            null
-                                        ) {
-                                            stringResource(
-                                                Res.string.settings_snooze_status_unlimited
-                                            )
-                                        } else {
-                                            stringResource(
-                                                Res.string.settings_snooze_status_limited,
-                                                state.maxSnoozesPerHabitPerDay
-                                            )
-                                        },
+                                    text = if (state.maxSnoozesPerHabitPerDay == null) {
+                                        stringResource(
+                                            Res.string.settings_snooze_status_unlimited
+                                        )
+                                    } else {
+                                        stringResource(
+                                            Res.string.settings_snooze_status_limited,
+                                            state.maxSnoozesPerHabitPerDay
+                                        )
+                                    },
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -272,15 +263,14 @@ private fun SettingsScreen(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
-                                text =
-                                    if (state.maxConsecutiveSkips == null) {
-                                        stringResource(Res.string.settings_skip_status_unlimited)
-                                    } else {
-                                        stringResource(
-                                            Res.string.settings_skip_status_limited,
-                                            state.maxConsecutiveSkips
-                                        )
-                                    },
+                                text = if (state.maxConsecutiveSkips == null) {
+                                    stringResource(Res.string.settings_skip_status_unlimited)
+                                } else {
+                                    stringResource(
+                                        Res.string.settings_skip_status_limited,
+                                        state.maxConsecutiveSkips
+                                    )
+                                },
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -315,11 +305,10 @@ private fun SettingsScreen(
 
                 // Archived Habits Link
                 Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = onArchivedHabitsClick)
-                            .padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onArchivedHabitsClick)
+                        .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -359,14 +348,13 @@ private fun UndoPolicyOption(
     onClick: () -> Unit
 ) {
     Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .selectable(
-                    selected = selected,
-                    onClick = onClick,
-                    role = Role.RadioButton
-                ).padding(vertical = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .selectable(
+                selected = selected,
+                onClick = onClick,
+                role = Role.RadioButton
+            ).padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(

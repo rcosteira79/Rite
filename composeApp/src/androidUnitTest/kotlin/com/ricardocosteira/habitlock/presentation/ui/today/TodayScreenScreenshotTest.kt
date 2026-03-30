@@ -9,6 +9,11 @@ import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.habitlock.presentation.ui.theme.HabitLockThemeFallback
+import habitlock.composeapp.generated.resources.Res
+import habitlock.composeapp.generated.resources.motivational_title_0
+import habitlock.composeapp.generated.resources.motivational_title_1
+import habitlock.composeapp.generated.resources.motivational_title_2
+import habitlock.composeapp.generated.resources.motivational_title_7
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -272,7 +277,7 @@ class TodayScreenScreenshotTest {
     private fun emptyState(): TodayState = TodayState(
         isLoading = false,
         habits = emptyList(),
-        motivationalTitle = "Quiet discipline",
+        motivationalTitleRes = Res.string.motivational_title_0,
         strictnessPreset = StrictnessPreset.BALANCED,
         pendingCount = 0,
         dailyProgressDisplay = 0,
@@ -311,7 +316,7 @@ class TodayScreenScreenshotTest {
                     cadence = ScheduleType.DAILY
                 )
             ),
-        motivationalTitle = "Small steps, big change",
+        motivationalTitleRes = Res.string.motivational_title_1,
         strictnessPreset = StrictnessPreset.BALANCED,
         pendingCount = 3,
         dailyProgressDisplay = 0,
@@ -373,7 +378,7 @@ class TodayScreenScreenshotTest {
         return TodayState(
             isLoading = false,
             habits = habits,
-            motivationalTitle = "Quiet discipline",
+            motivationalTitleRes = Res.string.motivational_title_0,
             strictnessPreset = StrictnessPreset.BALANCED,
             pendingCount = 2,
             dailyProgressDisplay = 1,
@@ -415,7 +420,7 @@ class TodayScreenScreenshotTest {
                     cadence = ScheduleType.DAILY
                 )
             ),
-        motivationalTitle = "Trust the process",
+        motivationalTitleRes = Res.string.motivational_title_2,
         strictnessPreset = StrictnessPreset.BALANCED,
         pendingCount = 0,
         dailyProgressDisplay = 3,
@@ -451,7 +456,7 @@ class TodayScreenScreenshotTest {
                     cadence = ScheduleType.DAILY
                 )
             ),
-        motivationalTitle = "Consistency compounds",
+        motivationalTitleRes = Res.string.motivational_title_7,
         strictnessPreset = StrictnessPreset.FLEXIBLE,
         pendingCount = 2,
         dailyProgressDisplay = 0,

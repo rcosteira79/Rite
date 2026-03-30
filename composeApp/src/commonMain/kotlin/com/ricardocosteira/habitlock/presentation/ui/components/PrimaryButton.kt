@@ -22,18 +22,16 @@ fun PrimaryButton(
 ) {
     Button(
         onClick = onClick,
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .heightIn(min = PrimaryButtonMinHeight),
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = PrimaryButtonMinHeight),
         enabled = enabled,
         shape = PrimaryButtonShape,
-        elevation =
-            ButtonDefaults.buttonElevation(
-                defaultElevation = 4.dp,
-                pressedElevation = 8.dp,
-                disabledElevation = 0.dp
-            ),
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 4.dp,
+            pressedElevation = 8.dp,
+            disabledElevation = 0.dp
+        ),
         content = content
     )
 }

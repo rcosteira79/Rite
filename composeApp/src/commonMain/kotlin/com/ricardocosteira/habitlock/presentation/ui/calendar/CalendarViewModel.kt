@@ -48,7 +48,8 @@ class CalendarViewModel(
         _state.update {
             it.copy(
                 currentMonth = today.month,
-                currentYear = today.year
+                currentYear = today.year,
+                currentMonthDisplay = formatMonthDisplay(today.month, today.year)
             )
         }
         loadMonth()
@@ -61,7 +62,8 @@ class CalendarViewModel(
         _state.update {
             it.copy(
                 currentMonth = newDate.month,
-                currentYear = newDate.year
+                currentYear = newDate.year,
+                currentMonthDisplay = formatMonthDisplay(newDate.month, newDate.year)
             )
         }
         loadMonth()
@@ -74,7 +76,8 @@ class CalendarViewModel(
         _state.update {
             it.copy(
                 currentMonth = newDate.month,
-                currentYear = newDate.year
+                currentYear = newDate.year,
+                currentMonthDisplay = formatMonthDisplay(newDate.month, newDate.year)
             )
         }
         loadMonth()
@@ -86,6 +89,11 @@ class CalendarViewModel(
 
     fun clearSelection() {
         _state.update { it.copy(selectedDay = null) }
+    }
+
+    private fun formatMonthDisplay(month: Month, year: Int): String {
+        val monthName: String = month.name.lowercase().replaceFirstChar { it.uppercase() }
+        return "$monthName $year"
     }
 
     private fun loadMonth() {

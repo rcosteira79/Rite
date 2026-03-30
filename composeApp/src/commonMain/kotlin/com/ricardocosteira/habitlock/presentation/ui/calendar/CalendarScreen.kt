@@ -97,25 +97,22 @@ private fun CalendarScreen(
         }
     ) { paddingValues ->
         Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
         ) {
             // Stats summary
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors =
-                    CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
             ) {
                 Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -161,9 +158,7 @@ private fun CalendarScreen(
                 }
 
                 Text(
-                    text = "${state.currentMonth.name.lowercase().replaceFirstChar {
-                        it.uppercase()
-                    }} ${state.currentYear}",
+                    text = state.currentMonthDisplay,
                     style = MaterialTheme.typography.titleLarge
                 )
 
@@ -315,12 +310,11 @@ private fun CalendarDayCell(day: CalendarDayUiModel, onClick: () -> Unit) {
         day.classification !in listOf(DayClassification.NONE, DayClassification.FUTURE)
 
     Box(
-        modifier =
-            Modifier
-                .aspectRatio(1f)
-                .clip(CircleShape)
-                .background(backgroundColor)
-                .clickable(enabled = isClickable, onClick = onClick),
+        modifier = Modifier
+            .aspectRatio(1f)
+            .clip(CircleShape)
+            .background(backgroundColor)
+            .clickable(enabled = isClickable, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -338,11 +332,10 @@ private fun LegendItem(color: androidx.compose.ui.graphics.Color, label: String)
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Box(
-            modifier =
-                Modifier
-                    .size(12.dp)
-                    .clip(CircleShape)
-                    .background(color)
+            modifier = Modifier
+                .size(12.dp)
+                .clip(CircleShape)
+                .background(color)
         )
         Text(
             text = label,

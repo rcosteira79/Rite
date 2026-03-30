@@ -74,12 +74,11 @@ object EntityMappers {
         endDate = endDate?.let { LocalDate.parse(it) },
         quota = quota.toInt(),
         weekStartDay = DayOfWeek.valueOf(weekStartDay),
-        specificDays =
-            specificDays
-                ?.split(",")
-                ?.filter { it.isNotBlank() }
-                ?.map { DayOfWeek.valueOf(it.trim()) }
-                ?.toSet()
+        specificDays = specificDays
+            ?.split(",")
+            ?.filter { it.isNotBlank() }
+            ?.map { DayOfWeek.valueOf(it.trim()) }
+            ?.toSet()
     )
 
     // HabitReminder mappers

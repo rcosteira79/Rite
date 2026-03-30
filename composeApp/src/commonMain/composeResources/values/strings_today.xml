@@ -21,4 +21,21 @@
         <item quantity="one">%1$d habit to go</item>
         <item quantity="other">%1$d habits to go</item>
     </plurals>
+
+    <!-- Motivational titles -->
+    <string name="motivational_title_0">Quiet discipline</string>
+    <string name="motivational_title_1">Small steps, big change</string>
+    <string name="motivational_title_2">Trust the process</string>
+    <string name="motivational_title_3">One day at a time</string>
+    <string name="motivational_title_4">Show up for yourself</string>
+    <string name="motivational_title_5">Progress, not perfection</string>
+    <string name="motivational_title_6">Build the habit, build the life</string>
+    <string name="motivational_title_7">Consistency compounds</string>
+    <string name="motivational_title_8">The work is the reward</string>
+    <string name="motivational_title_9">Stay the course</string>
+    <string name="motivational_title_10">Begin again, always</string>
+    <string name="motivational_title_11">Discipline is freedom</string>
+    <string name="motivational_title_12">Earn your rest</string>
+    <string name="motivational_title_13">Action over intention</string>
+    <string name="motivational_title_14">Make it count</string>
 </resources>

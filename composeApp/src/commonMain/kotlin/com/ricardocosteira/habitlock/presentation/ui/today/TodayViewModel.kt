@@ -9,7 +9,7 @@ import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
 import com.ricardocosteira.habitlock.domain.models.UserStrictnessSettings
-import com.ricardocosteira.habitlock.domain.models.motivationalTitleForDate
+import com.ricardocosteira.habitlock.domain.models.motivationalTitleIndexForDate
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
@@ -20,6 +20,7 @@ import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
 import com.ricardocosteira.habitlock.domain.usecases.SkipLockedException
 import com.ricardocosteira.habitlock.domain.usecases.UndoHabit
 import com.ricardocosteira.habitlock.domain.usecases.UndoLastIncrement
+import com.ricardocosteira.habitlock.presentation.mappers.motivationalTitleResource
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.habitlock.presentation.models.mapToTodayHabitUiModel
 import com.ricardocosteira.habitlock.util.toLocalDate
@@ -114,7 +115,9 @@ class TodayViewModel(
                 val today = Clock.System.now().toLocalDate(userTimezone)
                 val instances = habitInstanceRepository.getInstancesForDate(today)
 
-                val motivationalTitle: String = motivationalTitleForDate(today)
+                val motivationalTitleRes = motivationalTitleResource(
+                    motivationalTitleIndexForDate(today)
+                )
 
                 // Map to UI models
                 val habits: ImmutableList<TodayHabitUiModel> = instances
@@ -166,7 +169,7 @@ class TodayViewModel(
                         dailyProgressDisplay = counts.dailyProgressDisplay,
                         dailyProgressExact = counts.dailyProgressExact,
                         dailyTotal = counts.dailyTotal,
-                        motivationalTitle = motivationalTitle,
+                        motivationalTitleRes = motivationalTitleRes,
                         strictnessPreset = strictnessPreset
                     )
                 }
@@ -177,7 +180,9 @@ class TodayViewModel(
                     it.copy(
                         isLoading = false,
                         error = e.message,
-                        motivationalTitle = motivationalTitleForDate(today)
+                        motivationalTitleRes = motivationalTitleResource(
+                            motivationalTitleIndexForDate(today)
+                        )
                     )
                 }
             }

@@ -143,16 +143,15 @@ class OnboardingViewModel(
             }
 
             val result = createHabit.execute(
-                params =
-                    CreateHabit.CreateHabitParams(
-                        name = habitName,
-                        description = null,
-                        type = habitType,
-                        targetValue = targetValue,
-                        unit = unit,
-                        specificDays = specificDays,
-                        reminder = null
-                    ),
+                params = CreateHabit.CreateHabitParams(
+                    name = habitName,
+                    description = null,
+                    type = habitType,
+                    targetValue = targetValue,
+                    unit = unit,
+                    specificDays = specificDays,
+                    reminder = null
+                ),
                 startDate = today
             )
 

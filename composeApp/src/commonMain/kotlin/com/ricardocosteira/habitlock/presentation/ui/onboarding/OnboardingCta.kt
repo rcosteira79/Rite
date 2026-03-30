@@ -52,14 +52,13 @@ private fun CtaContainer(
     }
 
     Column(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 16.dp)
-                .graphicsLayer {
-                    alpha = alphaAnim.value
-                    translationY = translateYAnim.value.dp.toPx()
-                },
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .graphicsLayer {
+                alpha = alphaAnim.value
+                translationY = translateYAnim.value.dp.toPx()
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
         content = content
     )

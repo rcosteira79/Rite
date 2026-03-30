@@ -7,26 +7,29 @@ import kotlinx.datetime.LocalDate
 
 class MotivationalTitlesTest {
     @Test
-    fun given_a_date_when_getting_title_then_returns_non_blank_string() {
+    fun given_a_date_when_getting_title_index_then_returns_valid_index() {
         val date = LocalDate(2026, 3, 26)
-        val actualTitle = motivationalTitleForDate(date)
-        assertTrue(actualTitle.isNotBlank())
+        val actualIndex: Int = motivationalTitleIndexForDate(date)
+        assertTrue(actualIndex in 0 until MOTIVATIONAL_TITLE_COUNT)
     }
 
     @Test
-    fun given_same_date_when_getting_title_twice_then_returns_same_title() {
+    fun given_same_date_when_getting_title_index_twice_then_returns_same_index() {
         val date = LocalDate(2026, 3, 26)
-        val firstCall = motivationalTitleForDate(date)
-        val secondCall = motivationalTitleForDate(date)
+        val firstCall: Int = motivationalTitleIndexForDate(date)
+        val secondCall: Int = motivationalTitleIndexForDate(date)
         assertEquals(firstCall, secondCall)
     }
 
     @Test
-    fun given_different_dates_when_getting_titles_then_not_all_are_the_same() {
-        val titles = (1..30)
+    fun given_different_dates_when_getting_title_indices_then_not_all_are_the_same() {
+        val indices: Set<Int> = (1..30)
             .map { day ->
-                motivationalTitleForDate(LocalDate(2026, 3, day))
+                motivationalTitleIndexForDate(LocalDate(2026, 3, day))
             }.toSet()
-        assertTrue(titles.size > 1, "Expected different titles for different dates, got: $titles")
+        assertTrue(
+            indices.size > 1,
+            "Expected different indices for different dates, got: $indices"
+        )
     }
 }

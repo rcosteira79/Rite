@@ -51,40 +51,38 @@ fun DetailRow(
         }
 
         Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .then(
-                        if (onClick != null) {
-                            Modifier.clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = onClick
-                            )
-                        } else {
-                            Modifier
-                        }
-                    ).padding(vertical = 12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(
+                    if (onClick != null) {
+                        Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = onClick
+                        )
+                    } else {
+                        Modifier
+                    }
+                ).padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Box(
-                modifier =
-                    Modifier
-                        .size(IconContainerSize)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                        .then(
-                            if (isDarkTheme) {
-                                Modifier.border(
-                                    1.dp,
-                                    MaterialTheme.colorScheme.outlineVariant,
-                                    CircleShape
-                                )
-                            } else {
-                                Modifier
-                            }
-                        ),
+                modifier = Modifier
+                    .size(IconContainerSize)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                    .then(
+                        if (isDarkTheme) {
+                            Modifier.border(
+                                1.dp,
+                                MaterialTheme.colorScheme.outlineVariant,
+                                CircleShape
+                            )
+                        } else {
+                            Modifier
+                        }
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

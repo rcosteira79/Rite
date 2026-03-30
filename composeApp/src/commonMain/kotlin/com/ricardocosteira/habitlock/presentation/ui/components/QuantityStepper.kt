@@ -48,28 +48,26 @@ fun QuantityStepper(
         IconButton(
             onClick = { if (value > MIN_VALUE) onValueChange(value - 1) },
             enabled = value > MIN_VALUE,
-            modifier =
-                Modifier
-                    .size(ButtonSize)
-                    .clip(CircleShape)
-                    .background(buttonBackground)
-                    .then(
-                        if (isDarkTheme) {
-                            Modifier.border(1.dp, buttonBorder, CircleShape)
-                        } else {
-                            Modifier
-                        }
-                    )
+            modifier = Modifier
+                .size(ButtonSize)
+                .clip(CircleShape)
+                .background(buttonBackground)
+                .then(
+                    if (isDarkTheme) {
+                        Modifier.border(1.dp, buttonBorder, CircleShape)
+                    } else {
+                        Modifier
+                    }
+                )
         ) {
             Icon(
                 imageVector = Icons.Default.Remove,
                 contentDescription = stringResource(Res.string.quantity_stepper_cd_decrease),
-                tint =
-                    if (value > MIN_VALUE) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_CONTENT_ALPHA)
-                    }
+                tint = if (value > MIN_VALUE) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_CONTENT_ALPHA)
+                }
             )
         }
 
@@ -82,18 +80,17 @@ fun QuantityStepper(
 
         IconButton(
             onClick = { onValueChange(value + 1) },
-            modifier =
-                Modifier
-                    .size(ButtonSize)
-                    .clip(CircleShape)
-                    .background(buttonBackground)
-                    .then(
-                        if (isDarkTheme) {
-                            Modifier.border(1.dp, buttonBorder, CircleShape)
-                        } else {
-                            Modifier
-                        }
-                    )
+            modifier = Modifier
+                .size(ButtonSize)
+                .clip(CircleShape)
+                .background(buttonBackground)
+                .then(
+                    if (isDarkTheme) {
+                        Modifier.border(1.dp, buttonBorder, CircleShape)
+                    } else {
+                        Modifier
+                    }
+                )
         ) {
             Icon(
                 imageVector = Icons.Default.Add,

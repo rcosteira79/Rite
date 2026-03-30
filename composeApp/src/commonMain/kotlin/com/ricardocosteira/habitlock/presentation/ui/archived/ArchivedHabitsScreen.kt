@@ -63,19 +63,13 @@ fun ArchivedHabitsScreen(onBackClick: () -> Unit, snackbarHostState: SnackbarHos
         viewModel.events.collect { event ->
             when (event) {
                 ArchivedHabitsEvent.HabitRestored ->
-                    snackbarHostState.showSnackbar(
-                        messageHabitRestored
-                    )
+                    snackbarHostState.showSnackbar(messageHabitRestored)
 
                 ArchivedHabitsEvent.HabitDeleted ->
-                    snackbarHostState.showSnackbar(
-                        messageHabitDeleted
-                    )
+                    snackbarHostState.showSnackbar(messageHabitDeleted)
 
                 is ArchivedHabitsEvent.ShowError ->
-                    snackbarHostState.showSnackbar(
-                        event.message ?: messageGenericError
-                    )
+                    snackbarHostState.showSnackbar(event.message ?: messageGenericError)
             }
         }
     }
@@ -119,10 +113,9 @@ private fun ArchivedHabitsScreen(
         when {
             state.isLoading -> {
                 Box(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
@@ -131,10 +124,9 @@ private fun ArchivedHabitsScreen(
 
             state.habits.isEmpty() -> {
                 Box(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -155,10 +147,9 @@ private fun ArchivedHabitsScreen(
 
             else -> {
                 LazyColumn(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
@@ -186,16 +177,14 @@ private fun ArchivedHabitCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors =
-            CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-            )
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
     ) {
         Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

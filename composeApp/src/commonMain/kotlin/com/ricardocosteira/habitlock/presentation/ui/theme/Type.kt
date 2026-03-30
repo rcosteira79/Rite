@@ -34,14 +34,13 @@ internal fun habitLockTypography(): Typography {
 
     return Typography(
         // Display — Manrope, for emotional milestones (3.5rem ≈ 56sp)
-        displayLarge =
-            TextStyle(
-                fontFamily = manrope,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 56.sp,
-                lineHeight = 64.sp,
-                letterSpacing = (-0.25).sp
-            ),
+        displayLarge = TextStyle(
+            fontFamily = manrope,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 56.sp,
+            lineHeight = 64.sp,
+            letterSpacing = (-0.25).sp
+        ),
         displayMedium =
             TextStyle(
                 fontFamily = manrope,

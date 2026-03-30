@@ -52,26 +52,25 @@ fun TypeToggle(
             val label = stringResource(type.labelRes)
 
             Box(
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .clip(PillShape)
-                        .background(backgroundColor)
-                        .then(
-                            if (!isSelected && isDarkTheme) {
-                                Modifier.border(
-                                    1.dp,
-                                    MaterialTheme.colorScheme.outlineVariant,
-                                    PillShape
-                                )
-                            } else {
-                                Modifier
-                            }
-                        ).clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                            onClick = { onSelectionChange(type) }
-                        ).padding(vertical = 10.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(PillShape)
+                    .background(backgroundColor)
+                    .then(
+                        if (!isSelected && isDarkTheme) {
+                            Modifier.border(
+                                1.dp,
+                                MaterialTheme.colorScheme.outlineVariant,
+                                PillShape
+                            )
+                        } else {
+                            Modifier
+                        }
+                    ).clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = { onSelectionChange(type) }
+                    ).padding(vertical = 10.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(

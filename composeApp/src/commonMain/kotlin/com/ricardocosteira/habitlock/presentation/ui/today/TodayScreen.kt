@@ -169,7 +169,9 @@ internal fun TodayScreen(
                         collapsedElevation = 0.dp
                     ) { scrollProgress ->
                         TodayHeader(
-                            motivationalTitle = state.motivationalTitle,
+                            motivationalTitle = state.motivationalTitleRes?.let {
+                                stringResource(it)
+                            } ?: "",
                             pendingCount = state.pendingCount,
                             hasHabits = state.habits.isNotEmpty(),
                             strictnessPreset = state.strictnessPreset,
