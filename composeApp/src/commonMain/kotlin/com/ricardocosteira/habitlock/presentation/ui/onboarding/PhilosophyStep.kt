@@ -36,10 +36,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun PhilosophyStep(
-    modifier: Modifier = Modifier,
-    reduceMotion: Boolean = false
-) {
+fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false) {
     val headlineAlpha = remember { Animatable(0f) }
     val headlineTranslateY = remember { Animatable(12f) }
     val accentWidth = remember { Animatable(0f) }
@@ -84,7 +81,9 @@ fun PhilosophyStep(
 
             Text(
                 text = stringResource(Res.string.philosophy_heading),
-                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold),
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.ExtraBold
+                ),
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .alpha(headlineAlpha.value)
@@ -99,7 +98,10 @@ fun PhilosophyStep(
                 modifier = Modifier
                     .width((36 * accentWidth.value).dp)
                     .height(3.dp)
-                    .background(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(2.dp))
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(2.dp)
+                    )
             )
 
             Spacer(modifier = Modifier.height(16.dp))

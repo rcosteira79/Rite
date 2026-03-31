@@ -1,5 +1,13 @@
 package com.ricardocosteira.habitlock.data.mappers
 
+import com.ricardocosteira.habitlock.data.database.Habit as DbHabit
+import com.ricardocosteira.habitlock.data.database.HabitCompletionEvent as DbHabitCompletionEvent
+import com.ricardocosteira.habitlock.data.database.HabitInstance as DbHabitInstance
+import com.ricardocosteira.habitlock.data.database.HabitReminder as DbHabitReminder
+import com.ricardocosteira.habitlock.data.database.HabitSchedule as DbHabitSchedule
+import com.ricardocosteira.habitlock.data.database.LeavePeriod as DbLeavePeriod
+import com.ricardocosteira.habitlock.data.database.SnoozeState as DbSnoozeState
+import com.ricardocosteira.habitlock.data.database.User as DbUser
 import com.ricardocosteira.habitlock.domain.models.CompletionSource
 import com.ricardocosteira.habitlock.domain.models.Habit
 import com.ricardocosteira.habitlock.domain.models.HabitCompletionEvent
@@ -14,25 +22,16 @@ import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.models.SnoozeState
 import com.ricardocosteira.habitlock.domain.models.UndoPolicy
 import com.ricardocosteira.habitlock.domain.models.User
-import kotlinx.datetime.DayOfWeek
 import kotlin.time.Instant
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import com.ricardocosteira.habitlock.data.database.Habit as DbHabit
-import com.ricardocosteira.habitlock.data.database.HabitCompletionEvent as DbHabitCompletionEvent
-import com.ricardocosteira.habitlock.data.database.HabitInstance as DbHabitInstance
-import com.ricardocosteira.habitlock.data.database.HabitReminder as DbHabitReminder
-import com.ricardocosteira.habitlock.data.database.HabitSchedule as DbHabitSchedule
-import com.ricardocosteira.habitlock.data.database.LeavePeriod as DbLeavePeriod
-import com.ricardocosteira.habitlock.data.database.SnoozeState as DbSnoozeState
-import com.ricardocosteira.habitlock.data.database.User as DbUser
 
 /**
  * Mappers between SQLDelight entities and domain models.
  */
 object EntityMappers {
-
     // User mappers
     fun DbUser.toDomain(): User = User(
         id = id,
@@ -55,6 +54,7 @@ object EntityMappers {
         type = HabitType.valueOf(type),
         targetValue = targetValue?.toInt(),
         unit = unit,
+        defaultIncrement = defaultIncrement.toInt(),
         isActive = isActive == 1L,
         isArchived = isArchived == 1L,
         currentStreak = currentStreak.toInt(),
@@ -74,7 +74,8 @@ object EntityMappers {
         endDate = endDate?.let { LocalDate.parse(it) },
         quota = quota.toInt(),
         weekStartDay = DayOfWeek.valueOf(weekStartDay),
-        specificDays = specificDays?.split(",")
+        specificDays = specificDays
+            ?.split(",")
             ?.filter { it.isNotBlank() }
             ?.map { DayOfWeek.valueOf(it.trim()) }
             ?.toSet()
@@ -101,7 +102,8 @@ object EntityMappers {
         completedValue = completedValue?.toInt(),
         targetValue = targetValue?.toInt(),
         consecutiveSkipsAtCreation = consecutiveSkipsAtCreation.toInt(),
-        createdAt = Instant.parse(createdAt)
+        createdAt = Instant.parse(createdAt),
+        completedAt = completedAt?.let { Instant.parse(it) }
     )
 
     // HabitCompletionEvent mappers

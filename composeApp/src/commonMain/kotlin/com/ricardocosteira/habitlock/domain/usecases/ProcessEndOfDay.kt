@@ -1,7 +1,5 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
-import me.tatarka.inject.annotations.Inject
-
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
@@ -14,6 +12,7 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
+import me.tatarka.inject.annotations.Inject
 
 /**
  * Processes end-of-day/end-of-week failure for habits.
@@ -26,7 +25,6 @@ class ProcessEndOfDay(
     private val habitInstanceRepository: HabitInstanceRepository,
     private val habitRepository: HabitRepository
 ) {
-
     /**
      * Process end-of-day for the previous day and end-of-week for weekly habits.
      * @return Pair of (daily failures, weekly failures).
@@ -53,7 +51,7 @@ class ProcessEndOfDay(
         for (instance in yesterdayInstances) {
             // Skip if not PENDING (includes SUSPENDED)
             if (instance.status != HabitStatus.PENDING) continue
-            
+
             // Check if this is a daily habit
             val habit = habitRepository.getHabitById(instance.habitId) ?: continue
             val schedule = habitRepository.getScheduleForHabit(habit.id) ?: continue
@@ -62,7 +60,8 @@ class ProcessEndOfDay(
                 habitInstanceRepository.updateInstanceStatus(
                     instanceId = instance.id,
                     status = HabitStatus.FAILED,
-                    completedValue = instance.completedValue
+                    completedValue = instance.completedValue,
+                    completedAt = null
                 )
 
                 // Reset streak for failed habit
@@ -104,7 +103,9 @@ class ProcessEndOfDay(
                     )
 
                     // Only process PENDING instances (skip SUSPENDED)
-                    if (lastWeekInstance != null && lastWeekInstance.status == HabitStatus.PENDING) {
+                    if (lastWeekInstance != null &&
+                        lastWeekInstance.status == HabitStatus.PENDING
+                    ) {
                         // Check if quota was not met
                         val completedValue = lastWeekInstance.completedValue ?: 0
                         val quota = lastWeekInstance.targetValue ?: 1
@@ -113,7 +114,8 @@ class ProcessEndOfDay(
                             habitInstanceRepository.updateInstanceStatus(
                                 instanceId = lastWeekInstance.id,
                                 status = HabitStatus.FAILED,
-                                completedValue = completedValue
+                                completedValue = completedValue,
+                                completedAt = null
                             )
 
                             // Reset streak for failed habit
@@ -129,7 +131,8 @@ class ProcessEndOfDay(
                             habitInstanceRepository.updateInstanceStatus(
                                 instanceId = lastWeekInstance.id,
                                 status = HabitStatus.COMPLETED,
-                                completedValue = completedValue
+                                completedValue = completedValue,
+                                completedAt = Clock.System.now()
                             )
                         }
                     }
@@ -140,6 +143,3 @@ class ProcessEndOfDay(
         return failedCount
     }
 }
-
-
-

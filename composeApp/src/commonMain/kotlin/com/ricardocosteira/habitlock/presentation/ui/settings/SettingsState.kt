@@ -16,5 +16,3 @@ data class SettingsState(
     val isLoading: Boolean = true,
     val isSaving: Boolean = false
 )
-
-

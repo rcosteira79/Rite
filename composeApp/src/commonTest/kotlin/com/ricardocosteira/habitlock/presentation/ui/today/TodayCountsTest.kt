@@ -8,7 +8,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class TodayCountsTest {
-
     private fun buildInputHabit(
         status: HabitStatus,
         cadence: ScheduleType = ScheduleType.DAILY
@@ -22,12 +21,14 @@ class TodayCountsTest {
         completedValue = null,
         targetValue = null,
         unit = null,
+        defaultIncrement = 1,
         progressPercentage = 0f,
         isSkipLocked = false,
         currentStreak = 0,
         longestStreak = 0,
         scorePercentage = 0,
-        cadence = cadence
+        cadence = cadence,
+        completedAtText = null
     )
 
     @Test
@@ -52,20 +53,19 @@ class TodayCountsTest {
         val actualCounts = inputHabits.computeCounts()
         assertEquals(0, actualCounts.pendingCount)
         assertEquals(0, actualCounts.dailyTotal)
-        assertEquals(0, actualCounts.weeklyTotal)
     }
 
     @Test
-    fun `given failed daily habit when computing counts then counted in dailyResolved not pending`() {
+    fun `given failed daily habit when computing counts then counted in dailyProgress not pending`() {
         val inputHabits = listOf(buildInputHabit(HabitStatus.FAILED, ScheduleType.DAILY))
         val actualCounts = inputHabits.computeCounts()
         assertEquals(0, actualCounts.pendingCount)
-        assertEquals(1, actualCounts.dailyResolved)
+        assertEquals(1, actualCounts.dailyProgressDisplay)
         assertEquals(1, actualCounts.dailyTotal)
     }
 
     @Test
-    fun `given mix of daily habits when computing counts then dailyResolved matches completed skipped failed`() {
+    fun `given mix of daily habits when computing counts then dailyProgress includes resolved and partial`() {
         val inputHabits = listOf(
             buildInputHabit(HabitStatus.PENDING, ScheduleType.DAILY),
             buildInputHabit(HabitStatus.COMPLETED, ScheduleType.DAILY),
@@ -75,22 +75,8 @@ class TodayCountsTest {
         )
         val actualCounts = inputHabits.computeCounts()
         assertEquals(1, actualCounts.pendingCount)
-        assertEquals(3, actualCounts.dailyResolved)
+        assertEquals(3, actualCounts.dailyProgressDisplay)
         assertEquals(4, actualCounts.dailyTotal)
-    }
-
-    @Test
-    fun `given weekly habits when computing counts then weekly totals populated correctly`() {
-        val inputHabits = listOf(
-            buildInputHabit(HabitStatus.PENDING, ScheduleType.WEEKLY),
-            buildInputHabit(HabitStatus.COMPLETED, ScheduleType.WEEKLY),
-            buildInputHabit(HabitStatus.SUSPENDED, ScheduleType.WEEKLY)
-        )
-        val actualCounts = inputHabits.computeCounts()
-        assertEquals(1, actualCounts.pendingCount)
-        assertEquals(1, actualCounts.weeklyResolved)
-        assertEquals(2, actualCounts.weeklyTotal)
-        assertEquals(0, actualCounts.dailyTotal)
     }
 
     @Test

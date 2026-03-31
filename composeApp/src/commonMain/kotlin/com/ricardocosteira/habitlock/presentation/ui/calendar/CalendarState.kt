@@ -12,6 +12,7 @@ import kotlinx.datetime.Month
 data class CalendarState(
     val currentMonth: Month = Month.JANUARY,
     val currentYear: Int = 2026,
+    val currentMonthDisplay: String = "",
     val days: ImmutableList<CalendarDayUiModel> = persistentListOf(),
     val isLoading: Boolean = true,
     val selectedDay: LocalDate? = null,

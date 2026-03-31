@@ -32,12 +32,9 @@ private const val TOTAL_STEPS = 3
 private const val DONE_DOT_ALPHA = 0.45f
 
 @Composable
-fun OnboardingTopChrome(
-    currentStep: Int,
-    onSkip: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val stepDescription = stringResource(Res.string.common_cd_onboarding_step, currentStep + 1, TOTAL_STEPS)
+fun OnboardingTopChrome(currentStep: Int, onSkip: () -> Unit, modifier: Modifier = Modifier) {
+    val stepDescription =
+        stringResource(Res.string.common_cd_onboarding_step, currentStep + 1, TOTAL_STEPS)
 
     Row(
         modifier = modifier.padding(horizontal = 24.dp, vertical = 8.dp),
@@ -64,10 +61,7 @@ fun OnboardingTopChrome(
 }
 
 @Composable
-private fun ProgressDots(
-    currentStep: Int,
-    modifier: Modifier = Modifier
-) {
+private fun ProgressDots(currentStep: Int, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -88,10 +82,7 @@ private fun ProgressDots(
 private enum class DotState { Active, Done, Inactive }
 
 @Composable
-private fun StepDot(
-    state: DotState,
-    modifier: Modifier = Modifier
-) {
+private fun StepDot(state: DotState, modifier: Modifier = Modifier) {
     val targetWidth = if (state == DotState.Active) 20.dp else 6.dp
     val animatedWidth by animateDpAsState(
         targetValue = targetWidth,

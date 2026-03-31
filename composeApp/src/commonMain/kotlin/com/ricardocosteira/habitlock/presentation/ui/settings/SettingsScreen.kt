@@ -38,15 +38,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ricardocosteira.habitlock.di.LocalAppComponent
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ricardocosteira.habitlock.di.LocalAppComponent
 import com.ricardocosteira.habitlock.domain.models.UndoPolicy
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_cd_back
+import habitlock.composeapp.generated.resources.common_error_generic
 import habitlock.composeapp.generated.resources.settings_archived_habits
 import habitlock.composeapp.generated.resources.settings_info_timezone_label
 import habitlock.composeapp.generated.resources.settings_section_info
@@ -60,9 +61,8 @@ import habitlock.composeapp.generated.resources.settings_snooze_max_duration
 import habitlock.composeapp.generated.resources.settings_snooze_status_limited
 import habitlock.composeapp.generated.resources.settings_snooze_status_unlimited
 import habitlock.composeapp.generated.resources.settings_snooze_unlimited_label
-import habitlock.composeapp.generated.resources.common_error_generic
-import habitlock.composeapp.generated.resources.settings_success_saved
 import habitlock.composeapp.generated.resources.settings_success_daily_summary_updated
+import habitlock.composeapp.generated.resources.settings_success_saved
 import habitlock.composeapp.generated.resources.settings_title
 import habitlock.composeapp.generated.resources.settings_undo_all_description
 import habitlock.composeapp.generated.resources.settings_undo_all_label
@@ -82,15 +82,24 @@ fun SettingsScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val messageSettingsSaved = stringResource(Res.string.settings_success_saved)
-    val messageDailySummaryUpdated = stringResource(Res.string.settings_success_daily_summary_updated)
+    val messageDailySummaryUpdated =
+        stringResource(Res.string.settings_success_daily_summary_updated)
     val messageGenericError = stringResource(Res.string.common_error_generic)
 
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
                 SettingsEvent.SettingsSaved -> snackbarHostState.showSnackbar(messageSettingsSaved)
-                SettingsEvent.DailySummaryUpdated -> snackbarHostState.showSnackbar(messageDailySummaryUpdated)
-                is SettingsEvent.ShowError -> snackbarHostState.showSnackbar(event.message ?: messageGenericError)
+
+                SettingsEvent.DailySummaryUpdated ->
+                    snackbarHostState.showSnackbar(
+                        messageDailySummaryUpdated
+                    )
+
+                is SettingsEvent.ShowError ->
+                    snackbarHostState.showSnackbar(
+                        event.message ?: messageGenericError
+                    )
             }
         }
     }
@@ -124,12 +133,7 @@ private fun SettingsScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Res.string.settings_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.common_cd_back))
-                    }
-                }
+                title = { Text(stringResource(Res.string.settings_title)) }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -155,13 +159,17 @@ private fun SettingsScreen(
                     Column(modifier = Modifier.selectableGroup()) {
                         UndoPolicyOption(
                             title = stringResource(Res.string.settings_undo_disabled_label),
-                            description = stringResource(Res.string.settings_undo_disabled_description),
+                            description = stringResource(
+                                Res.string.settings_undo_disabled_description
+                            ),
                             selected = state.undoPolicy == UndoPolicy.NONE,
                             onClick = { onUndoPolicyChange(UndoPolicy.NONE) }
                         )
                         UndoPolicyOption(
                             title = stringResource(Res.string.settings_undo_today_label),
-                            description = stringResource(Res.string.settings_undo_today_description),
+                            description = stringResource(
+                                Res.string.settings_undo_today_description
+                            ),
                             selected = state.undoPolicy == UndoPolicy.TODAY_ONLY,
                             onClick = { onUndoPolicyChange(UndoPolicy.TODAY_ONLY) }
                         )
@@ -180,7 +188,10 @@ private fun SettingsScreen(
                 SettingsSection(title = stringResource(Res.string.settings_section_snooze)) {
                     Column {
                         Text(
-                            text = stringResource(Res.string.settings_snooze_max_duration, state.maxSnoozeDurationMinutes),
+                            text = stringResource(
+                                Res.string.settings_snooze_max_duration,
+                                state.maxSnoozeDurationMinutes
+                            ),
                             style = MaterialTheme.typography.bodyMedium
                         )
 
@@ -191,7 +202,9 @@ private fun SettingsScreen(
                         Slider(
                             value = sliderValue,
                             onValueChange = { sliderValue = it },
-                            onValueChangeFinished = { onMaxSnoozeDurationChange(sliderValue.toInt()) },
+                            onValueChangeFinished = {
+                                onMaxSnoozeDurationChange(sliderValue.toInt())
+                            },
                             valueRange = 5f..60f,
                             steps = 10
                         )
@@ -205,12 +218,22 @@ private fun SettingsScreen(
                         ) {
                             Column {
                                 Text(
-                                    text = stringResource(Res.string.settings_snooze_unlimited_label),
+                                    text = stringResource(
+                                        Res.string.settings_snooze_unlimited_label
+                                    ),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 Text(
-                                    text = if (state.maxSnoozesPerHabitPerDay == null) stringResource(Res.string.settings_snooze_status_unlimited)
-                                           else stringResource(Res.string.settings_snooze_status_limited, state.maxSnoozesPerHabitPerDay),
+                                    text = if (state.maxSnoozesPerHabitPerDay == null) {
+                                        stringResource(
+                                            Res.string.settings_snooze_status_unlimited
+                                        )
+                                    } else {
+                                        stringResource(
+                                            Res.string.settings_snooze_status_limited,
+                                            state.maxSnoozesPerHabitPerDay
+                                        )
+                                    },
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -240,8 +263,14 @@ private fun SettingsScreen(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
-                                text = if (state.maxConsecutiveSkips == null) stringResource(Res.string.settings_skip_status_unlimited)
-                                       else stringResource(Res.string.settings_skip_status_limited, state.maxConsecutiveSkips),
+                                text = if (state.maxConsecutiveSkips == null) {
+                                    stringResource(Res.string.settings_skip_status_unlimited)
+                                } else {
+                                    stringResource(
+                                        Res.string.settings_skip_status_limited,
+                                        state.maxConsecutiveSkips
+                                    )
+                                },
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -299,10 +328,7 @@ private fun SettingsScreen(
 }
 
 @Composable
-private fun SettingsSection(
-    title: String,
-    content: @Composable () -> Unit
-) {
+private fun SettingsSection(title: String, content: @Composable () -> Unit) {
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
             text = title,
@@ -328,8 +354,7 @@ private fun UndoPolicyOption(
                 selected = selected,
                 onClick = onClick,
                 role = Role.RadioButton
-            )
-            .padding(vertical = 8.dp),
+            ).padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
@@ -346,4 +371,3 @@ private fun UndoPolicyOption(
         }
     }
 }
-

@@ -9,6 +9,7 @@ import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import com.ricardocosteira.habitlock.presentation.models.CalendarDayUiModel
 import com.ricardocosteira.habitlock.presentation.models.DayClassification
 import com.ricardocosteira.habitlock.util.toLocalDate
+import kotlin.time.Clock
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,6 @@ import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
-import kotlin.time.Clock
 import me.tatarka.inject.annotations.Inject
 
 /**
@@ -48,7 +48,8 @@ class CalendarViewModel(
         _state.update {
             it.copy(
                 currentMonth = today.month,
-                currentYear = today.year
+                currentYear = today.year,
+                currentMonthDisplay = formatMonthDisplay(today.month, today.year)
             )
         }
         loadMonth()
@@ -61,7 +62,8 @@ class CalendarViewModel(
         _state.update {
             it.copy(
                 currentMonth = newDate.month,
-                currentYear = newDate.year
+                currentYear = newDate.year,
+                currentMonthDisplay = formatMonthDisplay(newDate.month, newDate.year)
             )
         }
         loadMonth()
@@ -74,7 +76,8 @@ class CalendarViewModel(
         _state.update {
             it.copy(
                 currentMonth = newDate.month,
-                currentYear = newDate.year
+                currentYear = newDate.year,
+                currentMonthDisplay = formatMonthDisplay(newDate.month, newDate.year)
             )
         }
         loadMonth()
@@ -86,6 +89,11 @@ class CalendarViewModel(
 
     fun clearSelection() {
         _state.update { it.copy(selectedDay = null) }
+    }
+
+    private fun formatMonthDisplay(month: Month, year: Int): String {
+        val monthName = month.name.lowercase().replaceFirstChar { it.uppercase() }
+        return "$monthName $year"
     }
 
     private fun loadMonth() {
@@ -113,16 +121,20 @@ class CalendarViewModel(
                     if (dayInstances.isNotEmpty()) {
                         trackedCount++
 
-                        val completedCount = dayInstances.count { it.status == HabitStatus.COMPLETED }
+                        val completedCount = dayInstances.count {
+                            it.status == HabitStatus.COMPLETED
+                        }
                         val skippedCount = dayInstances.count { it.status == HabitStatus.SKIPPED }
                         val failedCount = dayInstances.count { it.status == HabitStatus.FAILED }
 
                         val classification = when {
                             failedCount > 0 -> DayClassification.FAILED
+
                             completedCount + skippedCount == dayInstances.size -> {
                                 perfectCount++
                                 DayClassification.PERFECT
                             }
+
                             else -> DayClassification.PARTIAL
                         }
 
@@ -166,4 +178,3 @@ class CalendarViewModel(
         }
     }
 }
-

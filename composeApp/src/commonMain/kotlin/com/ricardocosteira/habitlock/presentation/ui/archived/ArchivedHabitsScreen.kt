@@ -31,11 +31,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ricardocosteira.habitlock.di.LocalAppComponent
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ricardocosteira.habitlock.di.LocalAppComponent
 import com.ricardocosteira.habitlock.domain.models.Habit
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.archived_best_streak
@@ -51,10 +51,7 @@ import habitlock.composeapp.generated.resources.common_error_generic
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ArchivedHabitsScreen(
-    onBackClick: () -> Unit,
-    snackbarHostState: SnackbarHostState
-) {
+fun ArchivedHabitsScreen(onBackClick: () -> Unit, snackbarHostState: SnackbarHostState) {
     val viewModel = LocalAppComponent.current.archivedHabitsViewModel
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -65,9 +62,14 @@ fun ArchivedHabitsScreen(
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
-                ArchivedHabitsEvent.HabitRestored -> snackbarHostState.showSnackbar(messageHabitRestored)
-                ArchivedHabitsEvent.HabitDeleted -> snackbarHostState.showSnackbar(messageHabitDeleted)
-                is ArchivedHabitsEvent.ShowError -> snackbarHostState.showSnackbar(event.message ?: messageGenericError)
+                ArchivedHabitsEvent.HabitRestored ->
+                    snackbarHostState.showSnackbar(messageHabitRestored)
+
+                ArchivedHabitsEvent.HabitDeleted ->
+                    snackbarHostState.showSnackbar(messageHabitDeleted)
+
+                is ArchivedHabitsEvent.ShowError ->
+                    snackbarHostState.showSnackbar(event.message ?: messageGenericError)
             }
         }
     }
@@ -98,7 +100,10 @@ private fun ArchivedHabitsScreen(
                 title = { Text(stringResource(Res.string.archived_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.common_cd_back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(Res.string.common_cd_back)
+                        )
                     }
                 }
             )
@@ -116,6 +121,7 @@ private fun ArchivedHabitsScreen(
                     CircularProgressIndicator()
                 }
             }
+
             state.habits.isEmpty() -> {
                 Box(
                     modifier = Modifier
@@ -138,6 +144,7 @@ private fun ArchivedHabitsScreen(
                     }
                 }
             }
+
             else -> {
                 LazyColumn(
                     modifier = Modifier
@@ -223,4 +230,3 @@ private fun ArchivedHabitCard(
         }
     }
 }
-

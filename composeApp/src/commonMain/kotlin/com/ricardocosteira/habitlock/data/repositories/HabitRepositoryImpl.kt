@@ -9,11 +9,11 @@ import com.ricardocosteira.habitlock.domain.models.Habit
 import com.ricardocosteira.habitlock.domain.models.HabitReminder
 import com.ricardocosteira.habitlock.domain.models.HabitSchedule
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
+import kotlin.time.Clock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
-import kotlin.time.Clock
 
 @Inject
 class HabitRepositoryImpl(
@@ -22,29 +22,25 @@ class HabitRepositoryImpl(
 ) : HabitRepository {
     private val queries = database.habitLockQueries
 
-    override fun observeActiveHabits(): Flow<List<Habit>> =
-        queries
-            .getActiveHabits()
-            .asFlow()
-            .mapToList(ioDispatcher)
-            .map { list -> list.map { it.toDomain() } }
+    override fun observeActiveHabits(): Flow<List<Habit>> = queries
+        .getActiveHabits()
+        .asFlow()
+        .mapToList(ioDispatcher)
+        .map { list -> list.map { it.toDomain() } }
 
-    override fun observeArchivedHabits(): Flow<List<Habit>> =
-        queries
-            .getArchivedHabits()
-            .asFlow()
-            .mapToList(ioDispatcher)
-            .map { list -> list.map { it.toDomain() } }
+    override fun observeArchivedHabits(): Flow<List<Habit>> = queries
+        .getArchivedHabits()
+        .asFlow()
+        .mapToList(ioDispatcher)
+        .map { list -> list.map { it.toDomain() } }
 
-    override suspend fun getActiveHabits(): List<Habit> =
-        withContext(ioDispatcher) {
-            queries.getActiveHabits().executeAsList().map { it.toDomain() }
-        }
+    override suspend fun getActiveHabits(): List<Habit> = withContext(ioDispatcher) {
+        queries.getActiveHabits().executeAsList().map { it.toDomain() }
+    }
 
-    override suspend fun getHabitById(habitId: String): Habit? =
-        withContext(ioDispatcher) {
-            queries.getHabitById(habitId).executeAsOneOrNull()?.toDomain()
-        }
+    override suspend fun getHabitById(habitId: String): Habit? = withContext(ioDispatcher) {
+        queries.getHabitById(habitId).executeAsOneOrNull()?.toDomain()
+    }
 
     override suspend fun createHabit(
         habit: Habit,
@@ -60,6 +56,7 @@ class HabitRepositoryImpl(
                     type = habit.type.name,
                     targetValue = habit.targetValue?.toLong(),
                     unit = habit.unit,
+                    defaultIncrement = habit.defaultIncrement.toLong(),
                     isActive = if (habit.isActive) 1 else 0,
                     isArchived = if (habit.isArchived) 1 else 0,
                     currentStreak = habit.currentStreak.toLong(),
@@ -141,10 +138,7 @@ class HabitRepositoryImpl(
         }
     }
 
-    override suspend fun incrementHabitTotalCompletions(
-        habitId: String,
-        amount: Int
-    ) {
+    override suspend fun incrementHabitTotalCompletions(habitId: String, amount: Int) {
         withContext(ioDispatcher) {
             queries.incrementHabitTotalCompletions(
                 totalCompletions = amount.toLong(),
@@ -153,10 +147,7 @@ class HabitRepositoryImpl(
         }
     }
 
-    override suspend fun decrementHabitTotalCompletions(
-        habitId: String,
-        amount: Int
-    ) {
+    override suspend fun decrementHabitTotalCompletions(habitId: String, amount: Int) {
         withContext(ioDispatcher) {
             queries.decrementHabitTotalCompletions(
                 totalCompletions = amount.toLong(),
@@ -166,10 +157,7 @@ class HabitRepositoryImpl(
         }
     }
 
-    override suspend fun incrementHabitExpectedCompletions(
-        habitId: String,
-        amount: Int
-    ) {
+    override suspend fun incrementHabitExpectedCompletions(habitId: String, amount: Int) {
         withContext(ioDispatcher) {
             queries.incrementHabitExpectedCompletions(
                 expectedCompletions = amount.toLong(),

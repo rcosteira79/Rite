@@ -29,4 +29,3 @@ data object ArchivedHabits : Route
 
 @Serializable
 data object Settings : Route
-

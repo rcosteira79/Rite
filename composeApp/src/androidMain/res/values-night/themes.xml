@@ -5,4 +5,11 @@
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
+    <style name="Theme.HabitLock.Launch" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/habit_lock_splash</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/splash_icon_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.HabitLock</item>
+    </style>
+
 </resources>

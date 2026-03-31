@@ -34,12 +34,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ricardocosteira.habitlock.di.LocalAppComponent
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ricardocosteira.habitlock.di.LocalAppComponent
 import com.ricardocosteira.habitlock.presentation.models.CalendarDayUiModel
 import com.ricardocosteira.habitlock.presentation.models.DayClassification
 import habitlock.composeapp.generated.resources.Res
@@ -92,12 +92,7 @@ private fun CalendarScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Res.string.calendar_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.common_cd_back))
-                    }
-                }
+                title = { Text(stringResource(Res.string.calendar_title)) }
             )
         }
     ) { paddingValues ->
@@ -156,16 +151,22 @@ private fun CalendarScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onPreviousMonth) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = stringResource(Res.string.calendar_cd_previous_month))
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                        contentDescription = stringResource(Res.string.calendar_cd_previous_month)
+                    )
                 }
 
                 Text(
-                    text = "${state.currentMonth.name.lowercase().replaceFirstChar { it.uppercase() }} ${state.currentYear}",
+                    text = state.currentMonthDisplay,
                     style = MaterialTheme.typography.titleLarge
                 )
 
                 IconButton(onClick = onNextMonth) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = stringResource(Res.string.calendar_cd_next_month))
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = stringResource(Res.string.calendar_cd_next_month)
+                    )
                 }
             }
 
@@ -173,7 +174,15 @@ private fun CalendarScreen(
 
             // Day of week headers
             Row(modifier = Modifier.fillMaxWidth()) {
-                listOf(stringResource(Res.string.calendar_day_mon), stringResource(Res.string.calendar_day_tue), stringResource(Res.string.calendar_day_wed), stringResource(Res.string.calendar_day_thu), stringResource(Res.string.calendar_day_fri), stringResource(Res.string.calendar_day_sat), stringResource(Res.string.calendar_day_sun)).forEach { day ->
+                listOf(
+                    stringResource(Res.string.calendar_day_mon),
+                    stringResource(Res.string.calendar_day_tue),
+                    stringResource(Res.string.calendar_day_wed),
+                    stringResource(Res.string.calendar_day_thu),
+                    stringResource(Res.string.calendar_day_fri),
+                    stringResource(Res.string.calendar_day_sat),
+                    stringResource(Res.string.calendar_day_sun)
+                ).forEach { day ->
                     Text(
                         text = day,
                         modifier = Modifier.weight(1f),
@@ -202,7 +211,11 @@ private fun CalendarScreen(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     // Add empty cells for days before month starts
-                    val firstDayOfWeek = state.days.firstOrNull()?.date?.dayOfWeek?.ordinal ?: 0
+                    val firstDayOfWeek = state.days
+                        .firstOrNull()
+                        ?.date
+                        ?.dayOfWeek
+                        ?.ordinal ?: 0
                     items(firstDayOfWeek) {
                         Box(modifier = Modifier.aspectRatio(1f))
                     }
@@ -227,17 +240,35 @@ private fun CalendarScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    LegendItem(color = MaterialTheme.colorScheme.primary, label = stringResource(Res.string.calendar_legend_perfect))
-                    LegendItem(color = MaterialTheme.colorScheme.tertiary, label = stringResource(Res.string.calendar_legend_best_effort))
-                    LegendItem(color = MaterialTheme.colorScheme.secondary, label = stringResource(Res.string.calendar_legend_partial))
+                    LegendItem(
+                        color = MaterialTheme.colorScheme.primary,
+                        label = stringResource(Res.string.calendar_legend_perfect)
+                    )
+                    LegendItem(
+                        color = MaterialTheme.colorScheme.tertiary,
+                        label = stringResource(Res.string.calendar_legend_best_effort)
+                    )
+                    LegendItem(
+                        color = MaterialTheme.colorScheme.secondary,
+                        label = stringResource(Res.string.calendar_legend_partial)
+                    )
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    LegendItem(color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f), label = stringResource(Res.string.calendar_legend_rough_day))
-                    LegendItem(color = MaterialTheme.colorScheme.error, label = stringResource(Res.string.common_failed))
-                    LegendItem(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), label = stringResource(Res.string.calendar_legend_future))
+                    LegendItem(
+                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
+                        label = stringResource(Res.string.calendar_legend_rough_day)
+                    )
+                    LegendItem(
+                        color = MaterialTheme.colorScheme.error,
+                        label = stringResource(Res.string.common_failed)
+                    )
+                    LegendItem(
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        label = stringResource(Res.string.calendar_legend_future)
+                    )
                 }
             }
         }
@@ -245,10 +276,7 @@ private fun CalendarScreen(
 }
 
 @Composable
-private fun CalendarDayCell(
-    day: CalendarDayUiModel,
-    onClick: () -> Unit
-) {
+private fun CalendarDayCell(day: CalendarDayUiModel, onClick: () -> Unit) {
     val backgroundColor = when (day.classification) {
         DayClassification.PERFECT -> MaterialTheme.colorScheme.primary
         DayClassification.BEST_EFFORT -> MaterialTheme.colorScheme.tertiary
@@ -261,15 +289,25 @@ private fun CalendarDayCell(
 
     val textColor = when (day.classification) {
         DayClassification.PERFECT -> MaterialTheme.colorScheme.onPrimary
+
         DayClassification.BEST_EFFORT -> MaterialTheme.colorScheme.onTertiary
+
         DayClassification.PARTIAL -> MaterialTheme.colorScheme.onSecondary
+
         DayClassification.ROUGH_DAY -> MaterialTheme.colorScheme.onError
+
         DayClassification.FAILED -> MaterialTheme.colorScheme.onError
-        DayClassification.FUTURE -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+
+        DayClassification.FUTURE ->
+            MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                alpha = 0.5f
+            )
+
         DayClassification.NONE -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
-    val isClickable = day.classification !in listOf(DayClassification.NONE, DayClassification.FUTURE)
+    val isClickable =
+        day.classification !in listOf(DayClassification.NONE, DayClassification.FUTURE)
 
     Box(
         modifier = Modifier
@@ -288,10 +326,7 @@ private fun CalendarDayCell(
 }
 
 @Composable
-private fun LegendItem(
-    color: androidx.compose.ui.graphics.Color,
-    label: String
-) {
+private fun LegendItem(color: androidx.compose.ui.graphics.Color, label: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -309,4 +344,3 @@ private fun LegendItem(
         )
     }
 }
-

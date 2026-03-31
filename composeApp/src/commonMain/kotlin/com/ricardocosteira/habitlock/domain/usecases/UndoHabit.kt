@@ -1,7 +1,5 @@
 package com.ricardocosteira.habitlock.domain.usecases
 
-import me.tatarka.inject.annotations.Inject
-
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.UndoPolicy
@@ -12,6 +10,7 @@ import com.ricardocosteira.habitlock.domain.repositories.UserRepository
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import me.tatarka.inject.annotations.Inject
 
 /**
  * Undoes a habit completion or skip.
@@ -23,7 +22,6 @@ class UndoHabit(
     private val habitRepository: HabitRepository,
     private val userRepository: UserRepository
 ) {
-
     /**
      * Undo a habit action (completion or skip).
      * Respects user's undo policy.
@@ -40,6 +38,7 @@ class UndoHabit(
             UndoPolicy.NONE -> {
                 return Result.failure(UndoNotAllowedException("Undo is disabled"))
             }
+
             UndoPolicy.TODAY_ONLY -> {
                 val today = Clock.System.now().toLocalDate(user.timezone)
                 if (instance.date != today) {
@@ -48,6 +47,7 @@ class UndoHabit(
                     )
                 }
             }
+
             UndoPolicy.ALL_HISTORY -> {
                 // Allowed for all dates
             }
@@ -63,7 +63,7 @@ class UndoHabit(
 
         // Get the completed value before undoing (for score decrement)
         val completedValueToUndo = instance.completedValue ?: 0
-        
+
         // Delete all completion events
         habitCompletionEventRepository.deleteEventsForInstance(instanceId)
 
@@ -71,7 +71,8 @@ class UndoHabit(
         habitInstanceRepository.updateInstanceStatus(
             instanceId = instanceId,
             status = HabitStatus.PENDING,
-            completedValue = 0
+            completedValue = 0,
+            completedAt = null
         )
 
         // Recalculate streak and score (decrement if was completed)
@@ -85,7 +86,7 @@ class UndoHabit(
                 )
             }
         }
-        
+
         // Decrement total completions by the completed value
         if (completedValueToUndo > 0) {
             habitRepository.decrementHabitTotalCompletions(
@@ -95,7 +96,9 @@ class UndoHabit(
         }
 
         val updatedInstance = habitInstanceRepository.getInstanceById(instanceId)
-            ?: return Result.failure(IllegalStateException("Failed to retrieve updated instance"))
+            ?: return Result.failure(
+                IllegalStateException("Failed to retrieve updated instance")
+            )
 
         return Result.success(updatedInstance)
     }

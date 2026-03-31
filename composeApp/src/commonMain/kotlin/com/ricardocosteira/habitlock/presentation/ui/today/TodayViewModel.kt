@@ -4,7 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.di.AppScope
 import com.ricardocosteira.habitlock.domain.models.CompletionSource
+import com.ricardocosteira.habitlock.domain.models.HabitInstance
+import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
+import com.ricardocosteira.habitlock.domain.models.StrictnessPreset
+import com.ricardocosteira.habitlock.domain.models.UserStrictnessSettings
+import com.ricardocosteira.habitlock.domain.models.motivationalTitleIndexForDate
 import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.repositories.UserRepository
@@ -14,8 +19,17 @@ import com.ricardocosteira.habitlock.domain.usecases.ProcessEndOfDay
 import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
 import com.ricardocosteira.habitlock.domain.usecases.SkipLockedException
 import com.ricardocosteira.habitlock.domain.usecases.UndoHabit
+import com.ricardocosteira.habitlock.domain.usecases.UndoLastIncrement
+import com.ricardocosteira.habitlock.presentation.mappers.motivationalTitleResource
+import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.habitlock.presentation.models.mapToTodayHabitUiModel
 import com.ricardocosteira.habitlock.util.toLocalDate
+import kotlin.time.Clock
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -24,8 +38,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.TimeZone
-import kotlin.time.Clock
 import me.tatarka.inject.annotations.Inject
 
 /**
@@ -46,9 +60,9 @@ class TodayViewModel(
     private val processEndOfDay: ProcessEndOfDay,
     private val completeHabit: CompleteHabit,
     private val skipHabit: SkipHabit,
-    private val undoHabit: UndoHabit
+    private val undoHabit: UndoHabit,
+    private val undoLastIncrement: UndoLastIncrement
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(TodayState())
     val state: StateFlow<TodayState> = _state.asStateFlow()
 
@@ -61,7 +75,12 @@ class TodayViewModel(
 
     fun loadTodayHabits() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
+            // Only show loading spinner on initial load, not on refreshes
+            // after actions (complete, skip, undo) to avoid full-screen flash.
+            val isInitialLoad: Boolean = _state.value.habits.isEmpty()
+            if (isInitialLoad) {
+                _state.update { it.copy(isLoading = true) }
+            }
 
             try {
                 // Process end of day first
@@ -83,40 +102,98 @@ class TodayViewModel(
                     }
                 }
 
-                // Get today's instances
-                val today = Clock.System.now().toLocalDate(user?.timezone ?: TimeZone.currentSystemDefault())
-                val instances = habitInstanceRepository.getInstancesForDate(today)
+                // Derive timezone and strictness preset
+                val userTimezone: TimeZone = user?.timezone ?: TimeZone.currentSystemDefault()
 
-                // Map to UI models
-                val habits = instances.mapNotNull { instance ->
-                    val habit = habitRepository.getHabitById(instance.habitId) ?: return@mapNotNull null
-                    val schedule = habitRepository.getScheduleForHabit(habit.id) ?: return@mapNotNull null
-                    mapToTodayHabitUiModel(
-                        instance = instance,
-                        habit = habit,
-                        schedule = schedule,
-                        maxConsecutiveSkips = user?.maxConsecutiveSkips
+                val strictnessPreset: StrictnessPreset? = user?.let {
+                    val settings = UserStrictnessSettings(
+                        undoPolicy = it.undoPolicy,
+                        maxSnoozesPerHabitPerDay = it.maxSnoozesPerHabitPerDay,
+                        maxConsecutiveSkips = it.maxConsecutiveSkips,
+                        maxSnoozeDurationMinutes = it.maxSnoozeDurationMinutes
                     )
+                    StrictnessPreset.fromSettings(settings)
                 }
 
-                val counts = habits.computeCounts()
+                // Get today's instances
+                val today = Clock.System.now().toLocalDate(userTimezone)
+                val instances = habitInstanceRepository.getInstancesForDate(today)
+
+                val motivationalTitleRes = motivationalTitleResource(
+                    motivationalTitleIndexForDate(today)
+                )
+
+                // Map to UI models — runs on Default to keep the main thread free
+                val habits: ImmutableList<TodayHabitUiModel> = withContext(Dispatchers.Default) {
+                    coroutineScope {
+                        instances.mapNotNull { instance ->
+                            val habitDeferred = async {
+                                habitRepository.getHabitById(instance.habitId)
+                            }
+                            val scheduleDeferred = async {
+                                habitRepository.getScheduleForHabit(instance.habitId)
+                            }
+                            val habit = habitDeferred.await() ?: return@mapNotNull null
+                            val schedule = scheduleDeferred.await() ?: return@mapNotNull null
+                            mapToTodayHabitUiModel(
+                                instance = instance,
+                                habit = habit,
+                                schedule = schedule,
+                                maxConsecutiveSkips = user?.maxConsecutiveSkips,
+                                userTimezone = userTimezone
+                            )
+                        }.toImmutableList()
+                    }
+                }
+
+                val counts: TodayCounts = habits.computeCounts()
+
+                val resolvedStatuses: Set<HabitStatus> = setOf(
+                    HabitStatus.COMPLETED,
+                    HabitStatus.SKIPPED,
+                    HabitStatus.FAILED
+                )
+
+                val dailyHabits: List<TodayHabitUiModel> = habits.filter {
+                    it.isDaily &&
+                        !it.isSuspended
+                }
+                val weeklyHabits: List<TodayHabitUiModel> = habits.filter {
+                    it.isWeekly &&
+                        !it.isSuspended
+                }
+
+                val (pendingDaily: List<TodayHabitUiModel>, resolvedDaily: List<TodayHabitUiModel>) =
+                    dailyHabits.partition { it.status !in resolvedStatuses }
+                val (pendingWeekly: List<TodayHabitUiModel>, resolvedWeekly: List<TodayHabitUiModel>) =
+                    weeklyHabits.partition { it.status !in resolvedStatuses }
 
                 _state.update {
                     it.copy(
                         habits = habits,
+                        pendingDaily = pendingDaily.toImmutableList(),
+                        resolvedDaily = resolvedDaily.toImmutableList(),
+                        pendingWeekly = pendingWeekly.toImmutableList(),
+                        resolvedWeekly = resolvedWeekly.toImmutableList(),
                         isLoading = false,
                         pendingCount = counts.pendingCount,
-                        dailyResolved = counts.dailyResolved,
+                        dailyProgressDisplay = counts.dailyProgressDisplay,
+                        dailyProgressExact = counts.dailyProgressExact,
                         dailyTotal = counts.dailyTotal,
-                        weeklyResolved = counts.weeklyResolved,
-                        weeklyTotal = counts.weeklyTotal
+                        motivationalTitleRes = motivationalTitleRes,
+                        strictnessPreset = strictnessPreset
                     )
                 }
             } catch (e: Exception) {
+                val fallbackTimezone: TimeZone = TimeZone.currentSystemDefault()
+                val today = Clock.System.now().toLocalDate(fallbackTimezone)
                 _state.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message
+                        error = e.message,
+                        motivationalTitleRes = motivationalTitleResource(
+                            motivationalTitleIndexForDate(today)
+                        )
                     )
                 }
             }
@@ -134,15 +211,12 @@ class TodayViewModel(
 
             val result = completeHabit.executeBinary(instanceId, CompletionSource.IN_APP)
 
-            result.fold(
-                onSuccess = {
-                    loadTodayHabits()
-                    _events.emit(TodayEvent.HabitCompleted)
-                },
-                onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message))
-                }
-            )
+            result.onSuccess {
+                loadTodayHabits()
+                // No snackbar — card state change is the feedback
+            }.onFailure { error ->
+                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+            }
         }
     }
 
@@ -156,20 +230,45 @@ class TodayViewModel(
                 source = CompletionSource.IN_APP
             )
 
-            result.fold(
-                onSuccess = { updatedInstance ->
-                    loadTodayHabits()
-                    if (updatedInstance.isQuantitativeComplete()) {
-                        _events.emit(TodayEvent.HabitCompleted)
-                    } else {
-                        _events.emit(TodayEvent.ProgressAdded)
-                    }
-                },
-                onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message))
+            result.onSuccess { updatedInstance ->
+                loadTodayHabits()
+                if (updatedInstance.isQuantitativeComplete()) {
+                    // No snackbar — card state change is the feedback
+                } else {
+                    // No snackbar — progress bar update is the feedback
                 }
-            )
+            }.onFailure { error ->
+                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+            }
         }
+    }
+
+    fun incrementHabitProgress(instanceId: String) {
+        viewModelScope.launch {
+            val habit: TodayHabitUiModel =
+                _state.value.habits.find { it.instanceId == instanceId } ?: return@launch
+
+            val result: Result<HabitInstance> = completeHabit.executeQuantitative(
+                instanceId = instanceId,
+                deltaValue = habit.defaultIncrement,
+                source = CompletionSource.IN_APP
+            )
+
+            result.onSuccess { updatedInstance: HabitInstance ->
+                loadTodayHabits()
+                if (updatedInstance.isQuantitativeComplete()) {
+                    // No snackbar — card state change is the feedback
+                } else {
+                    // No snackbar — progress bar update is the feedback
+                }
+            }.onFailure { error: Throwable ->
+                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+            }
+        }
+    }
+
+    fun showQuantitativeInput(instanceId: String) {
+        _state.update { it.copy(showQuantitativeInputFor = instanceId) }
     }
 
     fun dismissQuantitativeInput() {
@@ -180,18 +279,19 @@ class TodayViewModel(
         viewModelScope.launch {
             val result = skipHabit.execute(instanceId)
 
-            result.fold(
-                onSuccess = {
-                    loadTodayHabits()
-                    _events.emit(TodayEvent.HabitSkipped)
-                },
-                onFailure = { error ->
-                    when (error) {
-                        is SkipLockedException -> _events.emit(TodayEvent.SkipLimitReached)
-                        else -> _events.emit(TodayEvent.ShowError(error.message))
-                    }
+            result.onSuccess {
+                loadTodayHabits()
+                // No snackbar — card state change is the feedback
+            }.onFailure { error ->
+                when (error) {
+                    is SkipLockedException -> _events.emit(TodayEvent.SkipLimitReached)
+
+                    else ->
+                        _events.emit(
+                            TodayEvent.ShowError(error.message ?: "Something went wrong")
+                        )
                 }
-            )
+            }
         }
     }
 
@@ -199,15 +299,24 @@ class TodayViewModel(
         viewModelScope.launch {
             val result = undoHabit.execute(instanceId)
 
-            result.fold(
-                onSuccess = {
-                    loadTodayHabits()
-                    _events.emit(TodayEvent.ActionUndone)
-                },
-                onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message))
-                }
-            )
+            result.onSuccess {
+                loadTodayHabits()
+                // No snackbar — card state revert is the feedback
+            }.onFailure { error ->
+                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+            }
+        }
+    }
+
+    fun undoLastIncrement(instanceId: String) {
+        viewModelScope.launch {
+            val result = undoLastIncrement.execute(instanceId)
+
+            result.onSuccess {
+                loadTodayHabits()
+            }.onFailure { error ->
+                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+            }
         }
     }
 
@@ -216,9 +325,9 @@ class TodayViewModel(
             try {
                 habitRepository.archiveHabit(habitId)
                 loadTodayHabits()
-                _events.emit(TodayEvent.HabitArchived)
+                // No snackbar — habit disappears from the list
             } catch (e: Exception) {
-                _events.emit(TodayEvent.ShowError(e.message))
+                _events.emit(TodayEvent.ShowError(e.message ?: "Something went wrong"))
             }
         }
     }

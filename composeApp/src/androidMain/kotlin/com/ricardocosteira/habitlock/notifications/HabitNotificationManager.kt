@@ -19,18 +19,17 @@ import com.ricardocosteira.habitlock.domain.models.HabitType
  * - Grace period warnings
  * - Daily summary notifications (optional)
  */
-class HabitNotificationManager(
-    private val context: Context
-) {
-
-    private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+class HabitNotificationManager(private val context: Context) {
+    private val notificationManager = context.getSystemService(
+        Context.NOTIFICATION_SERVICE
+    ) as NotificationManager
 
     /**
      * Shows a habit reminder notification.
      * Includes action buttons based on habit type:
      * - Binary habits: "Complete", "Snooze", "Skip"
      * - Quantitative habits: "+1", "Snooze", "Skip"
-     * 
+     *
      * @param instance The habit instance to remind about
      * @param habit The habit details
      */
@@ -43,7 +42,7 @@ class HabitNotificationManager(
     /**
      * Shows a grace period notification.
      * This is a more urgent notification sent before habits are marked as failed.
-     * 
+     *
      * @param instance The habit instance in grace period
      * @param habit The habit details
      */
@@ -56,7 +55,7 @@ class HabitNotificationManager(
     /**
      * Shows a daily summary notification.
      * Provides an overview of the day's habit completion.
-     * 
+     *
      * @param completedCount Number of completed habits
      * @param totalCount Total number of habits for the day
      * @param perfectDay Whether all habits were completed
@@ -68,7 +67,7 @@ class HabitNotificationManager(
 
     /**
      * Cancels a habit reminder notification.
-     * 
+     *
      * @param instanceId The ID of the habit instance
      */
     fun cancelHabitReminder(instanceId: String) {
@@ -78,7 +77,7 @@ class HabitNotificationManager(
 
     /**
      * Cancels a grace period notification.
-     * 
+     *
      * @param instanceId The ID of the habit instance
      */
     fun cancelGracePeriodNotification(instanceId: String) {
@@ -88,7 +87,7 @@ class HabitNotificationManager(
 
     /**
      * Cancels all notifications for a specific habit instance.
-     * 
+     *
      * @param instanceId The ID of the habit instance
      */
     fun cancelAllNotificationsForInstance(instanceId: String) {
@@ -105,7 +104,10 @@ class HabitNotificationManager(
 
     // Private helper methods
 
-    private fun buildHabitReminderNotification(instance: HabitInstance, habit: Habit): Notification {
+    private fun buildHabitReminderNotification(
+        instance: HabitInstance,
+        habit: Habit
+    ): Notification {
         // Intent to open the app
         val openAppIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -120,7 +122,10 @@ class HabitNotificationManager(
         // Build notification title and content based on habit type
         val title = habit.name
         val content = when (habit.type) {
-            HabitType.BINARY -> "Time to complete your habit"
+            HabitType.BINARY -> {
+                "Time to complete your habit"
+            }
+
             HabitType.QUANTITATIVE -> {
                 val progress = instance.currentProgress
                 val quota = habit.targetValue ?: 1
@@ -128,8 +133,9 @@ class HabitNotificationManager(
             }
         }
 
-        val builder = NotificationCompat.Builder(context, NotificationChannels.CHANNEL_HABITS)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+        val builder = NotificationCompat
+            .Builder(context, NotificationChannels.CHANNEL_HABITS)
+            .setSmallIcon(R.mipmap.ic_launcher_foreground)
             .setContentTitle(title)
             .setContentText(content)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -142,6 +148,7 @@ class HabitNotificationManager(
             HabitType.BINARY -> {
                 builder.addAction(createCompleteAction(instance.id, habit.id))
             }
+
             HabitType.QUANTITATIVE -> {
                 builder.addAction(createAddOneAction(instance.id, habit.id))
             }
@@ -168,8 +175,9 @@ class HabitNotificationManager(
         val title = "⚠️ ${habit.name}"
         val content = "Last chance! This habit will be marked as failed soon."
 
-        val builder = NotificationCompat.Builder(context, NotificationChannels.CHANNEL_GRACE_PERIOD)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+        val builder = NotificationCompat
+            .Builder(context, NotificationChannels.CHANNEL_GRACE_PERIOD)
+            .setSmallIcon(R.mipmap.ic_launcher_foreground)
             .setContentTitle(title)
             .setContentText(content)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -182,6 +190,7 @@ class HabitNotificationManager(
             HabitType.BINARY -> {
                 builder.addAction(createCompleteAction(instance.id, habit.id))
             }
+
             HabitType.QUANTITATIVE -> {
                 builder.addAction(createAddOneAction(instance.id, habit.id))
             }
@@ -220,8 +229,9 @@ class HabitNotificationManager(
             "You completed $completedCount out of $totalCount habits today."
         }
 
-        return NotificationCompat.Builder(context, NotificationChannels.CHANNEL_DAILY_SUMMARY)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+        return NotificationCompat
+            .Builder(context, NotificationChannels.CHANNEL_DAILY_SUMMARY)
+            .setSmallIcon(R.mipmap.ic_launcher_foreground)
             .setContentTitle(title)
             .setContentText(content)
             .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -231,7 +241,10 @@ class HabitNotificationManager(
             .build()
     }
 
-    private fun createCompleteAction(instanceId: String, habitId: String): NotificationCompat.Action {
+    private fun createCompleteAction(
+        instanceId: String,
+        habitId: String
+    ): NotificationCompat.Action {
         val intent = Intent(context, NotificationActionReceiver::class.java).apply {
             action = NotificationActionReceiver.ACTION_COMPLETE
             putExtra(NotificationActionReceiver.EXTRA_INSTANCE_ID, instanceId)
@@ -245,11 +258,12 @@ class HabitNotificationManager(
             PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        return NotificationCompat.Action.Builder(
-            0, // No icon for now
-            "Complete",
-            pendingIntent
-        ).build()
+        return NotificationCompat.Action
+            .Builder(
+                0, // No icon for now
+                "Complete",
+                pendingIntent
+            ).build()
     }
 
     private fun createAddOneAction(instanceId: String, habitId: String): NotificationCompat.Action {
@@ -266,11 +280,12 @@ class HabitNotificationManager(
             PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        return NotificationCompat.Action.Builder(
-            0, // No icon for now
-            "+1",
-            pendingIntent
-        ).build()
+        return NotificationCompat.Action
+            .Builder(
+                0, // No icon for now
+                "+1",
+                pendingIntent
+            ).build()
     }
 
     private fun createSnoozeAction(instanceId: String): NotificationCompat.Action {
@@ -286,11 +301,12 @@ class HabitNotificationManager(
             PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        return NotificationCompat.Action.Builder(
-            0, // No icon for now
-            "Snooze",
-            pendingIntent
-        ).build()
+        return NotificationCompat.Action
+            .Builder(
+                0, // No icon for now
+                "Snooze",
+                pendingIntent
+            ).build()
     }
 
     private fun createSkipAction(instanceId: String): NotificationCompat.Action {
@@ -306,18 +322,17 @@ class HabitNotificationManager(
             PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        return NotificationCompat.Action.Builder(
-            0, // No icon for now
-            "Skip",
-            pendingIntent
-        ).build()
+        return NotificationCompat.Action
+            .Builder(
+                0, // No icon for now
+                "Skip",
+                pendingIntent
+            ).build()
     }
 
-    private fun getNotificationId(instanceId: String): Int {
-        return NotificationChannels.NOTIFICATION_ID_HABIT_BASE + (instanceId.hashCode() % 1000)
-    }
+    private fun getNotificationId(instanceId: String): Int =
+        NotificationChannels.NOTIFICATION_ID_HABIT_BASE + (instanceId.hashCode() % 1000)
 
-    private fun getGracePeriodNotificationId(instanceId: String): Int {
-        return NotificationChannels.NOTIFICATION_ID_GRACE_BASE + (instanceId.hashCode() % 1000)
-    }
+    private fun getGracePeriodNotificationId(instanceId: String): Int =
+        NotificationChannels.NOTIFICATION_ID_GRACE_BASE + (instanceId.hashCode() % 1000)
 }

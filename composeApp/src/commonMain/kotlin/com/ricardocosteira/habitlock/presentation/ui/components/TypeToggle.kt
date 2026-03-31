@@ -58,7 +58,11 @@ fun TypeToggle(
                     .background(backgroundColor)
                     .then(
                         if (!isSelected && isDarkTheme) {
-                            Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, PillShape)
+                            Modifier.border(
+                                1.dp,
+                                MaterialTheme.colorScheme.outlineVariant,
+                                PillShape
+                            )
                         } else {
                             Modifier
                         }

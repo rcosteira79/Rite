@@ -15,7 +15,8 @@ data class HabitInstance(
     val completedValue: Int?,
     val targetValue: Int?,
     val consecutiveSkipsAtCreation: Int,
-    val createdAt: Instant
+    val createdAt: Instant,
+    val completedAt: Instant? = null
 ) {
     /**
      * Whether skip is disabled due to reaching the consecutive skip limit.
@@ -50,4 +51,3 @@ data class HabitInstance(
     val currentProgress: Int
         get() = completedValue ?: 0
 }
-

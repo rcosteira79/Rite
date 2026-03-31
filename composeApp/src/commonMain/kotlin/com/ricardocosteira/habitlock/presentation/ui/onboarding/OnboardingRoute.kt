@@ -31,9 +31,18 @@ fun OnboardingRoute(
         viewModel.events.collect { event ->
             when (event) {
                 OnboardingEvent.NavigateToToday -> onFinished()
+
                 OnboardingEvent.EmptyHabitName -> snackbarHostState.showSnackbar(messageEmptyName)
-                OnboardingEvent.MissingTargetValue -> snackbarHostState.showSnackbar(messageMissingTarget)
-                OnboardingEvent.InvalidTargetValue -> snackbarHostState.showSnackbar(messageInvalidTarget)
+
+                OnboardingEvent.MissingTargetValue ->
+                    snackbarHostState.showSnackbar(
+                        messageMissingTarget
+                    )
+
+                OnboardingEvent.InvalidTargetValue ->
+                    snackbarHostState.showSnackbar(
+                        messageInvalidTarget
+                    )
             }
         }
     }

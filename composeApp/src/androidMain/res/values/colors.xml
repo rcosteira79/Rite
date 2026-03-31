@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Splash screen background — matches the app's primary surface color -->
-    <color name="splash_background">#FFFFFF</color>
+    <!-- Splash screen background — matches the app's primary color -->
+    <color name="splash_background">#2D4F3F</color>
     <!-- Circular background behind the icon on the splash screen -->
-    <color name="splash_icon_background">#F3F0FF</color>
+    <color name="splash_icon_background">#2D4F3F</color>
 </resources>
 

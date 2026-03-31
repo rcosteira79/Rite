@@ -24,9 +24,7 @@ import me.tatarka.inject.annotations.Inject
  */
 @AppScope
 @Inject
-class ArchivedHabitsViewModel(
-    private val habitRepository: HabitRepository
-) : ViewModel() {
+class ArchivedHabitsViewModel(private val habitRepository: HabitRepository) : ViewModel() {
 
     private val _state = MutableStateFlow(ArchivedHabitsState())
     val state: StateFlow<ArchivedHabitsState> = _state.asStateFlow()

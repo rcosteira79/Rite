@@ -55,12 +55,11 @@ import habitlock.composeapp.generated.resources.strictness_preset_cd_selected
 import habitlock.composeapp.generated.resources.strictness_subtext
 import org.jetbrains.compose.resources.stringResource
 
-private fun OnboardingStrictnessPreset.icon(): ImageVector =
-    when (this) {
-        OnboardingStrictnessPreset.FLEXIBLE -> Icons.Outlined.EditNote
-        OnboardingStrictnessPreset.BALANCED -> Icons.Filled.Balance
-        OnboardingStrictnessPreset.LOCKED -> Icons.Filled.Lock
-    }
+private fun OnboardingStrictnessPreset.icon(): ImageVector = when (this) {
+    OnboardingStrictnessPreset.FLEXIBLE -> Icons.Outlined.EditNote
+    OnboardingStrictnessPreset.BALANCED -> Icons.Filled.Balance
+    OnboardingStrictnessPreset.LOCKED -> Icons.Filled.Lock
+}
 
 @Composable
 fun StrictnessStep(
@@ -181,7 +180,8 @@ private fun PresetCard(
             .semantics {
                 role = Role.RadioButton
                 selected = isSelected
-                stateDescription = if (isSelected) selectedStateDescription else notSelectedStateDescription
+                stateDescription =
+                    if (isSelected) selectedStateDescription else notSelectedStateDescription
             }.padding(16.dp)
     ) {
         if (isSelected) {
@@ -252,7 +252,9 @@ private fun PresetCard(
                     )
                     Text(
                         text = rule.value,
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.SemiBold
+                        ),
                         color = cardContent
                     )
                 }
@@ -278,7 +280,9 @@ private fun PresetCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = preset.label,
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
