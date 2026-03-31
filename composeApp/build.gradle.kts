@@ -81,24 +81,6 @@ kotlin {
     }
 }
 
-// Wire KSP-generated Kotlin sources into each iOS Kotlin/Native compile task.
-// The KSP Gradle plugin registers only the java output directory automatically;
-// the kotlin directory must be added explicitly so kotlin-inject's generated
-// `create` extension is visible at compile time.
-tasks.matching { it.name.startsWith("compileKotlinIos") }.configureEach {
-    val targetName = name.removePrefix("compileKotlin")
-        .replaceFirstChar { it.lowercaseChar() }
-    val kspDir = layout.buildDirectory
-        .dir("generated/ksp/$targetName/${targetName}Main/kotlin")
-        .get().asFile
-    (this as? org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>)
-        ?.compilerOptions
-        ?: return@configureEach
-    inputs.dir(kspDir).optional()
-    (this as org.jetbrains.kotlin.gradle.tasks.AbstractKotlinNativeCompile<*, *>)
-        .source(kspDir)
-}
-
 android {
     namespace = "com.ricardocosteira.habitlock"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -118,6 +100,10 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+        }
+        create("rc") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -159,10 +145,19 @@ sqldelight {
     }
 }
 
+// kotlin-inject: generate code once via commonMain metadata, visible to all targets.
 dependencies {
     add("kspCommonMainMetadata", libs.kotlin.inject.compiler)
-    add("kspAndroid", libs.kotlin.inject.compiler)
-    add("kspIosArm64", libs.kotlin.inject.compiler)
-    add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
-    add("kspJvm", libs.kotlin.inject.compiler)
+}
+
+// Wire KSP metadata output into commonMain so all targets see the generated `create` extension.
+kotlin.sourceSets.commonMain {
+    kotlin.srcDir(layout.buildDirectory.dir("generated/ksp/metadata/commonMain/kotlin"))
+}
+
+// Ensure all Kotlin compile tasks wait for KSP metadata generation.
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+    if (name != "kspCommonMainKotlinMetadata") {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
 }
