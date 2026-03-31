@@ -206,9 +206,7 @@ private fun CollapsedHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = motivationalTitle,
                 style = MaterialTheme.typography.headlineSmall.copy(

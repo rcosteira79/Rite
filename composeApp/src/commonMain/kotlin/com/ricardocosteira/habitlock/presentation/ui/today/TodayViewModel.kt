@@ -27,6 +27,9 @@ import com.ricardocosteira.habitlock.util.toLocalDate
 import kotlin.time.Clock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -35,6 +38,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.TimeZone
 import me.tatarka.inject.annotations.Inject
 
@@ -119,21 +123,28 @@ class TodayViewModel(
                     motivationalTitleIndexForDate(today)
                 )
 
-                // Map to UI models
-                val habits: ImmutableList<TodayHabitUiModel> = instances
-                    .mapNotNull { instance ->
-                        val habit = habitRepository.getHabitById(instance.habitId)
-                            ?: return@mapNotNull null
-                        val schedule = habitRepository.getScheduleForHabit(habit.id)
-                            ?: return@mapNotNull null
-                        mapToTodayHabitUiModel(
-                            instance = instance,
-                            habit = habit,
-                            schedule = schedule,
-                            maxConsecutiveSkips = user?.maxConsecutiveSkips,
-                            userTimezone = userTimezone
-                        )
-                    }.toImmutableList()
+                // Map to UI models — runs on Default to keep the main thread free
+                val habits: ImmutableList<TodayHabitUiModel> = withContext(Dispatchers.Default) {
+                    coroutineScope {
+                        instances.mapNotNull { instance ->
+                            val habitDeferred = async {
+                                habitRepository.getHabitById(instance.habitId)
+                            }
+                            val scheduleDeferred = async {
+                                habitRepository.getScheduleForHabit(instance.habitId)
+                            }
+                            val habit = habitDeferred.await() ?: return@mapNotNull null
+                            val schedule = scheduleDeferred.await() ?: return@mapNotNull null
+                            mapToTodayHabitUiModel(
+                                instance = instance,
+                                habit = habit,
+                                schedule = schedule,
+                                maxConsecutiveSkips = user?.maxConsecutiveSkips,
+                                userTimezone = userTimezone
+                            )
+                        }.toImmutableList()
+                    }
+                }
 
                 val counts: TodayCounts = habits.computeCounts()
 
@@ -200,15 +211,12 @@ class TodayViewModel(
 
             val result = completeHabit.executeBinary(instanceId, CompletionSource.IN_APP)
 
-            result.fold(
-                onSuccess = {
-                    loadTodayHabits()
-                    // No snackbar — card state change is the feedback
-                },
-                onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
-                }
-            )
+            result.onSuccess {
+                loadTodayHabits()
+                // No snackbar — card state change is the feedback
+            }.onFailure { error ->
+                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+            }
         }
     }
 
@@ -222,19 +230,16 @@ class TodayViewModel(
                 source = CompletionSource.IN_APP
             )
 
-            result.fold(
-                onSuccess = { updatedInstance ->
-                    loadTodayHabits()
-                    if (updatedInstance.isQuantitativeComplete()) {
-                        // No snackbar — card state change is the feedback
-                    } else {
-                        // No snackbar — progress bar update is the feedback
-                    }
-                },
-                onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+            result.onSuccess { updatedInstance ->
+                loadTodayHabits()
+                if (updatedInstance.isQuantitativeComplete()) {
+                    // No snackbar — card state change is the feedback
+                } else {
+                    // No snackbar — progress bar update is the feedback
                 }
-            )
+            }.onFailure { error ->
+                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+            }
         }
     }
 
@@ -249,19 +254,16 @@ class TodayViewModel(
                 source = CompletionSource.IN_APP
             )
 
-            result.fold(
-                onSuccess = { updatedInstance: HabitInstance ->
-                    loadTodayHabits()
-                    if (updatedInstance.isQuantitativeComplete()) {
-                        // No snackbar — card state change is the feedback
-                    } else {
-                        // No snackbar — progress bar update is the feedback
-                    }
-                },
-                onFailure = { error: Throwable ->
-                    _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+            result.onSuccess { updatedInstance: HabitInstance ->
+                loadTodayHabits()
+                if (updatedInstance.isQuantitativeComplete()) {
+                    // No snackbar — card state change is the feedback
+                } else {
+                    // No snackbar — progress bar update is the feedback
                 }
-            )
+            }.onFailure { error: Throwable ->
+                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+            }
         }
     }
 
@@ -277,22 +279,19 @@ class TodayViewModel(
         viewModelScope.launch {
             val result = skipHabit.execute(instanceId)
 
-            result.fold(
-                onSuccess = {
-                    loadTodayHabits()
-                    // No snackbar — card state change is the feedback
-                },
-                onFailure = { error ->
-                    when (error) {
-                        is SkipLockedException -> _events.emit(TodayEvent.SkipLimitReached)
+            result.onSuccess {
+                loadTodayHabits()
+                // No snackbar — card state change is the feedback
+            }.onFailure { error ->
+                when (error) {
+                    is SkipLockedException -> _events.emit(TodayEvent.SkipLimitReached)
 
-                        else ->
-                            _events.emit(
-                                TodayEvent.ShowError(error.message ?: "Something went wrong")
-                            )
-                    }
+                    else ->
+                        _events.emit(
+                            TodayEvent.ShowError(error.message ?: "Something went wrong")
+                        )
                 }
-            )
+            }
         }
     }
 
@@ -300,15 +299,12 @@ class TodayViewModel(
         viewModelScope.launch {
             val result = undoHabit.execute(instanceId)
 
-            result.fold(
-                onSuccess = {
-                    loadTodayHabits()
-                    // No snackbar — card state revert is the feedback
-                },
-                onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
-                }
-            )
+            result.onSuccess {
+                loadTodayHabits()
+                // No snackbar — card state revert is the feedback
+            }.onFailure { error ->
+                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+            }
         }
     }
 
@@ -316,12 +312,11 @@ class TodayViewModel(
         viewModelScope.launch {
             val result = undoLastIncrement.execute(instanceId)
 
-            result.fold(
-                onSuccess = { loadTodayHabits() },
-                onFailure = { error ->
-                    _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
-                }
-            )
+            result.onSuccess {
+                loadTodayHabits()
+            }.onFailure { error ->
+                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+            }
         }
     }
 

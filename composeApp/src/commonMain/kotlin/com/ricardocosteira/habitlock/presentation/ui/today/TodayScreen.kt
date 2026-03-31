@@ -40,6 +40,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +57,7 @@ import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.habitlock.presentation.ui.components.toolbar.DynamicCollapsingToolbar
 import com.ricardocosteira.habitlock.presentation.ui.components.toolbar.pinnedExitUntilCollapsedToolbarSpec
+import com.ricardocosteira.habitlock.util.formatMonthAbbreviation
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.habit_lock_logo
 import habitlock.composeapp.generated.resources.today_cd_add_habit
@@ -69,7 +71,6 @@ import habitlock.composeapp.generated.resources.today_timezone_changed_dismiss
 import habitlock.composeapp.generated.resources.today_timezone_changed_message
 import habitlock.composeapp.generated.resources.today_timezone_changed_title
 import kotlin.time.Clock
-import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.getString
@@ -150,7 +151,7 @@ internal fun TodayScreen(
     val lazyListState = rememberLazyListState()
     val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec()
 
-    var expandedCardIds: Set<String> by remember { mutableStateOf(emptySet()) }
+    var expandedCardIds: Set<String> by rememberSaveable { mutableStateOf(emptySet()) }
 
     Scaffold(
         topBar = {
@@ -393,56 +394,6 @@ private fun rememberFormattedDate(): String {
     }
 
     return remember(localDate) { "$monthAbbreviation ${localDate.day}" }
-}
-
-private fun formatMonthAbbreviation(month: Month): String = when (month) {
-    Month.JANUARY -> {
-        "Jan"
-    }
-
-    Month.FEBRUARY -> {
-        "Feb"
-    }
-
-    Month.MARCH -> {
-        "Mar"
-    }
-
-    Month.APRIL -> {
-        "Apr"
-    }
-
-    Month.MAY -> {
-        "May"
-    }
-
-    Month.JUNE -> {
-        "Jun"
-    }
-
-    Month.JULY -> {
-        "Jul"
-    }
-
-    Month.AUGUST -> {
-        "Aug"
-    }
-
-    Month.SEPTEMBER -> {
-        "Sep"
-    }
-
-    Month.OCTOBER -> {
-        "Oct"
-    }
-
-    Month.NOVEMBER -> {
-        "Nov"
-    }
-
-    Month.DECEMBER -> {
-        "Dec"
-    }
 }
 
 @Composable

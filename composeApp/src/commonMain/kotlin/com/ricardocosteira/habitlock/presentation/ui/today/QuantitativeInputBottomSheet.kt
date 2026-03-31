@@ -75,9 +75,7 @@ fun QuantitativeInputBottomSheet(
             // Current progress
             if (habit.targetValue != null) {
                 Text(
-                    text = if (habit.unit !=
-                        null
-                    ) {
+                    text = if (habit.unit != null) {
                         stringResource(
                             Res.string.quantitative_input_current_with_unit,
                             habit.completedValue ?: 0,

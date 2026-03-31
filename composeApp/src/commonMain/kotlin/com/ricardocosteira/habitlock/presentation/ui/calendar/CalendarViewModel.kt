@@ -92,7 +92,7 @@ class CalendarViewModel(
     }
 
     private fun formatMonthDisplay(month: Month, year: Int): String {
-        val monthName: String = month.name.lowercase().replaceFirstChar { it.uppercase() }
+        val monthName = month.name.lowercase().replaceFirstChar { it.uppercase() }
         return "$monthName $year"
     }
 

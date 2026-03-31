@@ -61,16 +61,15 @@ private fun SchedulePreset.labelRes(): StringResource = when (this) {
 }
 
 private val DayOfWeek.labelRes: StringResource
-    get() =
-        when (this) {
-            DayOfWeek.MONDAY -> Res.string.common_schedule_day_mon
-            DayOfWeek.TUESDAY -> Res.string.common_schedule_day_tue
-            DayOfWeek.WEDNESDAY -> Res.string.common_schedule_day_wed
-            DayOfWeek.THURSDAY -> Res.string.common_schedule_day_thu
-            DayOfWeek.FRIDAY -> Res.string.common_schedule_day_fri
-            DayOfWeek.SATURDAY -> Res.string.common_schedule_day_sat
-            DayOfWeek.SUNDAY -> Res.string.common_schedule_day_sun
-        }
+    get() = when (this) {
+        DayOfWeek.MONDAY -> Res.string.common_schedule_day_mon
+        DayOfWeek.TUESDAY -> Res.string.common_schedule_day_tue
+        DayOfWeek.WEDNESDAY -> Res.string.common_schedule_day_wed
+        DayOfWeek.THURSDAY -> Res.string.common_schedule_day_thu
+        DayOfWeek.FRIDAY -> Res.string.common_schedule_day_fri
+        DayOfWeek.SATURDAY -> Res.string.common_schedule_day_sat
+        DayOfWeek.SUNDAY -> Res.string.common_schedule_day_sun
+    }
 
 /**
  * Schedule picker with three preset pills (Every day / Weekdays / Weekend) and

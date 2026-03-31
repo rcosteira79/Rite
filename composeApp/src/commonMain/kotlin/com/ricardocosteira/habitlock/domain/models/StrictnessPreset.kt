@@ -32,9 +32,7 @@ enum class StrictnessPreset {
      * - No skips allowed (0)
      * - Short snooze duration (15 minutes)
      */
-    LOCKED,
-
-    ;
+    LOCKED;
 
     /**
      * Converts this preset to user settings.
