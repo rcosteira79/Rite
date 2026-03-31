@@ -14,6 +14,8 @@ import habitlock.composeapp.generated.resources.motivational_title_0
 import habitlock.composeapp.generated.resources.motivational_title_1
 import habitlock.composeapp.generated.resources.motivational_title_2
 import habitlock.composeapp.generated.resources.motivational_title_7
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -43,6 +45,7 @@ class TodayScreenScreenshotTest {
                     onComplete = {},
                     onSkip = {},
                     onUndo = {},
+                    onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
@@ -62,6 +65,7 @@ class TodayScreenScreenshotTest {
                     onComplete = {},
                     onSkip = {},
                     onUndo = {},
+                    onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
@@ -83,6 +87,7 @@ class TodayScreenScreenshotTest {
                     onComplete = {},
                     onSkip = {},
                     onUndo = {},
+                    onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
@@ -102,6 +107,7 @@ class TodayScreenScreenshotTest {
                     onComplete = {},
                     onSkip = {},
                     onUndo = {},
+                    onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
@@ -123,6 +129,7 @@ class TodayScreenScreenshotTest {
                     onComplete = {},
                     onSkip = {},
                     onUndo = {},
+                    onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
@@ -142,6 +149,7 @@ class TodayScreenScreenshotTest {
                     onComplete = {},
                     onSkip = {},
                     onUndo = {},
+                    onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
@@ -163,6 +171,7 @@ class TodayScreenScreenshotTest {
                     onComplete = {},
                     onSkip = {},
                     onUndo = {},
+                    onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
@@ -182,6 +191,7 @@ class TodayScreenScreenshotTest {
                     onComplete = {},
                     onSkip = {},
                     onUndo = {},
+                    onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
@@ -203,6 +213,7 @@ class TodayScreenScreenshotTest {
                     onComplete = {},
                     onSkip = {},
                     onUndo = {},
+                    onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
@@ -222,6 +233,7 @@ class TodayScreenScreenshotTest {
                     onComplete = {},
                     onSkip = {},
                     onUndo = {},
+                    onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
@@ -243,6 +255,7 @@ class TodayScreenScreenshotTest {
                     onComplete = {},
                     onSkip = {},
                     onUndo = {},
+                    onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
@@ -262,6 +275,7 @@ class TodayScreenScreenshotTest {
                     onComplete = {},
                     onSkip = {},
                     onUndo = {},
+                    onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
                     onDismissTimezoneWarning = {},
@@ -276,7 +290,7 @@ class TodayScreenScreenshotTest {
 
     private fun emptyState(): TodayState = TodayState(
         isLoading = false,
-        habits = emptyList(),
+        habits = persistentListOf(),
         motivationalTitleRes = Res.string.motivational_title_0,
         strictnessPreset = StrictnessPreset.BALANCED,
         pendingCount = 0,
@@ -287,7 +301,7 @@ class TodayScreenScreenshotTest {
     private fun dailyPendingState(): TodayState = TodayState(
         isLoading = false,
         habits =
-            listOf(
+            persistentListOf(
                 buildHabit(
                     instanceId = "1",
                     name = "Morning Meditation",
@@ -324,7 +338,7 @@ class TodayScreenScreenshotTest {
     )
 
     private fun mixedState(): TodayState {
-        val habits: List<TodayHabitUiModel> = listOf(
+        val habits = persistentListOf(
             buildHabit(
                 instanceId = "1",
                 name = "Read 30 Pages",
@@ -389,7 +403,7 @@ class TodayScreenScreenshotTest {
     private fun allDoneState(): TodayState = TodayState(
         isLoading = false,
         habits =
-            listOf(
+            persistentListOf(
                 buildHabit(
                     instanceId = "1",
                     name = "Morning Meditation",
@@ -430,7 +444,7 @@ class TodayScreenScreenshotTest {
     private fun quantitativeInProgressState(): TodayState = TodayState(
         isLoading = false,
         habits =
-            listOf(
+            persistentListOf(
                 buildHabit(
                     instanceId = "1",
                     name = "Hydrate",
