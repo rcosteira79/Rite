@@ -19,3 +19,6 @@ captures
 node_modules/
 .worktrees/
 .superpowers/
+# Roborazzi comparison artifacts
+*_actual.png
+*_compare.png
