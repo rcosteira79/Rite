@@ -28,8 +28,10 @@ import kotlin.time.Clock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -68,6 +70,8 @@ class TodayViewModel(
 
     private val _events = MutableSharedFlow<TodayEvent>()
     val events: SharedFlow<TodayEvent> = _events.asSharedFlow()
+
+    private var undoJob: Job? = null
 
     init {
         loadTodayHabits()
@@ -320,6 +324,54 @@ class TodayViewModel(
         }
     }
 
+    fun deleteHabit(habitId: String) {
+        val habit: TodayHabitUiModel = _state.value.habits.find { it.habitId == habitId } ?: return
+
+        removeHabitFromState(habitId)
+
+        _state.update { it.copy(pendingUndo = UndoOperation.Delete(habitId, habit.name)) }
+
+        viewModelScope.launch { _events.emit(TodayEvent.HabitDeleted(habit.name)) }
+
+        undoJob?.cancel()
+        undoJob = viewModelScope.launch {
+            delay(UNDO_TIMEOUT_MS)
+            try {
+                habitRepository.deleteHabit(habitId)
+                _state.update { it.copy(pendingUndo = null) }
+            } catch (e: Exception) {
+                _events.emit(TodayEvent.ShowError(e.message ?: "Failed to delete habit"))
+                loadTodayHabits()
+            }
+        }
+    }
+
+    fun undoDelete() {
+        undoJob?.cancel()
+        _state.update { it.copy(pendingUndo = null) }
+        loadTodayHabits()
+    }
+
+    private fun removeHabitFromState(habitId: String) {
+        _state.update { state ->
+            state.copy(
+                habits = state.habits.filter { it.habitId != habitId }.toImmutableList(),
+                pendingDaily = state.pendingDaily.filter {
+                    it.habitId != habitId
+                }.toImmutableList(),
+                resolvedDaily = state.resolvedDaily.filter {
+                    it.habitId != habitId
+                }.toImmutableList(),
+                pendingWeekly = state.pendingWeekly.filter {
+                    it.habitId != habitId
+                }.toImmutableList(),
+                resolvedWeekly = state.resolvedWeekly.filter {
+                    it.habitId != habitId
+                }.toImmutableList()
+            )
+        }
+    }
+
     fun archiveHabit(habitId: String) {
         viewModelScope.launch {
             try {
@@ -350,5 +402,9 @@ class TodayViewModel(
 
     fun clearError() {
         _state.update { it.copy(error = null) }
+    }
+
+    private companion object {
+        const val UNDO_TIMEOUT_MS: Long = 5_000L
     }
 }
