@@ -112,18 +112,15 @@ fun SwipeableHabitCard(
         AnchoredDraggableState(initialValue = SwipeAction.REST)
     }
 
-    // Update anchors when card width changes
-    LaunchedEffect(cardWidth) {
-        if (cardWidth > 0f) {
-            anchoredDraggableState.updateAnchors(
-                DraggableAnchors {
-                    SwipeAction.REST at 0f
-                    SwipeAction.ARCHIVE at cardWidth * ARCHIVE_THRESHOLD_FRACTION
-                    SwipeAction.EDIT at cardWidth * EDIT_THRESHOLD_FRACTION
-                    SwipeAction.DELETE at cardWidth * DELETE_THRESHOLD_FRACTION
-                }
-            )
+    // Update anchors synchronously — must be available before the first drag frame
+    if (cardWidth > 0f) {
+        val anchors = DraggableAnchors {
+            SwipeAction.REST at 0f
+            SwipeAction.ARCHIVE at cardWidth * ARCHIVE_THRESHOLD_FRACTION
+            SwipeAction.EDIT at cardWidth * EDIT_THRESHOLD_FRACTION
+            SwipeAction.DELETE at cardWidth * DELETE_THRESHOLD_FRACTION
         }
+        anchoredDraggableState.updateAnchors(anchors)
     }
 
     // currentOffset reads Compose state (anchoredDraggableState.offset) so it is reactive
