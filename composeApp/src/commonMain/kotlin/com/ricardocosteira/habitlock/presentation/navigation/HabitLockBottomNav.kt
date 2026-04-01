@@ -15,6 +15,8 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.ricardocosteira.habitlock.presentation.ui.haptics.HapticController
+import com.ricardocosteira.habitlock.presentation.ui.haptics.rememberHapticController
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.nav_history
 import habitlock.composeapp.generated.resources.nav_settings
@@ -33,6 +35,8 @@ fun HabitLockBottomNav(
     onTabSelected: (BottomNavTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val hapticController: HapticController = rememberHapticController()
+
     val navItemColors = NavigationBarItemDefaults.colors(
         indicatorColor = MaterialTheme.colorScheme.primaryContainer,
         selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -42,7 +46,10 @@ fun HabitLockBottomNav(
     NavigationBar(modifier = modifier) {
         NavigationBarItem(
             selected = currentTab == BottomNavTab.TODAY,
-            onClick = { onTabSelected(BottomNavTab.TODAY) },
+            onClick = {
+                if (currentTab != BottomNavTab.TODAY) hapticController.tick()
+                onTabSelected(BottomNavTab.TODAY)
+            },
             colors = navItemColors,
             icon = {
                 Icon(
@@ -58,7 +65,10 @@ fun HabitLockBottomNav(
         )
         NavigationBarItem(
             selected = currentTab == BottomNavTab.HISTORY,
-            onClick = { onTabSelected(BottomNavTab.HISTORY) },
+            onClick = {
+                if (currentTab != BottomNavTab.HISTORY) hapticController.tick()
+                onTabSelected(BottomNavTab.HISTORY)
+            },
             colors = navItemColors,
             icon = {
                 Icon(
@@ -74,7 +84,10 @@ fun HabitLockBottomNav(
         )
         NavigationBarItem(
             selected = currentTab == BottomNavTab.SETTINGS,
-            onClick = { onTabSelected(BottomNavTab.SETTINGS) },
+            onClick = {
+                if (currentTab != BottomNavTab.SETTINGS) hapticController.tick()
+                onTabSelected(BottomNavTab.SETTINGS)
+            },
             colors = navItemColors,
             icon = {
                 Icon(
