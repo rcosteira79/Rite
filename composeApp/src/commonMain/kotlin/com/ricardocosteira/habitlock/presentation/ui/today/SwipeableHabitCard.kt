@@ -48,7 +48,54 @@ enum class SwipeAction {
 private const val ARCHIVE_THRESHOLD_FRACTION = 0.3f
 private const val EDIT_THRESHOLD_FRACTION = -0.3f
 private const val DELETE_THRESHOLD_FRACTION = -0.6f
-private val CORNER_RADIUS = 16.dp
+internal val CORNER_RADIUS = 16.dp
+
+@Composable
+internal fun SwipeBackground(zone: SwipeAction, modifier: Modifier = Modifier) {
+    val backgroundColor = when (zone) {
+        SwipeAction.ARCHIVE -> MaterialTheme.colorScheme.surfaceContainerHighest
+        SwipeAction.EDIT -> MaterialTheme.colorScheme.secondaryContainer
+        SwipeAction.DELETE -> MaterialTheme.colorScheme.errorContainer
+        SwipeAction.REST -> MaterialTheme.colorScheme.surface
+    }
+
+    val iconTint = when (zone) {
+        SwipeAction.ARCHIVE -> MaterialTheme.colorScheme.onSurface
+        SwipeAction.EDIT -> MaterialTheme.colorScheme.onSecondaryContainer
+        SwipeAction.DELETE -> MaterialTheme.colorScheme.onErrorContainer
+        SwipeAction.REST -> MaterialTheme.colorScheme.onSurface
+    }
+
+    val icon: ImageVector? = when (zone) {
+        SwipeAction.ARCHIVE -> Icons.Outlined.Inventory2
+        SwipeAction.EDIT -> Icons.Outlined.Edit
+        SwipeAction.DELETE -> Icons.Filled.DeleteForever
+        SwipeAction.REST -> null
+    }
+
+    val alignment: Alignment = when (zone) {
+        SwipeAction.ARCHIVE -> Alignment.CenterStart
+        else -> Alignment.CenterEnd
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(CORNER_RADIUS))
+            .background(backgroundColor)
+    ) {
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = iconTint,
+                modifier = Modifier
+                    .align(alignment)
+                    .padding(horizontal = 24.dp)
+            )
+        }
+    }
+}
 
 @Composable
 fun SwipeableHabitCard(
@@ -104,27 +151,6 @@ fun SwipeableHabitCard(
         }
     }
 
-    val backgroundColor = when (currentZone) {
-        SwipeAction.ARCHIVE -> MaterialTheme.colorScheme.surfaceContainerHighest
-        SwipeAction.EDIT -> MaterialTheme.colorScheme.secondaryContainer
-        SwipeAction.DELETE -> MaterialTheme.colorScheme.errorContainer
-        SwipeAction.REST -> MaterialTheme.colorScheme.surface
-    }
-
-    val iconTint = when (currentZone) {
-        SwipeAction.ARCHIVE -> MaterialTheme.colorScheme.onSurface
-        SwipeAction.EDIT -> MaterialTheme.colorScheme.onSecondaryContainer
-        SwipeAction.DELETE -> MaterialTheme.colorScheme.onErrorContainer
-        SwipeAction.REST -> MaterialTheme.colorScheme.onSurface
-    }
-
-    val icon: ImageVector? = when (currentZone) {
-        SwipeAction.ARCHIVE -> Icons.Outlined.Inventory2
-        SwipeAction.EDIT -> Icons.Outlined.Edit
-        SwipeAction.DELETE -> Icons.Filled.DeleteForever
-        SwipeAction.REST -> null
-    }
-
     // Haptic feedback on zone entry — snapshotFlow tracks derivedStateOf correctly
     LaunchedEffect(anchoredDraggableState) {
         snapshotFlow { currentZone }
@@ -165,22 +191,11 @@ fun SwipeableHabitCard(
         modifier = modifier
             .fillMaxWidth()
             .onSizeChanged { size -> cardWidth = size.width.toFloat() }
-            .clip(RoundedCornerShape(CORNER_RADIUS))
-            .background(backgroundColor)
     ) {
-        // Background icon
-        if (icon != null) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = iconTint,
-                modifier = Modifier
-                    .align(
-                        if (currentOffset > 0f) Alignment.CenterStart else Alignment.CenterEnd
-                    )
-                    .padding(horizontal = 24.dp)
-            )
-        }
+        SwipeBackground(
+            zone = currentZone,
+            modifier = Modifier.matchParentSize()
+        )
 
         // Foreground card content
         Box(
