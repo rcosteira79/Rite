@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -66,6 +67,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -352,7 +354,8 @@ internal fun HabitFormScreen(
             UnderlineTextField(
                 value = state.name,
                 onValueChange = { onAction(HabitFormUiAction.NameChanged(it)) },
-                placeholder = stringResource(Res.string.common_placeholder_habit_name)
+                placeholder = stringResource(Res.string.common_placeholder_habit_name),
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -594,12 +597,14 @@ private fun UnderlineTextField(
     modifier: Modifier = Modifier,
     placeholder: String = "",
     label: String = "",
-    maxLines: Int = 1
+    maxLines: Int = 1,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     TextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.fillMaxWidth(),
+        keyboardOptions = keyboardOptions,
         placeholder = if (placeholder.isNotEmpty()) {
             { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         } else {
