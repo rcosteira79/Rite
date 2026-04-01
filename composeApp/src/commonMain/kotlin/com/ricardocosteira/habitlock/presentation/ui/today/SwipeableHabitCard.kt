@@ -1,10 +1,9 @@
 package com.ricardocosteira.habitlock.presentation.ui.today
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.AnchoredDraggableState
-import androidx.compose.foundation.gestures.DraggableAnchors
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -23,6 +22,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -38,6 +39,7 @@ import com.ricardocosteira.habitlock.presentation.ui.haptics.HapticController
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 enum class SwipeAction {
     REST,
@@ -45,16 +47,19 @@ enum class SwipeAction {
     EDIT
 }
 
-// Anchors — the card settles here when released past the arm threshold
-private const val DELETE_ANCHOR_FRACTION = 0.55f
-private const val EDIT_ANCHOR_FRACTION = -0.55f
+// How far the card can be dragged (fraction of card width)
+private const val MAX_DRAG_FRACTION = 0.55f
 
-// Visual — background starts fading immediately, reaches full "unarmed" opacity here
+// Fraction of card width where the action becomes armed
+private const val ARM_THRESHOLD_FRACTION = 0.25f
+
+// Background fade
 private const val UNARMED_FULL_OPACITY_FRACTION = 0.15f
-
-// Armed vs unarmed opacity
 private const val UNARMED_MAX_ALPHA = 0.5f
 private const val ARMED_ALPHA = 1.0f
+
+// Snap-back animation
+private const val SNAP_BACK_DURATION_MS = 250
 
 internal val CORNER_RADIUS = 16.dp
 
@@ -122,60 +127,20 @@ fun SwipeableHabitCard(
     content: @Composable () -> Unit
 ) {
     var cardWidth: Float by remember { mutableStateOf(0f) }
-    var pendingAction: SwipeAction? by remember { mutableStateOf(null) }
+    val offsetX: Animatable<Float, *> = remember { Animatable(0f) }
+    val coroutineScope = rememberCoroutineScope()
 
     val currentOnEdit by rememberUpdatedState(onEdit)
     val currentOnDelete by rememberUpdatedState(onDelete)
     val currentHaptic by rememberUpdatedState(hapticController)
 
-    // Defer action to next frame — navigating from confirmValueChange breaks backstack
-    LaunchedEffect(pendingAction) {
-        when (pendingAction) {
-            SwipeAction.DELETE -> currentOnDelete()
-            SwipeAction.EDIT -> currentOnEdit()
-            SwipeAction.REST, null -> { /* no-op */ }
-        }
-        pendingAction = null
-    }
-
-    val anchoredDraggableState: AnchoredDraggableState<SwipeAction> = remember {
-        AnchoredDraggableState(
-            initialValue = SwipeAction.REST,
-            confirmValueChange = { newValue: SwipeAction ->
-                when (newValue) {
-                    SwipeAction.DELETE -> {
-                        pendingAction = SwipeAction.DELETE
-                        true
-                    }
-
-                    SwipeAction.EDIT -> {
-                        pendingAction = SwipeAction.EDIT
-                        false // snap back to REST
-                    }
-
-                    SwipeAction.REST -> true
-                }
-            }
-        )
-    }
-
-    if (cardWidth > 0f) {
-        val anchors: DraggableAnchors<SwipeAction> = DraggableAnchors {
-            SwipeAction.REST at 0f
-            SwipeAction.DELETE at cardWidth * DELETE_ANCHOR_FRACTION
-            SwipeAction.EDIT at cardWidth * EDIT_ANCHOR_FRACTION
-        }
-        anchoredDraggableState.updateAnchors(anchors)
-    }
-
-    val currentOffset: Float = anchoredDraggableState.offset.takeIf { !it.isNaN() } ?: 0f
+    val currentOffset: Float = offsetX.value
 
     val currentZone: SwipeAction by remember {
         derivedStateOf {
-            val offset: Float = anchoredDraggableState.offset.takeIf { !it.isNaN() } ?: 0f
             when {
-                offset > 0f -> SwipeAction.DELETE
-                offset < 0f -> SwipeAction.EDIT
+                offsetX.value > 0f -> SwipeAction.DELETE
+                offsetX.value < 0f -> SwipeAction.EDIT
                 else -> SwipeAction.REST
             }
         }
@@ -183,25 +148,20 @@ fun SwipeableHabitCard(
 
     val revealFraction: Float by remember {
         derivedStateOf {
-            val offset: Float = anchoredDraggableState.offset.takeIf { !it.isNaN() } ?: 0f
             val width: Float = cardWidth
-            if (width > 0f) abs(offset) / width else 0f
+            if (width > 0f) abs(offsetX.value) / width else 0f
         }
     }
 
-    // Armed = dragged past half the anchor distance (matches AnchoredDraggable's default
-    // positional threshold, so armed = "will settle at action anchor if released")
     val isArmed: Boolean by remember {
         derivedStateOf {
-            val offset: Float = anchoredDraggableState.offset.takeIf { !it.isNaN() } ?: 0f
             val width: Float = cardWidth
             if (width <= 0f) return@derivedStateOf false
-            val fraction: Float = abs(offset) / width
-            fraction >= abs(DELETE_ANCHOR_FRACTION) * 0.5f
+            abs(offsetX.value) / width >= ARM_THRESHOLD_FRACTION
         }
     }
 
-    // Haptic feedback when crossing the arm threshold in either direction
+    // Haptic feedback when crossing the arm threshold
     LaunchedEffect(Unit) {
         snapshotFlow { isArmed }
             .distinctUntilChanged()
@@ -209,7 +169,6 @@ fun SwipeableHabitCard(
                 if (armed) {
                     currentHaptic.heavyClick()
                 } else if (currentZone != SwipeAction.REST) {
-                    // Dragged back below threshold while still swiping
                     currentHaptic.tick()
                 }
             }
@@ -230,10 +189,48 @@ fun SwipeableHabitCard(
         Box(
             modifier = Modifier
                 .offset { IntOffset(x = currentOffset.roundToInt(), y = 0) }
-                .anchoredDraggable(
-                    state = anchoredDraggableState,
-                    orientation = Orientation.Horizontal
-                )
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures(
+                        onHorizontalDrag = { change, dragAmount ->
+                            change.consume()
+                            val maxOffset: Float = cardWidth * MAX_DRAG_FRACTION
+                            val newOffset: Float = (offsetX.value + dragAmount)
+                                .coerceIn(-maxOffset, maxOffset)
+                            coroutineScope.launch { offsetX.snapTo(newOffset) }
+                        },
+                        onDragEnd = {
+                            val armed: Boolean = cardWidth > 0f &&
+                                abs(offsetX.value) / cardWidth >= ARM_THRESHOLD_FRACTION
+                            val zone: SwipeAction = when {
+                                offsetX.value > 0f -> SwipeAction.DELETE
+                                offsetX.value < 0f -> SwipeAction.EDIT
+                                else -> SwipeAction.REST
+                            }
+
+                            if (armed && zone == SwipeAction.DELETE) {
+                                currentOnDelete()
+                            } else if (armed && zone == SwipeAction.EDIT) {
+                                currentOnEdit()
+                            }
+
+                            // Always snap back
+                            coroutineScope.launch {
+                                offsetX.animateTo(
+                                    targetValue = 0f,
+                                    animationSpec = tween(durationMillis = SNAP_BACK_DURATION_MS)
+                                )
+                            }
+                        },
+                        onDragCancel = {
+                            coroutineScope.launch {
+                                offsetX.animateTo(
+                                    targetValue = 0f,
+                                    animationSpec = tween(durationMillis = SNAP_BACK_DURATION_MS)
+                                )
+                            }
+                        }
+                    )
+                }
         ) {
             content()
         }
