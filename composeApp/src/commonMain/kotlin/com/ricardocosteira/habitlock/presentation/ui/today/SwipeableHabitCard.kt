@@ -1,7 +1,6 @@
 package com.ricardocosteira.habitlock.presentation.ui.today
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.AnchoredDraggableDefaults
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -17,6 +16,7 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.presentation.ui.haptics.HapticController
@@ -107,13 +106,23 @@ fun SwipeableHabitCard(
     content: @Composable () -> Unit
 ) {
     var cardWidth: Float by remember { mutableStateOf(0f) }
+    var pendingAction: SwipeAction? by remember { mutableStateOf(null) }
 
     // Keep callbacks fresh for confirmValueChange
     val currentOnEdit by rememberUpdatedState(onEdit)
     val currentOnDelete by rememberUpdatedState(onDelete)
     val currentHaptic by rememberUpdatedState(hapticController)
 
-    val density = LocalDensity.current
+    // Defer action execution to next frame — navigating from inside confirmValueChange
+    // breaks the backstack because it runs during gesture resolution
+    LaunchedEffect(pendingAction) {
+        when (pendingAction) {
+            SwipeAction.DELETE -> currentOnDelete()
+            SwipeAction.EDIT -> currentOnEdit()
+            SwipeAction.REST, null -> { /* no-op */ }
+        }
+        pendingAction = null
+    }
 
     val anchoredDraggableState: AnchoredDraggableState<SwipeAction> = remember {
         AnchoredDraggableState(
@@ -122,13 +131,13 @@ fun SwipeableHabitCard(
                 when (newValue) {
                     SwipeAction.DELETE -> {
                         currentHaptic.heavyClick()
-                        currentOnDelete()
+                        pendingAction = SwipeAction.DELETE
                         true
                     }
 
                     SwipeAction.EDIT -> {
                         currentHaptic.click()
-                        currentOnEdit()
+                        pendingAction = SwipeAction.EDIT
                         false // snap back to REST
                     }
 
