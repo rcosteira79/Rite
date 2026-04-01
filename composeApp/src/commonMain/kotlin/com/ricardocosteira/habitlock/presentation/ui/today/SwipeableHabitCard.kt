@@ -208,17 +208,35 @@ fun SwipeableHabitCard(
                             }
 
                             if (armed && zone == SwipeAction.DELETE) {
-                                currentOnDelete()
+                                // Slide off-screen to the right, then fire delete
+                                coroutineScope.launch {
+                                    offsetX.animateTo(
+                                        targetValue = cardWidth,
+                                        animationSpec = tween(
+                                            durationMillis = SNAP_BACK_DURATION_MS
+                                        )
+                                    )
+                                    currentOnDelete()
+                                }
                             } else if (armed && zone == SwipeAction.EDIT) {
                                 currentOnEdit()
-                            }
-
-                            // Always snap back
-                            coroutineScope.launch {
-                                offsetX.animateTo(
-                                    targetValue = 0f,
-                                    animationSpec = tween(durationMillis = SNAP_BACK_DURATION_MS)
-                                )
+                                coroutineScope.launch {
+                                    offsetX.animateTo(
+                                        targetValue = 0f,
+                                        animationSpec = tween(
+                                            durationMillis = SNAP_BACK_DURATION_MS
+                                        )
+                                    )
+                                }
+                            } else {
+                                coroutineScope.launch {
+                                    offsetX.animateTo(
+                                        targetValue = 0f,
+                                        animationSpec = tween(
+                                            durationMillis = SNAP_BACK_DURATION_MS
+                                        )
+                                    )
+                                }
                             }
                         },
                         onDragCancel = {
