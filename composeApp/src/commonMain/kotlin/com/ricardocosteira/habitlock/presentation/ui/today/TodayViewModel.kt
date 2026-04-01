@@ -327,13 +327,14 @@ class TodayViewModel(
     fun deleteHabit(habitId: String) {
         val habit: TodayHabitUiModel = _state.value.habits.find { it.habitId == habitId } ?: return
 
+        commitPreviousUndoAndCancelJob()
+
         removeHabitFromState(habitId)
 
         _state.update { it.copy(pendingUndo = UndoOperation.Delete(habitId, habit.name)) }
 
         viewModelScope.launch { _events.emit(TodayEvent.HabitDeleted(habit.name)) }
 
-        undoJob?.cancel()
         undoJob = viewModelScope.launch {
             delay(UNDO_TIMEOUT_MS)
             try {
@@ -348,8 +349,72 @@ class TodayViewModel(
 
     fun undoDelete() {
         undoJob?.cancel()
+        undoJob = null
         _state.update { it.copy(pendingUndo = null) }
         loadTodayHabits()
+    }
+
+    fun archiveHabitWithUndo(habitId: String) {
+        val habit: TodayHabitUiModel = _state.value.habits.find { it.habitId == habitId } ?: return
+
+        commitPreviousUndoAndCancelJob()
+
+        removeHabitFromState(habitId)
+
+        _state.update { it.copy(pendingUndo = UndoOperation.Archive(habitId, habit.name)) }
+
+        viewModelScope.launch { _events.emit(TodayEvent.HabitArchived(habit.name)) }
+
+        undoJob = viewModelScope.launch {
+            delay(UNDO_TIMEOUT_MS)
+            try {
+                habitRepository.archiveHabit(habitId)
+                _state.update { it.copy(pendingUndo = null) }
+            } catch (e: Exception) {
+                _events.emit(TodayEvent.ShowError(e.message ?: "Failed to archive habit"))
+                loadTodayHabits()
+            }
+        }
+    }
+
+    fun undoArchive() {
+        undoJob?.cancel()
+        undoJob = null
+        _state.update { it.copy(pendingUndo = null) }
+        loadTodayHabits()
+    }
+
+    /**
+     * Captures any in-flight [UndoOperation], cancels its scheduled undo job, and
+     * immediately commits the operation to the repository.
+     *
+     * Must be called at the start of [deleteHabit] and [archiveHabitWithUndo], before
+     * the new [UndoOperation] is written to state. This ensures a second swipe action
+     * arriving during an active undo window still persists the first operation.
+     */
+    private fun commitPreviousUndoAndCancelJob() {
+        val previousUndoOperation: UndoOperation? = _state.value.pendingUndo
+
+        undoJob?.cancel()
+        undoJob = null
+
+        if (previousUndoOperation == null) return
+
+        viewModelScope.launch {
+            try {
+                when (previousUndoOperation) {
+                    is UndoOperation.Delete ->
+                        habitRepository.deleteHabit(previousUndoOperation.habitId)
+
+                    is UndoOperation.Archive ->
+                        habitRepository.archiveHabit(previousUndoOperation.habitId)
+                }
+            } catch (e: Exception) {
+                _events.emit(
+                    TodayEvent.ShowError(e.message ?: "Failed to commit pending operation")
+                )
+            }
+        }
     }
 
     private fun removeHabitFromState(habitId: String) {
