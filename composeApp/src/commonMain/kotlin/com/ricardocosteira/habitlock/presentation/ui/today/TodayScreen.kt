@@ -31,12 +31,13 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,12 +55,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
-import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.habitlock.presentation.ui.components.toolbar.DynamicCollapsingToolbar
 import com.ricardocosteira.habitlock.presentation.ui.components.toolbar.pinnedExitUntilCollapsedToolbarSpec
+import com.ricardocosteira.habitlock.presentation.ui.haptics.HapticController
+import com.ricardocosteira.habitlock.presentation.ui.haptics.rememberHapticController
 import com.ricardocosteira.habitlock.util.formatMonthAbbreviation
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.habit_lock_logo
+import habitlock.composeapp.generated.resources.swipe_habit_archived
+import habitlock.composeapp.generated.resources.swipe_habit_deleted
+import habitlock.composeapp.generated.resources.swipe_undo
 import habitlock.composeapp.generated.resources.today_cd_add_habit
 import habitlock.composeapp.generated.resources.today_empty_state_cta
 import habitlock.composeapp.generated.resources.today_empty_state_heading
@@ -107,11 +112,31 @@ fun TodayScreen(
 
                 is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
 
-                is TodayEvent.HabitArchived -> snackbarHostState.showSnackbar(event.habitName)
+                is TodayEvent.HabitArchived -> {
+                    val result = snackbarHostState.showSnackbar(
+                        message = getString(Res.string.swipe_habit_archived),
+                        actionLabel = getString(Res.string.swipe_undo),
+                        duration = SnackbarDuration.Short
+                    )
+                    if (result == SnackbarResult.ActionPerformed) {
+                        viewModel.undoArchive()
+                    }
+                }
 
-                is TodayEvent.HabitDeleted -> snackbarHostState.showSnackbar(event.habitName)
+                is TodayEvent.HabitDeleted -> {
+                    val result = snackbarHostState.showSnackbar(
+                        message = getString(Res.string.swipe_habit_deleted),
+                        actionLabel = getString(Res.string.swipe_undo),
+                        duration = SnackbarDuration.Short
+                    )
+                    if (result == SnackbarResult.ActionPerformed) {
+                        viewModel.undoDelete()
+                    }
+                }
 
-                TodayEvent.UndoCompleted -> snackbarHostState.currentSnackbarData?.dismiss()
+                TodayEvent.UndoCompleted -> {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                }
             }
         }
     }
@@ -124,6 +149,9 @@ fun TodayScreen(
         onUndoLastIncrement = viewModel::undoLastIncrement,
         onIncrementProgress = viewModel::incrementHabitProgress,
         onCustomProgress = viewModel::showQuantitativeInput,
+        onArchive = viewModel::archiveHabitWithUndo,
+        onEdit = { habitId: String -> onEditHabit(habitId) },
+        onDelete = viewModel::deleteHabit,
         onDismissTimezoneWarning = viewModel::dismissTimezoneWarning,
         onAddFirstHabit = onNavigateToCreateHabit
     )
@@ -150,12 +178,16 @@ internal fun TodayScreen(
     onUndoLastIncrement: (String) -> Unit,
     onIncrementProgress: (String) -> Unit,
     onCustomProgress: (String) -> Unit,
+    onArchive: (String) -> Unit,
+    onEdit: (String) -> Unit,
+    onDelete: (String) -> Unit,
     onDismissTimezoneWarning: () -> Unit,
     onAddFirstHabit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
     val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec()
+    val hapticController: HapticController = rememberHapticController()
 
     var expandedCardIds: Set<String> by rememberSaveable { mutableStateOf(emptySet()) }
 
@@ -247,83 +279,13 @@ internal fun TodayScreen(
                         items = state.pendingDaily,
                         key = { it.instanceId }
                     ) { habit ->
-                        HabitCard(
-                            habit = habit,
-                            isExpanded = habit.instanceId in expandedCardIds,
-                            modifier = Modifier.animateItem(),
-                            onToggleExpand = {
-                                expandedCardIds = if (habit.instanceId in expandedCardIds) {
-                                    expandedCardIds - habit.instanceId
-                                } else {
-                                    expandedCardIds + habit.instanceId
-                                }
-                            },
-                            onComplete = {
-                                if (habit.type == HabitType.BINARY) {
-                                    onComplete(habit.instanceId)
-                                } else {
-                                    onIncrementProgress(habit.instanceId)
-                                }
-                            },
-                            onSkip = { onSkip(habit.instanceId) },
-                            onUndo = {
-                                if (habit.type == HabitType.QUANTITATIVE &&
-                                    habit.status == HabitStatus.PENDING
-                                ) {
-                                    onUndoLastIncrement(habit.instanceId)
-                                } else {
-                                    onUndo(habit.instanceId)
-                                }
-                            },
-                            onIncrementProgress = { onIncrementProgress(habit.instanceId) },
-                            onCustomProgress = { onCustomProgress(habit.instanceId) }
-                        )
-                    }
-
-                    if (state.resolvedDaily.isNotEmpty()) {
-                        item(key = "daily_divider") {
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .alpha(DIVIDER_ALPHA)
-                                    .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
-                            )
-                        }
-
-                        items(
-                            items = state.resolvedDaily,
-                            key = { it.instanceId }
-                        ) { habit ->
-                            HabitCard(
-                                habit = habit,
-                                isExpanded = false,
-                                modifier = Modifier.animateItem(),
-                                onToggleExpand = {},
-                                onComplete = {},
-                                onSkip = {},
-                                onUndo = { onUndo(habit.instanceId) },
-                                onIncrementProgress = {},
-                                onCustomProgress = {}
-                            )
-                        }
-                    }
-
-                    // WEEKLY GOALS section
-                    if ((state.pendingWeekly.isNotEmpty() || state.resolvedWeekly.isNotEmpty())) {
-                        item(key = "weekly_spacer") {
-                            Spacer(modifier = Modifier.height(SECTION_GAP))
-                        }
-
-                        item(key = "weekly_header") {
-                            SectionHeader(
-                                title = stringResource(Res.string.today_section_weekly),
-                                trailingLabel = stringResource(Res.string.today_section_this_week)
-                            )
-                        }
-
-                        items(
-                            items = state.pendingWeekly,
-                            key = { it.instanceId }
-                        ) { habit ->
+                        SwipeableHabitCard(
+                            onArchive = { onArchive(habit.habitId) },
+                            onEdit = { onEdit(habit.habitId) },
+                            onDelete = { onDelete(habit.habitId) },
+                            hapticController = hapticController,
+                            modifier = Modifier.animateItem()
+                        ) {
                             HabitCard(
                                 habit = habit,
                                 isExpanded = habit.instanceId in expandedCardIds,
@@ -355,6 +317,98 @@ internal fun TodayScreen(
                                 onCustomProgress = { onCustomProgress(habit.instanceId) }
                             )
                         }
+                    }
+
+                    if (state.resolvedDaily.isNotEmpty()) {
+                        item(key = "daily_divider") {
+                            HorizontalDivider(
+                                modifier = Modifier
+                                    .alpha(DIVIDER_ALPHA)
+                                    .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
+                            )
+                        }
+
+                        items(
+                            items = state.resolvedDaily,
+                            key = { it.instanceId }
+                        ) { habit ->
+                            SwipeableHabitCard(
+                                onArchive = { onArchive(habit.habitId) },
+                                onEdit = { onEdit(habit.habitId) },
+                                onDelete = { onDelete(habit.habitId) },
+                                hapticController = hapticController,
+                                modifier = Modifier.animateItem()
+                            ) {
+                                HabitCard(
+                                    habit = habit,
+                                    isExpanded = false,
+                                    onToggleExpand = {},
+                                    onComplete = {},
+                                    onSkip = {},
+                                    onUndo = { onUndo(habit.instanceId) },
+                                    onIncrementProgress = {},
+                                    onCustomProgress = {}
+                                )
+                            }
+                        }
+                    }
+
+                    // WEEKLY GOALS section
+                    if ((state.pendingWeekly.isNotEmpty() || state.resolvedWeekly.isNotEmpty())) {
+                        item(key = "weekly_spacer") {
+                            Spacer(modifier = Modifier.height(SECTION_GAP))
+                        }
+
+                        item(key = "weekly_header") {
+                            SectionHeader(
+                                title = stringResource(Res.string.today_section_weekly),
+                                trailingLabel = stringResource(Res.string.today_section_this_week)
+                            )
+                        }
+
+                        items(
+                            items = state.pendingWeekly,
+                            key = { it.instanceId }
+                        ) { habit ->
+                            SwipeableHabitCard(
+                                onArchive = { onArchive(habit.habitId) },
+                                onEdit = { onEdit(habit.habitId) },
+                                onDelete = { onDelete(habit.habitId) },
+                                hapticController = hapticController,
+                                modifier = Modifier.animateItem()
+                            ) {
+                                HabitCard(
+                                    habit = habit,
+                                    isExpanded = habit.instanceId in expandedCardIds,
+                                    onToggleExpand = {
+                                        expandedCardIds = if (habit.instanceId in expandedCardIds) {
+                                            expandedCardIds - habit.instanceId
+                                        } else {
+                                            expandedCardIds + habit.instanceId
+                                        }
+                                    },
+                                    onComplete = {
+                                        if (habit.type == HabitType.BINARY) {
+                                            onComplete(habit.instanceId)
+                                        } else {
+                                            onIncrementProgress(habit.instanceId)
+                                        }
+                                    },
+                                    onSkip = { onSkip(habit.instanceId) },
+                                    onUndo = {
+                                        if (habit.type == HabitType.QUANTITATIVE &&
+                                            habit.status == HabitStatus.PENDING
+                                        ) {
+                                            onUndoLastIncrement(habit.instanceId)
+                                        } else {
+                                            onUndo(habit.instanceId)
+                                        }
+                                    },
+                                    onIncrementProgress = { onIncrementProgress(habit.instanceId) },
+                                    onCustomProgress = { onCustomProgress(habit.instanceId) }
+                                )
+                            }
+                        }
 
                         if (state.resolvedWeekly.isNotEmpty()) {
                             item(key = "weekly_divider") {
@@ -369,16 +423,24 @@ internal fun TodayScreen(
                                 items = state.resolvedWeekly,
                                 key = { it.instanceId }
                             ) { habit ->
-                                HabitCard(
-                                    habit = habit,
-                                    isExpanded = false,
-                                    onToggleExpand = {},
-                                    onComplete = {},
-                                    onSkip = {},
-                                    onUndo = { onUndo(habit.instanceId) },
-                                    onIncrementProgress = {},
-                                    onCustomProgress = {}
-                                )
+                                SwipeableHabitCard(
+                                    onArchive = { onArchive(habit.habitId) },
+                                    onEdit = { onEdit(habit.habitId) },
+                                    onDelete = { onDelete(habit.habitId) },
+                                    hapticController = hapticController,
+                                    modifier = Modifier.animateItem()
+                                ) {
+                                    HabitCard(
+                                        habit = habit,
+                                        isExpanded = false,
+                                        onToggleExpand = {},
+                                        onComplete = {},
+                                        onSkip = {},
+                                        onUndo = { onUndo(habit.instanceId) },
+                                        onIncrementProgress = {},
+                                        onCustomProgress = {}
+                                    )
+                                }
                             }
                         }
                     }
