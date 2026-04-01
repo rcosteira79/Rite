@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.domain.models.HabitType
@@ -125,6 +126,7 @@ fun FirstHabitStep(
             label = { Text(stringResource(Res.string.first_habit_label_name)) },
             placeholder = { Text(stringResource(Res.string.common_placeholder_habit_name)) },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             modifier = Modifier.fillMaxWidth(),
             shape = OnboardingTextFieldShape,
             colors = onboardingTextFieldColors()
