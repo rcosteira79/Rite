@@ -26,34 +26,6 @@ class SwipeableHabitCardScreenshotTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    // --- ARCHIVE zone ---
-
-    @Test
-    fun swipeBackground_archive_lightTheme() {
-        composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
-                SwipeBackground(
-                    zone = SwipeAction.ARCHIVE,
-                    modifier = Modifier.height(72.dp)
-                )
-            }
-        }
-        composeRule.onRoot().captureRoboImage()
-    }
-
-    @Test
-    fun swipeBackground_archive_darkTheme() {
-        composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
-                SwipeBackground(
-                    zone = SwipeAction.ARCHIVE,
-                    modifier = Modifier.height(72.dp)
-                )
-            }
-        }
-        composeRule.onRoot().captureRoboImage()
-    }
-
     // --- EDIT zone ---
 
     @Test

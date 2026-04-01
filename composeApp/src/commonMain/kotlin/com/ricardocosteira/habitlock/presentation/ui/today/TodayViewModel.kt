@@ -327,11 +327,12 @@ class TodayViewModel(
     fun deleteHabit(habitId: String) {
         val habit: TodayHabitUiModel = _state.value.habits.find { it.habitId == habitId } ?: return
 
-        commitPreviousUndoAndCancelJob()
+        // Commit any previous pending delete before starting a new one
+        commitPendingDeleteAndCancelJob()
 
         removeHabitFromState(habitId)
 
-        _state.update { it.copy(pendingUndo = UndoOperation.Delete(habitId, habit.name)) }
+        _state.update { it.copy(pendingDelete = PendingDelete(habitId, habit.name)) }
 
         viewModelScope.launch { _events.emit(TodayEvent.HabitDeleted(habit.name)) }
 
@@ -339,7 +340,7 @@ class TodayViewModel(
             delay(UNDO_TIMEOUT_MS)
             try {
                 habitRepository.deleteHabit(habitId)
-                _state.update { it.copy(pendingUndo = null) }
+                _state.update { it.copy(pendingDelete = null) }
             } catch (e: Exception) {
                 _events.emit(TodayEvent.ShowError(e.message ?: "Failed to delete habit"))
                 loadTodayHabits()
@@ -350,70 +351,25 @@ class TodayViewModel(
     fun undoDelete() {
         undoJob?.cancel()
         undoJob = null
-        _state.update { it.copy(pendingUndo = null) }
+        _state.update { it.copy(pendingDelete = null) }
         viewModelScope.launch { _events.emit(TodayEvent.UndoCompleted) }
         loadTodayHabits()
     }
 
-    fun archiveHabitWithUndo(habitId: String) {
-        val habit: TodayHabitUiModel = _state.value.habits.find { it.habitId == habitId } ?: return
-
-        commitPreviousUndoAndCancelJob()
-
-        removeHabitFromState(habitId)
-
-        _state.update { it.copy(pendingUndo = UndoOperation.Archive(habitId, habit.name)) }
-
-        viewModelScope.launch { _events.emit(TodayEvent.HabitArchived(habit.name)) }
-
-        undoJob = viewModelScope.launch {
-            delay(UNDO_TIMEOUT_MS)
-            try {
-                habitRepository.archiveHabit(habitId)
-                _state.update { it.copy(pendingUndo = null) }
-            } catch (e: Exception) {
-                _events.emit(TodayEvent.ShowError(e.message ?: "Failed to archive habit"))
-                loadTodayHabits()
-            }
-        }
-    }
-
-    fun undoArchive() {
-        undoJob?.cancel()
-        undoJob = null
-        _state.update { it.copy(pendingUndo = null) }
-        viewModelScope.launch { _events.emit(TodayEvent.UndoCompleted) }
-        loadTodayHabits()
-    }
-
-    /**
-     * Captures any in-flight [UndoOperation], cancels its scheduled undo job, and
-     * immediately commits the operation to the repository.
-     *
-     * Must be called at the start of [deleteHabit] and [archiveHabitWithUndo], before
-     * the new [UndoOperation] is written to state. This ensures a second swipe action
-     * arriving during an active undo window still persists the first operation.
-     */
-    private fun commitPreviousUndoAndCancelJob() {
-        val previousUndoOperation: UndoOperation? = _state.value.pendingUndo
+    private fun commitPendingDeleteAndCancelJob() {
+        val previousDelete: PendingDelete? = _state.value.pendingDelete
 
         undoJob?.cancel()
         undoJob = null
 
-        if (previousUndoOperation == null) return
+        if (previousDelete == null) return
 
         viewModelScope.launch {
             try {
-                when (previousUndoOperation) {
-                    is UndoOperation.Delete ->
-                        habitRepository.deleteHabit(previousUndoOperation.habitId)
-
-                    is UndoOperation.Archive ->
-                        habitRepository.archiveHabit(previousUndoOperation.habitId)
-                }
+                habitRepository.deleteHabit(previousDelete.habitId)
             } catch (e: Exception) {
                 _events.emit(
-                    TodayEvent.ShowError(e.message ?: "Failed to commit pending operation")
+                    TodayEvent.ShowError(e.message ?: "Failed to delete habit")
                 )
             }
         }

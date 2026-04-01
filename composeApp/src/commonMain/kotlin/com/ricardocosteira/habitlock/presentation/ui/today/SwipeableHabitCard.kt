@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -15,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -42,24 +42,21 @@ import kotlinx.coroutines.flow.filter
 
 enum class SwipeAction {
     REST,
-    ARCHIVE,
-    EDIT,
-    DELETE
+    DELETE,
+    EDIT
 }
 
-private const val ARCHIVE_ANCHOR_FRACTION = 0.3f
-private const val DELETE_ANCHOR_FRACTION = -0.6f
-private const val EDIT_VISUAL_THRESHOLD_FRACTION = 0.15f
-private const val DELETE_VISUAL_THRESHOLD_FRACTION = 0.45f
+private const val DELETE_ANCHOR_FRACTION = 0.4f
+private const val EDIT_ANCHOR_FRACTION = -0.4f
+private const val VISUAL_THRESHOLD_FRACTION = 0.1f
 private const val COLOR_FADE_DURATION_MS = 200
 internal val CORNER_RADIUS = 16.dp
 
 @Composable
 internal fun SwipeBackground(zone: SwipeAction, modifier: Modifier = Modifier) {
     val targetColor: Color = when (zone) {
-        SwipeAction.ARCHIVE -> MaterialTheme.colorScheme.surfaceContainerHighest
-        SwipeAction.EDIT -> MaterialTheme.colorScheme.secondaryContainer
         SwipeAction.DELETE -> MaterialTheme.colorScheme.errorContainer
+        SwipeAction.EDIT -> MaterialTheme.colorScheme.secondaryContainer
         SwipeAction.REST -> MaterialTheme.colorScheme.surface
     }
 
@@ -70,22 +67,21 @@ internal fun SwipeBackground(zone: SwipeAction, modifier: Modifier = Modifier) {
     )
 
     val iconTint: Color = when (zone) {
-        SwipeAction.ARCHIVE -> MaterialTheme.colorScheme.onSurface
-        SwipeAction.EDIT -> MaterialTheme.colorScheme.onSecondaryContainer
         SwipeAction.DELETE -> MaterialTheme.colorScheme.onErrorContainer
+        SwipeAction.EDIT -> MaterialTheme.colorScheme.onSecondaryContainer
         SwipeAction.REST -> MaterialTheme.colorScheme.onSurface
     }
 
     val icon: ImageVector? = when (zone) {
-        SwipeAction.ARCHIVE -> Icons.Outlined.Inventory2
-        SwipeAction.EDIT -> Icons.Outlined.Edit
         SwipeAction.DELETE -> Icons.Filled.DeleteForever
+        SwipeAction.EDIT -> Icons.Outlined.Edit
         SwipeAction.REST -> null
     }
 
     val alignment: Alignment = when (zone) {
-        SwipeAction.ARCHIVE -> Alignment.CenterStart
-        else -> Alignment.CenterEnd
+        SwipeAction.DELETE -> Alignment.CenterStart
+        SwipeAction.EDIT -> Alignment.CenterEnd
+        SwipeAction.REST -> Alignment.CenterEnd
     }
 
     Box(
@@ -109,7 +105,6 @@ internal fun SwipeBackground(zone: SwipeAction, modifier: Modifier = Modifier) {
 
 @Composable
 fun SwipeableHabitCard(
-    onArchive: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     hapticController: HapticController,
@@ -123,22 +118,16 @@ fun SwipeableHabitCard(
         AnchoredDraggableState(
             initialValue = SwipeAction.REST,
             confirmValueChange = { newValue: SwipeAction ->
-                if (!hasDragged) {
-                    newValue == SwipeAction.REST
-                } else {
-                    true
-                }
+                if (!hasDragged) newValue == SwipeAction.REST else true
             }
         )
     }
 
-    // Only REST, ARCHIVE, and DELETE are real anchors.
-    // EDIT is a visual-only zone — no anchor, so the card can drag through it to DELETE.
     if (cardWidth > 0f) {
         val anchors: DraggableAnchors<SwipeAction> = DraggableAnchors {
             SwipeAction.REST at 0f
-            SwipeAction.ARCHIVE at cardWidth * ARCHIVE_ANCHOR_FRACTION
             SwipeAction.DELETE at cardWidth * DELETE_ANCHOR_FRACTION
+            SwipeAction.EDIT at cardWidth * EDIT_ANCHOR_FRACTION
         }
         anchoredDraggableState.updateAnchors(anchors)
     }
@@ -152,20 +141,17 @@ fun SwipeableHabitCard(
             .collect { hasDragged = true }
     }
 
-    // Derive the visual zone from the offset for background color and haptic
+    // Derive the visual zone from the offset
     val currentZone: SwipeAction by remember {
         derivedStateOf {
             val offset: Float = anchoredDraggableState.offset.takeIf { !it.isNaN() } ?: 0f
             val width: Float = cardWidth
             when {
                 offset > 0f && width > 0f &&
-                    offset >= width * EDIT_VISUAL_THRESHOLD_FRACTION -> SwipeAction.ARCHIVE
+                    offset >= width * VISUAL_THRESHOLD_FRACTION -> SwipeAction.DELETE
 
                 offset < 0f && width > 0f &&
-                    abs(offset) >= width * DELETE_VISUAL_THRESHOLD_FRACTION -> SwipeAction.DELETE
-
-                offset < 0f && width > 0f &&
-                    abs(offset) >= width * EDIT_VISUAL_THRESHOLD_FRACTION -> SwipeAction.EDIT
+                    abs(offset) >= width * VISUAL_THRESHOLD_FRACTION -> SwipeAction.EDIT
 
                 else -> SwipeAction.REST
             }
@@ -179,37 +165,28 @@ fun SwipeableHabitCard(
             .filter { it != SwipeAction.REST }
             .collect { zone: SwipeAction ->
                 when (zone) {
-                    SwipeAction.ARCHIVE -> hapticController.tick()
-                    SwipeAction.EDIT -> hapticController.click()
                     SwipeAction.DELETE -> hapticController.heavyClick()
+                    SwipeAction.EDIT -> hapticController.click()
                     SwipeAction.REST -> { /* no haptic */ }
                 }
             }
     }
 
-    // Handle settle at real anchors (ARCHIVE and DELETE only)
+    // Handle settle at anchors
     LaunchedEffect(Unit) {
         snapshotFlow { anchoredDraggableState.currentValue }
             .distinctUntilChanged()
             .filter { it != SwipeAction.REST }
             .collect { action: SwipeAction ->
                 when (action) {
-                    SwipeAction.ARCHIVE -> onArchive()
                     SwipeAction.DELETE -> onDelete()
-                    else -> { /* EDIT is not an anchor, REST filtered */ }
-                }
-            }
-    }
 
-    // Handle EDIT: when the card settles back at REST from the edit zone, fire onEdit.
-    // Since EDIT has no anchor, releasing in the edit zone snaps back to REST.
-    // We detect this by watching for REST settle while the visual zone was EDIT.
-    LaunchedEffect(Unit) {
-        snapshotFlow { anchoredDraggableState.currentValue }
-            .collect { value: SwipeAction ->
-                if (value == SwipeAction.REST && hasDragged && currentZone == SwipeAction.EDIT) {
-                    // Card just snapped back from the edit zone
-                    onEdit()
+                    SwipeAction.EDIT -> {
+                        anchoredDraggableState.animateTo(SwipeAction.REST)
+                        onEdit()
+                    }
+
+                    SwipeAction.REST -> { /* filtered */ }
                 }
             }
     }
@@ -224,7 +201,6 @@ fun SwipeableHabitCard(
             modifier = Modifier.matchParentSize()
         )
 
-        // Foreground card content
         Box(
             modifier = Modifier
                 .offset { IntOffset(x = currentOffset.roundToInt(), y = 0) }

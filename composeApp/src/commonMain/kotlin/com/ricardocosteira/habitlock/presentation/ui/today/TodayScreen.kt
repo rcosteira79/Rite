@@ -62,7 +62,6 @@ import com.ricardocosteira.habitlock.presentation.ui.haptics.rememberHapticContr
 import com.ricardocosteira.habitlock.util.formatMonthAbbreviation
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.habit_lock_logo
-import habitlock.composeapp.generated.resources.swipe_habit_archived
 import habitlock.composeapp.generated.resources.swipe_habit_deleted
 import habitlock.composeapp.generated.resources.swipe_undo
 import habitlock.composeapp.generated.resources.today_cd_add_habit
@@ -112,17 +111,6 @@ fun TodayScreen(
 
                 is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
 
-                is TodayEvent.HabitArchived -> {
-                    val result = snackbarHostState.showSnackbar(
-                        message = getString(Res.string.swipe_habit_archived),
-                        actionLabel = getString(Res.string.swipe_undo),
-                        duration = SnackbarDuration.Long
-                    )
-                    if (result == SnackbarResult.ActionPerformed) {
-                        viewModel.undoArchive()
-                    }
-                }
-
                 is TodayEvent.HabitDeleted -> {
                     val result = snackbarHostState.showSnackbar(
                         message = getString(Res.string.swipe_habit_deleted),
@@ -149,7 +137,6 @@ fun TodayScreen(
         onUndoLastIncrement = viewModel::undoLastIncrement,
         onIncrementProgress = viewModel::incrementHabitProgress,
         onCustomProgress = viewModel::showQuantitativeInput,
-        onArchive = viewModel::archiveHabitWithUndo,
         onEdit = { habitId: String -> onEditHabit(habitId) },
         onDelete = viewModel::deleteHabit,
         onDismissTimezoneWarning = viewModel::dismissTimezoneWarning,
@@ -178,7 +165,6 @@ internal fun TodayScreen(
     onUndoLastIncrement: (String) -> Unit,
     onIncrementProgress: (String) -> Unit,
     onCustomProgress: (String) -> Unit,
-    onArchive: (String) -> Unit,
     onEdit: (String) -> Unit,
     onDelete: (String) -> Unit,
     onDismissTimezoneWarning: () -> Unit,
@@ -280,7 +266,6 @@ internal fun TodayScreen(
                         key = { it.instanceId }
                     ) { habit ->
                         SwipeableHabitCard(
-                            onArchive = { onArchive(habit.habitId) },
                             onEdit = { onEdit(habit.habitId) },
                             onDelete = { onDelete(habit.habitId) },
                             hapticController = hapticController,
@@ -333,7 +318,6 @@ internal fun TodayScreen(
                             key = { it.instanceId }
                         ) { habit ->
                             SwipeableHabitCard(
-                                onArchive = { onArchive(habit.habitId) },
                                 onEdit = { onEdit(habit.habitId) },
                                 onDelete = { onDelete(habit.habitId) },
                                 hapticController = hapticController,
@@ -371,7 +355,6 @@ internal fun TodayScreen(
                             key = { it.instanceId }
                         ) { habit ->
                             SwipeableHabitCard(
-                                onArchive = { onArchive(habit.habitId) },
                                 onEdit = { onEdit(habit.habitId) },
                                 onDelete = { onDelete(habit.habitId) },
                                 hapticController = hapticController,
@@ -424,7 +407,6 @@ internal fun TodayScreen(
                                 key = { it.instanceId }
                             ) { habit ->
                                 SwipeableHabitCard(
-                                    onArchive = { onArchive(habit.habitId) },
                                     onEdit = { onEdit(habit.habitId) },
                                     onDelete = { onDelete(habit.habitId) },
                                     hapticController = hapticController,

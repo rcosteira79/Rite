@@ -33,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -94,6 +95,7 @@ import habitlock.composeapp.generated.resources.habit_form_button_establish
 import habitlock.composeapp.generated.resources.habit_form_button_save
 import habitlock.composeapp.generated.resources.habit_form_cadence_day
 import habitlock.composeapp.generated.resources.habit_form_cadence_week
+import habitlock.composeapp.generated.resources.habit_form_cd_archive
 import habitlock.composeapp.generated.resources.habit_form_cd_delete
 import habitlock.composeapp.generated.resources.habit_form_delete_dialog_body
 import habitlock.composeapp.generated.resources.habit_form_delete_dialog_cancel
@@ -202,6 +204,8 @@ fun HabitFormScreen(
 
                 HabitFormUiAction.DeleteClicked -> viewModel.deleteHabit()
 
+                HabitFormUiAction.ArchiveClicked -> viewModel.archiveHabit()
+
                 HabitFormUiAction.DiscardDraftClicked -> viewModel.discardDraft()
 
                 HabitFormUiAction.DiscardChangesClicked -> viewModel.discardChanges()
@@ -283,6 +287,21 @@ internal fun HabitFormScreen(
                 },
                 actions = {
                     if (state.isEditing) {
+                        IconButton(
+                            onClick = { onAction(HabitFormUiAction.ArchiveClicked) },
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = iconContainerColor
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Inventory2,
+                                contentDescription = stringResource(
+                                    Res.string.habit_form_cd_archive
+                                ),
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
                         IconButton(
                             onClick = { isDeleteDialogVisible = true },
                             colors = IconButtonDefaults.iconButtonColors(

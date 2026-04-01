@@ -8,14 +8,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.StringResource
 
-sealed interface UndoOperation {
-    val habitId: String
-    val habitName: String
-
-    data class Delete(override val habitId: String, override val habitName: String) : UndoOperation
-
-    data class Archive(override val habitId: String, override val habitName: String) : UndoOperation
-}
+data class PendingDelete(val habitId: String, val habitName: String)
 
 /**
  * State for the Today screen.
@@ -37,7 +30,7 @@ data class TodayState(
     val dailyTotal: Int = 0,
     val motivationalTitleRes: StringResource? = null,
     val strictnessPreset: StrictnessPreset? = null,
-    val pendingUndo: UndoOperation? = null,
+    val pendingDelete: PendingDelete? = null,
 )
 
 /**
@@ -57,8 +50,6 @@ sealed interface TodayEvent {
     }
 
     data class ShowError(val message: String) : TodayEvent
-
-    data class HabitArchived(val habitName: String) : TodayEvent
 
     data class HabitDeleted(val habitName: String) : TodayEvent
 
