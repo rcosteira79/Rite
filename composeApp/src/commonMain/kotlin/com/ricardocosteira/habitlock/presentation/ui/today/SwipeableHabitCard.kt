@@ -1,7 +1,5 @@
 package com.ricardocosteira.habitlock.presentation.ui.today
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
@@ -48,23 +46,22 @@ enum class SwipeAction {
 
 private const val DELETE_ANCHOR_FRACTION = 0.4f
 private const val EDIT_ANCHOR_FRACTION = -0.4f
-private const val VISUAL_THRESHOLD_FRACTION = 0.1f
-private const val COLOR_FADE_DURATION_MS = 200
+private const val FULL_OPACITY_FRACTION = 0.15f
 internal val CORNER_RADIUS = 16.dp
 
 @Composable
-internal fun SwipeBackground(zone: SwipeAction, modifier: Modifier = Modifier) {
-    val targetColor: Color = when (zone) {
+internal fun SwipeBackground(
+    zone: SwipeAction,
+    revealFraction: Float,
+    modifier: Modifier = Modifier
+) {
+    val alpha: Float = (revealFraction / FULL_OPACITY_FRACTION).coerceIn(0f, 1f)
+
+    val zoneColor: Color = when (zone) {
         SwipeAction.DELETE -> MaterialTheme.colorScheme.errorContainer
         SwipeAction.EDIT -> MaterialTheme.colorScheme.secondaryContainer
         SwipeAction.REST -> MaterialTheme.colorScheme.surface
     }
-
-    val backgroundColor: Color by animateColorAsState(
-        targetValue = targetColor,
-        animationSpec = tween(durationMillis = COLOR_FADE_DURATION_MS),
-        label = "swipeBackgroundColor"
-    )
 
     val iconTint: Color = when (zone) {
         SwipeAction.DELETE -> MaterialTheme.colorScheme.onErrorContainer
@@ -88,13 +85,13 @@ internal fun SwipeBackground(zone: SwipeAction, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(CORNER_RADIUS))
-            .background(backgroundColor)
+            .background(zoneColor.copy(alpha = alpha))
     ) {
         if (icon != null) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = iconTint,
+                tint = iconTint.copy(alpha = alpha),
                 modifier = Modifier
                     .align(alignment)
                     .padding(horizontal = 24.dp)
@@ -141,20 +138,24 @@ fun SwipeableHabitCard(
             .collect { hasDragged = true }
     }
 
-    // Derive the visual zone from the offset
+    // Derive the visual zone and reveal fraction from the offset
     val currentZone: SwipeAction by remember {
         derivedStateOf {
             val offset: Float = anchoredDraggableState.offset.takeIf { !it.isNaN() } ?: 0f
-            val width: Float = cardWidth
             when {
-                offset > 0f && width > 0f &&
-                    offset >= width * VISUAL_THRESHOLD_FRACTION -> SwipeAction.DELETE
-
-                offset < 0f && width > 0f &&
-                    abs(offset) >= width * VISUAL_THRESHOLD_FRACTION -> SwipeAction.EDIT
-
+                offset > 0f -> SwipeAction.DELETE
+                offset < 0f -> SwipeAction.EDIT
                 else -> SwipeAction.REST
             }
+        }
+    }
+
+    // How far the card has been dragged as a fraction of its width (0..1)
+    val revealFraction: Float by remember {
+        derivedStateOf {
+            val offset: Float = anchoredDraggableState.offset.takeIf { !it.isNaN() } ?: 0f
+            val width: Float = cardWidth
+            if (width > 0f) abs(offset) / width else 0f
         }
     }
 
@@ -198,6 +199,7 @@ fun SwipeableHabitCard(
     ) {
         SwipeBackground(
             zone = currentZone,
+            revealFraction = revealFraction,
             modifier = Modifier.matchParentSize()
         )
 
