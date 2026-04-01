@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="swipe_habit_archived">Habit archived</string>
+    <string name="swipe_habit_deleted">Habit deleted</string>
+    <string name="swipe_undo">Undo</string>
+</resources>
