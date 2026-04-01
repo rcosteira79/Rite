@@ -106,6 +106,12 @@ fun TodayScreen(
                     )
 
                 is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+
+                is TodayEvent.HabitArchived -> snackbarHostState.showSnackbar(event.habitName)
+
+                is TodayEvent.HabitDeleted -> snackbarHostState.showSnackbar(event.habitName)
+
+                TodayEvent.UndoCompleted -> snackbarHostState.currentSnackbarData?.dismiss()
             }
         }
     }
