@@ -116,7 +116,7 @@ fun TodayScreen(
                     val result = snackbarHostState.showSnackbar(
                         message = getString(Res.string.swipe_habit_archived),
                         actionLabel = getString(Res.string.swipe_undo),
-                        duration = SnackbarDuration.Short
+                        duration = SnackbarDuration.Long
                     )
                     if (result == SnackbarResult.ActionPerformed) {
                         viewModel.undoArchive()
@@ -127,7 +127,7 @@ fun TodayScreen(
                     val result = snackbarHostState.showSnackbar(
                         message = getString(Res.string.swipe_habit_deleted),
                         actionLabel = getString(Res.string.swipe_undo),
-                        duration = SnackbarDuration.Short
+                        duration = SnackbarDuration.Long
                     )
                     if (result == SnackbarResult.ActionPerformed) {
                         viewModel.undoDelete()

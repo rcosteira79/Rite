@@ -351,6 +351,7 @@ class TodayViewModel(
         undoJob?.cancel()
         undoJob = null
         _state.update { it.copy(pendingUndo = null) }
+        viewModelScope.launch { _events.emit(TodayEvent.UndoCompleted) }
         loadTodayHabits()
     }
 
@@ -381,6 +382,7 @@ class TodayViewModel(
         undoJob?.cancel()
         undoJob = null
         _state.update { it.copy(pendingUndo = null) }
+        viewModelScope.launch { _events.emit(TodayEvent.UndoCompleted) }
         loadTodayHabits()
     }
 
