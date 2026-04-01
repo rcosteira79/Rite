@@ -33,6 +33,7 @@ class SwipeableHabitCardScreenshotTest {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = false) {
                 SwipeBackground(
+                    isArmed = true,
                     revealFraction = 1f,
                     zone = SwipeAction.EDIT,
                     modifier = Modifier.height(72.dp)
@@ -47,6 +48,7 @@ class SwipeableHabitCardScreenshotTest {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = true) {
                 SwipeBackground(
+                    isArmed = true,
                     revealFraction = 1f,
                     zone = SwipeAction.EDIT,
                     modifier = Modifier.height(72.dp)
@@ -63,6 +65,7 @@ class SwipeableHabitCardScreenshotTest {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = false) {
                 SwipeBackground(
+                    isArmed = true,
                     revealFraction = 1f,
                     zone = SwipeAction.DELETE,
                     modifier = Modifier.height(72.dp)
@@ -77,6 +80,7 @@ class SwipeableHabitCardScreenshotTest {
         composeRule.setContent {
             HabitLockThemeFallback(darkTheme = true) {
                 SwipeBackground(
+                    isArmed = true,
                     revealFraction = 1f,
                     zone = SwipeAction.DELETE,
                     modifier = Modifier.height(72.dp)

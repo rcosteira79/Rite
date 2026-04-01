@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.presentation.ui.haptics.HapticController
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 enum class SwipeAction {
     REST,
@@ -41,18 +45,28 @@ enum class SwipeAction {
     EDIT
 }
 
-private const val DELETE_ANCHOR_FRACTION = 0.4f
-private const val EDIT_ANCHOR_FRACTION = -0.4f
-private const val FULL_OPACITY_FRACTION = 0.15f
+// Anchors — the card settles here when released past the arm threshold
+private const val DELETE_ANCHOR_FRACTION = 0.55f
+private const val EDIT_ANCHOR_FRACTION = -0.55f
+
+// Visual — background starts fading immediately, reaches full "unarmed" opacity here
+private const val UNARMED_FULL_OPACITY_FRACTION = 0.15f
+
+// Armed vs unarmed opacity
+private const val UNARMED_MAX_ALPHA = 0.5f
+private const val ARMED_ALPHA = 1.0f
+
 internal val CORNER_RADIUS = 16.dp
 
 @Composable
 internal fun SwipeBackground(
     zone: SwipeAction,
+    isArmed: Boolean,
     revealFraction: Float,
     modifier: Modifier = Modifier
 ) {
-    val alpha: Float = (revealFraction / FULL_OPACITY_FRACTION).coerceIn(0f, 1f)
+    val baseAlpha: Float = (revealFraction / UNARMED_FULL_OPACITY_FRACTION).coerceIn(0f, 1f)
+    val alpha: Float = if (isArmed) ARMED_ALPHA else baseAlpha * UNARMED_MAX_ALPHA
 
     val zoneColor: Color = when (zone) {
         SwipeAction.DELETE -> MaterialTheme.colorScheme.errorContainer
@@ -66,10 +80,12 @@ internal fun SwipeBackground(
         SwipeAction.REST -> MaterialTheme.colorScheme.onSurface
     }
 
-    val icon: ImageVector? = when (zone) {
-        SwipeAction.DELETE -> Icons.Filled.DeleteForever
-        SwipeAction.EDIT -> Icons.Outlined.Edit
-        SwipeAction.REST -> null
+    val icon: ImageVector? = when {
+        zone == SwipeAction.DELETE && isArmed -> Icons.Filled.DeleteForever
+        zone == SwipeAction.DELETE -> Icons.Outlined.Delete
+        zone == SwipeAction.EDIT && isArmed -> Icons.Filled.Edit
+        zone == SwipeAction.EDIT -> Icons.Outlined.Edit
+        else -> null
     }
 
     val alignment: Alignment = when (zone) {
@@ -108,13 +124,11 @@ fun SwipeableHabitCard(
     var cardWidth: Float by remember { mutableStateOf(0f) }
     var pendingAction: SwipeAction? by remember { mutableStateOf(null) }
 
-    // Keep callbacks fresh for confirmValueChange
     val currentOnEdit by rememberUpdatedState(onEdit)
     val currentOnDelete by rememberUpdatedState(onDelete)
     val currentHaptic by rememberUpdatedState(hapticController)
 
-    // Defer action execution to next frame — navigating from inside confirmValueChange
-    // breaks the backstack because it runs during gesture resolution
+    // Defer action to next frame — navigating from confirmValueChange breaks backstack
     LaunchedEffect(pendingAction) {
         when (pendingAction) {
             SwipeAction.DELETE -> currentOnDelete()
@@ -130,13 +144,11 @@ fun SwipeableHabitCard(
             confirmValueChange = { newValue: SwipeAction ->
                 when (newValue) {
                     SwipeAction.DELETE -> {
-                        currentHaptic.heavyClick()
                         pendingAction = SwipeAction.DELETE
                         true
                     }
 
                     SwipeAction.EDIT -> {
-                        currentHaptic.click()
                         pendingAction = SwipeAction.EDIT
                         false // snap back to REST
                     }
@@ -177,6 +189,32 @@ fun SwipeableHabitCard(
         }
     }
 
+    // Armed = dragged past half the anchor distance (matches AnchoredDraggable's default
+    // positional threshold, so armed = "will settle at action anchor if released")
+    val isArmed: Boolean by remember {
+        derivedStateOf {
+            val offset: Float = anchoredDraggableState.offset.takeIf { !it.isNaN() } ?: 0f
+            val width: Float = cardWidth
+            if (width <= 0f) return@derivedStateOf false
+            val fraction: Float = abs(offset) / width
+            fraction >= abs(DELETE_ANCHOR_FRACTION) * 0.5f
+        }
+    }
+
+    // Haptic feedback when crossing the arm threshold in either direction
+    LaunchedEffect(Unit) {
+        snapshotFlow { isArmed }
+            .distinctUntilChanged()
+            .collect { armed: Boolean ->
+                if (armed) {
+                    currentHaptic.heavyClick()
+                } else if (currentZone != SwipeAction.REST) {
+                    // Dragged back below threshold while still swiping
+                    currentHaptic.tick()
+                }
+            }
+    }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -184,6 +222,7 @@ fun SwipeableHabitCard(
     ) {
         SwipeBackground(
             zone = currentZone,
+            isArmed = isArmed,
             revealFraction = revealFraction,
             modifier = Modifier.matchParentSize()
         )
