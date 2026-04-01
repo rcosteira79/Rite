@@ -85,11 +85,11 @@ internal fun SwipeBackground(
         SwipeAction.REST -> MaterialTheme.colorScheme.onSurface
     }
 
-    val icon: ImageVector? = when {
-        zone == SwipeAction.DELETE && isArmed -> Icons.Filled.DeleteForever
-        zone == SwipeAction.DELETE -> Icons.Outlined.Delete
-        zone == SwipeAction.EDIT && isArmed -> Icons.Filled.Edit
-        zone == SwipeAction.EDIT -> Icons.Outlined.Edit
+    val icon: ImageVector? = when (zone) {
+        SwipeAction.DELETE if isArmed -> Icons.Filled.DeleteForever
+        SwipeAction.DELETE -> Icons.Outlined.Delete
+        SwipeAction.EDIT if isArmed -> Icons.Filled.Edit
+        SwipeAction.EDIT -> Icons.Outlined.Edit
         else -> null
     }
 
@@ -169,7 +169,7 @@ fun SwipeableHabitCard(
                 if (armed) {
                     currentHaptic.heavyClick()
                 } else if (currentZone != SwipeAction.REST) {
-                    currentHaptic.tick()
+                    currentHaptic.click()
                 }
             }
     }

@@ -173,7 +173,7 @@ internal fun TodayScreen(
 ) {
     val lazyListState = rememberLazyListState()
     val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec()
-    val hapticController: HapticController = rememberHapticController()
+    val hapticController = rememberHapticController()
 
     var expandedCardIds: Set<String> by rememberSaveable { mutableStateOf(emptySet()) }
 
