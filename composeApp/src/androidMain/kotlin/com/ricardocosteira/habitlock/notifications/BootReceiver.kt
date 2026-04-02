@@ -39,16 +39,26 @@ class BootReceiver : BroadcastReceiver() {
         val habitRepository: HabitRepository = appComponent.habitRepository
         val habitInstanceRepository: HabitInstanceRepository = appComponent.habitInstanceRepository
 
+        val pendingResult: PendingResult = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
-            val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
+            try {
+                val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
-            rescheduleReminders(habitNotification, habitRepository, habitInstanceRepository, today)
-            restoreTrackingNotification(
-                habitNotification,
-                habitRepository,
-                habitInstanceRepository,
-                today
-            )
+                rescheduleReminders(
+                    habitNotification,
+                    habitRepository,
+                    habitInstanceRepository,
+                    today
+                )
+                restoreTrackingNotification(
+                    habitNotification,
+                    habitRepository,
+                    habitInstanceRepository,
+                    today
+                )
+            } finally {
+                pendingResult.finish()
+            }
         }
     }
 

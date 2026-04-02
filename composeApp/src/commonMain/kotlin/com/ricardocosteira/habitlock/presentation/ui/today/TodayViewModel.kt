@@ -223,6 +223,7 @@ class TodayViewModel(
             val result = completeHabit.executeBinary(instanceId, CompletionSource.IN_APP)
 
             result.onSuccess {
+                habitNotification.cancelReminder(instanceId)
                 loadTodayHabits()
                 // No snackbar — card state change is the feedback
             }.onFailure { error ->
@@ -242,12 +243,10 @@ class TodayViewModel(
             )
 
             result.onSuccess { updatedInstance ->
-                loadTodayHabits()
                 if (updatedInstance.isQuantitativeComplete()) {
-                    // No snackbar — card state change is the feedback
-                } else {
-                    // No snackbar — progress bar update is the feedback
+                    habitNotification.cancelReminder(instanceId)
                 }
+                loadTodayHabits()
             }.onFailure { error ->
                 _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
             }
@@ -266,12 +265,10 @@ class TodayViewModel(
             )
 
             result.onSuccess { updatedInstance: HabitInstance ->
-                loadTodayHabits()
                 if (updatedInstance.isQuantitativeComplete()) {
-                    // No snackbar — card state change is the feedback
-                } else {
-                    // No snackbar — progress bar update is the feedback
+                    habitNotification.cancelReminder(instanceId)
                 }
+                loadTodayHabits()
             }.onFailure { error: Throwable ->
                 _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
             }
@@ -291,8 +288,8 @@ class TodayViewModel(
             val result = skipHabit.execute(instanceId)
 
             result.onSuccess {
+                habitNotification.cancelReminder(instanceId)
                 loadTodayHabits()
-                // No snackbar — card state change is the feedback
             }.onFailure { error ->
                 when (error) {
                     is SkipLockedException -> _events.emit(TodayEvent.SkipLimitReached)
@@ -405,9 +402,16 @@ class TodayViewModel(
     fun archiveHabit(habitId: String) {
         viewModelScope.launch {
             try {
+                val today: LocalDate = Clock.System.now().toLocalDate(
+                    TimeZone.currentSystemDefault()
+                )
+                val instance: HabitInstance? =
+                    habitInstanceRepository.getInstanceForHabitAndDate(habitId, today)
+                if (instance != null) {
+                    habitNotification.cancelAllForHabit(habitId, listOf(instance.id))
+                }
                 habitRepository.archiveHabit(habitId)
                 loadTodayHabits()
-                // No snackbar — habit disappears from the list
             } catch (e: Exception) {
                 _events.emit(TodayEvent.ShowError(e.message ?: "Something went wrong"))
             }
