@@ -55,6 +55,11 @@ class HabitFormViewModel(
     private var originalState: HabitFormState? = null
 
     init {
+        _state.update {
+            it.copy(
+                isNotificationPermissionGranted = habitNotification.isNotificationPermissionGranted()
+            )
+        }
         if (habitIdToEdit != null) {
             loadHabit(habitIdToEdit)
         }
@@ -96,6 +101,7 @@ class HabitFormViewModel(
                             intervalMinutes = reminder?.intervalMinutes?.toString() ?: "60",
                             startTime = reminder?.startTime,
                             endTime = reminder?.endTime,
+                            isTrackingEnabled = habit.isTrackingEnabled,
                             isLoading = false
                         )
                     }
@@ -267,7 +273,8 @@ class HabitFormViewModel(
                     scheduleType = state.scheduleType,
                     quota = state.quota.toIntOrNull() ?: 1,
                     specificDays = specificDays,
-                    reminder = reminder
+                    reminder = reminder,
+                    isTrackingEnabled = state.isTrackingEnabled
                 ),
                 startDate = today
             ).getOrThrow()
@@ -296,7 +303,8 @@ class HabitFormViewModel(
             } else {
                 null
             },
-            unit = state.unit.trim().takeIf { it.isNotEmpty() }
+            unit = state.unit.trim().takeIf { it.isNotEmpty() },
+            isTrackingEnabled = state.isTrackingEnabled
         )
 
         habitRepository.updateHabit(updatedHabit)
@@ -390,6 +398,22 @@ class HabitFormViewModel(
             } catch (e: Exception) {
                 _events.emit(HabitFormEvent.ShowError(e.message))
             }
+        }
+    }
+
+    fun updateIsTrackingEnabled(isEnabled: Boolean) {
+        _state.update { it.copy(isTrackingEnabled = isEnabled) }
+    }
+
+    fun openNotificationSettings() {
+        habitNotification.openNotificationSettings()
+    }
+
+    fun refreshNotificationPermission() {
+        _state.update {
+            it.copy(
+                isNotificationPermissionGranted = habitNotification.isNotificationPermissionGranted()
+            )
         }
     }
 

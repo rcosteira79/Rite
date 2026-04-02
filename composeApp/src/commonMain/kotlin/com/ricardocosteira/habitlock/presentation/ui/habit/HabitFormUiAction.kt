@@ -34,4 +34,8 @@ sealed interface HabitFormUiAction {
     data object DiscardDraftClicked : HabitFormUiAction
 
     data object DiscardChangesClicked : HabitFormUiAction
+
+    data class IsTrackingEnabledChanged(val isEnabled: Boolean) : HabitFormUiAction
+
+    data object NotificationSettingsClicked : HabitFormUiAction
 }

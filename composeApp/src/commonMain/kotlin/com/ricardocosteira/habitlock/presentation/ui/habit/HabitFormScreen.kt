@@ -71,6 +71,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.habitlock.di.LocalAppComponent
 import com.ricardocosteira.habitlock.domain.models.HabitType
@@ -138,6 +139,11 @@ fun HabitFormScreen(
 
     if (state.isEditing) {
         BackHandler { viewModel.discardChanges() }
+    }
+
+    LifecycleResumeEffect(viewModel) {
+        viewModel.refreshNotificationPermission()
+        onPauseOrDispose { }
     }
 
     LaunchedEffect(viewModel) {
@@ -209,6 +215,12 @@ fun HabitFormScreen(
                 HabitFormUiAction.DiscardDraftClicked -> viewModel.discardDraft()
 
                 HabitFormUiAction.DiscardChangesClicked -> viewModel.discardChanges()
+
+                is HabitFormUiAction.IsTrackingEnabledChanged ->
+                    viewModel.updateIsTrackingEnabled(action.isEnabled)
+
+                HabitFormUiAction.NotificationSettingsClicked ->
+                    viewModel.openNotificationSettings()
             }
         }
     )
