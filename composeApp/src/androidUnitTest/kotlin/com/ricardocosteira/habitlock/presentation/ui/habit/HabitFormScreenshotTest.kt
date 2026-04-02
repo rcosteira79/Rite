@@ -17,7 +17,11 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [33], qualifiers = "w360dp-h800dp-420dpi", application = android.app.Application::class)
+@Config(
+    sdk = [33],
+    qualifiers = "w360dp-h800dp-420dpi",
+    application = android.app.Application::class
+)
 class HabitFormScreenshotTest {
     @get:Rule
     val composeRule = createComposeRule()
@@ -106,7 +110,11 @@ class HabitFormScreenshotTest {
                     state = HabitFormState(
                         type = HabitType.BINARY,
                         scheduleType = ScheduleType.WEEKLY,
-                        selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+                        selectedDays = setOf(
+                            DayOfWeek.MONDAY,
+                            DayOfWeek.WEDNESDAY,
+                            DayOfWeek.FRIDAY
+                        )
                     ),
                     onAction = {}
                 )
@@ -123,7 +131,11 @@ class HabitFormScreenshotTest {
                     state = HabitFormState(
                         type = HabitType.BINARY,
                         scheduleType = ScheduleType.WEEKLY,
-                        selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+                        selectedDays = setOf(
+                            DayOfWeek.MONDAY,
+                            DayOfWeek.WEDNESDAY,
+                            DayOfWeek.FRIDAY
+                        )
                     ),
                     onAction = {}
                 )
@@ -256,7 +268,11 @@ class HabitFormScreenshotTest {
                         name = "Run",
                         type = HabitType.BINARY,
                         scheduleType = ScheduleType.WEEKLY,
-                        selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+                        selectedDays = setOf(
+                            DayOfWeek.MONDAY,
+                            DayOfWeek.WEDNESDAY,
+                            DayOfWeek.FRIDAY
+                        )
                     ),
                     onAction = {}
                 )
@@ -275,7 +291,123 @@ class HabitFormScreenshotTest {
                         name = "Run",
                         type = HabitType.BINARY,
                         scheduleType = ScheduleType.WEEKLY,
-                        selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+                        selectedDays = setOf(
+                            DayOfWeek.MONDAY,
+                            DayOfWeek.WEDNESDAY,
+                            DayOfWeek.FRIDAY
+                        )
+                    ),
+                    onAction = {}
+                )
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    // --- Tracking enabled ---
+
+    @Test
+    fun habitForm_create_trackingEnabled_lightTheme() {
+        composeRule.setContent {
+            HabitLockThemeFallback(darkTheme = false) {
+                HabitFormScreen(
+                    state = HabitFormState(
+                        type = HabitType.BINARY,
+                        isTrackingEnabled = true,
+                        selectedDays = DayOfWeek.entries.toSet()
+                    ),
+                    onAction = {}
+                )
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun habitForm_create_trackingEnabled_darkTheme() {
+        composeRule.setContent {
+            HabitLockThemeFallback(darkTheme = true) {
+                HabitFormScreen(
+                    state = HabitFormState(
+                        type = HabitType.BINARY,
+                        isTrackingEnabled = true,
+                        selectedDays = DayOfWeek.entries.toSet()
+                    ),
+                    onAction = {}
+                )
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    // --- Both reminder and tracking enabled ---
+
+    @Test
+    fun habitForm_create_bothNotificationsEnabled_lightTheme() {
+        composeRule.setContent {
+            HabitLockThemeFallback(darkTheme = false) {
+                HabitFormScreen(
+                    state = HabitFormState(
+                        type = HabitType.BINARY,
+                        hasReminder = true,
+                        reminderTime = LocalTime(9, 0),
+                        isTrackingEnabled = true,
+                        selectedDays = DayOfWeek.entries.toSet()
+                    ),
+                    onAction = {}
+                )
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun habitForm_create_bothNotificationsEnabled_darkTheme() {
+        composeRule.setContent {
+            HabitLockThemeFallback(darkTheme = true) {
+                HabitFormScreen(
+                    state = HabitFormState(
+                        type = HabitType.BINARY,
+                        hasReminder = true,
+                        reminderTime = LocalTime(9, 0),
+                        isTrackingEnabled = true,
+                        selectedDays = DayOfWeek.entries.toSet()
+                    ),
+                    onAction = {}
+                )
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    // --- Notification permission denied ---
+
+    @Test
+    fun habitForm_create_notificationPermissionDenied_lightTheme() {
+        composeRule.setContent {
+            HabitLockThemeFallback(darkTheme = false) {
+                HabitFormScreen(
+                    state = HabitFormState(
+                        type = HabitType.BINARY,
+                        isNotificationPermissionGranted = false,
+                        selectedDays = DayOfWeek.entries.toSet()
+                    ),
+                    onAction = {}
+                )
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun habitForm_create_notificationPermissionDenied_darkTheme() {
+        composeRule.setContent {
+            HabitLockThemeFallback(darkTheme = true) {
+                HabitFormScreen(
+                    state = HabitFormState(
+                        type = HabitType.BINARY,
+                        isNotificationPermissionGranted = false,
+                        selectedDays = DayOfWeek.entries.toSet()
                     ),
                     onAction = {}
                 )
