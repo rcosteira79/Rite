@@ -20,8 +20,10 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - uses: gradle/actions/setup-gradle@v4
+      - name: Verify snapshot files exist
+        run: ls -la composeApp/src/androidUnitTest/snapshots/images/ | wc -l
       - name: Run tests
-        run: ./gradlew :composeApp:testDebugUnitTest :composeApp:jvmTest --no-build-cache -Proborazzi.test.compare=false
+        run: ./gradlew :composeApp:testDebugUnitTest :composeApp:jvmTest --no-build-cache --no-configuration-cache
 
   ios-build:
     name: iOS Build
