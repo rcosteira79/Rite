@@ -102,6 +102,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
         const val ACTION_ADD_ONE = "com.ricardocosteira.habitlock.ACTION_ADD_ONE"
         const val ACTION_SNOOZE = "com.ricardocosteira.habitlock.ACTION_SNOOZE"
         const val ACTION_SKIP = "com.ricardocosteira.habitlock.ACTION_SKIP"
+        const val ACTION_UNDO_LAST_INCREMENT = "com.ricardocosteira.habitlock.ACTION_UNDO_LAST_INCREMENT"
 
         const val EXTRA_INSTANCE_ID = "instance_id"
         const val EXTRA_HABIT_ID = "habit_id"
