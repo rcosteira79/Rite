@@ -11,6 +11,7 @@ import com.ricardocosteira.habitlock.domain.models.ScheduleType
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabit
 import com.ricardocosteira.habitlock.domain.usecases.UuidProvider
+import com.ricardocosteira.habitlock.notifications.HabitNotification
 import com.ricardocosteira.habitlock.util.toLocalDate
 import kotlin.time.Clock
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,6 +34,7 @@ class HabitFormViewModel(
     private val habitRepository: HabitRepository,
     private val createHabit: CreateHabit,
     private val uuidProvider: UuidProvider,
+    private val habitNotification: HabitNotification,
     private val habitIdToEdit: String? = null
 ) : ViewModel() {
     private val _state = MutableStateFlow(HabitFormState())

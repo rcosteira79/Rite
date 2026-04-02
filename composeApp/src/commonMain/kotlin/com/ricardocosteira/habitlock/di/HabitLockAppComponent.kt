@@ -22,6 +22,7 @@ import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
 import com.ricardocosteira.habitlock.domain.usecases.SnoozeHabit
 import com.ricardocosteira.habitlock.domain.usecases.UuidProvider
 import com.ricardocosteira.habitlock.generateUuid
+import com.ricardocosteira.habitlock.notifications.HabitNotification
 import com.ricardocosteira.habitlock.presentation.ui.archived.ArchivedHabitsViewModel
 import com.ricardocosteira.habitlock.presentation.ui.calendar.CalendarViewModel
 import com.ricardocosteira.habitlock.presentation.ui.habit.HabitFormViewModel
@@ -44,7 +45,8 @@ import me.tatarka.inject.annotations.Provides
 @Component
 @AppScope
 abstract class HabitLockAppComponent(
-    @get:Provides val databaseDriverFactory: DatabaseDriverFactory
+    @get:Provides val databaseDriverFactory: DatabaseDriverFactory,
+    @get:Provides val habitNotification: HabitNotification
 ) {
     // IO Dispatcher (singleton)
     @AppScope
@@ -54,15 +56,15 @@ abstract class HabitLockAppComponent(
     // Database (singleton)
     @AppScope
     @Provides
-    fun provideDatabase(driverFactory: DatabaseDriverFactory): HabitLockDatabase = HabitLockDatabase(driverFactory.createDriver())
+    fun provideDatabase(driverFactory: DatabaseDriverFactory): HabitLockDatabase =
+        HabitLockDatabase(driverFactory.createDriver())
 
     // UUID Provider (singleton)
     @AppScope
     @Provides
-    fun provideUuidProvider(): UuidProvider =
-        object : UuidProvider {
-            override fun generate(): String = generateUuid()
-        }
+    fun provideUuidProvider(): UuidProvider = object : UuidProvider {
+        override fun generate(): String = generateUuid()
+    }
 
     // Repository bindings (interface -> implementation)
     @AppScope
@@ -75,11 +77,14 @@ abstract class HabitLockAppComponent(
 
     @AppScope
     @Provides
-    fun provideHabitInstanceRepository(impl: HabitInstanceRepositoryImpl): HabitInstanceRepository = impl
+    fun provideHabitInstanceRepository(impl: HabitInstanceRepositoryImpl): HabitInstanceRepository =
+        impl
 
     @AppScope
     @Provides
-    fun provideHabitCompletionEventRepository(impl: HabitCompletionEventRepositoryImpl): HabitCompletionEventRepository = impl
+    fun provideHabitCompletionEventRepository(
+        impl: HabitCompletionEventRepositoryImpl
+    ): HabitCompletionEventRepository = impl
 
     @AppScope
     @Provides
@@ -95,12 +100,17 @@ abstract class HabitLockAppComponent(
     fun provideHabitFormViewModelFactory(
         habitRepository: HabitRepository,
         createHabit: CreateHabit,
-        uuidProvider: UuidProvider
-    ): HabitFormViewModel.Factory =
-        object : HabitFormViewModel.Factory {
-            override fun create(habitIdToEdit: String?): HabitFormViewModel =
-                HabitFormViewModel(habitRepository, createHabit, uuidProvider, habitIdToEdit)
-        }
+        uuidProvider: UuidProvider,
+        habitNotification: HabitNotification
+    ): HabitFormViewModel.Factory = object : HabitFormViewModel.Factory {
+        override fun create(habitIdToEdit: String?): HabitFormViewModel = HabitFormViewModel(
+            habitRepository,
+            createHabit,
+            uuidProvider,
+            habitNotification,
+            habitIdToEdit
+        )
+    }
 
     // Public accessors for App initialization
     abstract val startupViewModel: StartupViewModel
@@ -120,6 +130,7 @@ abstract class HabitLockAppComponent(
     abstract val completeHabit: CompleteHabit
     abstract val snoozeHabit: SnoozeHabit
     abstract val skipHabit: SkipHabit
+    abstract val habitNotificationAccessor: HabitNotification
 
     companion object
 }

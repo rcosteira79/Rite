@@ -20,6 +20,7 @@ import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
 import com.ricardocosteira.habitlock.domain.usecases.SkipLockedException
 import com.ricardocosteira.habitlock.domain.usecases.UndoHabit
 import com.ricardocosteira.habitlock.domain.usecases.UndoLastIncrement
+import com.ricardocosteira.habitlock.notifications.HabitNotification
 import com.ricardocosteira.habitlock.presentation.mappers.motivationalTitleResource
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.habitlock.presentation.models.mapToTodayHabitUiModel
@@ -63,7 +64,8 @@ class TodayViewModel(
     private val completeHabit: CompleteHabit,
     private val skipHabit: SkipHabit,
     private val undoHabit: UndoHabit,
-    private val undoLastIncrement: UndoLastIncrement
+    private val undoLastIncrement: UndoLastIncrement,
+    private val habitNotification: HabitNotification
 ) : ViewModel() {
     private val _state = MutableStateFlow(TodayState())
     val state: StateFlow<TodayState> = _state.asStateFlow()
