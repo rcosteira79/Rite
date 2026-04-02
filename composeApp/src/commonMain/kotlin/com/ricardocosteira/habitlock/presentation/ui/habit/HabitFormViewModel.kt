@@ -3,11 +3,13 @@ package com.ricardocosteira.habitlock.presentation.ui.habit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.domain.models.Habit
+import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitReminder
 import com.ricardocosteira.habitlock.domain.models.HabitSchedule
 import com.ricardocosteira.habitlock.domain.models.HabitType
 import com.ricardocosteira.habitlock.domain.models.ReminderType
 import com.ricardocosteira.habitlock.domain.models.ScheduleType
+import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.domain.usecases.CreateHabit
 import com.ricardocosteira.habitlock.domain.usecases.UuidProvider
@@ -23,6 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import me.tatarka.inject.annotations.Inject
@@ -32,6 +35,7 @@ private class HabitNotFoundException : Exception()
 @Inject
 class HabitFormViewModel(
     private val habitRepository: HabitRepository,
+    private val habitInstanceRepository: HabitInstanceRepository,
     private val createHabit: CreateHabit,
     private val uuidProvider: UuidProvider,
     private val habitNotification: HabitNotification,
@@ -248,7 +252,7 @@ class HabitFormViewModel(
             null
         }
 
-        createHabit
+        val habit: Habit = createHabit
             .execute(
                 params = CreateHabit.CreateHabitParams(
                     name = state.name.trim(),
@@ -267,6 +271,16 @@ class HabitFormViewModel(
                 ),
                 startDate = today
             ).getOrThrow()
+
+        if (reminder != null) {
+            val savedReminders: List<HabitReminder> = habitRepository.getRemindersForHabit(habit.id)
+            val savedReminder: HabitReminder? = savedReminders.firstOrNull()
+            val instance: HabitInstance? =
+                habitInstanceRepository.getInstanceForHabitAndDate(habit.id, today)
+            if (savedReminder != null && instance != null) {
+                habitNotification.scheduleReminder(habit, savedReminder, instance)
+            }
+        }
     }
 
     private suspend fun updateExistingHabit(state: HabitFormState, reminder: HabitReminder?) {
@@ -325,6 +339,24 @@ class HabitFormViewModel(
                 reminder.copy(habitId = habitId, id = uuidProvider.generate())
             )
         }
+
+        val today: LocalDate =
+            Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
+        val todayInstance: HabitInstance? =
+            habitInstanceRepository.getInstanceForHabitAndDate(habitId, today)
+
+        if (todayInstance != null) {
+            habitNotification.cancelReminder(todayInstance.id)
+
+            if (reminder != null) {
+                val savedReminders: List<HabitReminder> =
+                    habitRepository.getRemindersForHabit(habitId)
+                val savedReminder: HabitReminder? = savedReminders.firstOrNull()
+                if (savedReminder != null) {
+                    habitNotification.scheduleReminder(updatedHabit, savedReminder, todayInstance)
+                }
+            }
+        }
     }
 
     fun deleteHabit() {
@@ -332,6 +364,14 @@ class HabitFormViewModel(
 
         viewModelScope.launch {
             try {
+                val today: LocalDate =
+                    Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
+                val instance: HabitInstance? =
+                    habitInstanceRepository.getInstanceForHabitAndDate(habitId, today)
+                if (instance != null) {
+                    habitNotification.cancelAllForHabit(habitId, listOf(instance.id))
+                }
+
                 habitRepository.deleteHabit(habitId)
                 _events.emit(HabitFormEvent.NavigateBack)
             } catch (e: Exception) {

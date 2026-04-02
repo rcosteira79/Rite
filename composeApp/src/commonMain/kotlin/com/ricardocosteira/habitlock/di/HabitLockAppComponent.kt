@@ -99,12 +99,14 @@ abstract class HabitLockAppComponent(
     @Provides
     fun provideHabitFormViewModelFactory(
         habitRepository: HabitRepository,
+        habitInstanceRepository: HabitInstanceRepository,
         createHabit: CreateHabit,
         uuidProvider: UuidProvider,
         habitNotification: HabitNotification
     ): HabitFormViewModel.Factory = object : HabitFormViewModel.Factory {
         override fun create(habitIdToEdit: String?): HabitFormViewModel = HabitFormViewModel(
             habitRepository,
+            habitInstanceRepository,
             createHabit,
             uuidProvider,
             habitNotification,
