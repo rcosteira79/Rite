@@ -29,6 +29,8 @@ sealed interface HabitFormUiAction {
 
     data object DeleteClicked : HabitFormUiAction
 
+    data object ArchiveClicked : HabitFormUiAction
+
     data object DiscardDraftClicked : HabitFormUiAction
 
     data object DiscardChangesClicked : HabitFormUiAction

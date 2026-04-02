@@ -48,6 +48,8 @@ class TodayScreenScreenshotTest {
                     onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
+                    onEdit = {},
+                    onDelete = {},
                     onDismissTimezoneWarning = {},
                     onAddFirstHabit = {}
                 )
@@ -68,6 +70,8 @@ class TodayScreenScreenshotTest {
                     onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
+                    onEdit = {},
+                    onDelete = {},
                     onDismissTimezoneWarning = {},
                     onAddFirstHabit = {}
                 )
@@ -90,6 +94,8 @@ class TodayScreenScreenshotTest {
                     onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
+                    onEdit = {},
+                    onDelete = {},
                     onDismissTimezoneWarning = {},
                     onAddFirstHabit = {}
                 )
@@ -110,6 +116,8 @@ class TodayScreenScreenshotTest {
                     onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
+                    onEdit = {},
+                    onDelete = {},
                     onDismissTimezoneWarning = {},
                     onAddFirstHabit = {}
                 )
@@ -132,6 +140,8 @@ class TodayScreenScreenshotTest {
                     onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
+                    onEdit = {},
+                    onDelete = {},
                     onDismissTimezoneWarning = {},
                     onAddFirstHabit = {}
                 )
@@ -152,6 +162,8 @@ class TodayScreenScreenshotTest {
                     onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
+                    onEdit = {},
+                    onDelete = {},
                     onDismissTimezoneWarning = {},
                     onAddFirstHabit = {}
                 )
@@ -174,6 +186,8 @@ class TodayScreenScreenshotTest {
                     onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
+                    onEdit = {},
+                    onDelete = {},
                     onDismissTimezoneWarning = {},
                     onAddFirstHabit = {}
                 )
@@ -194,6 +208,8 @@ class TodayScreenScreenshotTest {
                     onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
+                    onEdit = {},
+                    onDelete = {},
                     onDismissTimezoneWarning = {},
                     onAddFirstHabit = {}
                 )
@@ -216,6 +232,8 @@ class TodayScreenScreenshotTest {
                     onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
+                    onEdit = {},
+                    onDelete = {},
                     onDismissTimezoneWarning = {},
                     onAddFirstHabit = {}
                 )
@@ -236,6 +254,8 @@ class TodayScreenScreenshotTest {
                     onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
+                    onEdit = {},
+                    onDelete = {},
                     onDismissTimezoneWarning = {},
                     onAddFirstHabit = {}
                 )
@@ -258,6 +278,8 @@ class TodayScreenScreenshotTest {
                     onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
+                    onEdit = {},
+                    onDelete = {},
                     onDismissTimezoneWarning = {},
                     onAddFirstHabit = {}
                 )
@@ -278,6 +300,8 @@ class TodayScreenScreenshotTest {
                     onUndoLastIncrement = {},
                     onIncrementProgress = {},
                     onCustomProgress = {},
+                    onEdit = {},
+                    onDelete = {},
                     onDismissTimezoneWarning = {},
                     onAddFirstHabit = {}
                 )

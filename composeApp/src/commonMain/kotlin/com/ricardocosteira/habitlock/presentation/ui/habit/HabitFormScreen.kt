@@ -27,11 +27,13 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -66,6 +68,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -92,6 +95,7 @@ import habitlock.composeapp.generated.resources.habit_form_button_establish
 import habitlock.composeapp.generated.resources.habit_form_button_save
 import habitlock.composeapp.generated.resources.habit_form_cadence_day
 import habitlock.composeapp.generated.resources.habit_form_cadence_week
+import habitlock.composeapp.generated.resources.habit_form_cd_archive
 import habitlock.composeapp.generated.resources.habit_form_cd_delete
 import habitlock.composeapp.generated.resources.habit_form_delete_dialog_body
 import habitlock.composeapp.generated.resources.habit_form_delete_dialog_cancel
@@ -200,6 +204,8 @@ fun HabitFormScreen(
 
                 HabitFormUiAction.DeleteClicked -> viewModel.deleteHabit()
 
+                HabitFormUiAction.ArchiveClicked -> viewModel.archiveHabit()
+
                 HabitFormUiAction.DiscardDraftClicked -> viewModel.discardDraft()
 
                 HabitFormUiAction.DiscardChangesClicked -> viewModel.discardChanges()
@@ -282,6 +288,21 @@ internal fun HabitFormScreen(
                 actions = {
                     if (state.isEditing) {
                         IconButton(
+                            onClick = { onAction(HabitFormUiAction.ArchiveClicked) },
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = iconContainerColor
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Inventory2,
+                                contentDescription = stringResource(
+                                    Res.string.habit_form_cd_archive
+                                ),
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
+                        IconButton(
                             onClick = { isDeleteDialogVisible = true },
                             colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = iconContainerColor
@@ -352,7 +373,8 @@ internal fun HabitFormScreen(
             UnderlineTextField(
                 value = state.name,
                 onValueChange = { onAction(HabitFormUiAction.NameChanged(it)) },
-                placeholder = stringResource(Res.string.common_placeholder_habit_name)
+                placeholder = stringResource(Res.string.common_placeholder_habit_name),
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -594,12 +616,14 @@ private fun UnderlineTextField(
     modifier: Modifier = Modifier,
     placeholder: String = "",
     label: String = "",
-    maxLines: Int = 1
+    maxLines: Int = 1,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     TextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.fillMaxWidth(),
+        keyboardOptions = keyboardOptions,
         placeholder = if (placeholder.isNotEmpty()) {
             { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         } else {
