@@ -25,6 +25,11 @@ interface HabitRepository {
     suspend fun getActiveHabits(): List<Habit>
 
     /**
+     * Get all active, non-archived habits that have tracking enabled.
+     */
+    suspend fun getHabitsWithTrackingEnabled(): List<Habit>
+
+    /**
      * Get a habit by ID.
      */
     suspend fun getHabitById(habitId: String): Habit?
@@ -32,11 +37,7 @@ interface HabitRepository {
     /**
      * Create a new habit with schedule and optional reminder.
      */
-    suspend fun createHabit(
-        habit: Habit,
-        schedule: HabitSchedule,
-        reminder: HabitReminder?
-    )
+    suspend fun createHabit(habit: Habit, schedule: HabitSchedule, reminder: HabitReminder?)
 
     /**
      * Update an existing habit.
@@ -46,44 +47,27 @@ interface HabitRepository {
     /**
      * Update habit streak values.
      */
-    suspend fun updateHabitStreak(
-        habitId: String,
-        currentStreak: Int,
-        longestStreak: Int
-    )
+    suspend fun updateHabitStreak(habitId: String, currentStreak: Int, longestStreak: Int)
 
     /**
      * Update habit score values.
      */
-    suspend fun updateHabitScore(
-        habitId: String,
-        totalCompletions: Int,
-        expectedCompletions: Int
-    )
+    suspend fun updateHabitScore(habitId: String, totalCompletions: Int, expectedCompletions: Int)
 
     /**
      * Increment habit total completions.
      */
-    suspend fun incrementHabitTotalCompletions(
-        habitId: String,
-        amount: Int = 1
-    )
+    suspend fun incrementHabitTotalCompletions(habitId: String, amount: Int = 1)
 
     /**
      * Decrement habit total completions.
      */
-    suspend fun decrementHabitTotalCompletions(
-        habitId: String,
-        amount: Int = 1
-    )
+    suspend fun decrementHabitTotalCompletions(habitId: String, amount: Int = 1)
 
     /**
      * Increment habit expected completions.
      */
-    suspend fun incrementHabitExpectedCompletions(
-        habitId: String,
-        amount: Int = 1
-    )
+    suspend fun incrementHabitExpectedCompletions(habitId: String, amount: Int = 1)
 
     /**
      * Archive a habit. It will no longer generate daily instances.

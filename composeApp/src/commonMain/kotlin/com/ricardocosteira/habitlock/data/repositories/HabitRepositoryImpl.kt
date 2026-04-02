@@ -38,6 +38,10 @@ class HabitRepositoryImpl(
         queries.getActiveHabits().executeAsList().map { it.toDomain() }
     }
 
+    override suspend fun getHabitsWithTrackingEnabled(): List<Habit> = withContext(ioDispatcher) {
+        queries.getHabitsWithTrackingEnabled().executeAsList().map { it.toDomain() }
+    }
+
     override suspend fun getHabitById(habitId: String): Habit? = withContext(ioDispatcher) {
         queries.getHabitById(habitId).executeAsOneOrNull()?.toDomain()
     }
@@ -57,6 +61,7 @@ class HabitRepositoryImpl(
                     targetValue = habit.targetValue?.toLong(),
                     unit = habit.unit,
                     defaultIncrement = habit.defaultIncrement.toLong(),
+                    isTrackingEnabled = if (habit.isTrackingEnabled) 1L else 0L,
                     isActive = if (habit.isActive) 1 else 0,
                     isArchived = if (habit.isArchived) 1 else 0,
                     currentStreak = habit.currentStreak.toLong(),
@@ -102,6 +107,7 @@ class HabitRepositoryImpl(
                 type = habit.type.name,
                 targetValue = habit.targetValue?.toLong(),
                 unit = habit.unit,
+                isTrackingEnabled = if (habit.isTrackingEnabled) 1L else 0L,
                 isActive = if (habit.isActive) 1 else 0,
                 isArchived = if (habit.isArchived) 1 else 0,
                 archivedAt = habit.archivedAt?.toString(),

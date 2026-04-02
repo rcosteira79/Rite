@@ -13,6 +13,7 @@ data class Habit(
     val targetValue: Int?,
     val unit: String?,
     val defaultIncrement: Int = 1,
+    val isTrackingEnabled: Boolean = false,
     val isActive: Boolean,
     val isArchived: Boolean,
     val currentStreak: Int,

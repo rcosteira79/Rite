@@ -55,6 +55,7 @@ object EntityMappers {
         targetValue = targetValue?.toInt(),
         unit = unit,
         defaultIncrement = defaultIncrement.toInt(),
+        isTrackingEnabled = isTrackingEnabled == 1L,
         isActive = isActive == 1L,
         isArchived = isArchived == 1L,
         currentStreak = currentStreak.toInt(),
