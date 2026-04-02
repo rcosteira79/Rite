@@ -20,6 +20,7 @@ import com.ricardocosteira.habitlock.domain.usecases.GenerateDailyHabits
 import com.ricardocosteira.habitlock.domain.usecases.ProcessEndOfDay
 import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
 import com.ricardocosteira.habitlock.domain.usecases.SnoozeHabit
+import com.ricardocosteira.habitlock.domain.usecases.UndoLastIncrement
 import com.ricardocosteira.habitlock.domain.usecases.UuidProvider
 import com.ricardocosteira.habitlock.generateUuid
 import com.ricardocosteira.habitlock.notifications.HabitNotification
@@ -132,6 +133,7 @@ abstract class HabitLockAppComponent(
     abstract val completeHabit: CompleteHabit
     abstract val snoozeHabit: SnoozeHabit
     abstract val skipHabit: SkipHabit
+    abstract val undoLastIncrement: UndoLastIncrement
     abstract val habitNotificationAccessor: HabitNotification
 
     companion object
