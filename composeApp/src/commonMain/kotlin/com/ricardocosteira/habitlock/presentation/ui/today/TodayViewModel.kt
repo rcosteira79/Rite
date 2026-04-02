@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.di.AppScope
 import com.ricardocosteira.habitlock.domain.models.CompletionSource
+import com.ricardocosteira.habitlock.domain.models.Habit
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
@@ -21,6 +22,7 @@ import com.ricardocosteira.habitlock.domain.usecases.SkipLockedException
 import com.ricardocosteira.habitlock.domain.usecases.UndoHabit
 import com.ricardocosteira.habitlock.domain.usecases.UndoLastIncrement
 import com.ricardocosteira.habitlock.notifications.HabitNotification
+import com.ricardocosteira.habitlock.notifications.TrackedHabitInfo
 import com.ricardocosteira.habitlock.presentation.mappers.motivationalTitleResource
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.habitlock.presentation.models.mapToTodayHabitUiModel
@@ -42,6 +44,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import me.tatarka.inject.annotations.Inject
 
@@ -190,6 +193,8 @@ class TodayViewModel(
                         strictnessPreset = strictnessPreset
                     )
                 }
+
+                refreshTrackingNotification()
             } catch (e: Exception) {
                 val fallbackTimezone: TimeZone = TimeZone.currentSystemDefault()
                 val today = Clock.System.now().toLocalDate(fallbackTimezone)
@@ -427,6 +432,40 @@ class TodayViewModel(
 
     fun clearError() {
         _state.update { it.copy(error = null) }
+    }
+
+    private suspend fun refreshTrackingNotification() {
+        val trackedHabits: List<Habit> = habitRepository.getHabitsWithTrackingEnabled()
+        if (trackedHabits.isEmpty()) {
+            habitNotification.hideTrackingNotification()
+            return
+        }
+
+        val today: LocalDate = Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
+        val trackedInfoList: List<TrackedHabitInfo> = trackedHabits.mapNotNull { habit: Habit ->
+            val instance: HabitInstance = habitInstanceRepository.getInstanceForHabitAndDate(
+                habit.id,
+                today
+            ) ?: return@mapNotNull null
+
+            TrackedHabitInfo(
+                instanceId = instance.id,
+                habitId = habit.id,
+                habitName = habit.name,
+                type = habit.type,
+                currentProgress = instance.currentProgress,
+                targetValue = instance.targetValue,
+                unit = habit.unit,
+                defaultIncrement = habit.defaultIncrement,
+                isCompleted = instance.status == HabitStatus.COMPLETED
+            )
+        }
+
+        if (trackedInfoList.isEmpty()) {
+            habitNotification.hideTrackingNotification()
+        } else {
+            habitNotification.updateTrackingNotification(trackedInfoList)
+        }
     }
 
     private companion object {
