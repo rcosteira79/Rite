@@ -90,6 +90,7 @@ import habitlock.composeapp.generated.resources.common_error_generic
 import habitlock.composeapp.generated.resources.common_ok
 import habitlock.composeapp.generated.resources.common_placeholder_habit_name
 import habitlock.composeapp.generated.resources.common_weekly
+import habitlock.composeapp.generated.resources.habit_form_both_notifications_hint
 import habitlock.composeapp.generated.resources.habit_form_button_discard_changes
 import habitlock.composeapp.generated.resources.habit_form_button_discard_draft
 import habitlock.composeapp.generated.resources.habit_form_button_establish
@@ -107,6 +108,7 @@ import habitlock.composeapp.generated.resources.habit_form_error_required_fields
 import habitlock.composeapp.generated.resources.habit_form_note_collapsed_subtitle
 import habitlock.composeapp.generated.resources.habit_form_note_collapsed_title
 import habitlock.composeapp.generated.resources.habit_form_note_expanded_title
+import habitlock.composeapp.generated.resources.habit_form_notification_permission_denied
 import habitlock.composeapp.generated.resources.habit_form_placeholder_unit
 import habitlock.composeapp.generated.resources.habit_form_reminder_off
 import habitlock.composeapp.generated.resources.habit_form_reminder_title
@@ -118,6 +120,8 @@ import habitlock.composeapp.generated.resources.habit_form_stepper_label_times
 import habitlock.composeapp.generated.resources.habit_form_subtitle_create
 import habitlock.composeapp.generated.resources.habit_form_title_edit
 import habitlock.composeapp.generated.resources.habit_form_title_new_habit
+import habitlock.composeapp.generated.resources.habit_form_tracking_subtitle
+import habitlock.composeapp.generated.resources.habit_form_tracking_title
 import habitlock.composeapp.generated.resources.habit_form_unit_label
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.StringResource
@@ -494,6 +498,29 @@ internal fun HabitFormScreen(
             } else {
                 stringResource(Res.string.habit_form_reminder_off)
             }
+
+            // Contextual notification messages
+            if (!state.isNotificationPermissionGranted) {
+                Text(
+                    text = stringResource(Res.string.habit_form_notification_permission_denied),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onAction(HabitFormUiAction.NotificationSettingsClicked) }
+                        .padding(bottom = 8.dp)
+                )
+            } else if (state.showBothEnabledHint) {
+                Text(
+                    text = stringResource(Res.string.habit_form_both_notifications_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+            }
+
             Surface(
                 shape = RoundedCornerShape(16.dp),
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -522,7 +549,31 @@ internal fun HabitFormScreen(
                                 onCheckedChange = { checked: Boolean ->
                                     onAction(HabitFormUiAction.HasReminderChanged(checked))
                                     if (checked) isTimePickerVisible = true
-                                }
+                                },
+                                enabled = state.areNotificationTogglesEnabled
+                            )
+                        },
+                        modifier = Modifier.padding(horizontal = 12.dp)
+                    )
+
+                    DetailRow(
+                        icon = Icons.Outlined.Notifications,
+                        iconTint = if (state.isTrackingEnabled) {
+                            MaterialTheme.colorScheme.onSurface
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        title = stringResource(Res.string.habit_form_tracking_title),
+                        subtitle = stringResource(Res.string.habit_form_tracking_subtitle),
+                        onClick = null,
+                        showTopDivider = false,
+                        trailingContent = {
+                            Switch(
+                                checked = state.isTrackingEnabled,
+                                onCheckedChange = { checked: Boolean ->
+                                    onAction(HabitFormUiAction.IsTrackingEnabledChanged(checked))
+                                },
+                                enabled = state.areNotificationTogglesEnabled
                             )
                         },
                         modifier = Modifier.padding(horizontal = 12.dp)
