@@ -102,7 +102,7 @@ class TrackingNotificationManager(private val context: Context) {
             context,
             NotificationChannels.CHANNEL_HABIT_TRACKING
         )
-            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(trackedHabit.habitName)
             .setContentText(contentText)
             .setGroup(NotificationChannels.NOTIFICATION_GROUP_TRACKING)
@@ -131,7 +131,7 @@ class TrackingNotificationManager(private val context: Context) {
         }
 
         return NotificationCompat.Builder(context, NotificationChannels.CHANNEL_HABIT_TRACKING)
-            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("HabitLock")
             .setContentText(contentText)
             .setGroup(NotificationChannels.NOTIFICATION_GROUP_TRACKING)
