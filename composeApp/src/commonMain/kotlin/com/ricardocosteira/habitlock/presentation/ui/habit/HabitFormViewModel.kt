@@ -326,11 +326,24 @@ class HabitFormViewModel(
     }
 
     fun deleteHabit() {
-        val habitId = _state.value.habitId ?: return
+        val habitId: String = _state.value.habitId ?: return
 
         viewModelScope.launch {
             try {
                 habitRepository.deleteHabit(habitId)
+                _events.emit(HabitFormEvent.NavigateBack)
+            } catch (e: Exception) {
+                _events.emit(HabitFormEvent.ShowError(e.message))
+            }
+        }
+    }
+
+    fun archiveHabit() {
+        val habitId: String = _state.value.habitId ?: return
+
+        viewModelScope.launch {
+            try {
+                habitRepository.archiveHabit(habitId)
                 _events.emit(HabitFormEvent.NavigateBack)
             } catch (e: Exception) {
                 _events.emit(HabitFormEvent.ShowError(e.message))
