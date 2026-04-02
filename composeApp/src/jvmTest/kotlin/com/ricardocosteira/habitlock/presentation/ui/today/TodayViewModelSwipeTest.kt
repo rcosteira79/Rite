@@ -1,5 +1,12 @@
 package com.ricardocosteira.habitlock.presentation.ui.today
 
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import com.ricardocosteira.habitlock.data.database.HabitLockDatabase
+import com.ricardocosteira.habitlock.data.repositories.HabitCompletionEventRepositoryImpl
+import com.ricardocosteira.habitlock.data.repositories.HabitInstanceRepositoryImpl
+import com.ricardocosteira.habitlock.data.repositories.HabitRepositoryImpl
+import com.ricardocosteira.habitlock.data.repositories.LeavePeriodRepositoryImpl
+import com.ricardocosteira.habitlock.data.repositories.UserRepositoryImpl
 import com.ricardocosteira.habitlock.domain.models.Habit
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitSchedule
@@ -13,11 +20,6 @@ import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
 import com.ricardocosteira.habitlock.domain.usecases.UndoHabit
 import com.ricardocosteira.habitlock.domain.usecases.UndoLastIncrement
 import com.ricardocosteira.habitlock.domain.usecases.UuidProvider
-import com.ricardocosteira.habitlock.fakes.FakeHabitCompletionEventRepository
-import com.ricardocosteira.habitlock.fakes.FakeHabitInstanceRepository
-import com.ricardocosteira.habitlock.fakes.FakeHabitRepository
-import com.ricardocosteira.habitlock.fakes.FakeLeavePeriodRepository
-import com.ricardocosteira.habitlock.fakes.FakeUserRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -33,6 +35,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -40,18 +43,14 @@ import kotlinx.datetime.toLocalDateTime
 /**
  * Integration tests for TodayViewModel swipe-to-delete with deferred undo.
  *
- * CONCERN: These tests use fake repository interfaces rather than real
- * SQLDelight-backed repositories. This is a pragmatic trade-off: the
- * SQLDelight layer requires platform-specific drivers (JdbcSqliteDriver
- * for JVM) which adds significant wiring complexity. The fakes cover
- * the essential contract. A follow-up task could set up a real
- * in-memory SQLite driver for full integration coverage.
+ * Uses real repository implementations backed by an in-memory JdbcSqliteDriver so that
+ * the full data layer (SQLDelight queries, mappers, dispatchers) is exercised end-to-end.
  *
- * NOTE ON DISPATCHER: `loadTodayHabits()` uses `withContext(Dispatchers.Default)`
- * for the habit mapping step. Since `StandardTestDispatcher` does not replace
- * `Dispatchers.Default`, `advanceUntilIdle()` cannot guarantee the real-thread work
- * is done. Tests use `awaitStateCondition` (a polling helper) to wait for state
- * to settle rather than relying on virtual-time advancement alone.
+ * NOTE ON DISPATCHER: `loadTodayHabits()` uses `withContext(Dispatchers.Default)` for
+ * the habit-mapping step. Since `StandardTestDispatcher` does not replace
+ * `Dispatchers.Default`, `advanceUntilIdle()` cannot guarantee the real-thread work is
+ * done. Tests use `awaitState` (a polling helper) to wait for state to settle rather
+ * than relying on virtual-time advancement alone.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class TodayViewModelSwipeTest {
@@ -70,11 +69,15 @@ class TodayViewModelSwipeTest {
      */
     private suspend fun TestScope.awaitState(
         viewModel: TodayViewModel,
-        maxIterations: Int = 100,
+        maxIterations: Int = 200,
         condition: (TodayState) -> Boolean
     ): Boolean {
         repeat(maxIterations) {
             if (condition(viewModel.state.value)) return true
+            // Yield to Dispatchers.IO threads so they can post their continuations
+            // back to the Main (test) dispatcher before advanceUntilIdle drains it.
+            withContext(Dispatchers.IO) {}
+            advanceUntilIdle()
             kotlinx.coroutines.delay(1)
             advanceUntilIdle()
         }
@@ -143,8 +146,8 @@ class TodayViewModelSwipeTest {
             // When — delete. Do NOT call advanceUntilIdle() — it would drain the 5s delay.
             viewModel.deleteHabit(inputHabitId)
 
-            // Then — habit still in fake repository (delete is deferred)
-            val actualHabit = deps.fakeHabitRepository.getHabitOrNull(inputHabitId)
+            // Then — habit still in real repository (delete is deferred)
+            val actualHabit: Habit? = deps.habitRepository.getHabitById(inputHabitId)
             assertNotNull(
                 actualHabit,
                 "Expected habit to still exist in repository before undo timeout"
@@ -170,17 +173,15 @@ class TodayViewModelSwipeTest {
             // When — delete, then advance past the undo timeout (5 seconds)
             viewModel.deleteHabit(inputHabitId)
             advanceTimeBy(6_000L)
-            advanceUntilIdle()
+            // Wait for the IO-dispatched delete and state update to complete
+            val isCommitted: Boolean = awaitState(viewModel) { it.pendingDelete == null }
+            assertTrue(isCommitted, "Expected pendingDelete to be null after delete committed")
 
             // Then — habit deleted from repository after timeout
-            val actualHabit = deps.fakeHabitRepository.getHabitOrNull(inputHabitId)
+            val actualHabit: Habit? = deps.habitRepository.getHabitById(inputHabitId)
             assertNull(
                 actualHabit,
                 "Expected habit to be deleted from repository after undo timeout"
-            )
-            assertNull(
-                viewModel.state.value.pendingDelete,
-                "Expected pendingDelete to be null after delete committed"
             )
         } finally {
             Dispatchers.resetMain()
@@ -223,7 +224,7 @@ class TodayViewModelSwipeTest {
                 "Expected pendingDelete to be null after undoDelete"
             )
             // Habit still exists in repository (delete was cancelled)
-            val actualHabit = deps.fakeHabitRepository.getHabitOrNull(inputHabitId)
+            val actualHabit: Habit? = deps.habitRepository.getHabitById(inputHabitId)
             assertNotNull(
                 actualHabit,
                 "Expected habit to still exist in repository after undoDelete"
@@ -254,7 +255,7 @@ class TodayViewModelSwipeTest {
             advanceUntilIdle()
 
             // Then — habit still in repository (undo cancelled the deferred delete)
-            val actualHabit = deps.fakeHabitRepository.getHabitOrNull(inputHabitId)
+            val actualHabit: Habit? = deps.habitRepository.getHabitById(inputHabitId)
             assertNotNull(
                 actualHabit,
                 "Expected habit to remain after undo, even after timeout elapsed"
@@ -284,10 +285,11 @@ class TodayViewModelSwipeTest {
                 )
 
                 val viewModel = buildViewModelWithScheduler(deps)
-                awaitState(viewModel) {
+                val isBothLoaded: Boolean = awaitState(viewModel) {
                     it.pendingDaily.any { habit -> habit.habitId == inputFirstHabitId } &&
                         it.pendingDaily.any { habit -> habit.habitId == inputSecondHabitId }
                 }
+                assertTrue(isBothLoaded, "Expected both habits to be loaded into pendingDaily")
 
                 // When — delete first, then delete second (cancels first undo job)
                 viewModel.deleteHabit(inputFirstHabitId)
@@ -311,12 +313,16 @@ class TodayViewModelSwipeTest {
                     "Expected pendingDelete to refer to second habit"
                 )
 
-                // Advance past timeout — second habit should be deleted from repository
+                // Advance past timeout — second habit should be deleted from repository.
+                // Use awaitState to allow IO-dispatched DB operations to complete.
                 advanceTimeBy(6_000L)
-                advanceUntilIdle()
+                val isBothDeleted: Boolean = awaitState(viewModel) { it.pendingDelete == null }
+                assertTrue(isBothDeleted, "Expected pendingDelete to be null after timeout")
 
-                val actualFirstHabit = deps.fakeHabitRepository.getHabitOrNull(inputFirstHabitId)
-                val actualSecondHabit = deps.fakeHabitRepository.getHabitOrNull(inputSecondHabitId)
+                val actualFirstHabit: Habit? = deps.habitRepository.getHabitById(inputFirstHabitId)
+                val actualSecondHabit: Habit? = deps.habitRepository.getHabitById(
+                    inputSecondHabitId
+                )
                 assertNull(
                     actualFirstHabit,
                     "Expected first habit to be deleted from repository (its undo job was cancelled)"
@@ -334,9 +340,9 @@ class TodayViewModelSwipeTest {
 
     private fun buildViewModelWithScheduler(deps: TestDependencies): TodayViewModel =
         TodayViewModel(
-            userRepository = deps.fakeUserRepository,
-            habitRepository = deps.fakeHabitRepository,
-            habitInstanceRepository = deps.fakeInstanceRepository,
+            userRepository = deps.userRepository,
+            habitRepository = deps.habitRepository,
+            habitInstanceRepository = deps.habitInstanceRepository,
             generateDailyHabits = deps.generateDailyHabits,
             processEndOfDay = deps.processEndOfDay,
             completeHabit = deps.completeHabit,
@@ -346,57 +352,76 @@ class TodayViewModelSwipeTest {
         )
 
     inner class TestDependencies {
-        val fakeHabitRepository = FakeHabitRepository()
-        val fakeInstanceRepository = FakeHabitInstanceRepository()
-        val fakeUserRepository = FakeUserRepository()
-        val fakeCompletionEventRepository = FakeHabitCompletionEventRepository()
-        val fakeLeavePeriodRepository = FakeLeavePeriodRepository()
 
-        private val fakeUuidProvider: UuidProvider = object : UuidProvider {
+        private val driver: JdbcSqliteDriver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY).also {
+            HabitLockDatabase.Schema.create(it)
+        }
+        private val database: HabitLockDatabase = HabitLockDatabase(driver)
+
+        val habitRepository: HabitRepositoryImpl =
+            HabitRepositoryImpl(database = database, ioDispatcher = Dispatchers.IO)
+
+        val habitInstanceRepository: HabitInstanceRepositoryImpl =
+            HabitInstanceRepositoryImpl(database = database, ioDispatcher = Dispatchers.IO)
+
+        val userRepository: UserRepositoryImpl = UserRepositoryImpl(database = database)
+
+        private val completionEventRepository: HabitCompletionEventRepositoryImpl =
+            HabitCompletionEventRepositoryImpl(database = database)
+
+        private val leavePeriodRepository: LeavePeriodRepositoryImpl =
+            LeavePeriodRepositoryImpl(database = database)
+
+        private val uuidProvider: UuidProvider = object : UuidProvider {
             private var counter: Int = 0
             override fun generate(): String = "uuid-${++counter}"
         }
 
-        val generateDailyHabits = GenerateDailyHabits(
-            userRepository = fakeUserRepository,
-            habitRepository = fakeHabitRepository,
-            habitInstanceRepository = fakeInstanceRepository,
-            leavePeriodRepository = fakeLeavePeriodRepository,
-            uuidProvider = fakeUuidProvider
+        val generateDailyHabits: GenerateDailyHabits = GenerateDailyHabits(
+            userRepository = userRepository,
+            habitRepository = habitRepository,
+            habitInstanceRepository = habitInstanceRepository,
+            leavePeriodRepository = leavePeriodRepository,
+            uuidProvider = uuidProvider
         )
-        val processEndOfDay = ProcessEndOfDay(
-            userRepository = fakeUserRepository,
-            habitInstanceRepository = fakeInstanceRepository,
-            habitRepository = fakeHabitRepository
+        val processEndOfDay: ProcessEndOfDay = ProcessEndOfDay(
+            userRepository = userRepository,
+            habitInstanceRepository = habitInstanceRepository,
+            habitRepository = habitRepository
         )
-        val completeHabit = CompleteHabit(
-            habitInstanceRepository = fakeInstanceRepository,
-            habitRepository = fakeHabitRepository,
-            habitCompletionEventRepository = fakeCompletionEventRepository
+        val completeHabit: CompleteHabit = CompleteHabit(
+            habitInstanceRepository = habitInstanceRepository,
+            habitRepository = habitRepository,
+            habitCompletionEventRepository = completionEventRepository
         )
-        val skipHabit = SkipHabit(
-            habitInstanceRepository = fakeInstanceRepository,
-            userRepository = fakeUserRepository
+        val skipHabit: SkipHabit = SkipHabit(
+            habitInstanceRepository = habitInstanceRepository,
+            userRepository = userRepository
         )
-        val undoHabit = UndoHabit(
-            habitInstanceRepository = fakeInstanceRepository,
-            habitCompletionEventRepository = fakeCompletionEventRepository,
-            habitRepository = fakeHabitRepository,
-            userRepository = fakeUserRepository
+        val undoHabit: UndoHabit = UndoHabit(
+            habitInstanceRepository = habitInstanceRepository,
+            habitCompletionEventRepository = completionEventRepository,
+            habitRepository = habitRepository,
+            userRepository = userRepository
         )
-        val undoLastIncrement = UndoLastIncrement(
-            habitInstanceRepository = fakeInstanceRepository,
-            habitCompletionEventRepository = fakeCompletionEventRepository
+        val undoLastIncrement: UndoLastIncrement = UndoLastIncrement(
+            habitInstanceRepository = habitInstanceRepository,
+            habitCompletionEventRepository = completionEventRepository
         )
 
-        fun seedHabitWithTodayInstance(
+        suspend fun seedHabitWithTodayInstance(
             habitId: String = "habit-1",
             habitName: String = "Morning Meditation",
             instanceId: String = "instance-1"
         ) {
             val inputToday: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.UTC).date
 
-            val inputHabit = Habit(
+            // Ensure a user exists so GenerateDailyHabits / use cases can resolve it.
+            if (userRepository.getUser() == null) {
+                userRepository.createDefaultUser(timezone = TimeZone.UTC)
+            }
+
+            val inputHabit: Habit = Habit(
                 id = habitId,
                 name = habitName,
                 description = null,
@@ -413,7 +438,7 @@ class TodayViewModelSwipeTest {
                 createdAt = Clock.System.now(),
                 archivedAt = null
             )
-            val inputSchedule = HabitSchedule(
+            val inputSchedule: HabitSchedule = HabitSchedule(
                 id = "schedule-$habitId",
                 habitId = habitId,
                 scheduleType = ScheduleType.DAILY,
@@ -421,7 +446,7 @@ class TodayViewModelSwipeTest {
                 endDate = null,
                 quota = 1
             )
-            val inputInstance = HabitInstance(
+            val inputInstance: HabitInstance = HabitInstance(
                 id = instanceId,
                 habitId = habitId,
                 date = inputToday,
@@ -432,8 +457,12 @@ class TodayViewModelSwipeTest {
                 createdAt = Clock.System.now()
             )
 
-            fakeHabitRepository.addHabit(inputHabit, inputSchedule)
-            fakeInstanceRepository.addInstance(inputInstance)
+            habitRepository.createHabit(
+                habit = inputHabit,
+                schedule = inputSchedule,
+                reminder = null
+            )
+            habitInstanceRepository.createInstance(inputInstance)
         }
     }
 }

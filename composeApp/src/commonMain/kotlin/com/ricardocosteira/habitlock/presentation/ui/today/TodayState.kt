@@ -30,7 +30,7 @@ data class TodayState(
     val dailyTotal: Int = 0,
     val motivationalTitleRes: StringResource? = null,
     val strictnessPreset: StrictnessPreset? = null,
-    val pendingDelete: PendingDelete? = null,
+    val pendingDelete: PendingDelete? = null
 )
 
 /**

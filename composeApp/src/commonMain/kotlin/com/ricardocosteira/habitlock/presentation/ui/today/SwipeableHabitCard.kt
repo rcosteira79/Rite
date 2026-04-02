@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,29 +37,50 @@ import androidx.compose.ui.unit.dp
 import com.ricardocosteira.habitlock.presentation.ui.haptics.HapticController
 import kotlin.math.abs
 import kotlin.math.roundToInt
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
-enum class SwipeAction {
-    REST,
-    DELETE,
-    EDIT
+enum class SwipeAction(
+    val unarmedIcon: ImageVector?,
+    val armedIcon: ImageVector?,
+    val alignment: Alignment
+) {
+    REST(
+        unarmedIcon = null,
+        armedIcon = null,
+        alignment = Alignment.CenterEnd
+    ),
+    DELETE(
+        unarmedIcon = Icons.Outlined.Delete,
+        armedIcon = Icons.Filled.DeleteForever,
+        alignment = Alignment.CenterStart
+    ),
+    EDIT(
+        unarmedIcon = Icons.Outlined.Edit,
+        armedIcon = Icons.Filled.Edit,
+        alignment = Alignment.CenterEnd
+    );
+
+    @Composable
+    fun backgroundColor(): Color = when (this) {
+        DELETE -> MaterialTheme.colorScheme.errorContainer
+        EDIT -> MaterialTheme.colorScheme.secondaryContainer
+        REST -> MaterialTheme.colorScheme.surface
+    }
+
+    @Composable
+    fun iconTint(): Color = when (this) {
+        DELETE -> MaterialTheme.colorScheme.onErrorContainer
+        EDIT -> MaterialTheme.colorScheme.onSecondaryContainer
+        REST -> MaterialTheme.colorScheme.onSurface
+    }
 }
 
-// How far the card can be dragged (fraction of card width)
 private const val MAX_DRAG_FRACTION = 0.55f
-
-// Fraction of card width where the action becomes armed
 private const val ARM_THRESHOLD_FRACTION = 0.25f
-
-// Background fade
 private const val UNARMED_FULL_OPACITY_FRACTION = 0.15f
 private const val UNARMED_MAX_ALPHA = 0.5f
 private const val ARMED_ALPHA = 1.0f
-
-// Snap-back animation
 private const val SNAP_BACK_DURATION_MS = 250
-
 internal val CORNER_RADIUS = 16.dp
 
 @Composable
@@ -73,37 +93,15 @@ internal fun SwipeBackground(
     val baseAlpha: Float = (revealFraction / UNARMED_FULL_OPACITY_FRACTION).coerceIn(0f, 1f)
     val alpha: Float = if (isArmed) ARMED_ALPHA else baseAlpha * UNARMED_MAX_ALPHA
 
-    val zoneColor: Color = when (zone) {
-        SwipeAction.DELETE -> MaterialTheme.colorScheme.errorContainer
-        SwipeAction.EDIT -> MaterialTheme.colorScheme.secondaryContainer
-        SwipeAction.REST -> MaterialTheme.colorScheme.surface
-    }
-
-    val iconTint: Color = when (zone) {
-        SwipeAction.DELETE -> MaterialTheme.colorScheme.onErrorContainer
-        SwipeAction.EDIT -> MaterialTheme.colorScheme.onSecondaryContainer
-        SwipeAction.REST -> MaterialTheme.colorScheme.onSurface
-    }
-
-    val icon: ImageVector? = when (zone) {
-        SwipeAction.DELETE if isArmed -> Icons.Filled.DeleteForever
-        SwipeAction.DELETE -> Icons.Outlined.Delete
-        SwipeAction.EDIT if isArmed -> Icons.Filled.Edit
-        SwipeAction.EDIT -> Icons.Outlined.Edit
-        else -> null
-    }
-
-    val alignment: Alignment = when (zone) {
-        SwipeAction.DELETE -> Alignment.CenterStart
-        SwipeAction.EDIT -> Alignment.CenterEnd
-        SwipeAction.REST -> Alignment.CenterEnd
-    }
+    val backgroundColor: Color = zone.backgroundColor()
+    val iconTint: Color = zone.iconTint()
+    val icon: ImageVector? = if (isArmed) zone.armedIcon else zone.unarmedIcon
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(CORNER_RADIUS))
-            .background(zoneColor.copy(alpha = alpha))
+            .background(backgroundColor.copy(alpha = alpha))
     ) {
         if (icon != null) {
             Icon(
@@ -111,7 +109,7 @@ internal fun SwipeBackground(
                 contentDescription = null,
                 tint = iconTint.copy(alpha = alpha),
                 modifier = Modifier
-                    .align(alignment)
+                    .align(zone.alignment)
                     .padding(horizontal = 24.dp)
             )
         }
@@ -161,17 +159,12 @@ fun SwipeableHabitCard(
         }
     }
 
-    // Haptic feedback when crossing the arm threshold
-    LaunchedEffect(Unit) {
-        snapshotFlow { isArmed }
-            .distinctUntilChanged()
-            .collect { armed: Boolean ->
-                if (armed) {
-                    currentHaptic.heavyClick()
-                } else if (currentZone != SwipeAction.REST) {
-                    currentHaptic.click()
-                }
-            }
+    LaunchedEffect(isArmed) {
+        if (isArmed) {
+            currentHaptic.heavyClick()
+        } else if (currentZone != SwipeAction.REST) {
+            currentHaptic.click()
+        }
     }
 
     Box(
@@ -208,7 +201,6 @@ fun SwipeableHabitCard(
                             }
 
                             if (armed && zone == SwipeAction.DELETE) {
-                                // Slide off-screen to the right, then fire delete
                                 coroutineScope.launch {
                                     offsetX.animateTo(
                                         targetValue = cardWidth,

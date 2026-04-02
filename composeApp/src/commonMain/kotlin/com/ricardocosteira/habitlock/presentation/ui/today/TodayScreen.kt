@@ -137,7 +137,7 @@ fun TodayScreen(
         onUndoLastIncrement = viewModel::undoLastIncrement,
         onIncrementProgress = viewModel::incrementHabitProgress,
         onCustomProgress = viewModel::showQuantitativeInput,
-        onEdit = { habitId: String -> onEditHabit(habitId) },
+        onEdit = onEditHabit,
         onDelete = viewModel::deleteHabit,
         onDismissTimezoneWarning = viewModel::dismissTimezoneWarning,
         onAddFirstHabit = onNavigateToCreateHabit
