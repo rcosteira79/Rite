@@ -76,6 +76,10 @@ class OnboardingViewModel(
         viewModelScope.launch { applyPresetAndComplete(StrictnessPreset.BALANCED) }
     }
 
+    fun setShowNotificationStep(show: Boolean) {
+        _state.update { it.copy(showNotificationStep = show) }
+    }
+
     fun continueFromStrictness() {
         viewModelScope.launch {
             _state.update { it.copy(isApplyingPreset = true) }
@@ -84,13 +88,24 @@ class OnboardingViewModel(
 
             result.fold(
                 onSuccess = {
-                    _state.update { it.copy(isApplyingPreset = false, currentStep = 2) }
+                    _state.update {
+                        val nextStep: Int = if (it.showNotificationStep) {
+                            it.notificationStepIndex
+                        } else {
+                            it.firstHabitStepIndex
+                        }
+                        it.copy(isApplyingPreset = false, currentStep = nextStep)
+                    }
                 },
                 onFailure = { error ->
                     _state.update { it.copy(isApplyingPreset = false, error = error.message) }
                 }
             )
         }
+    }
+
+    fun continueFromNotificationPermission() {
+        _state.update { it.copy(currentStep = it.firstHabitStepIndex) }
     }
 
     fun createFirstHabit() {
