@@ -24,11 +24,7 @@ An open-source habit tracker that enforces commitments through user-defined stri
 </p>
 
 <p align="center">
-  <img src="docs/images/today_light.png" width="180" alt="Today screen — light" />
-  <img src="docs/images/today_dark.png" width="180" alt="Today screen — dark" />
-</p>
-
-<p align="center">
+  <img src="docs/images/today_empty.png" width="180" alt="Today screen — empty state" />
   <img src="docs/images/habit_form_light.png" width="180" alt="Create habit — light" />
   <img src="docs/images/habit_form_dark.png" width="180" alt="Create habit — dark" />
 </p>
@@ -197,4 +193,4 @@ Contributions are welcome. The best ways to help:
 
 ## License
 
-[MIT License](./LICENSE)
+[MIT License](./LICENSE) — © 2026 Ricardo Costeira

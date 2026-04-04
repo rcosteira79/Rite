@@ -88,13 +88,18 @@ class TrackingNotificationManager(private val context: Context) {
     // Private helpers
 
     private fun buildChildNotification(trackedHabit: TrackedHabitInfo): android.app.Notification {
-        val contentText = when (trackedHabit.type) {
-            HabitType.BINARY -> "Not completed"
+        val contentText: String = when (trackedHabit.type) {
+            HabitType.BINARY -> context.getString(R.string.tracking_child_not_completed)
 
             HabitType.QUANTITATIVE -> {
-                val target = trackedHabit.targetValue ?: 0
-                val unit = trackedHabit.unit?.let { " $it" } ?: ""
-                "${trackedHabit.currentProgress} / $target$unit"
+                val target: Int = trackedHabit.targetValue ?: 0
+                val unit: String = trackedHabit.unit?.let { " $it" } ?: ""
+                context.getString(
+                    R.string.tracking_child_progress,
+                    trackedHabit.currentProgress,
+                    target,
+                    unit
+                )
             }
         }
 
@@ -124,15 +129,15 @@ class TrackingNotificationManager(private val context: Context) {
     }
 
     private fun buildSummaryNotification(pendingCount: Int): android.app.Notification {
-        val contentText = if (pendingCount == 1) {
-            "1 habit remaining"
-        } else {
-            "$pendingCount habits remaining"
-        }
+        val contentText: String = context.resources.getQuantityString(
+            R.plurals.tracking_summary_text,
+            pendingCount,
+            pendingCount
+        )
 
         return NotificationCompat.Builder(context, NotificationChannels.CHANNEL_HABIT_TRACKING)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("HabitLock")
+            .setContentTitle(context.getString(R.string.tracking_summary_title))
             .setContentText(contentText)
             .setGroup(NotificationChannels.NOTIFICATION_GROUP_TRACKING)
             .setGroupSummary(true)
@@ -165,14 +170,15 @@ class TrackingNotificationManager(private val context: Context) {
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        return NotificationCompat.Action.Builder(0, "Complete", pendingIntent).build()
+        val label: String = context.getString(R.string.tracking_action_complete)
+        return NotificationCompat.Action.Builder(0, label, pendingIntent).build()
     }
 
     private fun buildIncrementAction(
         instanceId: String,
         defaultIncrement: Int
     ): NotificationCompat.Action {
-        val label = "+$defaultIncrement"
+        val label: String = context.getString(R.string.tracking_action_increment, defaultIncrement)
         val intent = Intent(context, NotificationActionReceiver::class.java).apply {
             action = NotificationActionReceiver.ACTION_ADD_ONE
             putExtra(NotificationActionReceiver.EXTRA_INSTANCE_ID, instanceId)
@@ -197,7 +203,8 @@ class TrackingNotificationManager(private val context: Context) {
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        return NotificationCompat.Action.Builder(0, "Undo", pendingIntent).build()
+        val label: String = context.getString(R.string.tracking_action_undo)
+        return NotificationCompat.Action.Builder(0, label, pendingIntent).build()
     }
 
     private fun childNotificationId(instanceId: String): Int =

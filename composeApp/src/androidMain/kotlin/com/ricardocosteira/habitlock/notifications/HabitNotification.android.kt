@@ -23,7 +23,7 @@ actual class HabitNotification(private val context: Context) {
             }
 
             ReminderType.PERIODIC -> {
-                // PERIODIC scheduling out of scope for this work
+                // TODO: future work — schedule repeating alarms at intervalMinutes within startTime/endTime window
             }
         }
     }

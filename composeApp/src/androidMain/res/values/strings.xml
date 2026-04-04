@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">HabitLock</string>
+
+    <!-- Tracking notification -->
+    <string name="tracking_child_not_completed">Not completed</string>
+    <string name="tracking_child_progress">%1$d / %2$d%3$s</string>
+    <string name="tracking_summary_title">HabitLock</string>
+    <plurals name="tracking_summary_text">
+        <item quantity="one">%d habit remaining</item>
+        <item quantity="other">%d habits remaining</item>
+    </plurals>
+    <string name="tracking_action_complete">Complete</string>
+    <string name="tracking_action_increment">+%d</string>
+    <string name="tracking_action_undo">Undo</string>
 </resources>
