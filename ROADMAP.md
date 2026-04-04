@@ -22,14 +22,20 @@ This roadmap outlines the development plan for HabitLock, a habit enforcing app 
 - ✅ Onboarding screens (Philosophy, Strictness, FirstHabit)
 - ✅ Habit form for creation/editing
 
-**Remaining / In Progress:**
+- ✅ Settings screen (undo policy, skip/snooze limits, archived habits)
+- ✅ Swipe actions on habit cards (edit / delete with undo)
+- ✅ Persistent tracking notification with quick actions
+- ✅ Notification permission handling (runtime request + form UI degradation)
+- ✅ CI pipeline (GitHub Actions)
+- ✅ Screenshot tests (Roborazzi) for onboarding, today, and habit form
+
+**MVP complete.** Remaining items are post-MVP polish:
 - 🔲 iOS activation (entry point wiring)
-- 🔲 Settings screen (strictness switching, snooze/skip limits UI)
-- 🔲 Leave mode UI (date picker, swipe actions)
+- 🔲 Leave mode UI (domain logic complete, needs UI)
 - 🔲 Day-detail calendar view
-- 🔲 Multiple notification times per habit
-- 🔲 Comprehensive test coverage (Phase 5)
-- 🔲 Polish & production readiness (Phase 6)
+- 🔲 Periodic reminder scheduling
+- 🔲 Comprehensive test coverage
+- 🔲 Polish & production readiness
 
 ---
 
