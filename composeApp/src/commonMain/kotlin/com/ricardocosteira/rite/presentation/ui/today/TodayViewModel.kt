@@ -8,6 +8,7 @@ import com.ricardocosteira.rite.domain.models.Habit
 import com.ricardocosteira.rite.domain.models.HabitInstance
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
+import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.domain.models.StrictnessPreset
 import com.ricardocosteira.rite.domain.models.UserStrictnessSettings
 import com.ricardocosteira.rite.domain.models.motivationalTitleIndexForDate
@@ -44,8 +45,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
 import me.tatarka.inject.annotations.Inject
 
 /**
@@ -124,15 +127,18 @@ class TodayViewModel(
                     StrictnessPreset.fromSettings(settings)
                 }
 
-                // Get today's instances
+                // Get today's daily instances + this week's weekly instances
                 val today = Clock.System.now().toLocalDate(userTimezone)
-                val instances = habitInstanceRepository.getInstancesForDate(today)
+                val weekAgo = today.minus(6, DateTimeUnit.DAY)
+                val instances = habitInstanceRepository.getInstancesInDateRange(weekAgo, today)
 
                 val motivationalTitleRes = motivationalTitleResource(
                     motivationalTitleIndexForDate(today)
                 )
 
-                // Map to UI models — runs on Default to keep the main thread free
+                // Map to UI models — runs on Default to keep the main thread free.
+                // The date range query returns daily instances from earlier in the week too,
+                // so we filter those out: only today's daily instances + all weekly instances.
                 val habits: ImmutableList<TodayHabitUiModel> = withContext(Dispatchers.Default) {
                     coroutineScope {
                         instances.mapNotNull { instance ->
@@ -144,6 +150,14 @@ class TodayViewModel(
                             }
                             val habit = habitDeferred.await() ?: return@mapNotNull null
                             val schedule = scheduleDeferred.await() ?: return@mapNotNull null
+
+                            // Skip daily instances from earlier in the week
+                            if (schedule.scheduleType == ScheduleType.DAILY &&
+                                instance.date != today
+                            ) {
+                                return@mapNotNull null
+                            }
+
                             mapToTodayHabitUiModel(
                                 instance = instance,
                                 habit = habit,
