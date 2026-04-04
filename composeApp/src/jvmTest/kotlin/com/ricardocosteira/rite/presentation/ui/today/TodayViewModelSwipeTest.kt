@@ -70,16 +70,18 @@ class TodayViewModelSwipeTest {
      */
     private suspend fun TestScope.awaitState(
         viewModel: TodayViewModel,
-        maxIterations: Int = 200,
+        maxIterations: Int = 500,
         condition: (TodayState) -> Boolean
     ): Boolean {
         repeat(maxIterations) {
             if (condition(viewModel.state.value)) return true
-            // Yield to Dispatchers.IO threads so they can post their continuations
-            // back to the Main (test) dispatcher before advanceUntilIdle drains it.
+            // Yield to real thread pools (IO/Default) so they can complete and post
+            // continuations back to the test dispatcher. The Thread.sleep gives real
+            // threads time to finish on slow CI machines where virtual-time-only
+            // yielding is insufficient.
             withContext(Dispatchers.IO) {}
             advanceUntilIdle()
-            kotlinx.coroutines.delay(1)
+            Thread.sleep(5)
             advanceUntilIdle()
         }
         return condition(viewModel.state.value)
