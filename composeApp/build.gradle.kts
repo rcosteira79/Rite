@@ -99,10 +99,10 @@ android {
     }
     signingConfigs {
         create("release") {
-            storeFile = file(System.getenv("HABITLOCK_STORE_FILE") ?: "/dev/null")
-            keyAlias = System.getenv("HABITLOCK_KEY_ALIAS") ?: ""
-            storePassword = System.getenv("HABITLOCK_STORE_PASSWORD") ?: ""
-            keyPassword = System.getenv("HABITLOCK_KEY_PASSWORD") ?: ""
+            storeFile = file(System.getenv("RITE_STORE_FILE") ?: "/dev/null")
+            keyAlias = System.getenv("RITE_KEY_ALIAS") ?: ""
+            storePassword = System.getenv("RITE_STORE_PASSWORD") ?: ""
+            keyPassword = System.getenv("RITE_KEY_PASSWORD") ?: ""
         }
     }
     buildTypes {
