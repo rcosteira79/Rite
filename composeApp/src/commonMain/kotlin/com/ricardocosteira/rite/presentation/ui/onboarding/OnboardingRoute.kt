@@ -58,8 +58,10 @@ fun OnboardingRoute(
         onContinueFromStrictness = viewModel::continueFromStrictness,
         onContinueFromNotificationPermission = viewModel::continueFromNotificationPermission,
         onEnableNotifications = {
-            permissionState.requestPermission { _ ->
-                viewModel.continueFromNotificationPermission()
+            permissionState.requestPermission { isGranted: Boolean ->
+                if (isGranted) {
+                    viewModel.continueFromNotificationPermission()
+                }
             }
         },
         onCreateHabit = viewModel::createFirstHabit,
