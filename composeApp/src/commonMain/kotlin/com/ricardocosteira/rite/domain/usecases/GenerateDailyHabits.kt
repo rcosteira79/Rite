@@ -1,7 +1,5 @@
 package com.ricardocosteira.rite.domain.usecases
 
-import me.tatarka.inject.annotations.Inject
-
 import com.ricardocosteira.rite.domain.models.HabitInstance
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
@@ -11,12 +9,13 @@ import com.ricardocosteira.rite.domain.repositories.HabitRepository
 import com.ricardocosteira.rite.domain.repositories.LeavePeriodRepository
 import com.ricardocosteira.rite.domain.repositories.UserRepository
 import com.ricardocosteira.rite.util.todayIn
+import kotlin.time.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.minus
-import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import me.tatarka.inject.annotations.Inject
 
 /**
  * Generates habit instances for all active, non-archived habits.
@@ -62,7 +61,10 @@ class GenerateDailyHabits(
             when (schedule.scheduleType) {
                 ScheduleType.DAILY -> {
                     // Check if instance already exists for today
-                    val existingInstance = habitInstanceRepository.getInstanceForHabitAndDate(habit.id, today)
+                    val existingInstance = habitInstanceRepository.getInstanceForHabitAndDate(
+                        habit.id,
+                        today
+                    )
                     if (existingInstance != null) continue
 
                     val instance = if (isSuspended) {
@@ -70,36 +72,54 @@ class GenerateDailyHabits(
                     } else {
                         createDailyInstance(habit.id, habit.type, habit.targetValue, today)
                     }
-                    
+
                     habitInstanceRepository.createInstance(instance)
                     newInstances.add(instance)
-                    
+
                     // Only increment expected completions for non-suspended habits
                     if (!isSuspended) {
                         habitRepository.incrementHabitExpectedCompletions(habit.id, amount = 1)
                     }
                 }
-                ScheduleType.WEEKLY -> {
-                    // Check if we're at the start of a new week
-                    if (isStartOfWeek(today, schedule.weekStartDay)) {
-                        // Check if instance already exists for this week
-                        val weekStart = getWeekStart(today, schedule.weekStartDay)
-                        val existingInstance = habitInstanceRepository.getInstanceForHabitAndDate(habit.id, weekStart)
-                        if (existingInstance != null) continue
 
-                        val instance = if (isSuspended) {
-                            createSuspendedWeeklyInstance(habit.id, habit.type, habit.targetValue, weekStart, schedule.quota)
-                        } else {
-                            createWeeklyInstance(habit.id, habit.type, habit.targetValue, weekStart, schedule.quota)
-                        }
-                        
-                        habitInstanceRepository.createInstance(instance)
-                        newInstances.add(instance)
-                        
-                        // Only increment expected completions for non-suspended habits
-                        if (!isSuspended) {
-                            habitRepository.incrementHabitExpectedCompletions(habit.id, amount = schedule.quota)
-                        }
+                ScheduleType.WEEKLY -> {
+                    // Create a weekly instance if none exists for the current week.
+                    // Unlike daily habits, weekly instances use the week start date
+                    // so they persist across the entire week.
+                    val weekStart = getWeekStart(today, schedule.weekStartDay)
+                    val existingInstance = habitInstanceRepository.getInstanceForHabitAndDate(
+                        habit.id,
+                        weekStart
+                    )
+                    if (existingInstance != null) continue
+
+                    val instance = if (isSuspended) {
+                        createSuspendedWeeklyInstance(
+                            habit.id,
+                            habit.type,
+                            habit.targetValue,
+                            weekStart,
+                            schedule.quota
+                        )
+                    } else {
+                        createWeeklyInstance(
+                            habit.id,
+                            habit.type,
+                            habit.targetValue,
+                            weekStart,
+                            schedule.quota
+                        )
+                    }
+
+                    habitInstanceRepository.createInstance(instance)
+                    newInstances.add(instance)
+
+                    // Only increment expected completions for non-suspended habits
+                    if (!isSuspended) {
+                        habitRepository.incrementHabitExpectedCompletions(
+                            habit.id,
+                            amount = schedule.quota
+                        )
                     }
                 }
             }
@@ -139,18 +159,16 @@ class GenerateDailyHabits(
         habitType: HabitType,
         targetValue: Int?,
         date: LocalDate
-    ): HabitInstance {
-        return HabitInstance(
-            id = uuidProvider.generate(),
-            habitId = habitId,
-            date = date,
-            status = HabitStatus.SUSPENDED,
-            completedValue = if (habitType == HabitType.QUANTITATIVE) 0 else null,
-            targetValue = targetValue,
-            consecutiveSkipsAtCreation = 0, // Suspended habits don't track skips
-            createdAt = Clock.System.now()
-        )
-    }
+    ): HabitInstance = HabitInstance(
+        id = uuidProvider.generate(),
+        habitId = habitId,
+        date = date,
+        status = HabitStatus.SUSPENDED,
+        completedValue = if (habitType == HabitType.QUANTITATIVE) 0 else null,
+        targetValue = targetValue,
+        consecutiveSkipsAtCreation = 0, // Suspended habits don't track skips
+        createdAt = Clock.System.now()
+    )
 
     /**
      * Creates a weekly habit instance.
@@ -186,25 +204,22 @@ class GenerateDailyHabits(
         targetValue: Int?,
         weekStartDate: LocalDate,
         quota: Int
-    ): HabitInstance {
-        return HabitInstance(
-            id = uuidProvider.generate(),
-            habitId = habitId,
-            date = weekStartDate,
-            status = HabitStatus.SUSPENDED,
-            completedValue = if (habitType == HabitType.QUANTITATIVE) 0 else null,
-            targetValue = quota,
-            consecutiveSkipsAtCreation = 0, // Suspended habits don't track skips
-            createdAt = Clock.System.now()
-        )
-    }
+    ): HabitInstance = HabitInstance(
+        id = uuidProvider.generate(),
+        habitId = habitId,
+        date = weekStartDate,
+        status = HabitStatus.SUSPENDED,
+        completedValue = if (habitType == HabitType.QUANTITATIVE) 0 else null,
+        targetValue = quota,
+        consecutiveSkipsAtCreation = 0, // Suspended habits don't track skips
+        createdAt = Clock.System.now()
+    )
 
     /**
      * Checks if the given date is the start of a week based on weekStartDay.
      */
-    private fun isStartOfWeek(date: LocalDate, weekStartDay: DayOfWeek): Boolean {
-        return date.dayOfWeek == weekStartDay
-    }
+    private fun isStartOfWeek(date: LocalDate, weekStartDay: DayOfWeek): Boolean =
+        date.dayOfWeek == weekStartDay
 
     /**
      * Gets the start date of the week containing the given date.
@@ -244,4 +259,3 @@ class GenerateDailyHabits(
         return count
     }
 }
-
