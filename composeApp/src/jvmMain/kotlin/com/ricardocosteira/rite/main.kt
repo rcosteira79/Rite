@@ -14,7 +14,7 @@ fun main() = application {
     val appComponent = RiteAppComponent::class.create(driverFactory, habitNotification)
     Window(
         onCloseRequest = ::exitApplication,
-        title = "HabitLock",
+        title = "Rite",
     ) {
         App(appComponent = appComponent)
     }
