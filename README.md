@@ -1,15 +1,15 @@
-# HabitLock
+# Rite
 
-An open-source habit tracker that enforces commitments through user-defined strictness levels. Unlike typical habit trackers focused on motivation and gentle reminders, HabitLock helps you keep promises to yourself through configurable accountability rules.
+An open-source habit tracker that turns your goals into daily rituals through user-defined strictness levels. Unlike typical habit trackers focused on motivation and gentle reminders, Rite helps you show up for yourself through configurable accountability rules.
 
 > MVP complete for Android. iOS and Desktop targets compile but are not yet activated.
 
 ---
 
-## What Makes HabitLock Different
+## What Makes Rite Different
 
-- **Enforcement-based design** — the app actively prevents you from breaking your own rules
-- **Conscious strictness** — choose between Flexible, Balanced, or Locked modes; change anytime
+- **Enforcement-based design** — the app helps you build rituals worth keeping
+- **Conscious strictness** — choose between Flexible, Balanced, or Unwavering modes; change anytime
 - **No gamification clutter** — focused on actual habit completion, not XP or achievements
 - **Privacy-first** — local-only storage, no backend sync required
 
@@ -41,7 +41,7 @@ An open-source habit tracker that enforces commitments through user-defined stri
 ### Implemented
 
 - Daily and weekly habit tracking (binary and quantitative)
-- Configurable strictness presets (Flexible / Balanced / Locked)
+- Configurable strictness presets (Flexible / Balanced / Unwavering)
 - Streak tracking per habit and perfect-day streaks
 - Habit Score — cumulative long-term performance metric
 - Skip management with configurable limits
@@ -103,7 +103,7 @@ Clean Architecture with vertical feature slices:
 
 ```
 commonMain/
-└── com.ricardocosteira.habitlock/
+└── com.ricardocosteira.rite/
     ├── di/                  # kotlin-inject component & modules
     ├── domain/
     │   ├── models/          # Pure Kotlin data classes
@@ -119,7 +119,7 @@ commonMain/
         └── ui/              # Screen composables & ViewModels
 
 androidMain/
-└── com.ricardocosteira.habitlock/
+└── com.ricardocosteira.rite/
     ├── notifications/       # Channels, scheduler, receivers, tracking
     └── workers/             # WorkManager workers
 ```
