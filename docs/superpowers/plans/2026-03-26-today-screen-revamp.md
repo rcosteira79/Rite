@@ -745,8 +745,7 @@ feat: implement collapsing header with crossfade transition
 
 Expanded: motivational title, pending count, strictness pill,
 daily progress ring. Collapsed: single-line title, pill, and
-percentage text. Crossfade for now, animated transition in
-follow-up PR.
+percentage text. Crossfade for now (see FOLLOWUP.md for planned animation).
 ```
 
 ---
