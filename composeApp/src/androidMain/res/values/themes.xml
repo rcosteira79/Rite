@@ -1,24 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!--
-        Base app theme applied after the splash screen exits.
-        Compose replaces all theming at runtime, so this just needs to be
-        a windowless/ActionBar-free base that doesn't clash with edge-to-edge.
-    -->
-    <style name="Theme.HabitLock" parent="android:Theme.Material.Light.NoActionBar" />
-
-    <!--
-        Splash screen theme — applied to MainActivity via android:theme in the manifest.
-        The system shows this automatically on cold/warm start; postSplashScreenTheme
-        restores the real app theme once the splash exits.
-    -->
-    <style name="Theme.HabitLock.Launch" parent="Theme.SplashScreen">
+    <style name="Theme.Rite" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Rite.Launch" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/splash_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/habit_lock_splash</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/rite_splash</item>
         <item name="windowSplashScreenIconBackgroundColor">@color/splash_icon_background</item>
-        <item name="postSplashScreenTheme">@style/Theme.HabitLock</item>
+        <item name="postSplashScreenTheme">@style/Theme.Rite</item>
     </style>
-
 </resources>
-
