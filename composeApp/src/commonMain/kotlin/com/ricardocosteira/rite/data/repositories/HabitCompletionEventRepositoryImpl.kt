@@ -16,7 +16,7 @@ class HabitCompletionEventRepositoryImpl(
     private val database: RiteDatabase
 ) : HabitCompletionEventRepository {
 
-    private val queries = database.habitLockQueries
+    private val queries = database.riteQueries
 
     override suspend fun getEventsForInstance(instanceId: String): List<HabitCompletionEvent> =
         withContext(Dispatchers.IO) {

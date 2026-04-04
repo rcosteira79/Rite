@@ -27,14 +27,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.common_cancel
-import habitlock.composeapp.generated.resources.quantitative_input_button_add
-import habitlock.composeapp.generated.resources.quantitative_input_current_no_unit
-import habitlock.composeapp.generated.resources.quantitative_input_current_with_unit
-import habitlock.composeapp.generated.resources.quantitative_input_label_amount
-import habitlock.composeapp.generated.resources.quantitative_input_quick_add
-import habitlock.composeapp.generated.resources.quantitative_input_title
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.common_cancel
+import rite.composeapp.generated.resources.quantitative_input_button_add
+import rite.composeapp.generated.resources.quantitative_input_current_no_unit
+import rite.composeapp.generated.resources.quantitative_input_current_with_unit
+import rite.composeapp.generated.resources.quantitative_input_label_amount
+import rite.composeapp.generated.resources.quantitative_input_quick_add
+import rite.composeapp.generated.resources.quantitative_input_title
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

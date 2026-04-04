@@ -47,18 +47,18 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.strictness_badge_recommended
-import habitlock.composeapp.generated.resources.strictness_heading
-import habitlock.composeapp.generated.resources.strictness_preset_cd_not_selected
-import habitlock.composeapp.generated.resources.strictness_preset_cd_selected
-import habitlock.composeapp.generated.resources.strictness_subtext
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.strictness_badge_recommended
+import rite.composeapp.generated.resources.strictness_heading
+import rite.composeapp.generated.resources.strictness_preset_cd_not_selected
+import rite.composeapp.generated.resources.strictness_preset_cd_selected
+import rite.composeapp.generated.resources.strictness_subtext
 import org.jetbrains.compose.resources.stringResource
 
 private fun OnboardingStrictnessPreset.icon(): ImageVector = when (this) {
     OnboardingStrictnessPreset.FLEXIBLE -> Icons.Outlined.EditNote
     OnboardingStrictnessPreset.BALANCED -> Icons.Filled.Balance
-    OnboardingStrictnessPreset.LOCKED -> Icons.Filled.Lock
+    OnboardingStrictnessPreset.UNWAVERING -> Icons.Filled.Lock
 }
 
 @Composable
@@ -265,7 +265,7 @@ private fun PresetCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                val iconTint = if (preset == OnboardingStrictnessPreset.LOCKED) {
+                val iconTint = if (preset == OnboardingStrictnessPreset.UNWAVERING) {
                     MaterialTheme.colorScheme.error
                 } else {
                     MaterialTheme.colorScheme.onSurfaceVariant

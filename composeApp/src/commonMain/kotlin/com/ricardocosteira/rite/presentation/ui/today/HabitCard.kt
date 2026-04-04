@@ -38,18 +38,18 @@ import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.common_skip
-import habitlock.composeapp.generated.resources.today_action_complete
-import habitlock.composeapp.generated.resources.today_action_custom
-import habitlock.composeapp.generated.resources.today_action_increment
-import habitlock.composeapp.generated.resources.today_action_increment_short
-import habitlock.composeapp.generated.resources.today_badge_in_progress
-import habitlock.composeapp.generated.resources.today_badge_pending
-import habitlock.composeapp.generated.resources.today_cd_undo
-import habitlock.composeapp.generated.resources.today_resolved_completed_at
-import habitlock.composeapp.generated.resources.today_resolved_failed
-import habitlock.composeapp.generated.resources.today_resolved_skipped_at
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.common_skip
+import rite.composeapp.generated.resources.today_action_complete
+import rite.composeapp.generated.resources.today_action_custom
+import rite.composeapp.generated.resources.today_action_increment
+import rite.composeapp.generated.resources.today_action_increment_short
+import rite.composeapp.generated.resources.today_badge_in_progress
+import rite.composeapp.generated.resources.today_badge_pending
+import rite.composeapp.generated.resources.today_cd_undo
+import rite.composeapp.generated.resources.today_resolved_completed_at
+import rite.composeapp.generated.resources.today_resolved_failed
+import rite.composeapp.generated.resources.today_resolved_skipped_at
 import org.jetbrains.compose.resources.stringResource
 
 private val CARD_CORNER_RADIUS = 24.dp

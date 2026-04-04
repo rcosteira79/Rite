@@ -32,8 +32,8 @@ import com.ricardocosteira.rite.presentation.ui.habit.HabitFormScreen
 import com.ricardocosteira.rite.presentation.ui.onboarding.OnboardingRoute
 import com.ricardocosteira.rite.presentation.ui.settings.SettingsScreen
 import com.ricardocosteira.rite.presentation.ui.today.TodayScreen
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.today_cd_add_habit
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.today_cd_add_habit
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass

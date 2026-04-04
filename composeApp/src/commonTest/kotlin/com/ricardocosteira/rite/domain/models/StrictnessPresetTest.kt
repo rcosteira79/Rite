@@ -39,9 +39,9 @@ class StrictnessPresetTest {
     }
 
     @Test
-    fun `given LOCKED preset when converting to settings then returns correct values`() {
+    fun `given UNWAVERING preset when converting to settings then returns correct values`() {
         // Given
-        val inputPreset = StrictnessPreset.LOCKED
+        val inputPreset = StrictnessPreset.UNWAVERING
 
         // When
         val actualSettings = inputPreset.toUserSettings()
@@ -87,9 +87,9 @@ class StrictnessPresetTest {
     }
 
     @Test
-    fun `given LOCKED settings when checking flags then returns correct values`() {
+    fun `given UNWAVERING settings when checking flags then returns correct values`() {
         // Given
-        val inputSettings = StrictnessPreset.LOCKED.toUserSettings()
+        val inputSettings = StrictnessPreset.UNWAVERING.toUserSettings()
 
         // When/Then
         assertTrue(inputSettings.isUndoDisabled)
@@ -151,7 +151,7 @@ class StrictnessPresetTest {
         // Given
         val flexibleSettings = StrictnessPreset.FLEXIBLE.toUserSettings()
         val balancedSettings = StrictnessPreset.BALANCED.toUserSettings()
-        val lockedSettings = StrictnessPreset.LOCKED.toUserSettings()
+        val unwaveringSettings = StrictnessPreset.UNWAVERING.toUserSettings()
 
         // When/Then - Verify FLEXIBLE is most lenient
         assertTrue(flexibleSettings.hasUnlimitedSnoozes)
@@ -160,23 +160,23 @@ class StrictnessPresetTest {
 
         // Verify order of strictness for snooze duration
         assertTrue(flexibleSettings.maxSnoozeDurationMinutes > balancedSettings.maxSnoozeDurationMinutes)
-        assertTrue(balancedSettings.maxSnoozeDurationMinutes > lockedSettings.maxSnoozeDurationMinutes)
+        assertTrue(balancedSettings.maxSnoozeDurationMinutes > unwaveringSettings.maxSnoozeDurationMinutes)
     }
 
     @Test
-    fun `given LOCKED preset when comparing limits then is most strict`() {
+    fun `given UNWAVERING preset when comparing limits then is most strict`() {
         // Given
-        val lockedSettings = StrictnessPreset.LOCKED.toUserSettings()
+        val unwaveringSettings = StrictnessPreset.UNWAVERING.toUserSettings()
         val balancedSettings = StrictnessPreset.BALANCED.toUserSettings()
 
         // When/Then - Verify LOCKED is most strict
-        assertTrue(lockedSettings.isUndoDisabled)
-        assertTrue(lockedSettings.isSkipDisabled)
-        assertEquals(1, lockedSettings.maxSnoozesPerHabitPerDay)
-        assertEquals(15, lockedSettings.maxSnoozeDurationMinutes)
+        assertTrue(unwaveringSettings.isUndoDisabled)
+        assertTrue(unwaveringSettings.isSkipDisabled)
+        assertEquals(1, unwaveringSettings.maxSnoozesPerHabitPerDay)
+        assertEquals(15, unwaveringSettings.maxSnoozeDurationMinutes)
 
         // Verify it's stricter than BALANCED
-        val lockedSnoozes = lockedSettings.maxSnoozesPerHabitPerDay ?: Int.MAX_VALUE
+        val lockedSnoozes = unwaveringSettings.maxSnoozesPerHabitPerDay ?: Int.MAX_VALUE
         val balancedSnoozes = balancedSettings.maxSnoozesPerHabitPerDay ?: Int.MAX_VALUE
         assertTrue(lockedSnoozes < balancedSnoozes)
     }

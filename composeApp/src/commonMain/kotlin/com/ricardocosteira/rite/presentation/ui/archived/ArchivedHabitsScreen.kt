@@ -37,17 +37,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.domain.models.Habit
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.archived_best_streak
-import habitlock.composeapp.generated.resources.archived_cd_delete
-import habitlock.composeapp.generated.resources.archived_cd_restore
-import habitlock.composeapp.generated.resources.archived_empty_state_heading
-import habitlock.composeapp.generated.resources.archived_empty_state_subtext
-import habitlock.composeapp.generated.resources.archived_success_habit_deleted
-import habitlock.composeapp.generated.resources.archived_success_habit_restored
-import habitlock.composeapp.generated.resources.archived_title
-import habitlock.composeapp.generated.resources.common_cd_back
-import habitlock.composeapp.generated.resources.common_error_generic
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.archived_best_streak
+import rite.composeapp.generated.resources.archived_cd_delete
+import rite.composeapp.generated.resources.archived_cd_restore
+import rite.composeapp.generated.resources.archived_empty_state_heading
+import rite.composeapp.generated.resources.archived_empty_state_subtext
+import rite.composeapp.generated.resources.archived_success_habit_deleted
+import rite.composeapp.generated.resources.archived_success_habit_restored
+import rite.composeapp.generated.resources.archived_title
+import rite.composeapp.generated.resources.common_cd_back
+import rite.composeapp.generated.resources.common_error_generic
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

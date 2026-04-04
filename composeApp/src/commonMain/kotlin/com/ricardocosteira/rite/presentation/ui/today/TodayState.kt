@@ -2,8 +2,8 @@ package com.ricardocosteira.rite.presentation.ui.today
 
 import com.ricardocosteira.rite.domain.models.StrictnessPreset
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.today_error_skip_limit_reached
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.today_error_skip_limit_reached
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.StringResource

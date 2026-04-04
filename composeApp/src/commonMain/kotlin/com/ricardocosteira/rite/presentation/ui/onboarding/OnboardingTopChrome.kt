@@ -23,9 +23,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.common_cd_onboarding_step
-import habitlock.composeapp.generated.resources.common_skip
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.common_cd_onboarding_step
+import rite.composeapp.generated.resources.common_skip
 import org.jetbrains.compose.resources.stringResource
 
 private const val TOTAL_STEPS = 3

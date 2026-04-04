@@ -20,9 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.quantity_stepper_cd_decrease
-import habitlock.composeapp.generated.resources.quantity_stepper_cd_increase
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.quantity_stepper_cd_decrease
+import rite.composeapp.generated.resources.quantity_stepper_cd_increase
 import org.jetbrains.compose.resources.stringResource
 
 private val ButtonSize = 36.dp

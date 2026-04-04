@@ -17,10 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.ricardocosteira.rite.presentation.ui.haptics.HapticController
 import com.ricardocosteira.rite.presentation.ui.haptics.rememberHapticController
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.nav_history
-import habitlock.composeapp.generated.resources.nav_settings
-import habitlock.composeapp.generated.resources.nav_today
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.nav_history
+import rite.composeapp.generated.resources.nav_settings
+import rite.composeapp.generated.resources.nav_today
 import org.jetbrains.compose.resources.stringResource
 
 enum class BottomNavTab {

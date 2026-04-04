@@ -15,7 +15,7 @@ class LeavePeriodRepositoryImpl(
     private val database: RiteDatabase
 ) : LeavePeriodRepository {
 
-    private val queries = database.habitLockQueries
+    private val queries = database.riteQueries
 
     override suspend fun createLeavePeriod(leavePeriod: LeavePeriod): Unit = withContext(Dispatchers.IO) {
         queries.insertLeavePeriod(

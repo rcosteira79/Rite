@@ -15,7 +15,7 @@ class SnoozeRepositoryImpl(
     private val database: RiteDatabase
 ) : SnoozeRepository {
 
-    private val queries = database.habitLockQueries
+    private val queries = database.riteQueries
 
     override suspend fun getSnoozeState(instanceId: String): SnoozeState? =
         withContext(Dispatchers.IO) {

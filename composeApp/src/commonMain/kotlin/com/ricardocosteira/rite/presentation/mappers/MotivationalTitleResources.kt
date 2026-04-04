@@ -1,21 +1,21 @@
 package com.ricardocosteira.rite.presentation.mappers
 
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.motivational_title_0
-import habitlock.composeapp.generated.resources.motivational_title_1
-import habitlock.composeapp.generated.resources.motivational_title_10
-import habitlock.composeapp.generated.resources.motivational_title_11
-import habitlock.composeapp.generated.resources.motivational_title_12
-import habitlock.composeapp.generated.resources.motivational_title_13
-import habitlock.composeapp.generated.resources.motivational_title_14
-import habitlock.composeapp.generated.resources.motivational_title_2
-import habitlock.composeapp.generated.resources.motivational_title_3
-import habitlock.composeapp.generated.resources.motivational_title_4
-import habitlock.composeapp.generated.resources.motivational_title_5
-import habitlock.composeapp.generated.resources.motivational_title_6
-import habitlock.composeapp.generated.resources.motivational_title_7
-import habitlock.composeapp.generated.resources.motivational_title_8
-import habitlock.composeapp.generated.resources.motivational_title_9
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.motivational_title_0
+import rite.composeapp.generated.resources.motivational_title_1
+import rite.composeapp.generated.resources.motivational_title_10
+import rite.composeapp.generated.resources.motivational_title_11
+import rite.composeapp.generated.resources.motivational_title_12
+import rite.composeapp.generated.resources.motivational_title_13
+import rite.composeapp.generated.resources.motivational_title_14
+import rite.composeapp.generated.resources.motivational_title_2
+import rite.composeapp.generated.resources.motivational_title_3
+import rite.composeapp.generated.resources.motivational_title_4
+import rite.composeapp.generated.resources.motivational_title_5
+import rite.composeapp.generated.resources.motivational_title_6
+import rite.composeapp.generated.resources.motivational_title_7
+import rite.composeapp.generated.resources.motivational_title_8
+import rite.composeapp.generated.resources.motivational_title_9
 import org.jetbrains.compose.resources.StringResource
 
 private val MOTIVATIONAL_TITLE_RESOURCES: List<StringResource> = listOf(

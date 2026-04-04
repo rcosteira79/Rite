@@ -28,9 +28,9 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.philosophy_body
-import habitlock.composeapp.generated.resources.philosophy_heading
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.philosophy_body
+import rite.composeapp.generated.resources.philosophy_heading
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource

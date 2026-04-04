@@ -20,7 +20,7 @@ class HabitInstanceRepositoryImpl(
     private val database: RiteDatabase,
     private val ioDispatcher: IoDispatcher
 ) : HabitInstanceRepository {
-    private val queries = database.habitLockQueries
+    private val queries = database.riteQueries
 
     override fun observeInstancesForDate(date: LocalDate): Flow<List<HabitInstance>> = queries
         .getInstancesForDate(date.toString())

@@ -23,7 +23,7 @@ class UserRepositoryImpl(
     private val database: RiteDatabase
 ) : UserRepository {
 
-    private val queries = database.habitLockQueries
+    private val queries = database.riteQueries
 
     override fun observeUser(): Flow<User?> {
         return queries.getUser()

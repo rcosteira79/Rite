@@ -22,11 +22,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.first_habit_button_create
-import habitlock.composeapp.generated.resources.first_habit_button_skip
-import habitlock.composeapp.generated.resources.philosophy_cta_accept
-import habitlock.composeapp.generated.resources.strictness_cta_continue
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.first_habit_button_create
+import rite.composeapp.generated.resources.first_habit_button_skip
+import rite.composeapp.generated.resources.philosophy_cta_accept
+import rite.composeapp.generated.resources.strictness_cta_continue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource

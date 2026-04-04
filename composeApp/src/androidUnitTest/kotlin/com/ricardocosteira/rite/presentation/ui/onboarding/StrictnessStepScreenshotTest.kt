@@ -51,7 +51,7 @@ class StrictnessStepScreenshotTest {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = false) {
                 StrictnessStep(
-                    selectedPreset = OnboardingStrictnessPreset.LOCKED,
+                    selectedPreset = OnboardingStrictnessPreset.UNWAVERING,
                     onPresetSelected = {},
                     reduceMotion = true,
                 )
@@ -93,7 +93,7 @@ class StrictnessStepScreenshotTest {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = true) {
                 StrictnessStep(
-                    selectedPreset = OnboardingStrictnessPreset.LOCKED,
+                    selectedPreset = OnboardingStrictnessPreset.UNWAVERING,
                     onPresetSelected = {},
                     reduceMotion = true,
                 )

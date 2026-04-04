@@ -20,7 +20,7 @@ class HabitRepositoryImpl(
     private val database: RiteDatabase,
     private val ioDispatcher: IoDispatcher
 ) : HabitRepository {
-    private val queries = database.habitLockQueries
+    private val queries = database.riteQueries
 
     override fun observeActiveHabits(): Flow<List<Habit>> = queries
         .getActiveHabits()

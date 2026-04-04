@@ -27,7 +27,7 @@ class OnboardingStrictnessPresetTest {
     fun `LOCKED has correct collapsed summary`() {
         assertEquals(
             expected = "No undo · Skips capped",
-            actual = OnboardingStrictnessPreset.LOCKED.collapsedSummary
+            actual = OnboardingStrictnessPreset.UNWAVERING.collapsedSummary
         )
     }
 
@@ -56,12 +56,12 @@ class OnboardingStrictnessPresetTest {
     fun `BALANCED is recommended, others are not`() {
         assertTrue(OnboardingStrictnessPreset.BALANCED.isRecommended)
         assertFalse(OnboardingStrictnessPreset.FLEXIBLE.isRecommended)
-        assertFalse(OnboardingStrictnessPreset.LOCKED.isRecommended)
+        assertFalse(OnboardingStrictnessPreset.UNWAVERING.isRecommended)
     }
 
     @Test
     fun `LOCKED rules contain key-value pairs for Undo, Snoozes, Skips`() {
-        val rules = OnboardingStrictnessPreset.LOCKED.rules
+        val rules = OnboardingStrictnessPreset.UNWAVERING.rules
         assertEquals(expected = listOf("Undo", "Snoozes", "Skips"), actual = rules.map { it.key })
         assertEquals(expected = "None",   actual = rules[0].value)
         assertEquals(expected = "Capped", actual = rules[1].value)

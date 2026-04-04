@@ -6,9 +6,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.inter
-import habitlock.composeapp.generated.resources.manrope
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.inter
+import rite.composeapp.generated.resources.manrope
 import org.jetbrains.compose.resources.Font
 
 @Composable

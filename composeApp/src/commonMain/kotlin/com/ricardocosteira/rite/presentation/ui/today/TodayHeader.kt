@@ -42,12 +42,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ricardocosteira.rite.domain.models.StrictnessPreset
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.today_header_all_done
-import habitlock.composeapp.generated.resources.today_header_day_label
-import habitlock.composeapp.generated.resources.today_header_done_label
-import habitlock.composeapp.generated.resources.today_header_no_habits
-import habitlock.composeapp.generated.resources.today_header_remaining
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.today_header_all_done
+import rite.composeapp.generated.resources.today_header_day_label
+import rite.composeapp.generated.resources.today_header_done_label
+import rite.composeapp.generated.resources.today_header_no_habits
+import rite.composeapp.generated.resources.today_header_remaining
 import org.jetbrains.compose.resources.stringResource
 
 private val EXPANDED_HORIZONTAL_PADDING = 32.dp

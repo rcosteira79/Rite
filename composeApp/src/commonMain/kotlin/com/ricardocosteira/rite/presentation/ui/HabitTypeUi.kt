@@ -1,9 +1,9 @@
 package com.ricardocosteira.rite.presentation.ui
 
 import com.ricardocosteira.rite.domain.models.HabitType
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.common_quantitative
-import habitlock.composeapp.generated.resources.habit_form_type_binary_label
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.common_quantitative
+import rite.composeapp.generated.resources.habit_form_type_binary_label
 import org.jetbrains.compose.resources.StringResource
 
 val HabitType.labelRes: StringResource

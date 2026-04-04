@@ -7,10 +7,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.rite.presentation.ui.isReduceMotionEnabled
-import habitlock.composeapp.generated.resources.Res
-import habitlock.composeapp.generated.resources.first_habit_error_empty_name
-import habitlock.composeapp.generated.resources.first_habit_error_invalid_target_value
-import habitlock.composeapp.generated.resources.first_habit_error_missing_target_value
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.first_habit_error_empty_name
+import rite.composeapp.generated.resources.first_habit_error_invalid_target_value
+import rite.composeapp.generated.resources.first_habit_error_missing_target_value
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

@@ -196,6 +196,6 @@ class OnboardingViewModel(
     private fun OnboardingStrictnessPreset.toDomain(): StrictnessPreset = when (this) {
         OnboardingStrictnessPreset.FLEXIBLE -> StrictnessPreset.FLEXIBLE
         OnboardingStrictnessPreset.BALANCED -> StrictnessPreset.BALANCED
-        OnboardingStrictnessPreset.LOCKED -> StrictnessPreset.LOCKED
+        OnboardingStrictnessPreset.UNWAVERING -> StrictnessPreset.UNWAVERING
     }
 }
