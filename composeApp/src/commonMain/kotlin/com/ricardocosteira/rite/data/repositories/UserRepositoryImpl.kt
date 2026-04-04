@@ -2,7 +2,7 @@ package com.ricardocosteira.rite.data.repositories
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import com.ricardocosteira.rite.data.database.HabitLockDatabase
+import com.ricardocosteira.rite.data.database.RiteDatabase
 import com.ricardocosteira.rite.domain.models.UndoPolicy
 import com.ricardocosteira.rite.domain.models.User
 import com.ricardocosteira.rite.domain.repositories.UserRepository
@@ -20,7 +20,7 @@ import kotlin.time.Instant
 
 @Inject
 class UserRepositoryImpl(
-    private val database: HabitLockDatabase
+    private val database: RiteDatabase
 ) : UserRepository {
 
     private val queries = database.habitLockQueries

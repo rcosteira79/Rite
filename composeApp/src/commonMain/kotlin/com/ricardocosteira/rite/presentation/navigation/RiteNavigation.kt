@@ -57,7 +57,7 @@ private val savedStateConfig: SavedStateConfiguration = SavedStateConfiguration 
 private val topLevelRoutes: Set<Route> = setOf(Today, Calendar, Settings)
 
 @Composable
-fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
+fun RiteNavigation(isOnboardingCompleted: Boolean) {
     val initialRoute: Route = if (isOnboardingCompleted) Today else Onboarding
     val backStack = rememberNavBackStack(savedStateConfig, initialRoute)
     val snackbarHostState = remember { SnackbarHostState() }
@@ -129,7 +129,7 @@ fun HabitLockNavigation(isOnboardingCompleted: Boolean) {
                     animationSpec = tween(durationMillis = 200),
                     label = "nav-bar-offset"
                 )
-                HabitLockBottomNav(
+                RiteBottomNav(
                     currentTab = currentTab,
                     onTabSelected = { tab ->
                         handleTabSelection(tab, backStack)

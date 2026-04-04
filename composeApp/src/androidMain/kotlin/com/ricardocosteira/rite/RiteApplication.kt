@@ -3,22 +3,22 @@ package com.ricardocosteira.rite
 import android.app.Application
 import android.content.Context
 import com.ricardocosteira.rite.data.DatabaseDriverFactory
-import com.ricardocosteira.rite.di.HabitLockAppComponent
+import com.ricardocosteira.rite.di.RiteAppComponent
 import com.ricardocosteira.rite.di.createAppComponent
 import com.ricardocosteira.rite.notifications.HabitNotification
 import com.ricardocosteira.rite.notifications.NotificationChannels
 import com.ricardocosteira.rite.workers.WorkManagerInitializer
 
 /**
- * Application class that holds the singleton [HabitLockAppComponent].
+ * Application class that holds the singleton [RiteAppComponent].
  *
  * Workers and BroadcastReceivers retrieve the shared component via the
- * [Context.habitLockApplication] extension, eliminating the per-invocation
+ * [Context.riteApplication] extension, eliminating the per-invocation
  * AppModule pattern and ensuring a single SQLite connection per process.
  */
-class HabitLockApplication : Application() {
+class RiteApplication : Application() {
 
-    lateinit var appComponent: HabitLockAppComponent
+    lateinit var appComponent: RiteAppComponent
         private set
 
     override fun onCreate() {
@@ -31,5 +31,5 @@ class HabitLockApplication : Application() {
     }
 }
 
-val Context.habitLockApplication: HabitLockApplication
-    get() = applicationContext as HabitLockApplication
+val Context.riteApplication: RiteApplication
+    get() = applicationContext as RiteApplication

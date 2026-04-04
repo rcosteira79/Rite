@@ -3,14 +3,14 @@ package com.ricardocosteira.rite.workers
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.ricardocosteira.rite.di.HabitLockAppComponent
+import com.ricardocosteira.rite.di.RiteAppComponent
 import com.ricardocosteira.rite.domain.models.Habit
 import com.ricardocosteira.rite.domain.models.HabitInstance
 import com.ricardocosteira.rite.domain.models.HabitReminder
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.rite.domain.repositories.HabitRepository
-import com.ricardocosteira.rite.habitLockApplication
+import com.ricardocosteira.rite.riteApplication
 import com.ricardocosteira.rite.notifications.HabitNotification
 import com.ricardocosteira.rite.notifications.TrackedHabitInfo
 import com.ricardocosteira.rite.util.todayIn
@@ -30,7 +30,7 @@ class DailyHabitGenerationWorker(context: Context, params: WorkerParameters) :
     CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result = try {
-        val appComponent: HabitLockAppComponent = applicationContext.habitLockApplication.appComponent
+        val appComponent: RiteAppComponent = applicationContext.riteApplication.appComponent
         appComponent.processEndOfDay.execute()
         appComponent.generateDailyHabits.execute()
 

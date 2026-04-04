@@ -1,7 +1,7 @@
 package com.ricardocosteira.rite.di
 
 import com.ricardocosteira.rite.data.DatabaseDriverFactory
-import com.ricardocosteira.rite.data.database.HabitLockDatabase
+import com.ricardocosteira.rite.data.database.RiteDatabase
 import com.ricardocosteira.rite.data.repositories.HabitCompletionEventRepositoryImpl
 import com.ricardocosteira.rite.data.repositories.HabitInstanceRepositoryImpl
 import com.ricardocosteira.rite.data.repositories.HabitRepositoryImpl
@@ -45,7 +45,7 @@ import me.tatarka.inject.annotations.Provides
  */
 @Component
 @AppScope
-abstract class HabitLockAppComponent(
+abstract class RiteAppComponent(
     @get:Provides val databaseDriverFactory: DatabaseDriverFactory,
     @get:Provides val habitNotification: HabitNotification
 ) {
@@ -57,8 +57,8 @@ abstract class HabitLockAppComponent(
     // Database (singleton)
     @AppScope
     @Provides
-    fun provideDatabase(driverFactory: DatabaseDriverFactory): HabitLockDatabase =
-        HabitLockDatabase(driverFactory.createDriver())
+    fun provideDatabase(driverFactory: DatabaseDriverFactory): RiteDatabase =
+        RiteDatabase(driverFactory.createDriver())
 
     // UUID Provider (singleton)
     @AppScope

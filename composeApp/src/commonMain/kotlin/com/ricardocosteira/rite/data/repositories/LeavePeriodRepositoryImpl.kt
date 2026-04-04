@@ -1,6 +1,6 @@
 package com.ricardocosteira.rite.data.repositories
 
-import com.ricardocosteira.rite.data.database.HabitLockDatabase
+import com.ricardocosteira.rite.data.database.RiteDatabase
 import com.ricardocosteira.rite.data.mappers.EntityMappers.toDomain
 import com.ricardocosteira.rite.domain.models.LeavePeriod
 import com.ricardocosteira.rite.domain.repositories.LeavePeriodRepository
@@ -12,7 +12,7 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class LeavePeriodRepositoryImpl(
-    private val database: HabitLockDatabase
+    private val database: RiteDatabase
 ) : LeavePeriodRepository {
 
     private val queries = database.habitLockQueries

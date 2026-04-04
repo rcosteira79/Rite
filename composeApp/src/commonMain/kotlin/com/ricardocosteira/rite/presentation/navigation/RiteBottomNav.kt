@@ -30,7 +30,7 @@ enum class BottomNavTab {
 }
 
 @Composable
-fun HabitLockBottomNav(
+fun RiteBottomNav(
     currentTab: BottomNavTab,
     onTabSelected: (BottomNavTab) -> Unit,
     modifier: Modifier = Modifier

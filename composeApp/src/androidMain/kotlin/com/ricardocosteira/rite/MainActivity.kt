@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val appComponent = application.habitLockApplication.appComponent
+        val appComponent = application.riteApplication.appComponent
 
         installSplashScreen().setKeepOnScreenCondition {
             appComponent.startupViewModel.state.value is StartupState.Loading

@@ -2,6 +2,6 @@ package com.ricardocosteira.rite.di
 
 import androidx.compose.runtime.staticCompositionLocalOf
 
-val LocalAppComponent = staticCompositionLocalOf<HabitLockAppComponent> {
-    error("No HabitLockAppComponent provided")
+val LocalAppComponent = staticCompositionLocalOf<RiteAppComponent> {
+    error("No RiteAppComponent provided")
 }

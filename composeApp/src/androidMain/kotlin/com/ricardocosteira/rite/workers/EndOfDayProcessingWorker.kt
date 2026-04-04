@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.ricardocosteira.rite.domain.models.HabitStatus
-import com.ricardocosteira.rite.habitLockApplication
+import com.ricardocosteira.rite.riteApplication
 import com.ricardocosteira.rite.notifications.NotificationScheduler
 import com.ricardocosteira.rite.util.todayIn
 import kotlinx.datetime.TimeZone
@@ -23,7 +23,7 @@ class EndOfDayProcessingWorker(
 
     override suspend fun doWork(): Result {
         return try {
-            val appComponent = applicationContext.habitLockApplication.appComponent
+            val appComponent = applicationContext.riteApplication.appComponent
             val habitInstanceRepository = appComponent.habitInstanceRepository
             val habitRepository = appComponent.habitRepository
             val notificationScheduler = NotificationScheduler(applicationContext)

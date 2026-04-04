@@ -1,7 +1,7 @@
 package com.ricardocosteira.rite.presentation.ui.today
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import com.ricardocosteira.rite.data.database.HabitLockDatabase
+import com.ricardocosteira.rite.data.database.RiteDatabase
 import com.ricardocosteira.rite.data.repositories.HabitCompletionEventRepositoryImpl
 import com.ricardocosteira.rite.data.repositories.HabitInstanceRepositoryImpl
 import com.ricardocosteira.rite.data.repositories.HabitRepositoryImpl
@@ -356,9 +356,9 @@ class TodayViewModelSwipeTest {
     inner class TestDependencies {
 
         private val driver: JdbcSqliteDriver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY).also {
-            HabitLockDatabase.Schema.create(it)
+            RiteDatabase.Schema.create(it)
         }
-        private val database: HabitLockDatabase = HabitLockDatabase(driver)
+        private val database: RiteDatabase = RiteDatabase(driver)
 
         val habitRepository: HabitRepositoryImpl =
             HabitRepositoryImpl(database = database, ioDispatcher = Dispatchers.IO)

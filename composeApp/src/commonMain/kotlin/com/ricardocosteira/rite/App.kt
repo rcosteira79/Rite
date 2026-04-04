@@ -9,14 +9,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ricardocosteira.rite.di.HabitLockAppComponent
+import com.ricardocosteira.rite.di.RiteAppComponent
 import com.ricardocosteira.rite.di.LocalAppComponent
-import com.ricardocosteira.rite.presentation.navigation.HabitLockNavigation
+import com.ricardocosteira.rite.presentation.navigation.RiteNavigation
 import com.ricardocosteira.rite.presentation.ui.startup.StartupState
 import com.ricardocosteira.rite.presentation.ui.theme.HabitLockTheme
 
 @Composable
-fun App(appComponent: HabitLockAppComponent) {
+fun App(appComponent: RiteAppComponent) {
     HabitLockTheme {
         val state by appComponent.startupViewModel.state.collectAsStateWithLifecycle()
 
@@ -28,7 +28,7 @@ fun App(appComponent: HabitLockAppComponent) {
                 CircularProgressIndicator()
             }
             is StartupState.Ready -> CompositionLocalProvider(LocalAppComponent provides appComponent) {
-                HabitLockNavigation(isOnboardingCompleted = currentState.isOnboardingCompleted)
+                RiteNavigation(isOnboardingCompleted = currentState.isOnboardingCompleted)
             }
         }
     }

@@ -3,14 +3,14 @@ package com.ricardocosteira.rite.notifications
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.ricardocosteira.rite.di.HabitLockAppComponent
+import com.ricardocosteira.rite.di.RiteAppComponent
 import com.ricardocosteira.rite.domain.models.CompletionSource
 import com.ricardocosteira.rite.domain.models.Habit
 import com.ricardocosteira.rite.domain.models.HabitInstance
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.rite.domain.repositories.HabitRepository
-import com.ricardocosteira.rite.habitLockApplication
+import com.ricardocosteira.rite.riteApplication
 import com.ricardocosteira.rite.util.todayIn
 import kotlin.time.Clock
 import kotlinx.coroutines.CoroutineScope
@@ -44,7 +44,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
         scope.launch {
             try {
-                val appComponent = context.habitLockApplication.appComponent
+                val appComponent = context.riteApplication.appComponent
 
                 when (action) {
                     ACTION_COMPLETE -> handleComplete(appComponent, instanceId)
@@ -64,14 +64,14 @@ class NotificationActionReceiver : BroadcastReceiver() {
         }
     }
 
-    private suspend fun handleComplete(appComponent: HabitLockAppComponent, instanceId: String) {
+    private suspend fun handleComplete(appComponent: RiteAppComponent, instanceId: String) {
         val instance = appComponent.habitInstanceRepository.getInstanceById(instanceId)
         if (instance != null) {
             appComponent.completeHabit.executeBinary(instanceId, CompletionSource.NOTIFICATION)
         }
     }
 
-    private suspend fun handleAddOne(appComponent: HabitLockAppComponent, instanceId: String) {
+    private suspend fun handleAddOne(appComponent: RiteAppComponent, instanceId: String) {
         val instance = appComponent.habitInstanceRepository.getInstanceById(instanceId)
         if (instance != null) {
             appComponent.completeHabit.executeQuantitative(
@@ -84,7 +84,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
     private suspend fun handleSnooze(
         context: Context,
-        appComponent: HabitLockAppComponent,
+        appComponent: RiteAppComponent,
         instanceId: String
     ) {
         val result = appComponent.snoozeHabit.execute(instanceId, durationMinutes = 15)
@@ -104,18 +104,18 @@ class NotificationActionReceiver : BroadcastReceiver() {
         }
     }
 
-    private suspend fun handleSkip(appComponent: HabitLockAppComponent, instanceId: String) {
+    private suspend fun handleSkip(appComponent: RiteAppComponent, instanceId: String) {
         appComponent.skipHabit.execute(instanceId)
     }
 
     private suspend fun handleUndoLastIncrement(
-        appComponent: HabitLockAppComponent,
+        appComponent: RiteAppComponent,
         instanceId: String
     ) {
         appComponent.undoLastIncrement.execute(instanceId)
     }
 
-    private suspend fun refreshTrackingNotification(appComponent: HabitLockAppComponent) {
+    private suspend fun refreshTrackingNotification(appComponent: RiteAppComponent) {
         val habitNotification: HabitNotification = appComponent.habitNotificationAccessor
         val habitRepository: HabitRepository = appComponent.habitRepository
         val habitInstanceRepository: HabitInstanceRepository = appComponent.habitInstanceRepository

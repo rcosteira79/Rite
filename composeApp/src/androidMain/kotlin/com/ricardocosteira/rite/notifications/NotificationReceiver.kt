@@ -3,7 +3,7 @@ package com.ricardocosteira.rite.notifications
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.ricardocosteira.rite.habitLockApplication
+import com.ricardocosteira.rite.riteApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -30,7 +30,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
         scope.launch {
             try {
-                val appComponent = context.habitLockApplication.appComponent
+                val appComponent = context.riteApplication.appComponent
                 val instance = appComponent.habitInstanceRepository.getInstanceById(instanceId)
 
                 if (instance != null) {

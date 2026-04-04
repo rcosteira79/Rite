@@ -1,6 +1,6 @@
 package com.ricardocosteira.rite.data.repositories
 
-import com.ricardocosteira.rite.data.database.HabitLockDatabase
+import com.ricardocosteira.rite.data.database.RiteDatabase
 import com.ricardocosteira.rite.data.mappers.EntityMappers.toDomain
 import com.ricardocosteira.rite.domain.models.SnoozeState
 import com.ricardocosteira.rite.domain.repositories.SnoozeRepository
@@ -12,7 +12,7 @@ import kotlin.time.Instant
 
 @Inject
 class SnoozeRepositoryImpl(
-    private val database: HabitLockDatabase
+    private val database: RiteDatabase
 ) : SnoozeRepository {
 
     private val queries = database.habitLockQueries

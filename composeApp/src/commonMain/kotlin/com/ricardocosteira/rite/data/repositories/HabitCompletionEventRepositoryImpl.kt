@@ -1,6 +1,6 @@
 package com.ricardocosteira.rite.data.repositories
 
-import com.ricardocosteira.rite.data.database.HabitLockDatabase
+import com.ricardocosteira.rite.data.database.RiteDatabase
 import com.ricardocosteira.rite.data.mappers.EntityMappers.toDomain
 import com.ricardocosteira.rite.domain.models.CompletionSource
 import com.ricardocosteira.rite.domain.models.HabitCompletionEvent
@@ -13,7 +13,7 @@ import kotlin.time.Clock
 
 @Inject
 class HabitCompletionEventRepositoryImpl(
-    private val database: HabitLockDatabase
+    private val database: RiteDatabase
 ) : HabitCompletionEventRepository {
 
     private val queries = database.habitLockQueries

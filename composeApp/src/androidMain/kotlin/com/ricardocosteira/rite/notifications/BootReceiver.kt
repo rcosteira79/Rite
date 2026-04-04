@@ -3,14 +3,14 @@ package com.ricardocosteira.rite.notifications
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.ricardocosteira.rite.di.HabitLockAppComponent
+import com.ricardocosteira.rite.di.RiteAppComponent
 import com.ricardocosteira.rite.domain.models.Habit
 import com.ricardocosteira.rite.domain.models.HabitInstance
 import com.ricardocosteira.rite.domain.models.HabitReminder
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.rite.domain.repositories.HabitRepository
-import com.ricardocosteira.rite.habitLockApplication
+import com.ricardocosteira.rite.riteApplication
 import com.ricardocosteira.rite.util.todayIn
 import com.ricardocosteira.rite.workers.WorkManagerInitializer
 import kotlin.time.Clock
@@ -34,7 +34,7 @@ class BootReceiver : BroadcastReceiver() {
         WorkManagerInitializer.initialize(context)
         NotificationChannels.createChannels(context)
 
-        val appComponent: HabitLockAppComponent = context.habitLockApplication.appComponent
+        val appComponent: RiteAppComponent = context.riteApplication.appComponent
         val habitNotification: HabitNotification = appComponent.habitNotificationAccessor
         val habitRepository: HabitRepository = appComponent.habitRepository
         val habitInstanceRepository: HabitInstanceRepository = appComponent.habitInstanceRepository

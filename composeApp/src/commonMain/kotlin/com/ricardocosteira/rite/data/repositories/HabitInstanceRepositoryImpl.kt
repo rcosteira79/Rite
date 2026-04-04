@@ -2,7 +2,7 @@ package com.ricardocosteira.rite.data.repositories
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import com.ricardocosteira.rite.data.database.HabitLockDatabase
+import com.ricardocosteira.rite.data.database.RiteDatabase
 import com.ricardocosteira.rite.data.mappers.EntityMappers.toDomain
 import com.ricardocosteira.rite.di.IoDispatcher
 import com.ricardocosteira.rite.domain.models.HabitInstance
@@ -17,7 +17,7 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class HabitInstanceRepositoryImpl(
-    private val database: HabitLockDatabase,
+    private val database: RiteDatabase,
     private val ioDispatcher: IoDispatcher
 ) : HabitInstanceRepository {
     private val queries = database.habitLockQueries

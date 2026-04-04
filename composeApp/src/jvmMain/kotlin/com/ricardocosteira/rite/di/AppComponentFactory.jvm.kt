@@ -6,4 +6,4 @@ import com.ricardocosteira.rite.notifications.HabitNotification
 actual fun createAppComponent(
     driverFactory: DatabaseDriverFactory,
     habitNotification: HabitNotification
-): HabitLockAppComponent = HabitLockAppComponent::class.create(driverFactory, habitNotification)
+): RiteAppComponent = RiteAppComponent::class.create(driverFactory, habitNotification)

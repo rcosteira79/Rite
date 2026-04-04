@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.ricardocosteira.rite.domain.models.ReminderType
-import com.ricardocosteira.rite.habitLockApplication
+import com.ricardocosteira.rite.riteApplication
 import com.ricardocosteira.rite.util.todayIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +44,7 @@ class TimezoneChangeReceiver : BroadcastReceiver() {
         notificationScheduler: NotificationScheduler
     ) {
         try {
-            val appComponent = context.habitLockApplication.appComponent
+            val appComponent = context.riteApplication.appComponent
             val habitRepository = appComponent.habitRepository
             val habitInstanceRepository = appComponent.habitInstanceRepository
 
