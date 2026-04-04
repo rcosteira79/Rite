@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [master, develop]
+    tags: ['v*']
   pull_request:
     branches: [master, develop]
 
@@ -70,7 +71,14 @@ jobs:
         run: ./gradlew :composeApp:assembleRc
       - name: Build Release APK
         if: github.ref == 'refs/heads/master'
-        run: ./gradlew :composeApp:assembleRelease
+        env:
+          HABITLOCK_STORE_FILE: ${{ runner.temp }}/habitlock-release.keystore
+          HABITLOCK_KEY_ALIAS: ${{ secrets.HABITLOCK_KEY_ALIAS }}
+          HABITLOCK_STORE_PASSWORD: ${{ secrets.HABITLOCK_STORE_PASSWORD }}
+          HABITLOCK_KEY_PASSWORD: ${{ secrets.HABITLOCK_KEY_PASSWORD }}
+        run: |
+          echo "${{ secrets.HABITLOCK_KEYSTORE_BASE64 }}" | base64 --decode > "$HABITLOCK_STORE_FILE"
+          ./gradlew :composeApp:assembleRelease --no-configuration-cache
       - name: Upload RC artifact
         if: github.ref == 'refs/heads/develop'
         uses: actions/upload-artifact@v4
@@ -85,3 +93,36 @@ jobs:
           name: habitlock-release-${{ steps.slug.outputs.sha }}
           path: composeApp/build/outputs/apk/release/**/*.apk
           if-no-files-found: error
+
+  release:
+    name: Publish Release APK
+    runs-on: ubuntu-latest
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Decode keystore
+        run: echo "${{ secrets.HABITLOCK_KEYSTORE_BASE64 }}" | base64 --decode > "${{ runner.temp }}/habitlock-release.keystore"
+      - name: Build signed APK
+        env:
+          HABITLOCK_STORE_FILE: ${{ runner.temp }}/habitlock-release.keystore
+          HABITLOCK_KEY_ALIAS: ${{ secrets.HABITLOCK_KEY_ALIAS }}
+          HABITLOCK_STORE_PASSWORD: ${{ secrets.HABITLOCK_STORE_PASSWORD }}
+          HABITLOCK_KEY_PASSWORD: ${{ secrets.HABITLOCK_KEY_PASSWORD }}
+        run: ./gradlew :composeApp:assembleRelease --no-configuration-cache
+      - name: Get version from tag
+        id: version
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      - name: Attach APK to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mv composeApp/build/outputs/apk/release/composeApp-release.apk "habitlock-${{ steps.version.outputs.tag }}.apk"
+          gh release upload "${{ steps.version.outputs.tag }}" "habitlock-${{ steps.version.outputs.tag }}.apk"

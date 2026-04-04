@@ -90,16 +90,25 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    signingConfigs {
+        create("release") {
+            storeFile = file(System.getenv("HABITLOCK_STORE_FILE") ?: "/dev/null")
+            keyAlias = System.getenv("HABITLOCK_KEY_ALIAS") ?: ""
+            storePassword = System.getenv("HABITLOCK_STORE_PASSWORD") ?: ""
+            keyPassword = System.getenv("HABITLOCK_KEY_PASSWORD") ?: ""
+        }
+    }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
         }
         create("rc") {
             initWith(getByName("release"))
