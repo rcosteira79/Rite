@@ -6,7 +6,7 @@
 
 - [ ] Day-detail calendar view (tap a day to see that day's habits)
 - [ ] Leave/suspension mode UI (domain logic complete, needs UI entry point)
-- [ ] Notification permission onboarding screen
+- [x] Notification permission onboarding screen
 - [ ] Habit form IME handling (keyboard occludes bottom buttons)
 - [ ] Animated collapsing toolbar transition on Today screen — ring + percentage move to collapsed position, ring arc unfurls into horizontal line that slides off-screen right, "Done" fades in beneath percentage
 - [ ] Animate title in new/edit habit screens
