@@ -26,13 +26,13 @@ enum class StrictnessPreset {
     BALANCED,
 
     /**
-     * No excuses, full accountability.
+     * No excuses. Show up every time.
      * - No undo allowed
      * - Very limited snoozes (1 per habit per day)
      * - No skips allowed (0)
      * - Short snooze duration (15 minutes)
      */
-    LOCKED;
+    UNWAVERING;
 
     /**
      * Converts this preset to user settings.
@@ -56,7 +56,7 @@ enum class StrictnessPreset {
             )
         }
 
-        LOCKED -> {
+        UNWAVERING -> {
             UserStrictnessSettings(
                 undoPolicy = UndoPolicy.NONE,
                 maxSnoozesPerHabitPerDay = 1,

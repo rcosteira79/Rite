@@ -14,8 +14,8 @@
     <string name="strictness_balanced_rule_2">• Snoozes are limited</string>
     <string name="strictness_balanced_rule_3">• Skips are limited</string>
     <string name="strictness_balanced_rule_4">• Missed habits fail at the end of the day</string>
-    <string name="strictness_locked_label">Locked</string>
-    <string name="strictness_locked_description">No excuses. Full accountability.</string>
+    <string name="strictness_locked_label">Unwavering</string>
+    <string name="strictness_locked_description">No excuses. Show up every time.</string>
     <string name="strictness_locked_rule_1">• No undo</string>
     <string name="strictness_locked_rule_2">• Snoozes are capped</string>
     <string name="strictness_locked_rule_3">• Skips are capped</string>

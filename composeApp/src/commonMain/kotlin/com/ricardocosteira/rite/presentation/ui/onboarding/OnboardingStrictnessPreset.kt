@@ -30,9 +30,9 @@ enum class OnboardingStrictnessPreset(
         ),
         isRecommended = true
     ),
-    LOCKED(
-        label = "Locked",
-        description = "No excuses. Full accountability.",
+    UNWAVERING(
+        label = "Unwavering",
+        description = "No excuses. Show up every time.",
         collapsedSummary = "No undo · Skips capped",
         rules = listOf(
             PresetRule("Undo", "None"),

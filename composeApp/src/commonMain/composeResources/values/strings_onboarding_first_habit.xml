@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="first_habit_heading">Lock in your first habit</string>
+    <string name="first_habit_heading">Start your first rite</string>
     <string name="first_habit_subtext">Start small. One habit is enough to begin.</string>
     <string name="first_habit_label_name">Habit name</string>
     <string name="first_habit_type_binary">Binary</string>
