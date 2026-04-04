@@ -72,25 +72,25 @@ jobs:
       - name: Build Release APK
         if: github.ref == 'refs/heads/master'
         env:
-          HABITLOCK_STORE_FILE: ${{ runner.temp }}/habitlock-release.keystore
-          HABITLOCK_KEY_ALIAS: ${{ secrets.HABITLOCK_KEY_ALIAS }}
-          HABITLOCK_STORE_PASSWORD: ${{ secrets.HABITLOCK_STORE_PASSWORD }}
-          HABITLOCK_KEY_PASSWORD: ${{ secrets.HABITLOCK_KEY_PASSWORD }}
+          RITE_STORE_FILE: ${{ runner.temp }}/rite-release.keystore
+          RITE_KEY_ALIAS: ${{ secrets.RITE_KEY_ALIAS }}
+          RITE_STORE_PASSWORD: ${{ secrets.RITE_STORE_PASSWORD }}
+          RITE_KEY_PASSWORD: ${{ secrets.RITE_KEY_PASSWORD }}
         run: |
-          echo "${{ secrets.HABITLOCK_KEYSTORE_BASE64 }}" | base64 --decode > "$HABITLOCK_STORE_FILE"
+          echo "${{ secrets.RITE_KEYSTORE_BASE64 }}" | base64 --decode > "$RITE_STORE_FILE"
           ./gradlew :composeApp:assembleRelease --no-configuration-cache
       - name: Upload RC artifact
         if: github.ref == 'refs/heads/develop'
         uses: actions/upload-artifact@v4
         with:
-          name: habitlock-rc-${{ steps.slug.outputs.sha }}
+          name: rite-rc-${{ steps.slug.outputs.sha }}
           path: composeApp/build/outputs/apk/rc/**/*.apk
           if-no-files-found: error
       - name: Upload Release artifact
         if: github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v4
         with:
-          name: habitlock-release-${{ steps.slug.outputs.sha }}
+          name: rite-release-${{ steps.slug.outputs.sha }}
           path: composeApp/build/outputs/apk/release/**/*.apk
           if-no-files-found: error
 
@@ -109,13 +109,13 @@ jobs:
           distribution: 'temurin'
       - uses: gradle/actions/setup-gradle@v4
       - name: Decode keystore
-        run: echo "${{ secrets.HABITLOCK_KEYSTORE_BASE64 }}" | base64 --decode > "${{ runner.temp }}/habitlock-release.keystore"
+        run: echo "${{ secrets.RITE_KEYSTORE_BASE64 }}" | base64 --decode > "${{ runner.temp }}/rite-release.keystore"
       - name: Build signed APK
         env:
-          HABITLOCK_STORE_FILE: ${{ runner.temp }}/habitlock-release.keystore
-          HABITLOCK_KEY_ALIAS: ${{ secrets.HABITLOCK_KEY_ALIAS }}
-          HABITLOCK_STORE_PASSWORD: ${{ secrets.HABITLOCK_STORE_PASSWORD }}
-          HABITLOCK_KEY_PASSWORD: ${{ secrets.HABITLOCK_KEY_PASSWORD }}
+          RITE_STORE_FILE: ${{ runner.temp }}/rite-release.keystore
+          RITE_KEY_ALIAS: ${{ secrets.RITE_KEY_ALIAS }}
+          RITE_STORE_PASSWORD: ${{ secrets.RITE_STORE_PASSWORD }}
+          RITE_KEY_PASSWORD: ${{ secrets.RITE_KEY_PASSWORD }}
         run: ./gradlew :composeApp:assembleRelease --no-configuration-cache
       - name: Get version from tag
         id: version
@@ -124,5 +124,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mv composeApp/build/outputs/apk/release/composeApp-release.apk "habitlock-${{ steps.version.outputs.tag }}.apk"
-          gh release upload "${{ steps.version.outputs.tag }}" "habitlock-${{ steps.version.outputs.tag }}.apk"
+          mv composeApp/build/outputs/apk/release/composeApp-release.apk "rite-${{ steps.version.outputs.tag }}.apk"
+          gh release upload "${{ steps.version.outputs.tag }}" "rite-${{ steps.version.outputs.tag }}.apk"

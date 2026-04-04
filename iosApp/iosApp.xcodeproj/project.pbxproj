@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		FD612B9704C2160087819C03 /* HabitLock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HabitLock.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD612B9704C2160087819C03 /* Rite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rite.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -59,7 +59,7 @@
 		2269B4DC7ED9C302D3DD144E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FD612B9704C2160087819C03 /* HabitLock.app */,
+				FD612B9704C2160087819C03 /* Rite.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -87,7 +87,7 @@
 			packageProductDependencies = (
 			);
 			productName = iosApp;
-			productReference = FD612B9704C2160087819C03 /* HabitLock.app */;
+			productReference = FD612B9704C2160087819C03 /* Rite.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
