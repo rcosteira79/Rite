@@ -1,4 +1,4 @@
-rootProject.name = "HabitLock"
+rootProject.name = "Rite"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

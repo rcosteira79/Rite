@@ -82,11 +82,11 @@ kotlin {
 }
 
 android {
-    namespace = "com.ricardocosteira.habitlock"
+    namespace = "com.ricardocosteira.rite"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.ricardocosteira.habitlock"
+        applicationId = "com.ricardocosteira.rite"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -99,10 +99,10 @@ android {
     }
     signingConfigs {
         create("release") {
-            storeFile = file(System.getenv("HABITLOCK_STORE_FILE") ?: "/dev/null")
-            keyAlias = System.getenv("HABITLOCK_KEY_ALIAS") ?: ""
-            storePassword = System.getenv("HABITLOCK_STORE_PASSWORD") ?: ""
-            keyPassword = System.getenv("HABITLOCK_KEY_PASSWORD") ?: ""
+            storeFile = file(System.getenv("RITE_STORE_FILE") ?: "/dev/null")
+            keyAlias = System.getenv("RITE_KEY_ALIAS") ?: ""
+            storePassword = System.getenv("RITE_STORE_PASSWORD") ?: ""
+            keyPassword = System.getenv("RITE_KEY_PASSWORD") ?: ""
         }
     }
     buildTypes {
@@ -136,11 +136,11 @@ roborazzi {
 
 compose.desktop {
     application {
-        mainClass = "com.ricardocosteira.habitlock.MainKt"
+        mainClass = "com.ricardocosteira.rite.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.ricardocosteira.habitlock"
+            packageName = "com.ricardocosteira.rite"
             packageVersion = "1.0.0"
         }
     }
@@ -148,8 +148,8 @@ compose.desktop {
 
 sqldelight {
     databases {
-        create("HabitLockDatabase") {
-            packageName.set("com.ricardocosteira.habitlock.data.database")
+        create("RiteDatabase") {
+            packageName.set("com.ricardocosteira.rite.data.database")
         }
     }
 }

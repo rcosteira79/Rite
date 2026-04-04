@@ -3,5 +3,5 @@
     <string name="habit_form_tracking_title">Track this habit</string>
     <string name="habit_form_tracking_subtitle">Show a persistent notification to track progress and complete from anywhere</string>
     <string name="habit_form_notification_permission_denied">Notifications are disabled. Tap to open Settings.</string>
-    <string name="habit_form_both_notifications_hint">You\'ll receive both a reminder and a persistent tracking notification for this habit.</string>
+    <string name="habit_form_both_notifications_hint">You'll receive both a reminder and a persistent tracking notification for this habit.</string>
 </resources>
