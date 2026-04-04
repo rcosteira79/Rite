@@ -5,7 +5,7 @@ import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
-import com.ricardocosteira.rite.presentation.ui.theme.HabitLockThemeFallback
+import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 import org.junit.Rule
@@ -31,7 +31,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_binary_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 HabitFormScreen(
                     state = HabitFormState(
                         name = "",
@@ -48,7 +48,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_binary_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 HabitFormScreen(
                     state = HabitFormState(
                         name = "",
@@ -67,7 +67,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_quantitative_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.QUANTITATIVE,
@@ -85,7 +85,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_quantitative_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.QUANTITATIVE,
@@ -105,7 +105,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_weeklySchedule_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.BINARY,
@@ -126,7 +126,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_weeklySchedule_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.BINARY,
@@ -149,7 +149,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_noteExpanded_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.BINARY,
@@ -166,7 +166,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_noteExpanded_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.BINARY,
@@ -185,7 +185,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_reminderOn_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.BINARY,
@@ -203,7 +203,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_reminderOn_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.BINARY,
@@ -223,7 +223,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_edit_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 HabitFormScreen(
                     state = HabitFormState(
                         habitId = "habit-1",
@@ -241,7 +241,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_edit_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 HabitFormScreen(
                     state = HabitFormState(
                         habitId = "habit-1",
@@ -261,7 +261,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_edit_weeklySchedule_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 HabitFormScreen(
                     state = HabitFormState(
                         habitId = "habit-2",
@@ -284,7 +284,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_edit_weeklySchedule_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 HabitFormScreen(
                     state = HabitFormState(
                         habitId = "habit-2",
@@ -309,7 +309,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_trackingEnabled_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.BINARY,
@@ -326,7 +326,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_trackingEnabled_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.BINARY,
@@ -345,7 +345,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_bothNotificationsEnabled_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.BINARY,
@@ -364,7 +364,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_bothNotificationsEnabled_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.BINARY,
@@ -385,7 +385,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_notificationPermissionDenied_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.BINARY,
@@ -402,7 +402,7 @@ class HabitFormScreenshotTest {
     @Test
     fun habitForm_create_notificationPermissionDenied_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 HabitFormScreen(
                     state = HabitFormState(
                         type = HabitType.BINARY,

@@ -6,7 +6,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.ricardocosteira.rite.presentation.ui.theme.HabitLockThemeFallback
+import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,7 +31,7 @@ class SwipeableHabitCardScreenshotTest {
     @Test
     fun swipeBackground_edit_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 SwipeBackground(
                     isArmed = true,
                     revealFraction = 1f,
@@ -46,7 +46,7 @@ class SwipeableHabitCardScreenshotTest {
     @Test
     fun swipeBackground_edit_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 SwipeBackground(
                     isArmed = true,
                     revealFraction = 1f,
@@ -63,7 +63,7 @@ class SwipeableHabitCardScreenshotTest {
     @Test
     fun swipeBackground_delete_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 SwipeBackground(
                     isArmed = true,
                     revealFraction = 1f,
@@ -78,7 +78,7 @@ class SwipeableHabitCardScreenshotTest {
     @Test
     fun swipeBackground_delete_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 SwipeBackground(
                     isArmed = true,
                     revealFraction = 1f,

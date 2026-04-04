@@ -13,11 +13,11 @@ import com.ricardocosteira.rite.di.RiteAppComponent
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.presentation.navigation.RiteNavigation
 import com.ricardocosteira.rite.presentation.ui.startup.StartupState
-import com.ricardocosteira.rite.presentation.ui.theme.HabitLockTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteTheme
 
 @Composable
 fun App(appComponent: RiteAppComponent) {
-    HabitLockTheme {
+    RiteTheme {
         val state by appComponent.startupViewModel.state.collectAsStateWithLifecycle()
 
         when (val currentState = state) {

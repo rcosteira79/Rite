@@ -133,13 +133,13 @@ internal val DarkColorScheme = darkColorScheme(
 )
 
 @Composable
-expect fun HabitLockTheme(
+expect fun RiteTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 )
 
 @Composable
-fun HabitLockThemeFallback(
+fun RiteThemeFallback(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {

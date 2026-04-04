@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 @Composable
-actual fun HabitLockTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
+actual fun RiteTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
     val view = LocalView.current

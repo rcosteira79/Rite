@@ -3,7 +3,7 @@ package com.ricardocosteira.rite.presentation.ui.onboarding
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.ricardocosteira.rite.presentation.ui.theme.HabitLockThemeFallback
+import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,7 +21,7 @@ class StrictnessStepScreenshotTest {
     @Test
     fun strictnessStep_flexible_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 StrictnessStep(
                     selectedPreset = OnboardingStrictnessPreset.FLEXIBLE,
                     onPresetSelected = {},
@@ -35,7 +35,7 @@ class StrictnessStepScreenshotTest {
     @Test
     fun strictnessStep_balanced_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 StrictnessStep(
                     selectedPreset = OnboardingStrictnessPreset.BALANCED,
                     onPresetSelected = {},
@@ -49,7 +49,7 @@ class StrictnessStepScreenshotTest {
     @Test
     fun strictnessStep_locked_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 StrictnessStep(
                     selectedPreset = OnboardingStrictnessPreset.LOCKED,
                     onPresetSelected = {},
@@ -63,7 +63,7 @@ class StrictnessStepScreenshotTest {
     @Test
     fun strictnessStep_flexible_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 StrictnessStep(
                     selectedPreset = OnboardingStrictnessPreset.FLEXIBLE,
                     onPresetSelected = {},
@@ -77,7 +77,7 @@ class StrictnessStepScreenshotTest {
     @Test
     fun strictnessStep_balanced_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 StrictnessStep(
                     selectedPreset = OnboardingStrictnessPreset.BALANCED,
                     onPresetSelected = {},
@@ -91,7 +91,7 @@ class StrictnessStepScreenshotTest {
     @Test
     fun strictnessStep_locked_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 StrictnessStep(
                     selectedPreset = OnboardingStrictnessPreset.LOCKED,
                     onPresetSelected = {},

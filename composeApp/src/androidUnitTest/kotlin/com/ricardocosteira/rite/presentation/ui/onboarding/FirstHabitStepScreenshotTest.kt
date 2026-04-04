@@ -4,7 +4,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.ricardocosteira.rite.domain.models.HabitType
-import com.ricardocosteira.rite.presentation.ui.theme.HabitLockThemeFallback
+import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
 import kotlinx.datetime.DayOfWeek
 import org.junit.Rule
 import org.junit.Test
@@ -25,7 +25,7 @@ class FirstHabitStepScreenshotTest {
     @Test
     fun firstHabitStep_binary_daily_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 FirstHabitStep(
                     habitName = "",
                     habitType = HabitType.BINARY,
@@ -46,7 +46,7 @@ class FirstHabitStepScreenshotTest {
     @Test
     fun firstHabitStep_quantitative_weekdays_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 FirstHabitStep(
                     habitName = "Run",
                     habitType = HabitType.QUANTITATIVE,
@@ -74,7 +74,7 @@ class FirstHabitStepScreenshotTest {
     @Test
     fun firstHabitStep_customDays_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 FirstHabitStep(
                     habitName = "Meditate",
                     habitType = HabitType.BINARY,
@@ -97,7 +97,7 @@ class FirstHabitStepScreenshotTest {
     @Test
     fun firstHabitStep_binary_daily_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 FirstHabitStep(
                     habitName = "",
                     habitType = HabitType.BINARY,
@@ -118,7 +118,7 @@ class FirstHabitStepScreenshotTest {
     @Test
     fun firstHabitStep_quantitative_weekdays_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 FirstHabitStep(
                     habitName = "Run",
                     habitType = HabitType.QUANTITATIVE,
@@ -146,7 +146,7 @@ class FirstHabitStepScreenshotTest {
     @Test
     fun firstHabitStep_customDays_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 FirstHabitStep(
                     habitName = "Meditate",
                     habitType = HabitType.BINARY,

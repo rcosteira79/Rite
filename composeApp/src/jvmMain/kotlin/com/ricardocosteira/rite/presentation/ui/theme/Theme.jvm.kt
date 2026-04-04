@@ -3,10 +3,10 @@ package com.ricardocosteira.rite.presentation.ui.theme
 import androidx.compose.runtime.Composable
 
 @Composable
-actual fun HabitLockTheme(
+actual fun RiteTheme(
     darkTheme: Boolean,
     content: @Composable () -> Unit
 ) {
-    HabitLockThemeFallback(darkTheme = darkTheme, content = content)
+    RiteThemeFallback(darkTheme = darkTheme, content = content)
 }
 

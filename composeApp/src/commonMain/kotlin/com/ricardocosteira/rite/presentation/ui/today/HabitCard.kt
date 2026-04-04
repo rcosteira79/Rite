@@ -37,7 +37,7 @@ import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
-import com.ricardocosteira.rite.presentation.ui.theme.HabitLockThemeFallback
+import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.common_skip
 import habitlock.composeapp.generated.resources.today_action_complete
@@ -505,7 +505,7 @@ private fun ActionButton(
 @Preview
 @Composable
 private fun BinaryCollapsedPreview() {
-    HabitLockThemeFallback {
+    RiteThemeFallback {
         HabitCard(
             habit = previewBinaryHabit(),
             isExpanded = false,

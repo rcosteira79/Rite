@@ -8,7 +8,7 @@ import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.domain.models.StrictnessPreset
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
-import com.ricardocosteira.rite.presentation.ui.theme.HabitLockThemeFallback
+import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
 import habitlock.composeapp.generated.resources.Res
 import habitlock.composeapp.generated.resources.motivational_title_0
 import habitlock.composeapp.generated.resources.motivational_title_1
@@ -39,7 +39,7 @@ class TodayScreenScreenshotTest {
     @Test
     fun todayScreen_empty_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 TodayScreen(
                     state = emptyState(),
                     onComplete = {},
@@ -61,7 +61,7 @@ class TodayScreenScreenshotTest {
     @Test
     fun todayScreen_empty_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 TodayScreen(
                     state = emptyState(),
                     onComplete = {},
@@ -85,7 +85,7 @@ class TodayScreenScreenshotTest {
     @Test
     fun todayScreen_loading_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 TodayScreen(
                     state = TodayState(isLoading = true),
                     onComplete = {},
@@ -107,7 +107,7 @@ class TodayScreenScreenshotTest {
     @Test
     fun todayScreen_loading_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 TodayScreen(
                     state = TodayState(isLoading = true),
                     onComplete = {},
@@ -131,7 +131,7 @@ class TodayScreenScreenshotTest {
     @Test
     fun todayScreen_dailyPending_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 TodayScreen(
                     state = dailyPendingState(),
                     onComplete = {},
@@ -153,7 +153,7 @@ class TodayScreenScreenshotTest {
     @Test
     fun todayScreen_dailyPending_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 TodayScreen(
                     state = dailyPendingState(),
                     onComplete = {},
@@ -177,7 +177,7 @@ class TodayScreenScreenshotTest {
     @Test
     fun todayScreen_mixedState_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 TodayScreen(
                     state = mixedState(),
                     onComplete = {},
@@ -199,7 +199,7 @@ class TodayScreenScreenshotTest {
     @Test
     fun todayScreen_mixedState_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 TodayScreen(
                     state = mixedState(),
                     onComplete = {},
@@ -223,7 +223,7 @@ class TodayScreenScreenshotTest {
     @Test
     fun todayScreen_allDone_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 TodayScreen(
                     state = allDoneState(),
                     onComplete = {},
@@ -245,7 +245,7 @@ class TodayScreenScreenshotTest {
     @Test
     fun todayScreen_allDone_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 TodayScreen(
                     state = allDoneState(),
                     onComplete = {},
@@ -269,7 +269,7 @@ class TodayScreenScreenshotTest {
     @Test
     fun todayScreen_quantitativeInProgress_lightTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = false) {
+            RiteThemeFallback(darkTheme = false) {
                 TodayScreen(
                     state = quantitativeInProgressState(),
                     onComplete = {},
@@ -291,7 +291,7 @@ class TodayScreenScreenshotTest {
     @Test
     fun todayScreen_quantitativeInProgress_darkTheme() {
         composeRule.setContent {
-            HabitLockThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = true) {
                 TodayScreen(
                     state = quantitativeInProgressState(),
                     onComplete = {},
