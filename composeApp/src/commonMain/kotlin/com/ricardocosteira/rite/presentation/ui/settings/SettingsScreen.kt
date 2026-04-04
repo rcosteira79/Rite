@@ -45,12 +45,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.domain.models.UndoPolicy
+import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.common_cd_back
 import rite.composeapp.generated.resources.common_error_generic
 import rite.composeapp.generated.resources.settings_archived_habits
 import rite.composeapp.generated.resources.settings_info_timezone_label
+import rite.composeapp.generated.resources.settings_notifications_label
 import rite.composeapp.generated.resources.settings_section_info
+import rite.composeapp.generated.resources.settings_section_notifications
 import rite.composeapp.generated.resources.settings_section_skip
 import rite.composeapp.generated.resources.settings_section_snooze
 import rite.composeapp.generated.resources.settings_section_undo_policy
@@ -70,7 +73,6 @@ import rite.composeapp.generated.resources.settings_undo_disabled_description
 import rite.composeapp.generated.resources.settings_undo_disabled_label
 import rite.composeapp.generated.resources.settings_undo_today_description
 import rite.composeapp.generated.resources.settings_undo_today_label
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SettingsScreen(
@@ -154,6 +156,29 @@ private fun SettingsScreen(
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState())
             ) {
+                // Notifications Section
+                val notificationSettings = rememberNotificationSettingsState()
+                SettingsSection(
+                    title = stringResource(Res.string.settings_section_notifications)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.settings_notifications_label),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Switch(
+                            checked = notificationSettings.isEnabled,
+                            onCheckedChange = { notificationSettings.openSettings() }
+                        )
+                    }
+                }
+
+                HorizontalDivider()
+
                 // Undo Policy Section
                 SettingsSection(title = stringResource(Res.string.settings_section_undo_policy)) {
                     Column(modifier = Modifier.selectableGroup()) {

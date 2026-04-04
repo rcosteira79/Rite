@@ -97,6 +97,31 @@ New resource file: `strings_onboarding_notifications.xml`
 | `notifications_cta_enable` | Enable notifications |
 | `notifications_cta_later` | Maybe later |
 
+## Settings Screen — Notification Toggle
+
+A "Notifications" section is added at the top of the Settings screen (before Undo Policy) so users who skipped the onboarding prompt can enable notifications later.
+
+### Layout
+
+- Uses existing `SettingsSection` composable
+- Single row: "Notifications" label (left) + `Switch` (right)
+- Switch reflects the current system notification enabled state
+- Tapping the switch opens the system app notification settings via `Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)`
+- Switch state refreshes on lifecycle resume (user returns from system settings)
+
+### Platform Handling
+
+- Add `expect/actual` functions:
+  - `isNotificationPermissionGranted(): Boolean` — queries `NotificationManagerCompat.areNotificationsEnabled()` on Android, returns `true` on other platforms
+  - `openNotificationSettings()` — opens system notification settings on Android, no-op on other platforms
+- The section is shown on all platforms but the switch will always be "on" on non-Android platforms (no runtime permission concept)
+
+### String Resources
+
+| Key | Value |
+|---|---|
+| `settings_notifications_title` | Notifications |
+
 ## Testing
 
 - Screenshot tests for dark and light themes (matching existing `PhilosophyStepScreenshotTest` pattern)
