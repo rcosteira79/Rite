@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.habitlock.di.AppScope
 import com.ricardocosteira.habitlock.domain.models.CompletionSource
+import com.ricardocosteira.habitlock.domain.models.Habit
 import com.ricardocosteira.habitlock.domain.models.HabitInstance
 import com.ricardocosteira.habitlock.domain.models.HabitStatus
 import com.ricardocosteira.habitlock.domain.models.HabitType
@@ -20,6 +21,8 @@ import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
 import com.ricardocosteira.habitlock.domain.usecases.SkipLockedException
 import com.ricardocosteira.habitlock.domain.usecases.UndoHabit
 import com.ricardocosteira.habitlock.domain.usecases.UndoLastIncrement
+import com.ricardocosteira.habitlock.notifications.HabitNotification
+import com.ricardocosteira.habitlock.notifications.TrackedHabitInfo
 import com.ricardocosteira.habitlock.presentation.mappers.motivationalTitleResource
 import com.ricardocosteira.habitlock.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.habitlock.presentation.models.mapToTodayHabitUiModel
@@ -41,6 +44,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import me.tatarka.inject.annotations.Inject
 
@@ -63,7 +67,8 @@ class TodayViewModel(
     private val completeHabit: CompleteHabit,
     private val skipHabit: SkipHabit,
     private val undoHabit: UndoHabit,
-    private val undoLastIncrement: UndoLastIncrement
+    private val undoLastIncrement: UndoLastIncrement,
+    private val habitNotification: HabitNotification
 ) : ViewModel() {
     private val _state = MutableStateFlow(TodayState())
     val state: StateFlow<TodayState> = _state.asStateFlow()
@@ -188,6 +193,8 @@ class TodayViewModel(
                         strictnessPreset = strictnessPreset
                     )
                 }
+
+                refreshTrackingNotification()
             } catch (e: Exception) {
                 val fallbackTimezone: TimeZone = TimeZone.currentSystemDefault()
                 val today = Clock.System.now().toLocalDate(fallbackTimezone)
@@ -216,6 +223,7 @@ class TodayViewModel(
             val result = completeHabit.executeBinary(instanceId, CompletionSource.IN_APP)
 
             result.onSuccess {
+                habitNotification.cancelReminder(instanceId)
                 loadTodayHabits()
                 // No snackbar — card state change is the feedback
             }.onFailure { error ->
@@ -235,12 +243,10 @@ class TodayViewModel(
             )
 
             result.onSuccess { updatedInstance ->
-                loadTodayHabits()
                 if (updatedInstance.isQuantitativeComplete()) {
-                    // No snackbar — card state change is the feedback
-                } else {
-                    // No snackbar — progress bar update is the feedback
+                    habitNotification.cancelReminder(instanceId)
                 }
+                loadTodayHabits()
             }.onFailure { error ->
                 _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
             }
@@ -259,12 +265,10 @@ class TodayViewModel(
             )
 
             result.onSuccess { updatedInstance: HabitInstance ->
-                loadTodayHabits()
                 if (updatedInstance.isQuantitativeComplete()) {
-                    // No snackbar — card state change is the feedback
-                } else {
-                    // No snackbar — progress bar update is the feedback
+                    habitNotification.cancelReminder(instanceId)
                 }
+                loadTodayHabits()
             }.onFailure { error: Throwable ->
                 _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
             }
@@ -284,8 +288,8 @@ class TodayViewModel(
             val result = skipHabit.execute(instanceId)
 
             result.onSuccess {
+                habitNotification.cancelReminder(instanceId)
                 loadTodayHabits()
-                // No snackbar — card state change is the feedback
             }.onFailure { error ->
                 when (error) {
                     is SkipLockedException -> _events.emit(TodayEvent.SkipLimitReached)
@@ -398,9 +402,16 @@ class TodayViewModel(
     fun archiveHabit(habitId: String) {
         viewModelScope.launch {
             try {
+                val today: LocalDate = Clock.System.now().toLocalDate(
+                    TimeZone.currentSystemDefault()
+                )
+                val instance: HabitInstance? =
+                    habitInstanceRepository.getInstanceForHabitAndDate(habitId, today)
+                if (instance != null) {
+                    habitNotification.cancelAllForHabit(habitId, listOf(instance.id))
+                }
                 habitRepository.archiveHabit(habitId)
                 loadTodayHabits()
-                // No snackbar — habit disappears from the list
             } catch (e: Exception) {
                 _events.emit(TodayEvent.ShowError(e.message ?: "Something went wrong"))
             }
@@ -425,6 +436,40 @@ class TodayViewModel(
 
     fun clearError() {
         _state.update { it.copy(error = null) }
+    }
+
+    private suspend fun refreshTrackingNotification() {
+        val trackedHabits: List<Habit> = habitRepository.getHabitsWithTrackingEnabled()
+        if (trackedHabits.isEmpty()) {
+            habitNotification.hideTrackingNotification()
+            return
+        }
+
+        val today: LocalDate = Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
+        val trackedInfoList: List<TrackedHabitInfo> = trackedHabits.mapNotNull { habit: Habit ->
+            val instance: HabitInstance = habitInstanceRepository.getInstanceForHabitAndDate(
+                habit.id,
+                today
+            ) ?: return@mapNotNull null
+
+            TrackedHabitInfo(
+                instanceId = instance.id,
+                habitId = habit.id,
+                habitName = habit.name,
+                type = habit.type,
+                currentProgress = instance.currentProgress,
+                targetValue = instance.targetValue,
+                unit = habit.unit,
+                defaultIncrement = habit.defaultIncrement,
+                isCompleted = instance.status == HabitStatus.COMPLETED
+            )
+        }
+
+        if (trackedInfoList.isEmpty()) {
+            habitNotification.hideTrackingNotification()
+        } else {
+            habitNotification.updateTrackingNotification(trackedInfoList)
+        }
     }
 
     private companion object {

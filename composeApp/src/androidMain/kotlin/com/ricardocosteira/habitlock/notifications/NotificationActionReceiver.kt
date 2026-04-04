@@ -5,11 +5,20 @@ import android.content.Context
 import android.content.Intent
 import com.ricardocosteira.habitlock.di.HabitLockAppComponent
 import com.ricardocosteira.habitlock.domain.models.CompletionSource
+import com.ricardocosteira.habitlock.domain.models.Habit
+import com.ricardocosteira.habitlock.domain.models.HabitInstance
+import com.ricardocosteira.habitlock.domain.models.HabitStatus
+import com.ricardocosteira.habitlock.domain.repositories.HabitInstanceRepository
+import com.ricardocosteira.habitlock.domain.repositories.HabitRepository
 import com.ricardocosteira.habitlock.habitLockApplication
+import com.ricardocosteira.habitlock.util.todayIn
+import kotlin.time.Clock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 
 /**
  * BroadcastReceiver that handles notification action button clicks.
@@ -42,8 +51,10 @@ class NotificationActionReceiver : BroadcastReceiver() {
                     ACTION_ADD_ONE -> handleAddOne(appComponent, instanceId)
                     ACTION_SNOOZE -> handleSnooze(context, appComponent, instanceId)
                     ACTION_SKIP -> handleSkip(appComponent, instanceId)
+                    ACTION_UNDO_LAST_INCREMENT -> handleUndoLastIncrement(appComponent, instanceId)
                 }
 
+                refreshTrackingNotification(appComponent)
                 HabitNotificationManager(context).cancelAllNotificationsForInstance(instanceId)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -97,11 +108,49 @@ class NotificationActionReceiver : BroadcastReceiver() {
         appComponent.skipHabit.execute(instanceId)
     }
 
+    private suspend fun handleUndoLastIncrement(
+        appComponent: HabitLockAppComponent,
+        instanceId: String
+    ) {
+        appComponent.undoLastIncrement.execute(instanceId)
+    }
+
+    private suspend fun refreshTrackingNotification(appComponent: HabitLockAppComponent) {
+        val habitNotification: HabitNotification = appComponent.habitNotificationAccessor
+        val habitRepository: HabitRepository = appComponent.habitRepository
+        val habitInstanceRepository: HabitInstanceRepository = appComponent.habitInstanceRepository
+        val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
+
+        val trackedHabits: List<Habit> = habitRepository.getHabitsWithTrackingEnabled()
+        val trackedInfoList: List<TrackedHabitInfo> = trackedHabits.mapNotNull { habit: Habit ->
+            val instance: HabitInstance =
+                habitInstanceRepository.getInstanceForHabitAndDate(habit.id, today)
+                    ?: return@mapNotNull null
+            TrackedHabitInfo(
+                instanceId = instance.id,
+                habitId = habit.id,
+                habitName = habit.name,
+                type = habit.type,
+                currentProgress = instance.currentProgress,
+                targetValue = instance.targetValue,
+                unit = habit.unit,
+                defaultIncrement = habit.defaultIncrement,
+                isCompleted = instance.status == HabitStatus.COMPLETED
+            )
+        }
+        if (trackedInfoList.isNotEmpty()) {
+            habitNotification.updateTrackingNotification(trackedInfoList)
+        } else {
+            habitNotification.hideTrackingNotification()
+        }
+    }
+
     companion object {
         const val ACTION_COMPLETE = "com.ricardocosteira.habitlock.ACTION_COMPLETE"
         const val ACTION_ADD_ONE = "com.ricardocosteira.habitlock.ACTION_ADD_ONE"
         const val ACTION_SNOOZE = "com.ricardocosteira.habitlock.ACTION_SNOOZE"
         const val ACTION_SKIP = "com.ricardocosteira.habitlock.ACTION_SKIP"
+        const val ACTION_UNDO_LAST_INCREMENT = "com.ricardocosteira.habitlock.ACTION_UNDO_LAST_INCREMENT"
 
         const val EXTRA_INSTANCE_ID = "instance_id"
         const val EXTRA_HABIT_ID = "habit_id"

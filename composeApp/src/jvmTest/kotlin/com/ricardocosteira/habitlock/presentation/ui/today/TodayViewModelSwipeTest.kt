@@ -20,6 +20,7 @@ import com.ricardocosteira.habitlock.domain.usecases.SkipHabit
 import com.ricardocosteira.habitlock.domain.usecases.UndoHabit
 import com.ricardocosteira.habitlock.domain.usecases.UndoLastIncrement
 import com.ricardocosteira.habitlock.domain.usecases.UuidProvider
+import com.ricardocosteira.habitlock.notifications.HabitNotification
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -348,7 +349,8 @@ class TodayViewModelSwipeTest {
             completeHabit = deps.completeHabit,
             skipHabit = deps.skipHabit,
             undoHabit = deps.undoHabit,
-            undoLastIncrement = deps.undoLastIncrement
+            undoLastIncrement = deps.undoLastIncrement,
+            habitNotification = HabitNotification()
         )
 
     inner class TestDependencies {

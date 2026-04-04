@@ -135,7 +135,7 @@ class HabitNotificationManager(private val context: Context) {
 
         val builder = NotificationCompat
             .Builder(context, NotificationChannels.CHANNEL_HABITS)
-            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(content)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -177,7 +177,7 @@ class HabitNotificationManager(private val context: Context) {
 
         val builder = NotificationCompat
             .Builder(context, NotificationChannels.CHANNEL_GRACE_PERIOD)
-            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(content)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -231,7 +231,7 @@ class HabitNotificationManager(private val context: Context) {
 
         return NotificationCompat
             .Builder(context, NotificationChannels.CHANNEL_DAILY_SUMMARY)
-            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(content)
             .setPriority(NotificationCompat.PRIORITY_LOW)

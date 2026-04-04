@@ -5,6 +5,7 @@ import android.content.Context
 import com.ricardocosteira.habitlock.data.DatabaseDriverFactory
 import com.ricardocosteira.habitlock.di.HabitLockAppComponent
 import com.ricardocosteira.habitlock.di.createAppComponent
+import com.ricardocosteira.habitlock.notifications.HabitNotification
 import com.ricardocosteira.habitlock.notifications.NotificationChannels
 import com.ricardocosteira.habitlock.workers.WorkManagerInitializer
 
@@ -23,7 +24,8 @@ class HabitLockApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         val driverFactory = DatabaseDriverFactory(this)
-        appComponent = createAppComponent(driverFactory)
+        val habitNotification = HabitNotification(this)
+        appComponent = createAppComponent(driverFactory, habitNotification)
         NotificationChannels.createChannels(this)
         WorkManagerInitializer.initialize(this)
     }
@@ -31,6 +33,3 @@ class HabitLockApplication : Application() {
 
 val Context.habitLockApplication: HabitLockApplication
     get() = applicationContext as HabitLockApplication
-
-
-

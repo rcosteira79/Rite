@@ -25,11 +25,16 @@ data class HabitFormState(
     val intervalMinutes: String = "60",
     val startTime: LocalTime? = null,
     val endTime: LocalTime? = null,
+    val isTrackingEnabled: Boolean = false,
+    val isNotificationPermissionGranted: Boolean = true,
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,
     val error: String? = null
 ) {
     val isEditing: Boolean get() = habitId != null
+
+    val showBothEnabledHint: Boolean get() = hasReminder && isTrackingEnabled
+    val areNotificationTogglesEnabled: Boolean get() = isNotificationPermissionGranted
 
     val isValid: Boolean get() {
         val nameValid = name.isNotBlank()
