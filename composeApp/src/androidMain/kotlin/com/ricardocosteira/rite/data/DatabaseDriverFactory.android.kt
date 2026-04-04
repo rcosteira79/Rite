@@ -10,7 +10,7 @@ actual class DatabaseDriverFactory(private val context: Context) {
         return AndroidSqliteDriver(
             schema = RiteDatabase.Schema,
             context = context,
-            name = "habitlock.db"
+            name = "rite.db"
         )
     }
 }
