@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notifications_heading">With you\nevery step.</string>
+    <string name="notifications_body">Rite uses notifications to keep you on track — reminders when it\'s time, and warnings before a habit is marked as failed.</string>
+    <string name="notifications_card_reminders_title">Habit reminders</string>
+    <string name="notifications_card_reminders_subtitle">A nudge when it\'s time to show up</string>
+    <string name="notifications_card_warnings_title">Deadline warnings</string>
+    <string name="notifications_card_warnings_subtitle">A last chance before it\'s marked as failed</string>
+    <string name="notifications_card_tracking_title">Progress tracking</string>
+    <string name="notifications_card_tracking_subtitle">Your day\'s progress from the notification shade</string>
+    <string name="notifications_cta_enable">Enable notifications</string>
+    <string name="notifications_cta_later">Maybe later</string>
+</resources>
