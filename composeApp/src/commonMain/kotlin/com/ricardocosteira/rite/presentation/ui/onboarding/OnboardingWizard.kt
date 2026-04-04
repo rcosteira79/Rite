@@ -36,6 +36,8 @@ fun OnboardingWizard(
     snackbarHostState: SnackbarHostState,
     onStepChange: (Int) -> Unit,
     onSkip: () -> Unit,
+    onContinueFromNotificationPermission: () -> Unit,
+    onEnableNotifications: () -> Unit,
     onContinueFromStrictness: () -> Unit,
     onCreateHabit: () -> Unit,
     onSkipFirstHabit: () -> Unit,
@@ -56,6 +58,7 @@ fun OnboardingWizard(
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             OnboardingTopChrome(
                 currentStep = currentStep,
+                totalSteps = state.totalSteps,
                 onSkip = onSkip,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -95,7 +98,20 @@ fun OnboardingWizard(
                                 )
                             }
 
-                            2 -> {
+                            state.notificationStepIndex -> if (state.showNotificationStep) {
+                                NotificationPermissionStep(
+                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                    reduceMotion = true
+                                )
+                                NotificationPermissionStepCta(
+                                    onEnableNotifications = onEnableNotifications,
+                                    onMaybeLater = onContinueFromNotificationPermission,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = true
+                                )
+                            }
+
+                            state.firstHabitStepIndex -> {
                                 FirstHabitStep(
                                     habitName = state.habitName,
                                     habitType = state.habitType,
@@ -169,7 +185,20 @@ fun OnboardingWizard(
                                 )
                             }
 
-                            2 -> {
+                            state.notificationStepIndex -> if (state.showNotificationStep) {
+                                NotificationPermissionStep(
+                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                    reduceMotion = reduceMotion
+                                )
+                                NotificationPermissionStepCta(
+                                    onEnableNotifications = onEnableNotifications,
+                                    onMaybeLater = onContinueFromNotificationPermission,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    reduceMotion = reduceMotion
+                                )
+                            }
+
+                            state.firstHabitStepIndex -> {
                                 FirstHabitStep(
                                     habitName = state.habitName,
                                     habitType = state.habitType,
