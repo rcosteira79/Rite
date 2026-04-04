@@ -24,7 +24,12 @@ An open-source habit tracker that enforces commitments through user-defined stri
 </p>
 
 <p align="center">
+  <img src="docs/images/today_mixed_light.png" width="180" alt="Today screen — mixed state" />
+  <img src="docs/images/today_pending_dark.png" width="180" alt="Today screen — pending habits (dark)" />
   <img src="docs/images/today_empty.png" width="180" alt="Today screen — empty state" />
+</p>
+
+<p align="center">
   <img src="docs/images/habit_form_light.png" width="180" alt="Create habit — light" />
   <img src="docs/images/habit_form_dark.png" width="180" alt="Create habit — dark" />
 </p>
