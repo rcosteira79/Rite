@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="strictness_heading">How strict\nshould it be?</string>
-    <string name="strictness_subtext">You\'re always in control. Change this anytime.</string>
+    <string name="strictness_subtext">You're always in control. Change this anytime.</string>
     <string name="strictness_flexible_label">Flexible</string>
     <string name="strictness_flexible_description">Gentle support with maximum forgiveness.</string>
     <string name="strictness_flexible_rule_1">• Unlimited undo</string>
