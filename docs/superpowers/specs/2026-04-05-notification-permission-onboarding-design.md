@@ -55,7 +55,7 @@ Reuse the same decorative ring from `PhilosophyStep` — large `CircleShape` bor
 
 ## Behavior
 
-1. **"Enable notifications" tapped**: launches the system `POST_NOTIFICATIONS` permission request via `ActivityResultContracts.RequestPermission`. Regardless of grant or deny result, the wizard advances to the First Habit step.
+1. **"Enable notifications" tapped**: launches the system `POST_NOTIFICATIONS` permission request via `ActivityResultContracts.RequestPermission`. If granted, the wizard advances to the First Habit step. If denied, the screen stays — the user can try again or tap "Maybe later".
 2. **"Maybe later" tapped**: wizard advances to the First Habit step without requesting permission.
 3. **Back navigation**: returns to Strictness step (handled by existing `BackHandler` in `OnboardingWizard`).
 
