@@ -3,7 +3,7 @@
 ## Post-MVP Polish
 
 - [ ] Day-detail calendar view (tap a day to see that day's habits)
-- [ ] Habit detail screen (streaks, score history, completion stats)
+- [x] Habit detail screen (streaks, score, heatmap, actions)
 - [ ] Leave/suspension mode UI (domain logic complete, needs UI entry point)
 - [x] Notification permission onboarding screen
 - [x] Habit form IME handling (keyboard occludes bottom buttons)
