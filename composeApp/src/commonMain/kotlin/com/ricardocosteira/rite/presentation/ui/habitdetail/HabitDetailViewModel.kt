@@ -9,6 +9,7 @@ import com.ricardocosteira.rite.domain.repositories.HabitRepository
 import com.ricardocosteira.rite.domain.repositories.UserRepository
 import com.ricardocosteira.rite.domain.usecases.CompleteHabit
 import com.ricardocosteira.rite.domain.usecases.SkipHabit
+import com.ricardocosteira.rite.domain.usecases.UndoHabit
 import com.ricardocosteira.rite.util.todayIn
 import kotlin.time.Clock
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +30,7 @@ class HabitDetailViewModel(
     private val userRepository: UserRepository,
     private val completeHabit: CompleteHabit,
     private val skipHabit: SkipHabit,
+    private val undoHabit: UndoHabit,
     private val instanceId: String
 ) : ViewModel() {
 
@@ -109,6 +111,14 @@ class HabitDetailViewModel(
         val instanceId: String = _state.value.instance?.id ?: return
         viewModelScope.launch {
             skipHabit.execute(instanceId)
+            loadDetail()
+        }
+    }
+
+    fun undo() {
+        val instanceId: String = _state.value.instance?.id ?: return
+        viewModelScope.launch {
+            undoHabit.execute(instanceId)
             loadDetail()
         }
     }

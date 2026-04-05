@@ -25,6 +25,7 @@ fun HabitDetailRoute(
         onIncrementProgress = viewModel::incrementProgress,
         onCustomProgress = onCustomProgress,
         onSkip = viewModel::skip,
+        onUndo = viewModel::undo,
         modifier = modifier
     )
 }

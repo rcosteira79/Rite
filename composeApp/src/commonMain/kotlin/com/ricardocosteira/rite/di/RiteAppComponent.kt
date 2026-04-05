@@ -20,6 +20,7 @@ import com.ricardocosteira.rite.domain.usecases.GenerateDailyHabits
 import com.ricardocosteira.rite.domain.usecases.ProcessEndOfDay
 import com.ricardocosteira.rite.domain.usecases.SkipHabit
 import com.ricardocosteira.rite.domain.usecases.SnoozeHabit
+import com.ricardocosteira.rite.domain.usecases.UndoHabit
 import com.ricardocosteira.rite.domain.usecases.UndoLastIncrement
 import com.ricardocosteira.rite.domain.usecases.UuidProvider
 import com.ricardocosteira.rite.generateUuid
@@ -124,7 +125,8 @@ abstract class RiteAppComponent(
         habitInstanceRepository: HabitInstanceRepository,
         userRepository: UserRepository,
         completeHabit: CompleteHabit,
-        skipHabit: SkipHabit
+        skipHabit: SkipHabit,
+        undoHabit: UndoHabit
     ): HabitDetailViewModel.Factory = object : HabitDetailViewModel.Factory {
         override fun create(instanceId: String): HabitDetailViewModel = HabitDetailViewModel(
             habitRepository,
@@ -132,6 +134,7 @@ abstract class RiteAppComponent(
             userRepository,
             completeHabit,
             skipHabit,
+            undoHabit,
             instanceId
         )
     }

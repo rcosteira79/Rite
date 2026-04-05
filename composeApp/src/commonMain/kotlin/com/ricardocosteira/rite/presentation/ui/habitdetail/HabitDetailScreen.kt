@@ -1,6 +1,5 @@
 package com.ricardocosteira.rite.presentation.ui.habitdetail
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,12 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Block
-import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.SkipNext
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,6 +42,7 @@ import rite.composeapp.generated.resources.habit_detail_action_custom
 import rite.composeapp.generated.resources.habit_detail_action_goal_reached
 import rite.composeapp.generated.resources.habit_detail_action_skip
 import rite.composeapp.generated.resources.habit_detail_action_skipped
+import rite.composeapp.generated.resources.habit_detail_action_undo
 import rite.composeapp.generated.resources.habit_detail_category_binary
 import rite.composeapp.generated.resources.habit_detail_category_quantitative
 import rite.composeapp.generated.resources.habit_detail_heatmap_title
@@ -57,6 +54,8 @@ import rite.composeapp.generated.resources.habit_detail_stat_current_streak
 import rite.composeapp.generated.resources.habit_detail_stat_habit_score
 import rite.composeapp.generated.resources.habit_detail_stat_longest_streak
 
+private const val FULL_PROGRESS = 100
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HabitDetailScreen(
@@ -66,6 +65,7 @@ fun HabitDetailScreen(
     onIncrementProgress: () -> Unit,
     onCustomProgress: () -> Unit,
     onSkip: () -> Unit,
+    onUndo: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -123,12 +123,8 @@ fun HabitDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Progress indicator
-                if (state.habit.type == HabitType.QUANTITATIVE) {
-                    QuantitativeProgress(state = state)
-                } else {
-                    BinaryProgress(state = state)
-                }
+                // Progress indicator — unified ring for both types
+                ProgressRing(state = state)
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -164,7 +160,8 @@ fun HabitDetailScreen(
                     onComplete = onComplete,
                     onIncrementProgress = onIncrementProgress,
                     onCustomProgress = onCustomProgress,
-                    onSkip = onSkip
+                    onSkip = onSkip,
+                    onUndo = onUndo
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -174,9 +171,21 @@ fun HabitDetailScreen(
 }
 
 @Composable
-private fun QuantitativeProgress(state: HabitDetailState, modifier: Modifier = Modifier) {
+private fun ProgressRing(state: HabitDetailState, modifier: Modifier = Modifier) {
     val instance = state.instance ?: return
     val habit = state.habit ?: return
+
+    val progress: Float = if (habit.type == HabitType.BINARY) {
+        if (state.isCompleted) 1f else 0f
+    } else {
+        instance.progressPercentage().coerceIn(0f, 1f)
+    }
+
+    val percentageText: String = if (habit.type == HabitType.BINARY) {
+        if (state.isCompleted) "$FULL_PROGRESS%" else "0%"
+    } else {
+        "${(instance.progressPercentage() * FULL_PROGRESS).toInt()}%"
+    }
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -187,61 +196,32 @@ private fun QuantitativeProgress(state: HabitDetailState, modifier: Modifier = M
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(
-                progress = { instance.progressPercentage().coerceIn(0f, 1f) },
+                progress = { progress },
                 modifier = Modifier.size(88.dp),
                 strokeWidth = 5.dp,
                 trackColor = MaterialTheme.colorScheme.surfaceContainerHigh
             )
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = "${instance.currentProgress}",
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.ExtraBold
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = stringResource(
-                        Res.string.habit_detail_progress,
-                        instance.currentProgress,
-                        instance.targetValue ?: 0,
-                        habit.unit?.uppercase() ?: ""
-                    ),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun BinaryProgress(state: HabitDetailState, modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ) {
-        val isCompleted: Boolean = state.isCompleted
-        val iconTint = if (isCompleted) {
-            MaterialTheme.colorScheme.primary
-        } else {
-            MaterialTheme.colorScheme.onSurfaceVariant
-        }
-
-        Box(
-            modifier = Modifier
-                .size(88.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    shape = CircleShape
+            Text(
+                text = percentageText,
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.ExtraBold
                 ),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = if (isCompleted) Icons.Outlined.Check else Icons.Outlined.Block,
-                contentDescription = null,
-                modifier = Modifier.size(40.dp),
-                tint = iconTint
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        // "X of Y UNIT" below ring (quantitative only)
+        if (habit.type == HabitType.QUANTITATIVE) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(
+                    Res.string.habit_detail_progress,
+                    instance.currentProgress,
+                    instance.targetValue ?: 0,
+                    habit.unit?.uppercase() ?: ""
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -324,15 +304,22 @@ private fun ActionButtons(
     onIncrementProgress: () -> Unit,
     onCustomProgress: () -> Unit,
     onSkip: () -> Unit,
+    onUndo: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val habit = state.habit ?: return
+    val canUndo: Boolean = state.isCompleted || state.isSkipped
 
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (habit.type == HabitType.BINARY) {
+        if (state.isResolved && canUndo) {
+            // Undo button when completed or skipped
+            PrimaryButton(onClick = onUndo) {
+                Text(stringResource(Res.string.habit_detail_action_undo))
+            }
+        } else if (habit.type == HabitType.BINARY) {
             PrimaryButton(
                 onClick = onComplete,
                 enabled = !state.isResolved
@@ -349,7 +336,7 @@ private fun ActionButtons(
             // Quantitative: +N button
             PrimaryButton(
                 onClick = onIncrementProgress,
-                enabled = !state.isResolved || !state.isQuantitativeComplete
+                enabled = !state.isResolved
             ) {
                 val increment: Int = habit.defaultIncrement
                 val unit: String = habit.unit?.uppercase() ?: ""
@@ -372,25 +359,23 @@ private fun ActionButtons(
             }
         }
 
-        // Skip button (both types)
-        TextButton(
-            onClick = onSkip,
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !state.isResolved && !state.isSkipLocked
-        ) {
-            Text(
-                text = if (state.isSkipped) {
-                    stringResource(Res.string.habit_detail_action_skipped)
-                } else {
-                    stringResource(Res.string.habit_detail_action_skip)
-                },
-                style = MaterialTheme.typography.labelLarge,
-                color = if (!state.isResolved && !state.isSkipLocked) {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
-                }
-            )
+        // Skip button (when not resolved)
+        if (!state.isResolved) {
+            TextButton(
+                onClick = onSkip,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isSkipLocked
+            ) {
+                Text(
+                    text = stringResource(Res.string.habit_detail_action_skip),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = if (!state.isSkipLocked) {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
+                    }
+                )
+            }
         }
     }
 }

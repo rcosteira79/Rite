@@ -355,10 +355,11 @@ private fun ResolvedHabitRow(
     val rowAlpha: Float = if (isFailed) FAILED_ALPHA else RESOLVED_ALPHA
 
     Surface(
-        onClick = onClick,
         shape = RoundedCornerShape(RESOLVED_CORNER_RADIUS),
         color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = rowAlpha),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
     ) {
         Row(
             modifier = Modifier
