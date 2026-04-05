@@ -63,7 +63,7 @@ An open-source habit tracker that turns your goals into daily rituals through us
 
 ### Planned
 
-See [FOLLOWUP.md](./FOLLOWUP.md) for the full list of planned work.
+See [BACKLOG.md](./BACKLOG.md) for the full list of planned work.
 
 ---
 
