@@ -49,4 +49,7 @@
     <string name="habit_form_stepper_label_times">time(s)</string>
     <string name="habit_form_unit_label">UNIT</string>
     <string name="habit_form_error_habit_not_found">Habit not found</string>
+    <string name="habit_form_increment_label">INCREMENT BY</string>
+    <string name="habit_form_placeholder_increment">1</string>
+    <string name="habit_form_increment_hint">Quick-increment amount on the Today screen</string>
 </resources>
