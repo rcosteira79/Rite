@@ -149,8 +149,13 @@ class TodayViewModelSwipeTest {
             // When — delete. Do NOT call advanceUntilIdle() — it would drain the 5s delay.
             viewModel.deleteHabit(inputHabitId)
 
-            // Then — habit still in real repository (delete is deferred)
-            val actualHabit: Habit? = deps.habitRepository.getHabitById(inputHabitId)
+            // Then — habit still in real repository (delete is deferred).
+            // Use withContext(Dispatchers.IO) to query the DB directly, avoiding
+            // re-entry into the test scheduler which would advance virtual time
+            // and drain the undo delay.
+            val actualHabit: Habit? = withContext(Dispatchers.IO) {
+                deps.habitRepository.getHabitById(inputHabitId)
+            }
             assertNotNull(
                 actualHabit,
                 "Expected habit to still exist in repository before undo timeout"
