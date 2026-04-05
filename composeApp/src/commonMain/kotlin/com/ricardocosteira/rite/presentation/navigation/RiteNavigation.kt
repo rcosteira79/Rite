@@ -22,6 +22,7 @@ import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.presentation.ui.archived.ArchivedHabitsScreen
 import com.ricardocosteira.rite.presentation.ui.calendar.CalendarScreen
 import com.ricardocosteira.rite.presentation.ui.habit.HabitFormScreen
+import com.ricardocosteira.rite.presentation.ui.habitdetail.HabitDetailRoute
 import com.ricardocosteira.rite.presentation.ui.onboarding.OnboardingRoute
 import com.ricardocosteira.rite.presentation.ui.settings.SettingsScreen
 import com.ricardocosteira.rite.presentation.ui.today.TodayScreen
@@ -159,11 +160,18 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                     )
                 }
 
-                entry<HabitDetail> {
-                    // TODO: Implement habit detail screen
-                    LaunchedEffect(Unit) {
-                        backStack.removeLastOrNull()
-                    }
+                entry<HabitDetail> { route ->
+                    val todayViewModel = LocalAppComponent.current.todayViewModel
+                    HabitDetailRoute(
+                        instanceId = route.instanceId,
+                        onNavigateBack = {
+                            backStack.removeLastOrNull()
+                            todayViewModel.loadTodayHabits()
+                        },
+                        onCustomProgress = {
+                            // TODO: open custom progress bottom sheet
+                        }
+                    )
                 }
             }
         )

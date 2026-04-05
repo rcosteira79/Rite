@@ -60,6 +60,12 @@ import com.ricardocosteira.rite.presentation.ui.components.toolbar.pinnedExitUnt
 import com.ricardocosteira.rite.presentation.ui.haptics.HapticController
 import com.ricardocosteira.rite.presentation.ui.haptics.rememberHapticController
 import com.ricardocosteira.rite.util.formatMonthAbbreviation
+import kotlin.time.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.habit_lock_logo
 import rite.composeapp.generated.resources.swipe_habit_deleted
@@ -74,12 +80,6 @@ import rite.composeapp.generated.resources.today_section_weekly
 import rite.composeapp.generated.resources.today_timezone_changed_dismiss
 import rite.composeapp.generated.resources.today_timezone_changed_message
 import rite.composeapp.generated.resources.today_timezone_changed_title
-import kotlin.time.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 private val DIVIDER_ALPHA = 0.3f
 private val DIVIDER_HORIZONTAL_PADDING = 16.dp
@@ -171,11 +171,10 @@ internal fun TodayScreen(
     onAddFirstHabit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel = LocalAppComponent.current.todayViewModel
     val lazyListState = rememberLazyListState()
     val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec()
     val hapticController = rememberHapticController()
-
-    var expandedCardIds: Set<String> by rememberSaveable { mutableStateOf(emptySet()) }
 
     Scaffold(
         topBar = {
@@ -273,13 +272,9 @@ internal fun TodayScreen(
                         ) {
                             HabitCard(
                                 habit = habit,
-                                isExpanded = habit.instanceId in expandedCardIds,
+                                isExpanded = false,
                                 onToggleExpand = {
-                                    expandedCardIds = if (habit.instanceId in expandedCardIds) {
-                                        expandedCardIds - habit.instanceId
-                                    } else {
-                                        expandedCardIds + habit.instanceId
-                                    }
+                                    viewModel.navigateToHabitDetail(habit.instanceId)
                                 },
                                 onComplete = {
                                     if (habit.type == HabitType.BINARY) {
@@ -362,13 +357,9 @@ internal fun TodayScreen(
                             ) {
                                 HabitCard(
                                     habit = habit,
-                                    isExpanded = habit.instanceId in expandedCardIds,
+                                    isExpanded = false,
                                     onToggleExpand = {
-                                        expandedCardIds = if (habit.instanceId in expandedCardIds) {
-                                            expandedCardIds - habit.instanceId
-                                        } else {
-                                            expandedCardIds + habit.instanceId
-                                        }
+                                        viewModel.navigateToHabitDetail(habit.instanceId)
                                     },
                                     onComplete = {
                                         if (habit.type == HabitType.BINARY) {
