@@ -53,6 +53,7 @@ import rite.composeapp.generated.resources.habit_detail_action_custom
 import rite.composeapp.generated.resources.habit_detail_action_goal_reached
 import rite.composeapp.generated.resources.habit_detail_action_skip
 import rite.composeapp.generated.resources.habit_detail_action_undo
+import rite.composeapp.generated.resources.habit_detail_action_undo_last
 import rite.composeapp.generated.resources.habit_detail_category_binary
 import rite.composeapp.generated.resources.habit_detail_category_quantitative
 import rite.composeapp.generated.resources.habit_detail_enforcement_limits
@@ -84,6 +85,7 @@ fun HabitDetailScreen(
     onCustomProgress: () -> Unit,
     onSkip: () -> Unit,
     onUndo: () -> Unit,
+    onUndoIncrement: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -179,7 +181,8 @@ fun HabitDetailScreen(
                     onIncrementProgress = onIncrementProgress,
                     onCustomProgress = onCustomProgress,
                     onSkip = onSkip,
-                    onUndo = onUndo
+                    onUndo = onUndo,
+                    onUndoIncrement = onUndoIncrement
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -388,16 +391,17 @@ private fun ActionButtons(
     onCustomProgress: () -> Unit,
     onSkip: () -> Unit,
     onUndo: () -> Unit,
+    onUndoIncrement: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val habit = state.habit ?: return
-    val canUndo: Boolean = state.isCompleted || state.isSkipped
+    val hasProgress: Boolean = (state.instance?.currentProgress ?: 0) > 0
 
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (state.isResolved && canUndo) {
+        if (state.isResolved && (state.isCompleted || state.isSkipped)) {
             // Undo button when completed or skipped (both binary and quantitative)
             PrimaryButton(onClick = onUndo) {
                 Text(stringResource(Res.string.habit_detail_action_undo))
@@ -407,13 +411,7 @@ private fun ActionButtons(
                 onClick = onComplete,
                 enabled = !state.isResolved
             ) {
-                Text(
-                    text = if (state.isCompleted) {
-                        stringResource(Res.string.habit_detail_action_completed)
-                    } else {
-                        stringResource(Res.string.habit_detail_action_complete)
-                    }
-                )
+                Text(stringResource(Res.string.habit_detail_action_complete))
             }
         } else {
             // Quantitative: +N button
@@ -423,13 +421,7 @@ private fun ActionButtons(
             ) {
                 val increment: Int = habit.defaultIncrement
                 val unit: String = habit.unit?.uppercase() ?: ""
-                Text(
-                    text = if (state.isQuantitativeComplete) {
-                        stringResource(Res.string.habit_detail_action_goal_reached)
-                    } else {
-                        "+$increment $unit"
-                    }
-                )
+                Text("+$increment $unit")
             }
 
             // Custom button
@@ -439,6 +431,20 @@ private fun ActionButtons(
                 enabled = !state.isSkipped && !state.isFailed
             ) {
                 Text(stringResource(Res.string.habit_detail_action_custom))
+            }
+
+            // Undo last increment (when there's progress to undo)
+            if (hasProgress && !state.isResolved) {
+                TextButton(
+                    onClick = onUndoIncrement,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(Res.string.habit_detail_action_undo_last),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
 

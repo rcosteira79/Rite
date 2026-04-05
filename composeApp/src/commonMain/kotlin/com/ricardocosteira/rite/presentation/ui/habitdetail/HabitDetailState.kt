@@ -11,7 +11,8 @@ data class HabitDetailState(
     val maxConsecutiveSkips: Int? = null,
     val currentConsecutiveSkips: Int = 0,
     val heatmapData: List<HeatmapDay> = emptyList(),
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val showCustomInput: Boolean = false
 ) {
     val habitScore: Int
         get() = habit?.calculateScore()?.percentage ?: 0

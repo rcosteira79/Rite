@@ -167,9 +167,6 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                         onNavigateBack = {
                             backStack.removeLastOrNull()
                             todayViewModel.loadTodayHabits()
-                        },
-                        onCustomProgress = {
-                            // TODO: open custom progress bottom sheet
                         }
                     )
                 }

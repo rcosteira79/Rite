@@ -126,7 +126,8 @@ abstract class RiteAppComponent(
         userRepository: UserRepository,
         completeHabit: CompleteHabit,
         skipHabit: SkipHabit,
-        undoHabit: UndoHabit
+        undoHabit: UndoHabit,
+        undoLastIncrement: UndoLastIncrement
     ): HabitDetailViewModel.Factory = object : HabitDetailViewModel.Factory {
         override fun create(instanceId: String): HabitDetailViewModel = HabitDetailViewModel(
             habitRepository,
@@ -135,6 +136,7 @@ abstract class RiteAppComponent(
             completeHabit,
             skipHabit,
             undoHabit,
+            undoLastIncrement,
             instanceId
         )
     }
