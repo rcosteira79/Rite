@@ -140,7 +140,8 @@ fun TodayScreen(
         onEdit = onEditHabit,
         onDelete = viewModel::deleteHabit,
         onDismissTimezoneWarning = viewModel::dismissTimezoneWarning,
-        onAddFirstHabit = onNavigateToCreateHabit
+        onAddFirstHabit = onNavigateToCreateHabit,
+        onNavigateToDetail = viewModel::navigateToHabitDetail
     )
 
     state.showQuantitativeInputFor?.let { instanceId ->
@@ -169,9 +170,9 @@ internal fun TodayScreen(
     onDelete: (String) -> Unit,
     onDismissTimezoneWarning: () -> Unit,
     onAddFirstHabit: () -> Unit,
+    onNavigateToDetail: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val viewModel = LocalAppComponent.current.todayViewModel
     val lazyListState = rememberLazyListState()
     val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec()
     val hapticController = rememberHapticController()
@@ -274,7 +275,7 @@ internal fun TodayScreen(
                                 habit = habit,
                                 isExpanded = false,
                                 onToggleExpand = {
-                                    viewModel.navigateToHabitDetail(habit.instanceId)
+                                    onNavigateToDetail(habit.instanceId)
                                 },
                                 onComplete = {
                                     if (habit.type == HabitType.BINARY) {
@@ -359,7 +360,7 @@ internal fun TodayScreen(
                                     habit = habit,
                                     isExpanded = false,
                                     onToggleExpand = {
-                                        viewModel.navigateToHabitDetail(habit.instanceId)
+                                        onNavigateToDetail(habit.instanceId)
                                     },
                                     onComplete = {
                                         if (habit.type == HabitType.BINARY) {
