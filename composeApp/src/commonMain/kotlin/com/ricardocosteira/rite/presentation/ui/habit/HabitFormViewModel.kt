@@ -354,7 +354,19 @@ class HabitFormViewModel(
             )
         }
 
-        val existingReminders = habitRepository.getRemindersForHabit(habitId)
+        val existingReminders: List<HabitReminder> = habitRepository.getRemindersForHabit(habitId)
+        val today: LocalDate =
+            Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
+        val todayInstance: HabitInstance? =
+            habitInstanceRepository.getInstanceForHabitAndDate(habitId, today)
+
+        // Cancel existing alarms before deleting reminders (need reminder config for periodic cancellation)
+        if (todayInstance != null) {
+            val existingReminder: HabitReminder? = existingReminders.firstOrNull()
+            habitNotification.cancelReminder(todayInstance.id, existingReminder)
+        }
+
+        // Now safe to delete old reminders
         existingReminders.forEach { habitRepository.deleteReminder(it.id) }
 
         if (reminder != null) {
@@ -363,21 +375,13 @@ class HabitFormViewModel(
             )
         }
 
-        val today: LocalDate =
-            Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
-        val todayInstance: HabitInstance? =
-            habitInstanceRepository.getInstanceForHabitAndDate(habitId, today)
-
-        if (todayInstance != null) {
-            habitNotification.cancelReminder(todayInstance.id)
-
-            if (reminder != null) {
-                val savedReminders: List<HabitReminder> =
-                    habitRepository.getRemindersForHabit(habitId)
-                val savedReminder: HabitReminder? = savedReminders.firstOrNull()
-                if (savedReminder != null) {
-                    habitNotification.scheduleReminder(updatedHabit, savedReminder, todayInstance)
-                }
+        // Reschedule with new config
+        if (todayInstance != null && reminder != null) {
+            val savedReminders: List<HabitReminder> =
+                habitRepository.getRemindersForHabit(habitId)
+            val savedReminder: HabitReminder? = savedReminders.firstOrNull()
+            if (savedReminder != null) {
+                habitNotification.scheduleReminder(updatedHabit, savedReminder, todayInstance)
             }
         }
     }
