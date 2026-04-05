@@ -44,7 +44,10 @@ class HabitDetailViewModel(
 
     private fun loadDetail() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
+            val isInitialLoad: Boolean = _state.value.habit == null
+            if (isInitialLoad) {
+                _state.update { it.copy(isLoading = true) }
+            }
 
             val instance: HabitInstance = habitInstanceRepository.getInstanceById(instanceId)
                 ?: run {
