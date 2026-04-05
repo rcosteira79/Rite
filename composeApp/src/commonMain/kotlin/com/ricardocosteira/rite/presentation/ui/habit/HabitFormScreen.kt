@@ -188,6 +188,9 @@ fun HabitFormScreen(
 
                 is HabitFormUiAction.UnitChanged -> viewModel.updateUnit(action.unit)
 
+                is HabitFormUiAction.DefaultIncrementChanged ->
+                    viewModel.updateDefaultIncrement(action.value)
+
                 is HabitFormUiAction.ScheduleTypeChanged ->
                     viewModel.updateScheduleType(
                         action.scheduleType

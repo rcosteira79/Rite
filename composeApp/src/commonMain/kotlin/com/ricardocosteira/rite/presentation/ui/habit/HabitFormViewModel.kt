@@ -92,6 +92,7 @@ class HabitFormViewModel(
                             type = habit.type,
                             targetValue = habit.targetValue?.toString() ?: "",
                             unit = habit.unit ?: "",
+                            defaultIncrement = habit.defaultIncrement.toString(),
                             scheduleType = schedule?.scheduleType ?: ScheduleType.DAILY,
                             selectedDays = schedule?.specificDays ?: DayOfWeek.entries.toSet(),
                             quota = schedule?.quota?.toString() ?: "1",
@@ -143,6 +144,10 @@ class HabitFormViewModel(
 
     fun updateUnit(unit: String) {
         _state.update { it.copy(unit = unit) }
+    }
+
+    fun updateDefaultIncrement(value: String) {
+        _state.update { it.copy(defaultIncrement = value) }
     }
 
     fun updateScheduleType(scheduleType: ScheduleType) {
@@ -270,6 +275,7 @@ class HabitFormViewModel(
                         null
                     },
                     unit = state.unit.trim().takeIf { it.isNotEmpty() },
+                    defaultIncrement = state.defaultIncrement.toIntOrNull() ?: 1,
                     scheduleType = state.scheduleType,
                     quota = state.quota.toIntOrNull() ?: 1,
                     specificDays = specificDays,
@@ -304,6 +310,7 @@ class HabitFormViewModel(
                 null
             },
             unit = state.unit.trim().takeIf { it.isNotEmpty() },
+            defaultIncrement = state.defaultIncrement.toIntOrNull() ?: 1,
             isTrackingEnabled = state.isTrackingEnabled
         )
 
