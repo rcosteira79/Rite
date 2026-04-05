@@ -45,6 +45,8 @@ class HabitFormViewModel(
 
     private companion object {
         private val DEFAULT_REMINDER_TIME = HabitFormState.DEFAULT_REMINDER_TIME
+        private val DEFAULT_PERIODIC_START_TIME = LocalTime(8, 0)
+        private val DEFAULT_PERIODIC_END_TIME = LocalTime(22, 0)
     }
 
     val state: StateFlow<HabitFormState> = _state.asStateFlow()
@@ -125,16 +127,7 @@ class HabitFormViewModel(
     }
 
     fun updateType(type: HabitType) {
-        _state.update {
-            it.copy(
-                type = type,
-                reminderType = if (type == HabitType.QUANTITATIVE) {
-                    ReminderType.PERIODIC
-                } else {
-                    ReminderType.FIXED
-                }
-            )
-        }
+        _state.update { it.copy(type = type) }
     }
 
     fun updateTargetValue(targetValue: String) {
@@ -171,7 +164,21 @@ class HabitFormViewModel(
     }
 
     fun updateReminderType(reminderType: ReminderType) {
-        _state.update { it.copy(reminderType = reminderType) }
+        _state.update {
+            when (reminderType) {
+                ReminderType.PERIODIC -> it.copy(
+                    reminderType = reminderType,
+                    startTime = it.startTime ?: DEFAULT_PERIODIC_START_TIME,
+                    endTime = it.endTime ?: DEFAULT_PERIODIC_END_TIME
+                )
+
+                ReminderType.FIXED -> it.copy(
+                    reminderType = reminderType,
+                    startTime = null,
+                    endTime = null
+                )
+            }
+        }
     }
 
     fun updateReminderTime(hour: Int, minute: Int) {
@@ -188,6 +195,14 @@ class HabitFormViewModel(
 
     fun updateEndTime(time: LocalTime) {
         _state.update { it.copy(endTime = time) }
+    }
+
+    fun updatePeriodicStartTime(hour: Int, minute: Int) {
+        _state.update { it.copy(startTime = LocalTime(hour, minute)) }
+    }
+
+    fun updatePeriodicEndTime(hour: Int, minute: Int) {
+        _state.update { it.copy(endTime = LocalTime(hour, minute)) }
     }
 
     fun discardDraft() {

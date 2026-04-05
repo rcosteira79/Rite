@@ -1,6 +1,7 @@
 package com.ricardocosteira.rite.presentation.ui.habit
 
 import com.ricardocosteira.rite.domain.models.HabitType
+import com.ricardocosteira.rite.domain.models.ReminderType
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import kotlinx.datetime.DayOfWeek
 
@@ -24,6 +25,14 @@ sealed interface HabitFormUiAction {
     data class HasReminderChanged(val hasReminder: Boolean) : HabitFormUiAction
 
     data class ReminderTimeChanged(val hour: Int, val minute: Int) : HabitFormUiAction
+
+    data class ReminderTypeChanged(val reminderType: ReminderType) : HabitFormUiAction
+
+    data class IntervalChanged(val interval: String) : HabitFormUiAction
+
+    data class PeriodicStartTimeChanged(val hour: Int, val minute: Int) : HabitFormUiAction
+
+    data class PeriodicEndTimeChanged(val hour: Int, val minute: Int) : HabitFormUiAction
 
     data object SaveClicked : HabitFormUiAction
 

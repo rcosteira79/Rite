@@ -49,4 +49,13 @@
     <string name="habit_form_stepper_label_times">time(s)</string>
     <string name="habit_form_unit_label">UNIT</string>
     <string name="habit_form_error_habit_not_found">Habit not found</string>
+    <string name="habit_form_reminder_type_fixed">Fixed time</string>
+    <string name="habit_form_reminder_type_periodic">Periodic</string>
+    <string name="habit_form_periodic_every">Every</string>
+    <string name="habit_form_periodic_from">From</string>
+    <string name="habit_form_periodic_until">Until</string>
+    <string name="habit_form_periodic_minutes">min</string>
+    <string name="habit_form_periodic_hours">hr</string>
+    <string name="habit_form_periodic_interval_hint">Interval</string>
+    <string name="habit_form_periodic_invalid_window">Start time must be before end time</string>
 </resources>
