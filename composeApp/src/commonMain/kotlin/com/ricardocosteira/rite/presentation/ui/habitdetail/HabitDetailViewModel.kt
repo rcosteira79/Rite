@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.rite.domain.models.CompletionSource
 import com.ricardocosteira.rite.domain.models.HabitInstance
+import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.rite.domain.repositories.HabitRepository
 import com.ricardocosteira.rite.domain.repositories.UserRepository
@@ -70,11 +71,14 @@ class HabitDetailViewModel(
                     )
                 }
 
+            val consecutiveSkips: Int = calculateConsecutiveSkips(allInstances)
+
             _state.update {
                 it.copy(
                     habit = habit,
                     instance = instance,
                     maxConsecutiveSkips = maxSkips,
+                    currentConsecutiveSkips = consecutiveSkips,
                     heatmapData = heatmapData,
                     isLoading = false
                 )
@@ -121,6 +125,18 @@ class HabitDetailViewModel(
             undoHabit.execute(instanceId)
             loadDetail()
         }
+    }
+
+    private fun calculateConsecutiveSkips(instances: List<HabitInstance>): Int {
+        var count: Int = 0
+        for (instance in instances.sortedByDescending { it.date }) {
+            if (instance.status == HabitStatus.SKIPPED) {
+                count++
+            } else {
+                break
+            }
+        }
+        return count
     }
 
     interface Factory {

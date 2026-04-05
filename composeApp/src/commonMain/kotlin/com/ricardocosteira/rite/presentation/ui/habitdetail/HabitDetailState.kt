@@ -9,6 +9,7 @@ data class HabitDetailState(
     val habit: Habit? = null,
     val instance: HabitInstance? = null,
     val maxConsecutiveSkips: Int? = null,
+    val currentConsecutiveSkips: Int = 0,
     val heatmapData: List<HeatmapDay> = emptyList(),
     val isLoading: Boolean = true
 ) {
@@ -18,12 +19,14 @@ data class HabitDetailState(
     val skipsRemaining: Int?
         get() {
             val max: Int = maxConsecutiveSkips ?: return null
-            val used: Int = instance?.consecutiveSkipsAtCreation ?: 0
-            return (max - used).coerceAtLeast(0)
+            return (max - currentConsecutiveSkips).coerceAtLeast(0)
         }
 
     val isSkipLocked: Boolean
-        get() = instance?.isSkipLocked(maxConsecutiveSkips) ?: false
+        get() {
+            val max: Int = maxConsecutiveSkips ?: return false
+            return currentConsecutiveSkips >= max
+        }
 
     val isCompleted: Boolean
         get() {

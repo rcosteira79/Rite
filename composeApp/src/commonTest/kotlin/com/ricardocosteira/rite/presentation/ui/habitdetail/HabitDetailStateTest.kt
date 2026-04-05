@@ -60,8 +60,9 @@ class HabitDetailStateTest {
     fun `given max 2 skips and 0 used, skipsRemaining returns 2`() {
         val state = HabitDetailState(
             habit = baseHabit,
-            instance = baseInstance.copy(consecutiveSkipsAtCreation = 0),
-            maxConsecutiveSkips = 2
+            instance = baseInstance,
+            maxConsecutiveSkips = 2,
+            currentConsecutiveSkips = 0
         )
 
         assertEquals(2, state.skipsRemaining)
@@ -71,11 +72,36 @@ class HabitDetailStateTest {
     fun `given max 2 skips and 2 used, skipsRemaining returns 0`() {
         val state = HabitDetailState(
             habit = baseHabit,
-            instance = baseInstance.copy(consecutiveSkipsAtCreation = 2),
-            maxConsecutiveSkips = 2
+            instance = baseInstance,
+            maxConsecutiveSkips = 2,
+            currentConsecutiveSkips = 2
         )
 
         assertEquals(0, state.skipsRemaining)
+    }
+
+    @Test
+    fun `given max 2 skips and 2 used, isSkipLocked returns true`() {
+        val state = HabitDetailState(
+            habit = baseHabit,
+            instance = baseInstance,
+            maxConsecutiveSkips = 2,
+            currentConsecutiveSkips = 2
+        )
+
+        assertTrue(state.isSkipLocked)
+    }
+
+    @Test
+    fun `given unlimited skips, isSkipLocked returns false`() {
+        val state = HabitDetailState(
+            habit = baseHabit,
+            instance = baseInstance,
+            maxConsecutiveSkips = null,
+            currentConsecutiveSkips = 5
+        )
+
+        assertFalse(state.isSkipLocked)
     }
 
     @Test
