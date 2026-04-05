@@ -102,13 +102,13 @@ fun OnboardingWizard(
                                 step == state.notificationStepIndex && state.showNotificationStep -> {
                                     NotificationPermissionStep(
                                         modifier = Modifier.weight(1f).fillMaxWidth(),
-                                        reduceMotion = true
+                                        reduceMotion = reduceMotion
                                     )
                                     NotificationPermissionStepCta(
                                         onEnableNotifications = onEnableNotifications,
                                         onMaybeLater = onContinueFromNotificationPermission,
                                         modifier = Modifier.fillMaxWidth(),
-                                        reduceMotion = true
+                                        reduceMotion = reduceMotion
                                     )
                                 }
 
@@ -131,7 +131,7 @@ fun OnboardingWizard(
                                         onCreateHabit = onCreateHabit,
                                         onSkip = onSkipFirstHabit,
                                         modifier = Modifier.fillMaxWidth(),
-                                        reduceMotion = true
+                                        reduceMotion = reduceMotion
                                     )
                                 }
                             }
