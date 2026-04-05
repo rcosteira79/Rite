@@ -16,6 +16,7 @@ data class HabitFormState(
     val type: HabitType = HabitType.BINARY,
     val targetValue: String = "",
     val unit: String = "",
+    val defaultIncrement: String = "1",
     val scheduleType: ScheduleType = ScheduleType.DAILY,
     val selectedDays: Set<DayOfWeek> = DayOfWeek.entries.toSet(),
     val quota: String = "1",
