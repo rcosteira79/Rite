@@ -2,6 +2,8 @@ package com.ricardocosteira.rite.presentation.navigation
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -32,12 +34,12 @@ import com.ricardocosteira.rite.presentation.ui.habit.HabitFormScreen
 import com.ricardocosteira.rite.presentation.ui.onboarding.OnboardingRoute
 import com.ricardocosteira.rite.presentation.ui.settings.SettingsScreen
 import com.ricardocosteira.rite.presentation.ui.today.TodayScreen
-import rite.composeapp.generated.resources.Res
-import rite.composeapp.generated.resources.today_cd_add_habit
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import org.jetbrains.compose.resources.stringResource
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.today_cd_add_habit
 
 private val savedStateConfig: SavedStateConfiguration = SavedStateConfiguration {
     serializersModule = SerializersModule {
@@ -148,6 +150,9 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = scaffoldPadding.calculateBottomPadding())
+                .consumeWindowInsets(
+                    PaddingValues(bottom = scaffoldPadding.calculateBottomPadding())
+                )
                 .then(
                     if (isTodayRoute) {
                         Modifier.nestedScroll(nestedScrollConnection)
