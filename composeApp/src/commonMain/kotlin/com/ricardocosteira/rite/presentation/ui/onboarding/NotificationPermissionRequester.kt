@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
  */
 data class NotificationPermissionState(
     val shouldShow: Boolean,
+    val isGranted: Boolean,
     val requestPermission: (onResult: (Boolean) -> Unit) -> Unit
 )
 

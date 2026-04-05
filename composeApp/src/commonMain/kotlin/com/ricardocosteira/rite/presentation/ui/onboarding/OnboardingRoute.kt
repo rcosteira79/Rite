@@ -28,6 +28,15 @@ fun OnboardingRoute(
         viewModel.setShowNotificationStep(permissionState.shouldShow)
     }
 
+    // Auto-advance when user grants permission from system settings and returns
+    LaunchedEffect(permissionState.isGranted, state.currentStep) {
+        val isOnNotificationStep: Boolean = state.showNotificationStep &&
+            state.currentStep == state.notificationStepIndex
+        if (permissionState.isGranted && isOnNotificationStep) {
+            viewModel.continueFromNotificationPermission()
+        }
+    }
+
     val messageEmptyName = stringResource(Res.string.first_habit_error_empty_name)
     val messageMissingTarget = stringResource(Res.string.first_habit_error_missing_target_value)
     val messageInvalidTarget = stringResource(Res.string.first_habit_error_invalid_target_value)

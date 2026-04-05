@@ -6,5 +6,6 @@ import androidx.compose.runtime.Composable
 actual fun rememberNotificationPermissionState(): NotificationPermissionState =
     NotificationPermissionState(
         shouldShow = false,
+        isGranted = true,
         requestPermission = { onResult -> onResult(true) }
     )
