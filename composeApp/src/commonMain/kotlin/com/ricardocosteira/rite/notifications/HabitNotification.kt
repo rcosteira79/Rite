@@ -8,6 +8,7 @@ import com.ricardocosteira.rite.domain.models.HabitType
 expect class HabitNotification {
     fun scheduleReminder(habit: Habit, reminder: HabitReminder, instance: HabitInstance)
     fun cancelReminder(instanceId: String)
+    fun cancelReminder(instanceId: String, reminder: HabitReminder?)
     fun cancelAllForHabit(habitId: String, instanceIds: List<String>)
     fun updateTrackingNotification(trackedHabits: List<TrackedHabitInfo>)
     fun hideTrackingNotification()
