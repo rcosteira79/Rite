@@ -38,6 +38,7 @@ import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
+import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.common_skip
 import rite.composeapp.generated.resources.today_action_complete
@@ -50,7 +51,6 @@ import rite.composeapp.generated.resources.today_cd_undo
 import rite.composeapp.generated.resources.today_resolved_completed_at
 import rite.composeapp.generated.resources.today_resolved_failed
 import rite.composeapp.generated.resources.today_resolved_skipped_at
-import org.jetbrains.compose.resources.stringResource
 
 private val CARD_CORNER_RADIUS = 24.dp
 private val RESOLVED_CORNER_RADIUS = 16.dp
@@ -77,7 +77,7 @@ private const val FAILED_ALPHA = 0.5f
 fun HabitCard(
     habit: TodayHabitUiModel,
     isExpanded: Boolean,
-    onToggleExpand: () -> Unit,
+    onClick: () -> Unit,
     onComplete: () -> Unit,
     onSkip: () -> Unit,
     onUndo: () -> Unit,
@@ -91,13 +91,14 @@ fun HabitCard(
         ResolvedHabitRow(
             habit = habit,
             onUndo = onUndo,
+            onClick = onClick,
             modifier = modifier
         )
     } else {
         PendingHabitCard(
             habit = habit,
             isExpanded = isExpanded,
-            onToggleExpand = onToggleExpand,
+            onClick = onClick,
             onComplete = onComplete,
             onSkip = onSkip,
             onUndo = onUndo,
@@ -112,7 +113,7 @@ fun HabitCard(
 private fun PendingHabitCard(
     habit: TodayHabitUiModel,
     isExpanded: Boolean,
-    onToggleExpand: () -> Unit,
+    onClick: () -> Unit,
     onComplete: () -> Unit,
     onSkip: () -> Unit,
     onUndo: () -> Unit,
@@ -132,7 +133,7 @@ private fun PendingHabitCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(CARD_CORNER_RADIUS))
-            .clickable(onClick = onToggleExpand)
+            .clickable(onClick = onClick)
     ) {
         Column(
             modifier = Modifier.padding(
@@ -347,12 +348,14 @@ private fun PendingHabitCard(
 private fun ResolvedHabitRow(
     habit: TodayHabitUiModel,
     onUndo: () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isFailed: Boolean = habit.isFailed
     val rowAlpha: Float = if (isFailed) FAILED_ALPHA else RESOLVED_ALPHA
 
     Surface(
+        onClick = onClick,
         shape = RoundedCornerShape(RESOLVED_CORNER_RADIUS),
         color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = rowAlpha),
         modifier = modifier.fillMaxWidth()
@@ -509,7 +512,7 @@ private fun BinaryCollapsedPreview() {
         HabitCard(
             habit = previewBinaryHabit(),
             isExpanded = false,
-            onToggleExpand = {},
+            onClick = {},
             onComplete = {},
             onSkip = {},
             onUndo = {},

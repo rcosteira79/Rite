@@ -274,7 +274,7 @@ internal fun TodayScreen(
                             HabitCard(
                                 habit = habit,
                                 isExpanded = false,
-                                onToggleExpand = {
+                                onClick = {
                                     onNavigateToDetail(habit.instanceId)
                                 },
                                 onComplete = {
@@ -322,7 +322,7 @@ internal fun TodayScreen(
                                 HabitCard(
                                     habit = habit,
                                     isExpanded = false,
-                                    onToggleExpand = {},
+                                    onClick = {},
                                     onComplete = {},
                                     onSkip = {},
                                     onUndo = { onUndo(habit.instanceId) },
@@ -359,7 +359,7 @@ internal fun TodayScreen(
                                 HabitCard(
                                     habit = habit,
                                     isExpanded = false,
-                                    onToggleExpand = {
+                                    onClick = {
                                         onNavigateToDetail(habit.instanceId)
                                     },
                                     onComplete = {
@@ -407,7 +407,7 @@ internal fun TodayScreen(
                                     HabitCard(
                                         habit = habit,
                                         isExpanded = false,
-                                        onToggleExpand = {},
+                                        onClick = {},
                                         onComplete = {},
                                         onSkip = {},
                                         onUndo = { onUndo(habit.instanceId) },
