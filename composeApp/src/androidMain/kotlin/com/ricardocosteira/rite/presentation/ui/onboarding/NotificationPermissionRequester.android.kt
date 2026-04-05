@@ -1,12 +1,18 @@
 package com.ricardocosteira.rite.presentation.ui.onboarding
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
+import com.ricardocosteira.rite.findActivity
 
 @Composable
 actual fun rememberNotificationPermissionState(): NotificationPermissionState {
@@ -17,21 +23,48 @@ actual fun rememberNotificationPermissionState(): NotificationPermissionState {
         )
     }
 
+    val context = LocalContext.current
     val callbackRef = remember { mutableStateOf<((Boolean) -> Unit)?>(null) }
+    val hasRequestedOnce = remember { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
+        hasRequestedOnce.value = true
         callbackRef.value?.invoke(isGranted)
         callbackRef.value = null
     }
 
-    return remember {
+    return remember(context) {
         NotificationPermissionState(
             shouldShow = true,
             requestPermission = { onResult ->
-                callbackRef.value = onResult
-                launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                val isAlreadyGranted: Boolean =
+                    NotificationManagerCompat.from(context).areNotificationsEnabled()
+
+                if (isAlreadyGranted) {
+                    onResult(true)
+                    return@NotificationPermissionState
+                }
+
+                val activity = context.findActivity()
+                val canShowDialog: Boolean = activity == null ||
+                    !hasRequestedOnce.value ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(
+                        activity,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    )
+
+                if (canShowDialog) {
+                    callbackRef.value = onResult
+                    launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                } else {
+                    // Permanently denied — open system settings instead
+                    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                    }
+                    context.startActivity(intent)
+                }
             }
         )
     }
