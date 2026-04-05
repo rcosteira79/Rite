@@ -27,6 +27,7 @@ import com.ricardocosteira.rite.notifications.HabitNotification
 import com.ricardocosteira.rite.presentation.ui.archived.ArchivedHabitsViewModel
 import com.ricardocosteira.rite.presentation.ui.calendar.CalendarViewModel
 import com.ricardocosteira.rite.presentation.ui.habit.HabitFormViewModel
+import com.ricardocosteira.rite.presentation.ui.habitdetail.HabitDetailViewModel
 import com.ricardocosteira.rite.presentation.ui.onboarding.OnboardingViewModel
 import com.ricardocosteira.rite.presentation.ui.settings.SettingsViewModel
 import com.ricardocosteira.rite.presentation.ui.startup.StartupViewModel
@@ -115,6 +116,26 @@ abstract class RiteAppComponent(
         )
     }
 
+    // Factory for HabitDetailViewModel (needs instanceId parameter)
+    @AppScope
+    @Provides
+    fun provideHabitDetailViewModelFactory(
+        habitRepository: HabitRepository,
+        habitInstanceRepository: HabitInstanceRepository,
+        userRepository: UserRepository,
+        completeHabit: CompleteHabit,
+        skipHabit: SkipHabit
+    ): HabitDetailViewModel.Factory = object : HabitDetailViewModel.Factory {
+        override fun create(instanceId: String): HabitDetailViewModel = HabitDetailViewModel(
+            habitRepository,
+            habitInstanceRepository,
+            userRepository,
+            completeHabit,
+            skipHabit,
+            instanceId
+        )
+    }
+
     // Public accessors for App initialization
     abstract val startupViewModel: StartupViewModel
     abstract val userRepository: UserRepository
@@ -126,6 +147,7 @@ abstract class RiteAppComponent(
     abstract val settingsViewModel: SettingsViewModel
     abstract val archivedHabitsViewModel: ArchivedHabitsViewModel
     abstract val habitFormViewModelFactory: HabitFormViewModel.Factory
+    abstract val habitDetailViewModelFactory: HabitDetailViewModel.Factory
 
     // Accessors for workers and receivers
     abstract val generateDailyHabits: GenerateDailyHabits
