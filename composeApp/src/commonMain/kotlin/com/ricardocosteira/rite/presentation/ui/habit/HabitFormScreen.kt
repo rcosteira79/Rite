@@ -454,11 +454,10 @@ internal fun HabitFormScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    SectionLabel(Res.string.habit_form_increment_label)
-                    Spacer(modifier = Modifier.height(8.dp))
                     UnderlineTextField(
                         value = state.defaultIncrement,
                         onValueChange = { onAction(HabitFormUiAction.DefaultIncrementChanged(it)) },
+                        label = stringResource(Res.string.habit_form_increment_label),
                         placeholder = stringResource(Res.string.habit_form_placeholder_increment),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
