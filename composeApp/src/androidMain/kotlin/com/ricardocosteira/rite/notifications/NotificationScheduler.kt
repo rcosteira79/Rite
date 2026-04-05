@@ -7,11 +7,12 @@ import android.content.Intent
 import android.os.Build
 import com.ricardocosteira.rite.domain.models.Habit
 import com.ricardocosteira.rite.domain.models.HabitInstance
+import java.util.Calendar
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import java.util.Calendar
 
 /**
  * Service responsible for scheduling habit notifications using AlarmManager.
@@ -20,15 +21,13 @@ import java.util.Calendar
  * - Grace period notifications before habits are marked as failed
  * - Snooze reminder notifications
  */
-class NotificationScheduler(
-    private val context: Context
-) {
+class NotificationScheduler(private val context: Context) {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     /**
      * Schedules a reminder notification for a habit instance.
-     * 
+     *
      * @param instance The habit instance to send notification for
      * @param habit The habit details
      * @param reminderTimeHour Hour of day (0-23) to send notification
@@ -63,9 +62,44 @@ class NotificationScheduler(
     }
 
     /**
+     * Schedules multiple alarms for a periodic reminder within a time window.
+     * Each fire time gets its own exact alarm.
+     *
+     * @param instance The habit instance to send notifications for
+     * @param habit The habit details
+     * @param fireTimes The computed fire times to schedule (already filtered for future-only)
+     */
+    fun schedulePeriodicReminders(
+        instance: HabitInstance,
+        habit: Habit,
+        fireTimes: List<LocalTime>
+    ) {
+        fireTimes.forEachIndexed { index: Int, fireTime: LocalTime ->
+            val calendar = Calendar.getInstance().apply {
+                timeInMillis = System.currentTimeMillis()
+                set(Calendar.HOUR_OF_DAY, fireTime.hour)
+                set(Calendar.MINUTE, fireTime.minute)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+
+            // Skip if time already passed (safety check)
+            if (calendar.timeInMillis > System.currentTimeMillis()) {
+                scheduleNotification(
+                    notificationId = "${instance.id}_periodic_$index".hashCode(),
+                    triggerTimeMillis = calendar.timeInMillis,
+                    notificationType = NotificationType.HABIT_REMINDER,
+                    instanceId = instance.id,
+                    habitName = habit.name
+                )
+            }
+        }
+    }
+
+    /**
      * Schedules a grace period notification for a pending habit.
      * Grace period is typically sent late in the day before the habit is marked as failed.
-     * 
+     *
      * @param instance The habit instance to send grace period notification for
      * @param habit The habit details
      */
@@ -92,16 +126,12 @@ class NotificationScheduler(
 
     /**
      * Schedules a snooze reminder notification.
-     * 
+     *
      * @param instance The habit instance that was snoozed
      * @param habit The habit details
      * @param snoozeUntilMillis The time when the snooze should end and notification should fire
      */
-    fun scheduleSnoozeReminder(
-        instance: HabitInstance,
-        habit: Habit,
-        snoozeUntilMillis: Long
-    ) {
+    fun scheduleSnoozeReminder(instance: HabitInstance, habit: Habit, snoozeUntilMillis: Long) {
         scheduleNotification(
             notificationId = "${instance.id}_snooze".hashCode(),
             triggerTimeMillis = snoozeUntilMillis,
@@ -114,17 +144,32 @@ class NotificationScheduler(
     /**
      * Cancels all notifications for a specific habit instance.
      * Used when habit is completed, skipped, or suspended.
-     * 
+     *
      * @param instanceId The ID of the habit instance
      */
     fun cancelNotificationsForInstance(instanceId: String) {
         // Cancel main reminder
         cancelNotification(instanceId.hashCode())
-        
+
         // Cancel grace period notification
         cancelNotification("${instanceId}_grace".hashCode())
-        
+
         // Cancel snooze reminder
+        cancelNotification("${instanceId}_snooze".hashCode())
+    }
+
+    /**
+     * Cancels all periodic reminder alarms for a habit instance.
+     *
+     * @param instanceId The ID of the habit instance
+     * @param slotCount Total number of periodic slots to cancel
+     */
+    fun cancelPeriodicReminders(instanceId: String, slotCount: Int) {
+        for (index: Int in 0 until slotCount) {
+            cancelNotification("${instanceId}_periodic_$index".hashCode())
+        }
+        // Also cancel grace period and snooze
+        cancelNotification("${instanceId}_grace".hashCode())
         cancelNotification("${instanceId}_snooze".hashCode())
     }
 
