@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -82,6 +83,9 @@ import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
 import com.ricardocosteira.rite.presentation.ui.components.QuantityStepper
 import com.ricardocosteira.rite.presentation.ui.components.SchedulePicker
 import com.ricardocosteira.rite.presentation.ui.components.TypeToggle
+import kotlinx.datetime.LocalTime
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.common_cancel
 import rite.composeapp.generated.resources.common_cd_back
@@ -123,9 +127,6 @@ import rite.composeapp.generated.resources.habit_form_title_new_habit
 import rite.composeapp.generated.resources.habit_form_tracking_subtitle
 import rite.composeapp.generated.resources.habit_form_tracking_title
 import rite.composeapp.generated.resources.habit_form_unit_label
-import kotlinx.datetime.LocalTime
-import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HabitFormScreen(
@@ -284,7 +285,7 @@ internal fun HabitFormScreen(
     )
 
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.imePadding(),
         topBar = {
             TopAppBar(
                 title = {},
