@@ -4,6 +4,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.ricardocosteira.rite.domain.models.HabitType
+import com.ricardocosteira.rite.domain.models.ReminderType
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
 import kotlinx.datetime.DayOfWeek
@@ -371,6 +372,58 @@ class HabitFormScreenshotTest {
                         hasReminder = true,
                         reminderTime = LocalTime(9, 0),
                         isTrackingEnabled = true,
+                        selectedDays = DayOfWeek.entries.toSet()
+                    ),
+                    onAction = {}
+                )
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    // --- Periodic reminder enabled ---
+
+    @Test
+    fun habitForm_create_periodicReminderEnabled_lightTheme() {
+        composeRule.setContent {
+            RiteThemeFallback(darkTheme = false) {
+                HabitFormScreen(
+                    state = HabitFormState(
+                        name = "Drink Water",
+                        type = HabitType.QUANTITATIVE,
+                        targetValue = "8",
+                        unit = "glasses",
+                        hasReminder = true,
+                        reminderType = ReminderType.PERIODIC,
+                        intervalMinutes = "120",
+                        startTime = LocalTime(8, 0),
+                        endTime = LocalTime(22, 0),
+                        isNotificationPermissionGranted = true,
+                        selectedDays = DayOfWeek.entries.toSet()
+                    ),
+                    onAction = {}
+                )
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun habitForm_create_periodicReminderEnabled_darkTheme() {
+        composeRule.setContent {
+            RiteThemeFallback(darkTheme = true) {
+                HabitFormScreen(
+                    state = HabitFormState(
+                        name = "Drink Water",
+                        type = HabitType.QUANTITATIVE,
+                        targetValue = "8",
+                        unit = "glasses",
+                        hasReminder = true,
+                        reminderType = ReminderType.PERIODIC,
+                        intervalMinutes = "120",
+                        startTime = LocalTime(8, 0),
+                        endTime = LocalTime(22, 0),
+                        isNotificationPermissionGranted = true,
                         selectedDays = DayOfWeek.entries.toSet()
                     ),
                     onAction = {}
