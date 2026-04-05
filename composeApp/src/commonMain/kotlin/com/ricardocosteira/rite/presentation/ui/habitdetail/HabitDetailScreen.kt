@@ -1,5 +1,8 @@
 package com.ricardocosteira.rite.presentation.ui.habitdetail
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,9 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.SkipNext
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,12 +27,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,20 +52,27 @@ import rite.composeapp.generated.resources.habit_detail_action_completed
 import rite.composeapp.generated.resources.habit_detail_action_custom
 import rite.composeapp.generated.resources.habit_detail_action_goal_reached
 import rite.composeapp.generated.resources.habit_detail_action_skip
-import rite.composeapp.generated.resources.habit_detail_action_skipped
 import rite.composeapp.generated.resources.habit_detail_action_undo
 import rite.composeapp.generated.resources.habit_detail_category_binary
 import rite.composeapp.generated.resources.habit_detail_category_quantitative
+import rite.composeapp.generated.resources.habit_detail_enforcement_limits
 import rite.composeapp.generated.resources.habit_detail_heatmap_title
 import rite.composeapp.generated.resources.habit_detail_progress
 import rite.composeapp.generated.resources.habit_detail_skips_none
 import rite.composeapp.generated.resources.habit_detail_skips_remaining
 import rite.composeapp.generated.resources.habit_detail_skips_unlimited
 import rite.composeapp.generated.resources.habit_detail_stat_current_streak
+import rite.composeapp.generated.resources.habit_detail_stat_days
 import rite.composeapp.generated.resources.habit_detail_stat_habit_score
 import rite.composeapp.generated.resources.habit_detail_stat_longest_streak
 
-private const val FULL_PROGRESS = 100
+private val RING_SIZE = 120.dp
+private val RING_STROKE_WIDTH = 6.dp
+private const val FULL_CIRCLE_DEGREES = 360f
+private const val ARC_START_ANGLE = -90f
+private const val PROGRESS_ANIMATION_DURATION = 400
+private const val PERCENTAGE_MULTIPLIER = 100
+private val CARD_CORNER = 16.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -123,18 +141,18 @@ fun HabitDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Progress indicator — unified ring for both types
-                ProgressRing(state = state)
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Stats row
-                StatsRow(state = state)
+                // Progress ring in card
+                ProgressRingCard(state = state)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Accountability limits
-                SkipLimitsRow(state = state)
+                // Stats row in cards
+                StatsRow(state = state)
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Skip limits in card
+                SkipLimitsCard(state = state)
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -171,58 +189,97 @@ fun HabitDetailScreen(
 }
 
 @Composable
-private fun ProgressRing(state: HabitDetailState, modifier: Modifier = Modifier) {
+private fun ProgressRingCard(state: HabitDetailState, modifier: Modifier = Modifier) {
     val instance = state.instance ?: return
     val habit = state.habit ?: return
 
-    val progress: Float = if (habit.type == HabitType.BINARY) {
+    val targetProgress: Float = if (habit.type == HabitType.BINARY) {
         if (state.isCompleted) 1f else 0f
     } else {
         instance.progressPercentage().coerceIn(0f, 1f)
     }
 
-    val percentageText: String = if (habit.type == HabitType.BINARY) {
-        if (state.isCompleted) "$FULL_PROGRESS%" else "0%"
+    val percentage: Int = if (habit.type == HabitType.BINARY) {
+        if (state.isCompleted) PERCENTAGE_MULTIPLIER else 0
     } else {
-        "${(instance.progressPercentage() * FULL_PROGRESS).toInt()}%"
+        (instance.progressPercentage() * PERCENTAGE_MULTIPLIER).toInt()
     }
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier.size(88.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                progress = { progress },
-                modifier = Modifier.size(88.dp),
-                strokeWidth = 5.dp,
-                trackColor = MaterialTheme.colorScheme.surfaceContainerHigh
-            )
-            Text(
-                text = percentageText,
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.ExtraBold
-                ),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
+    val sweepAngle: Float by animateFloatAsState(
+        targetValue = FULL_CIRCLE_DEGREES * targetProgress,
+        animationSpec = tween(durationMillis = PROGRESS_ANIMATION_DURATION),
+        label = "detail-progress-ring"
+    )
 
-        // "X of Y UNIT" below ring (quantitative only)
-        if (habit.type == HabitType.QUANTITATIVE) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(
-                    Res.string.habit_detail_progress,
-                    instance.currentProgress,
-                    instance.targetValue ?: 0,
-                    habit.unit?.uppercase() ?: ""
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+    val trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
+    val progressColor = MaterialTheme.colorScheme.primary
+
+    Surface(
+        shape = RoundedCornerShape(CARD_CORNER),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(RING_SIZE)
+            ) {
+                Canvas(modifier = Modifier.size(RING_SIZE)) {
+                    val strokeWidthPx: Float = RING_STROKE_WIDTH.toPx()
+                    val radius: Float = (size.minDimension - strokeWidthPx) / 2f
+                    val topLeft = Offset(
+                        x = center.x - radius,
+                        y = center.y - radius
+                    )
+                    val arcSize = Size(radius * 2, radius * 2)
+
+                    drawArc(
+                        color = trackColor,
+                        startAngle = ARC_START_ANGLE,
+                        sweepAngle = FULL_CIRCLE_DEGREES,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = Stroke(width = strokeWidthPx, cap = StrokeCap.Round)
+                    )
+
+                    drawArc(
+                        color = progressColor,
+                        startAngle = ARC_START_ANGLE,
+                        sweepAngle = sweepAngle,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = Stroke(width = strokeWidthPx, cap = StrokeCap.Round)
+                    )
+                }
+
+                Text(
+                    text = "$percentage%",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.ExtraBold
+                    ),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            // "X of Y UNIT" below ring (quantitative only)
+            if (habit.type == HabitType.QUANTITATIVE) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(
+                        Res.string.habit_detail_progress,
+                        instance.currentProgress,
+                        instance.targetValue ?: 0,
+                        habit.unit?.uppercase() ?: ""
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
@@ -233,67 +290,93 @@ private fun StatsRow(state: HabitDetailState, modifier: Modifier = Modifier) {
 
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        StatItem(
+        StatCard(
             value = "${habit.currentStreak}",
-            label = stringResource(Res.string.habit_detail_stat_current_streak)
+            label = stringResource(Res.string.habit_detail_stat_current_streak),
+            suffix = stringResource(Res.string.habit_detail_stat_days),
+            modifier = Modifier.weight(1f)
         )
-        StatItem(
+        StatCard(
             value = "${habit.longestStreak}",
-            label = stringResource(Res.string.habit_detail_stat_longest_streak)
+            label = stringResource(Res.string.habit_detail_stat_longest_streak),
+            suffix = stringResource(Res.string.habit_detail_stat_days),
+            modifier = Modifier.weight(1f)
         )
-        StatItem(
+        StatCard(
             value = "${state.habitScore}",
-            label = stringResource(Res.string.habit_detail_stat_habit_score)
+            label = stringResource(Res.string.habit_detail_stat_habit_score),
+            suffix = null,
+            modifier = Modifier.weight(1f)
         )
     }
 }
 
 @Composable
-private fun StatItem(value: String, label: String, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+private fun StatCard(value: String, label: String, suffix: String?, modifier: Modifier = Modifier) {
+    Surface(
+        shape = RoundedCornerShape(CARD_CORNER),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        modifier = modifier
     ) {
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = label.uppercase(),
+                style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.5.sp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = if (suffix != null) "$value $suffix" else value,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
 
 @Composable
-private fun SkipLimitsRow(state: HabitDetailState, modifier: Modifier = Modifier) {
+private fun SkipLimitsCard(state: HabitDetailState, modifier: Modifier = Modifier) {
     val text: String = when {
         state.maxConsecutiveSkips == null -> stringResource(Res.string.habit_detail_skips_unlimited)
         state.isSkipLocked -> stringResource(Res.string.habit_detail_skips_none)
         else -> stringResource(Res.string.habit_detail_skips_remaining, state.skipsRemaining ?: 0)
     }
 
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+    Surface(
+        shape = RoundedCornerShape(CARD_CORNER),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        modifier = modifier.fillMaxWidth()
     ) {
-        Icon(
-            imageVector = Icons.Outlined.SkipNext,
-            contentDescription = null,
-            modifier = Modifier.size(16.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.size(6.dp))
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    text = stringResource(Res.string.habit_detail_enforcement_limits),
+                    style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.5.sp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            Icon(
+                imageVector = Icons.Outlined.Lock,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
@@ -315,7 +398,7 @@ private fun ActionButtons(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (state.isResolved && canUndo) {
-            // Undo button when completed or skipped
+            // Undo button when completed or skipped (both binary and quantitative)
             PrimaryButton(onClick = onUndo) {
                 Text(stringResource(Res.string.habit_detail_action_undo))
             }
