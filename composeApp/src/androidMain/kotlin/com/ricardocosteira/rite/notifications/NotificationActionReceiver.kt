@@ -87,7 +87,12 @@ class NotificationActionReceiver : BroadcastReceiver() {
         appComponent: RiteAppComponent,
         instanceId: String
     ) {
-        val result = appComponent.snoozeHabit.execute(instanceId, durationMinutes = 15)
+        val user = appComponent.userRepository.getUser()
+        val snoozeDurationMinutes: Int = user?.maxSnoozeDurationMinutes ?: 15
+        val result = appComponent.snoozeHabit.execute(
+            instanceId,
+            durationMinutes = snoozeDurationMinutes
+        )
         if (result.isSuccess) {
             val snoozeState = result.getOrNull()
             if (snoozeState != null) {
