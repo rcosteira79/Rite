@@ -25,4 +25,3 @@
 - [ ] Block distracting apps when there are pending habits (needs brainstorming)
 - [ ] Bag-of-words matching for habit creation — auto-suggest icon based on habit name
 - [ ] Update app icon
-- [ ] Allow custom strictness presets in settings screen
