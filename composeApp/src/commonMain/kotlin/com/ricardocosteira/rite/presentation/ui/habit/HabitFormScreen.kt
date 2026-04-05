@@ -70,6 +70,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -109,10 +110,13 @@ import rite.composeapp.generated.resources.habit_form_delete_dialog_confirm
 import rite.composeapp.generated.resources.habit_form_delete_dialog_title
 import rite.composeapp.generated.resources.habit_form_error_habit_not_found
 import rite.composeapp.generated.resources.habit_form_error_required_fields
+import rite.composeapp.generated.resources.habit_form_increment_hint
+import rite.composeapp.generated.resources.habit_form_increment_label
 import rite.composeapp.generated.resources.habit_form_note_collapsed_subtitle
 import rite.composeapp.generated.resources.habit_form_note_collapsed_title
 import rite.composeapp.generated.resources.habit_form_note_expanded_title
 import rite.composeapp.generated.resources.habit_form_notification_permission_denied
+import rite.composeapp.generated.resources.habit_form_placeholder_increment
 import rite.composeapp.generated.resources.habit_form_placeholder_unit
 import rite.composeapp.generated.resources.habit_form_reminder_off
 import rite.composeapp.generated.resources.habit_form_reminder_title
@@ -446,6 +450,23 @@ internal fun HabitFormScreen(
                         onValueChange = { onAction(HabitFormUiAction.UnitChanged(it)) },
                         label = stringResource(Res.string.habit_form_unit_label),
                         placeholder = stringResource(Res.string.habit_form_placeholder_unit)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    SectionLabel(Res.string.habit_form_increment_label)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    UnderlineTextField(
+                        value = state.defaultIncrement,
+                        onValueChange = { onAction(HabitFormUiAction.DefaultIncrementChanged(it)) },
+                        placeholder = stringResource(Res.string.habit_form_placeholder_increment),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                    Text(
+                        text = stringResource(Res.string.habit_form_increment_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp)
                     )
                 }
             }
