@@ -7,11 +7,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.rite.presentation.ui.isReduceMotionEnabled
+import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.first_habit_error_empty_name
 import rite.composeapp.generated.resources.first_habit_error_invalid_target_value
 import rite.composeapp.generated.resources.first_habit_error_missing_target_value
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun OnboardingRoute(
@@ -22,6 +22,20 @@ fun OnboardingRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val reduceMotion = isReduceMotionEnabled()
+    val permissionState = rememberNotificationPermissionState()
+
+    LaunchedEffect(permissionState.shouldShow) {
+        viewModel.setShowNotificationStep(permissionState.shouldShow)
+    }
+
+    // Auto-advance when user grants permission from system settings and returns
+    LaunchedEffect(permissionState.isGranted, state.currentStep) {
+        val isOnNotificationStep: Boolean = state.showNotificationStep &&
+            state.currentStep == state.notificationStepIndex
+        if (permissionState.isGranted && isOnNotificationStep) {
+            viewModel.continueFromNotificationPermission()
+        }
+    }
 
     val messageEmptyName = stringResource(Res.string.first_habit_error_empty_name)
     val messageMissingTarget = stringResource(Res.string.first_habit_error_missing_target_value)
@@ -35,14 +49,10 @@ fun OnboardingRoute(
                 OnboardingEvent.EmptyHabitName -> snackbarHostState.showSnackbar(messageEmptyName)
 
                 OnboardingEvent.MissingTargetValue ->
-                    snackbarHostState.showSnackbar(
-                        messageMissingTarget
-                    )
+                    snackbarHostState.showSnackbar(messageMissingTarget)
 
                 OnboardingEvent.InvalidTargetValue ->
-                    snackbarHostState.showSnackbar(
-                        messageInvalidTarget
-                    )
+                    snackbarHostState.showSnackbar(messageInvalidTarget)
             }
         }
     }
@@ -55,6 +65,14 @@ fun OnboardingRoute(
         onSkip = viewModel::skipToToday,
         reduceMotion = reduceMotion,
         onContinueFromStrictness = viewModel::continueFromStrictness,
+        onContinueFromNotificationPermission = viewModel::continueFromNotificationPermission,
+        onEnableNotifications = {
+            permissionState.requestPermission { isGranted: Boolean ->
+                if (isGranted) {
+                    viewModel.continueFromNotificationPermission()
+                }
+            }
+        },
         onCreateHabit = viewModel::createFirstHabit,
         onSkipFirstHabit = viewModel::skipFirstHabit,
         onPresetSelected = viewModel::selectPreset,

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="settings_title">Settings</string>
+    <string name="settings_section_notifications">Notifications</string>
+    <string name="settings_notifications_label">Notifications</string>
     <string name="settings_section_undo_policy">Undo Policy</string>
     <string name="settings_undo_disabled_label">Disabled</string>
     <string name="settings_undo_disabled_description">No undo allowed</string>
