@@ -27,11 +27,19 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import org.jetbrains.compose.resources.stringResource
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.habit_detail_heatmap_almost
+import rite.composeapp.generated.resources.habit_detail_heatmap_complete
+import rite.composeapp.generated.resources.habit_detail_heatmap_none
+import rite.composeapp.generated.resources.habit_detail_heatmap_partial
+import rite.composeapp.generated.resources.habit_detail_heatmap_skipped
 
 private val CELL_GAP = 2.dp
 private val CELL_CORNER = 2.dp
 private val DAY_LABEL_WIDTH = 16.dp
 private val DAY_LABEL_SPACING = 4.dp
+private val LEGEND_CELL_SIZE = 10.dp
 
 private val DAY_LABELS: List<Pair<DayOfWeek, String>> = listOf(
     DayOfWeek.MONDAY to "M",
@@ -59,44 +67,50 @@ fun HeatmapGrid(heatmapData: List<HeatmapDay>, modifier: Modifier = Modifier) {
         val totalGaps: Dp = CELL_GAP * (weekCount - 1)
         val cellSize: Dp = (availableWidth - labelSpace - totalGaps) / weekCount
 
-        Row {
-            // Day labels column
-            Column(verticalArrangement = Arrangement.spacedBy(CELL_GAP)) {
-                DAY_LABELS.forEach { (_, label) ->
-                    Box(
-                        modifier = Modifier.size(width = DAY_LABEL_WIDTH, height = cellSize),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        if (label.isNotEmpty()) {
-                            Text(
-                                text = label,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.width(DAY_LABEL_SPACING))
-
-            // Week columns
-            Row(horizontalArrangement = Arrangement.spacedBy(CELL_GAP)) {
-                weeks.forEach { week ->
-                    Column(verticalArrangement = Arrangement.spacedBy(CELL_GAP)) {
-                        week.forEach { date ->
-                            if (date == null) {
-                                Box(modifier = Modifier.size(cellSize))
-                            } else {
-                                HeatmapCell(
-                                    day = dataByDate[date],
-                                    size = cellSize
+        Column {
+            Row {
+                // Day labels column
+                Column(verticalArrangement = Arrangement.spacedBy(CELL_GAP)) {
+                    DAY_LABELS.forEach { (_, label) ->
+                        Box(
+                            modifier = Modifier.size(width = DAY_LABEL_WIDTH, height = cellSize),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            if (label.isNotEmpty()) {
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.width(DAY_LABEL_SPACING))
+
+                // Week columns
+                Row(horizontalArrangement = Arrangement.spacedBy(CELL_GAP)) {
+                    weeks.forEach { week ->
+                        Column(verticalArrangement = Arrangement.spacedBy(CELL_GAP)) {
+                            week.forEach { date ->
+                                if (date == null) {
+                                    Box(modifier = Modifier.size(cellSize))
+                                } else {
+                                    HeatmapCell(
+                                        day = dataByDate[date],
+                                        size = cellSize
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
+
+            Spacer(modifier = Modifier.size(12.dp))
+
+            HeatmapLegend(cellSize = LEGEND_CELL_SIZE)
         }
     }
 }
@@ -118,6 +132,66 @@ private fun HeatmapCell(day: HeatmapDay?, size: Dp, modifier: Modifier = Modifie
             .size(size)
             .background(color = color, shape = RoundedCornerShape(CELL_CORNER))
     )
+}
+
+@Composable
+private fun HeatmapLegend(cellSize: Dp, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        LegendItem(
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            label = stringResource(Res.string.habit_detail_heatmap_none),
+            size = cellSize
+        )
+        LegendItem(
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+            label = stringResource(Res.string.habit_detail_heatmap_partial),
+            size = cellSize
+        )
+        LegendItem(
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+            label = stringResource(Res.string.habit_detail_heatmap_almost),
+            size = cellSize
+        )
+        LegendItem(
+            color = MaterialTheme.colorScheme.primary,
+            label = stringResource(Res.string.habit_detail_heatmap_complete),
+            size = cellSize
+        )
+        LegendItem(
+            color = MaterialTheme.colorScheme.outlineVariant,
+            label = stringResource(Res.string.habit_detail_heatmap_skipped),
+            size = cellSize
+        )
+    }
+}
+
+@Composable
+private fun LegendItem(
+    color: androidx.compose.ui.graphics.Color,
+    label: String,
+    size: Dp,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(size)
+                .background(color = color, shape = RoundedCornerShape(CELL_CORNER))
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
 }
 
 private fun buildWeeks(startDate: LocalDate, endDate: LocalDate): List<List<LocalDate?>> {
