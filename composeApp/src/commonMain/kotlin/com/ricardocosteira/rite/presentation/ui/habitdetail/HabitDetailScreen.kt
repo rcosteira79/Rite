@@ -94,7 +94,7 @@ fun HabitDetailScreen(
     modifier: Modifier = Modifier
 ) {
     val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec(
-        collapsedToolbarHeight = 64.dp
+        collapsedToolbarHeight = 56.dp
     )
 
     Scaffold(
