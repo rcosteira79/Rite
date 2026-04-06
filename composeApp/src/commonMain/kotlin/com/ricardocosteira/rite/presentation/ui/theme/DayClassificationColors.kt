@@ -23,7 +23,7 @@ data class DayClassificationColors(
 // Dark theme — from calendar design
 private val DarkDayClassificationColors = DayClassificationColors(
     perfect = Color(0xFF2D6B4A),
-    bestEffort = Color(0xFF2D5F5F),
+    bestEffort = Color(0xFF1F7A8A),
     partial = Color(0xFF3B5998),
     roughDay = Color(0xFF8B5E3C),
     failed = Color(0xFF8B3A3A),
@@ -34,7 +34,7 @@ private val DarkDayClassificationColors = DayClassificationColors(
 // Light theme
 private val LightDayClassificationColors = DayClassificationColors(
     perfect = Color(0xFF4CAF7A),
-    bestEffort = Color(0xFF4DB6AC),
+    bestEffort = Color(0xFF26A8BF),
     partial = Color(0xFF5C7CDB),
     roughDay = Color(0xFFCD8B62),
     failed = Color(0xFFE57373),
