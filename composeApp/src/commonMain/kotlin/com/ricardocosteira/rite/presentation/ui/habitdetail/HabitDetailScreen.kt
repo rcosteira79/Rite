@@ -201,8 +201,8 @@ fun HabitDetailScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
                     .verticalScroll(scrollState)
+                    .padding(paddingValues)
                     .padding(horizontal = 24.dp)
             ) {
                 // Category label
