@@ -415,7 +415,8 @@ class TodayViewModelSwipeTest {
         )
         val undoLastIncrement: UndoLastIncrement = UndoLastIncrement(
             habitInstanceRepository = habitInstanceRepository,
-            habitCompletionEventRepository = completionEventRepository
+            habitCompletionEventRepository = completionEventRepository,
+            habitRepository = habitRepository
         )
 
         suspend fun seedHabitWithTodayInstance(

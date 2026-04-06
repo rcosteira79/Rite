@@ -13,6 +13,7 @@
 - [ ] Check spec_notifications for missing notification features
 - [ ] Discard confirmation on create habit screen; on edit screen, only prompt if there are unsaved changes
 - [ ] Persist daily target value when switching between binary and quantitative habit types
+- [ ] Animate complete button and metrics in habit detail screen
 
 ## Future Features
 
