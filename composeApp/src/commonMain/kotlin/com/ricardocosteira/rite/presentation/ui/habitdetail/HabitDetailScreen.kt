@@ -106,10 +106,7 @@ fun HabitDetailScreen(
                     stackVertically = true,
                     collapsedElevation = 0.dp,
                     navigationIcon = {
-                        IconButton(
-                            onClick = onBackClick,
-                            modifier = Modifier.padding(start = 4.dp)
-                        ) {
+                        IconButton(onClick = onBackClick) {
                             Icon(
                                 Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = stringResource(Res.string.common_cd_back)
