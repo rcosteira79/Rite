@@ -103,7 +103,16 @@ fun HabitDetailScreen(
                     toolbarSpec = toolbarSpec,
                     backgroundColor = MaterialTheme.colorScheme.background,
                     centerContent = false,
-                    collapsedElevation = 0.dp
+                    stackVertically = true,
+                    collapsedElevation = 0.dp,
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(Res.string.common_cd_back)
+                            )
+                        }
+                    }
                 ) { scrollProgress ->
                     HabitDetailToolbarContent(
                         habitName = state.habit.name.uppercase(),
@@ -112,8 +121,7 @@ fun HabitDetailScreen(
                         } else {
                             stringResource(Res.string.habit_detail_category_quantitative)
                         },
-                        scrollProgress = scrollProgress,
-                        onBackClick = onBackClick
+                        scrollProgress = scrollProgress
                     )
                 }
             }
@@ -189,71 +197,36 @@ private fun HabitDetailToolbarContent(
     habitName: String,
     categoryLabel: String,
     scrollProgress: Float,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        // Back arrow — always visible, aligned left
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(Res.string.common_cd_back)
-                )
-            }
+    // Expanded: category label + habit name (full width, left-aligned)
+    // As user scrolls, category fades out and name shrinks/fades
+    // The collapsing toolbar handles the height reduction
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+    ) {
+        // Category label — fades out first
+        Text(
+            text = categoryLabel,
+            style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.sp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.alpha((1f - scrollProgress * 2f).coerceAtLeast(0f))
+        )
 
-            // Collapsed title — appears inline with the back arrow when scrolled
-            if (scrollProgress > 0.5f) {
-                Text(
-                    text = habitName,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.ExtraBold
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .weight(1f)
-                        .alpha((scrollProgress - 0.5f) * 2f),
-                    textAlign = TextAlign.Center
-                )
-                // Spacer to balance the back button for centering
-                Spacer(modifier = Modifier.size(48.dp))
-            }
-        }
+        Spacer(modifier = Modifier.height(4.dp))
 
-        // Expanded content — category + habit name, fades out on scroll
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .alpha(1f - (scrollProgress * 2f).coerceAtMost(1f))
-                .graphicsLayer {
-                    scaleY = (1f - scrollProgress).coerceAtLeast(0f)
-                    transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0f, 0f)
-                }
-        ) {
-            // Category label
-            Text(
-                text = categoryLabel,
-                style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.sp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        // Habit name
+        Text(
+            text = habitName,
+            style = MaterialTheme.typography.headlineLarge.copy(
+                fontWeight = FontWeight.ExtraBold
+            ),
+            color = MaterialTheme.colorScheme.onSurface
+        )
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Habit name — large
-            Text(
-                text = habitName,
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    fontWeight = FontWeight.ExtraBold
-                ),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
