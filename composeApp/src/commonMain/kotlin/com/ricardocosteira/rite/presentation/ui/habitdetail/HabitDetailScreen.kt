@@ -526,7 +526,7 @@ private fun QuantitativeActions(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "CURRENT ${habit.unit?.uppercase() ?: ""}".trim(),
+                            text = habit.unit?.uppercase() ?: "",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 letterSpacing = 0.5.sp
                             ),
