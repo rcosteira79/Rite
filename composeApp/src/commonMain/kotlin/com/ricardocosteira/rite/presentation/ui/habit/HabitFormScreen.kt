@@ -337,7 +337,8 @@ internal fun HabitFormScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
+                    //containerColor = Color.Transparent,
+                    containerColor = MaterialTheme.colorScheme.primary,
                     scrolledContainerColor = Color.Transparent
                 )
             )
@@ -347,8 +348,7 @@ internal fun HabitFormScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(top = paddingValues.calculateTopPadding())
-                .padding(bottom = paddingValues.calculateBottomPadding())
+                .padding(paddingValues)
                 .padding(horizontal = 24.dp, vertical = 20.dp)
         ) {
             // Heading

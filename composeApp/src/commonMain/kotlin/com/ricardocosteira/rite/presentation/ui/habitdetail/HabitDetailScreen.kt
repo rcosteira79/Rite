@@ -111,7 +111,8 @@ fun HabitDetailScreen(
             if (!state.isLoading && state.habit != null) {
                 DynamicCollapsingToolbar(
                     toolbarSpec = toolbarSpec,
-                    backgroundColor = MaterialTheme.colorScheme.background,
+                    //backgroundColor = MaterialTheme.colorScheme.background,
+                    backgroundColor = MaterialTheme.colorScheme.primary,
                     centerContent = false,
                     stackVertically = true,
                     collapsedElevation = 0.dp,
