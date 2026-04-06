@@ -48,6 +48,9 @@ private const val UNBOUNDED_SIZE = Int.MAX_VALUE
 /** Matches M3 TopAppBar internal horizontal padding (TopAppBarHorizontalPadding). */
 private val TOOLBAR_HORIZONTAL_PADDING = 4.dp
 
+/** Matches M3 TopAppBar vertical centering: (64dp container - 48dp icon) / 2 = 8dp. */
+private val TOOLBAR_VERTICAL_PADDING = 8.dp
+
 /**
  * @param stackVertically When true, the navigation icon is placed above the content in expanded
  * state, and the content gets full width. When collapsed, the nav icon stays top-left and the
@@ -172,6 +175,7 @@ private fun CollapsingToolbarLayout(
         modifier = modifier
     ) { measurables, constraints ->
         val horizontalPaddingPx: Int = TOOLBAR_HORIZONTAL_PADDING.roundToPx()
+        val verticalPaddingPx: Int = TOOLBAR_VERTICAL_PADDING.roundToPx()
 
         val navigationIconPlaceable = measurables
             .fastFirst { it.layoutId == "navigationIcon" }
@@ -187,8 +191,10 @@ private fun CollapsingToolbarLayout(
             .fastFirst { it.layoutId == "content" }
             .measure(constraints.copy(minWidth = 0, maxWidth = maxContentWidth))
 
+        val navIconHeightWithPadding: Int = navigationIconPlaceable.height + verticalPaddingPx * 2
+
         val expandedHeight: Int = if (stackVertically) {
-            navigationIconPlaceable.height + contentPlaceable.height
+            navIconHeightWithPadding + contentPlaceable.height
         } else {
             contentPlaceable.height
         }
@@ -227,16 +233,16 @@ private fun CollapsingToolbarLayout(
             backgroundContentPlaceable.placeRelative(x = 0, y = 0)
 
             if (stackVertically) {
-                // Nav icon at top-left with horizontal padding
+                // Nav icon at top-left with M3-matching padding
                 navigationIconPlaceable.placeRelative(
                     x = horizontalPaddingPx,
-                    y = 0
+                    y = verticalPaddingPx
                 )
 
-                // Content below nav icon in expanded, slides up as it collapses
+                // Content below nav icon (including its padding) in expanded
                 contentPlaceable.placeRelative(
                     x = 0,
-                    y = navigationIconPlaceable.height
+                    y = navIconHeightWithPadding
                 )
             } else {
                 navigationIconPlaceable.placeRelative(
