@@ -121,12 +121,13 @@ private fun HeatmapCell(day: HeatmapDay?, size: Dp, modifier: Modifier = Modifie
     val classificationColors = LocalDayClassificationColors.current
     val color = when {
         day == null -> classificationColors.noData
+        day.status == HabitStatus.FAILED -> classificationColors.failed
         day.status == HabitStatus.SKIPPED -> classificationColors.skipped
         day.status == HabitStatus.SUSPENDED -> classificationColors.noData
         day.completionPercentage >= 1.0f -> classificationColors.perfect
         day.completionPercentage >= 0.5f -> classificationColors.bestEffort
         day.completionPercentage > 0f -> classificationColors.partial
-        else -> classificationColors.failed
+        else -> classificationColors.noData
     }
 
     Box(
