@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-private val PrimaryButtonShape = RoundedCornerShape(28.dp)
+private val PrimaryButtonShape = RoundedCornerShape(16.dp)
 private val PrimaryButtonMinHeight = 56.dp
 
 @Composable
