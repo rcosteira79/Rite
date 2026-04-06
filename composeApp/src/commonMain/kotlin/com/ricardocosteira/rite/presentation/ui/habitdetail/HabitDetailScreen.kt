@@ -149,6 +149,19 @@ fun HabitDetailScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Action buttons — right under the ring for quick access
+                ActionButtons(
+                    state = state,
+                    onComplete = onComplete,
+                    onIncrementProgress = onIncrementProgress,
+                    onCustomProgress = onCustomProgress,
+                    onSkip = onSkip,
+                    onUndo = onUndo,
+                    onUndoIncrement = onUndoIncrement
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
                 // Stats row in cards
                 StatsRow(state = state)
 
@@ -171,19 +184,6 @@ fun HabitDetailScreen(
                 HeatmapGrid(
                     heatmapData = state.heatmapData,
                     modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // Action buttons
-                ActionButtons(
-                    state = state,
-                    onComplete = onComplete,
-                    onIncrementProgress = onIncrementProgress,
-                    onCustomProgress = onCustomProgress,
-                    onSkip = onSkip,
-                    onUndo = onUndo,
-                    onUndoIncrement = onUndoIncrement
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))

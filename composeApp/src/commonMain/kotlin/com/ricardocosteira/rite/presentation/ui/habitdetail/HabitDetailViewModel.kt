@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.rite.domain.models.CompletionSource
 import com.ricardocosteira.rite.domain.models.HabitInstance
 import com.ricardocosteira.rite.domain.models.HabitStatus
+import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.rite.domain.repositories.HabitRepository
 import com.ricardocosteira.rite.domain.repositories.UserRepository
@@ -126,8 +127,15 @@ class HabitDetailViewModel(
 
     fun undo() {
         val instanceId: String = _state.value.instance?.id ?: return
+        val habit = _state.value.habit
         viewModelScope.launch {
-            undoHabit.execute(instanceId)
+            if (habit?.type == HabitType.QUANTITATIVE && _state.value.isCompleted) {
+                // For completed quantitative habits, undo last increment (revert to previous progress)
+                undoLastIncrement.execute(instanceId)
+            } else {
+                // For binary habits or skipped habits, full undo
+                undoHabit.execute(instanceId)
+            }
             loadDetail()
         }
     }
