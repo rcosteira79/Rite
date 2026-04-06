@@ -167,6 +167,15 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                         onNavigateBack = {
                             backStack.removeLastOrNull()
                             todayViewModel.loadTodayHabits()
+                        },
+                        onEditHabit = { habitId ->
+                            backStack.add(EditHabit(habitId))
+                        },
+                        onArchiveHabit = {
+                            // TODO: archive from detail screen
+                        },
+                        onDeleteHabit = {
+                            // TODO: delete from detail screen
                         }
                     )
                 }

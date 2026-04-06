@@ -19,6 +19,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.SkipNext
 import androidx.compose.material3.CircularProgressIndicator
@@ -60,6 +62,7 @@ import rite.composeapp.generated.resources.habit_detail_action_undo
 import rite.composeapp.generated.resources.habit_detail_action_undo_last
 import rite.composeapp.generated.resources.habit_detail_category_binary
 import rite.composeapp.generated.resources.habit_detail_category_quantitative
+import rite.composeapp.generated.resources.habit_detail_cd_edit
 import rite.composeapp.generated.resources.habit_detail_enforcement_limits
 import rite.composeapp.generated.resources.habit_detail_heatmap_title
 import rite.composeapp.generated.resources.habit_detail_progress
@@ -70,6 +73,8 @@ import rite.composeapp.generated.resources.habit_detail_stat_current_streak
 import rite.composeapp.generated.resources.habit_detail_stat_days
 import rite.composeapp.generated.resources.habit_detail_stat_habit_score
 import rite.composeapp.generated.resources.habit_detail_stat_longest_streak
+import rite.composeapp.generated.resources.habit_form_cd_archive
+import rite.composeapp.generated.resources.habit_form_cd_delete
 
 private val RING_SIZE = 120.dp
 private val RING_STROKE_WIDTH = 6.dp
@@ -91,6 +96,9 @@ fun HabitDetailScreen(
     onSkip: () -> Unit,
     onUndo: () -> Unit,
     onUndoIncrement: () -> Unit,
+    onEditHabit: () -> Unit,
+    onArchiveHabit: () -> Unit,
+    onDeleteHabit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec(
@@ -113,6 +121,38 @@ fun HabitDetailScreen(
                                 Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = stringResource(Res.string.common_cd_back)
                             )
+                        }
+                    },
+                    actions = {
+                        Row {
+                            IconButton(onClick = onEditHabit) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = stringResource(
+                                        Res.string.habit_detail_cd_edit
+                                    ),
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                            IconButton(onClick = onArchiveHabit) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Inventory2,
+                                    contentDescription = stringResource(
+                                        Res.string.habit_form_cd_archive
+                                    ),
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                            IconButton(onClick = onDeleteHabit) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Delete,
+                                    contentDescription = stringResource(
+                                        Res.string.habit_form_cd_delete
+                                    ),
+                                    tint = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
                         }
                     }
                 ) { scrollProgress ->

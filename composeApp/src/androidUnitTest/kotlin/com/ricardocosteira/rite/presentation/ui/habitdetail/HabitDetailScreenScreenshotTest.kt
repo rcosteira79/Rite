@@ -112,7 +112,10 @@ class HabitDetailScreenScreenshotTest {
                     onCustomProgress = {},
                     onSkip = {},
                     onUndo = {},
-                    onUndoIncrement = {}
+                    onUndoIncrement = {},
+                    onEditHabit = {},
+                    onArchiveHabit = {},
+                    onDeleteHabit = {}
                 )
             }
         }
@@ -137,7 +140,10 @@ class HabitDetailScreenScreenshotTest {
                     onCustomProgress = {},
                     onSkip = {},
                     onUndo = {},
-                    onUndoIncrement = {}
+                    onUndoIncrement = {},
+                    onEditHabit = {},
+                    onArchiveHabit = {},
+                    onDeleteHabit = {}
                 )
             }
         }
@@ -162,7 +168,10 @@ class HabitDetailScreenScreenshotTest {
                     onCustomProgress = {},
                     onSkip = {},
                     onUndo = {},
-                    onUndoIncrement = {}
+                    onUndoIncrement = {},
+                    onEditHabit = {},
+                    onArchiveHabit = {},
+                    onDeleteHabit = {}
                 )
             }
         }
@@ -187,7 +196,10 @@ class HabitDetailScreenScreenshotTest {
                     onCustomProgress = {},
                     onSkip = {},
                     onUndo = {},
-                    onUndoIncrement = {}
+                    onUndoIncrement = {},
+                    onEditHabit = {},
+                    onArchiveHabit = {},
+                    onDeleteHabit = {}
                 )
             }
         }

@@ -14,6 +14,9 @@ import com.ricardocosteira.rite.presentation.ui.today.QuantitativeInputBottomShe
 fun HabitDetailRoute(
     instanceId: String,
     onNavigateBack: () -> Unit,
+    onEditHabit: (String) -> Unit,
+    onArchiveHabit: () -> Unit,
+    onDeleteHabit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val factory = LocalAppComponent.current.habitDetailViewModelFactory
@@ -29,6 +32,9 @@ fun HabitDetailRoute(
         onSkip = viewModel::skip,
         onUndo = viewModel::undo,
         onUndoIncrement = viewModel::undoIncrement,
+        onEditHabit = { state.habit?.id?.let(onEditHabit) },
+        onArchiveHabit = onArchiveHabit,
+        onDeleteHabit = onDeleteHabit,
         modifier = modifier
     )
 

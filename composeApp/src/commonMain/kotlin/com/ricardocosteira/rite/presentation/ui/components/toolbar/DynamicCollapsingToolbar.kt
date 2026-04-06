@@ -63,6 +63,7 @@ fun DynamicCollapsingToolbar(
     stackVertically: Boolean = false,
     collapsedElevation: Dp = 2.dp,
     navigationIcon: @Composable () -> Unit = { },
+    actions: @Composable () -> Unit = { },
     navigationIconVerticalArrangement: Arrangement.Vertical = Arrangement.Top,
     bottomHorizontalDivider: @Composable () -> Unit = { },
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
@@ -113,6 +114,7 @@ fun DynamicCollapsingToolbar(
             scrollProgress = { toolbarSpec.state.collapsedFraction },
             onScrollOffsetLimitUpdate = { toolbarSpec.heightOffsetLimit = it },
             navigationIcon = navigationIcon,
+            actions = actions,
             navigationIconVerticalArrangement = navigationIconVerticalArrangement,
             centerContent = centerContent,
             stackVertically = stackVertically,
@@ -139,6 +141,7 @@ private fun CollapsingToolbarLayout(
     scrollProgress: () -> Float,
     onScrollOffsetLimitUpdate: (Float) -> Unit,
     navigationIcon: @Composable () -> Unit,
+    actions: @Composable () -> Unit,
     navigationIconVerticalArrangement: Arrangement.Vertical,
     centerContent: Boolean,
     stackVertically: Boolean,
@@ -161,6 +164,13 @@ private fun CollapsingToolbarLayout(
             Box(
                 Modifier
                     .windowInsetsPadding(windowInsets)
+                    .layoutId("actions")
+            ) {
+                actions()
+            }
+            Box(
+                Modifier
+                    .windowInsetsPadding(windowInsets)
                     .layoutId("content")
             ) {
                 content(scrollProgress())
@@ -175,6 +185,10 @@ private fun CollapsingToolbarLayout(
 
         val navigationIconPlaceable = measurables
             .fastFirst { it.layoutId == "navigationIcon" }
+            .measure(constraints.copy(minWidth = 0))
+
+        val actionsPlaceable = measurables
+            .fastFirst { it.layoutId == "actions" }
             .measure(constraints.copy(minWidth = 0))
 
         val maxContentWidth = if (stackVertically || constraints.maxWidth == UNBOUNDED_SIZE) {
@@ -229,6 +243,21 @@ private fun CollapsingToolbarLayout(
 
         layout(constraints.maxWidth, layoutHeight.coerceAtLeast(0)) {
             backgroundContentPlaceable.placeRelative(x = 0, y = 0)
+
+            // Actions: top-right, centered vertically within collapsed row
+            val actionsY: Int = if (stackVertically) {
+                (collapsedRowHeight - actionsPlaceable.height) / 2
+            } else {
+                when (navigationIconVerticalArrangement) {
+                    Arrangement.Center -> (layoutHeight - actionsPlaceable.height) / 2
+                    Arrangement.Bottom -> layoutHeight - actionsPlaceable.height
+                    else -> 0
+                }
+            }
+            actionsPlaceable.placeRelative(
+                x = constraints.maxWidth - actionsPlaceable.width - horizontalPaddingPx,
+                y = actionsY.coerceAtLeast(0)
+            )
 
             if (stackVertically) {
                 // Nav icon centered within the collapsed row height
