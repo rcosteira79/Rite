@@ -45,25 +45,14 @@ import kotlin.math.roundToInt
 const val COLLAPSING_TOOLBAR_TEST_TAG = "collapsing_toolbar"
 private const val UNBOUNDED_SIZE = Int.MAX_VALUE
 
-/** Matches M3 TopAppBar internal horizontal padding (TopAppBarHorizontalPadding). */
-private val TOOLBAR_HORIZONTAL_PADDING = 4.dp
-
-/**
- * @param stackVertically When true, the navigation icon is placed above the content in expanded
- * state, and the content gets full width. When collapsed, the nav icon stays top-left and the
- * content collapses into the nav icon row. When false (default), nav icon and content are
- * placed side by side.
- */
 @Composable
 fun DynamicCollapsingToolbar(
     toolbarSpec: CollapsingToolbarSpec,
     backgroundColor: Color,
     modifier: Modifier = Modifier,
     centerContent: Boolean = true,
-    stackVertically: Boolean = false,
     collapsedElevation: Dp = 2.dp,
     navigationIcon: @Composable () -> Unit = { },
-    actions: @Composable () -> Unit = { },
     navigationIconVerticalArrangement: Arrangement.Vertical = Arrangement.Top,
     bottomHorizontalDivider: @Composable () -> Unit = { },
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
@@ -114,10 +103,8 @@ fun DynamicCollapsingToolbar(
             scrollProgress = { toolbarSpec.state.collapsedFraction },
             onScrollOffsetLimitUpdate = { toolbarSpec.heightOffsetLimit = it },
             navigationIcon = navigationIcon,
-            actions = actions,
             navigationIconVerticalArrangement = navigationIconVerticalArrangement,
             centerContent = centerContent,
-            stackVertically = stackVertically,
             bottomHorizontalDivider = bottomHorizontalDivider,
             backgroundContent = backgroundContent,
             content = { scrollProgress ->
@@ -141,10 +128,8 @@ private fun CollapsingToolbarLayout(
     scrollProgress: () -> Float,
     onScrollOffsetLimitUpdate: (Float) -> Unit,
     navigationIcon: @Composable () -> Unit,
-    actions: @Composable () -> Unit,
     navigationIconVerticalArrangement: Arrangement.Vertical,
     centerContent: Boolean,
-    stackVertically: Boolean,
     bottomHorizontalDivider: @Composable () -> Unit,
     backgroundContent: @Composable (scrollProgress: Float) -> Unit,
     content: @Composable (scrollProgress: Float) -> Unit
@@ -164,13 +149,6 @@ private fun CollapsingToolbarLayout(
             Box(
                 Modifier
                     .windowInsetsPadding(windowInsets)
-                    .layoutId("actions")
-            ) {
-                actions()
-            }
-            Box(
-                Modifier
-                    .windowInsetsPadding(windowInsets)
                     .layoutId("content")
             ) {
                 content(scrollProgress())
@@ -181,17 +159,11 @@ private fun CollapsingToolbarLayout(
         },
         modifier = modifier
     ) { measurables, constraints ->
-        val horizontalPaddingPx: Int = TOOLBAR_HORIZONTAL_PADDING.roundToPx()
-
         val navigationIconPlaceable = measurables
             .fastFirst { it.layoutId == "navigationIcon" }
             .measure(constraints.copy(minWidth = 0))
 
-        val actionsPlaceable = measurables
-            .fastFirst { it.layoutId == "actions" }
-            .measure(constraints.copy(minWidth = 0))
-
-        val maxContentWidth = if (stackVertically || constraints.maxWidth == UNBOUNDED_SIZE) {
+        val maxContentWidth = if (constraints.maxWidth == UNBOUNDED_SIZE) {
             constraints.maxWidth
         } else {
             (constraints.maxWidth - navigationIconPlaceable.width).coerceAtLeast(0)
@@ -201,30 +173,20 @@ private fun CollapsingToolbarLayout(
             .fastFirst { it.layoutId == "content" }
             .measure(constraints.copy(minWidth = 0, maxWidth = maxContentWidth))
 
-        // In stacked mode, the collapsed row height is the min height (from collapsedHeight).
-        // The nav icon is centered within that row, and expanded content goes below it.
-        val collapsedRowHeight: Int = constraints.minHeight
-
-        val expandedHeight: Int = if (stackVertically) {
-            collapsedRowHeight + contentPlaceable.height
-        } else {
-            contentPlaceable.height
-        }
-
         // Only update offset limit when content is at max height (expanded state)
         val currentScrollProgress = scrollProgress()
         if (currentScrollProgress == 0f) {
-            onScrollOffsetLimitUpdate((constraints.minHeight - expandedHeight).toFloat())
+            onScrollOffsetLimitUpdate((constraints.minHeight - contentPlaceable.height).toFloat())
         }
 
         // ScrolledOffset is expected to be equal or smaller than zero.
         val scrolledOffsetValue = scrolledOffset()
         val heightOffset = if (scrolledOffsetValue.isNaN()) 0 else scrolledOffsetValue.roundToInt()
 
-        val layoutHeight = if (expandedHeight == UNBOUNDED_SIZE) {
-            expandedHeight
+        val layoutHeight = if (contentPlaceable.height == UNBOUNDED_SIZE) {
+            contentPlaceable.height
         } else {
-            expandedHeight + heightOffset
+            contentPlaceable.height + heightOffset
         }
 
         val backgroundContentPlaceable = measurables
@@ -244,60 +206,29 @@ private fun CollapsingToolbarLayout(
         layout(constraints.maxWidth, layoutHeight.coerceAtLeast(0)) {
             backgroundContentPlaceable.placeRelative(x = 0, y = 0)
 
-            // Actions: top-right, centered vertically within collapsed row
-            val actionsY: Int = if (stackVertically) {
-                (collapsedRowHeight - actionsPlaceable.height) / 2
-            } else {
-                when (navigationIconVerticalArrangement) {
-                    Arrangement.Center -> (layoutHeight - actionsPlaceable.height) / 2
-                    Arrangement.Bottom -> layoutHeight - actionsPlaceable.height
+            navigationIconPlaceable.placeRelative(
+                x = 0,
+                y = when (navigationIconVerticalArrangement) {
+                    Arrangement.Center -> (layoutHeight - navigationIconPlaceable.height) / 2
+                    Arrangement.Bottom -> layoutHeight - navigationIconPlaceable.height
                     else -> 0
                 }
-            }
-            actionsPlaceable.placeRelative(
-                x = constraints.maxWidth - actionsPlaceable.width - horizontalPaddingPx,
-                y = actionsY.coerceAtLeast(0)
             )
 
-            if (stackVertically) {
-                // Nav icon centered within the collapsed row height
-                // (placeables include windowInsetsPadding, so insets cancel out in centering)
-                val navIconY: Int =
-                    (collapsedRowHeight - navigationIconPlaceable.height) / 2
-                navigationIconPlaceable.placeRelative(
-                    x = horizontalPaddingPx,
-                    y = navIconY.coerceAtLeast(0)
-                )
-
-                // Content below the collapsed row area
-                contentPlaceable.placeRelative(
-                    x = 0,
-                    y = collapsedRowHeight
-                )
-            } else {
-                navigationIconPlaceable.placeRelative(
-                    x = horizontalPaddingPx,
-                    y = when (navigationIconVerticalArrangement) {
-                        Arrangement.Center -> (layoutHeight - navigationIconPlaceable.height) / 2
-                        Arrangement.Bottom -> layoutHeight - navigationIconPlaceable.height
-                        else -> 0
-                    }
-                )
-
-                var baseX = (constraints.maxWidth - contentPlaceable.width) / 2
-                if (!centerContent && baseX < navigationIconPlaceable.width + horizontalPaddingPx) {
-                    baseX += (navigationIconPlaceable.width + horizontalPaddingPx - baseX)
-                }
-
-                contentPlaceable.placeRelative(
-                    x = baseX,
-                    y = (layoutHeight - contentPlaceable.height) / 2
-                )
+            var baseX = (constraints.maxWidth - contentPlaceable.width) / 2
+            if (!centerContent && baseX < navigationIconPlaceable.width) {
+                // May happen if the navigation is wide and the title is long. In this case, prioritize
+                // showing more of the title by offsetting it to the right.
+                baseX += (navigationIconPlaceable.width - baseX)
             }
 
+            contentPlaceable.placeRelative(
+                x = baseX,
+                y = (layoutHeight - contentPlaceable.height) / 2
+            )
             dividerPlaceable.placeRelative(
                 x = 0,
-                y = layoutHeight - dividerPlaceable.height
+                y = contentPlaceable.height - dividerPlaceable.height
             )
         }
     }
@@ -311,10 +242,16 @@ private suspend fun settleAppBar(
     flingAnimationSpec: DecayAnimationSpec<Float>?,
     snapAnimationSpec: AnimationSpec<Float>?
 ): Velocity {
+    // Check if the app bar is completely collapsed/expanded. If so, no need to settle the app bar,
+    // and just return Zero Velocity.
+    // Note that we don't check for 0f due to float precision with the collapsedFraction
+    // calculation.
     if (state.collapsedFraction < 0.01f || state.collapsedFraction == 1f) {
         return Velocity.Zero
     }
     var remainingVelocity = velocity
+    // In case there is an initial velocity that was left after a previous user fling, animate to
+    // continue the motion to expand or collapse the app bar.
     if (flingAnimationSpec != null && abs(velocity) > 1f) {
         var lastValue = 0f
         AnimationState(
@@ -328,9 +265,11 @@ private suspend fun settleAppBar(
                 val consumed = abs(initialHeightOffset - state.heightOffset)
                 lastValue = value
                 remainingVelocity = this.velocity
+                // avoid rounding errors and stop if anything is unconsumed
                 if (abs(delta - consumed) > 0.5f) this.cancelAnimation()
             }
     }
+    // Snap if animation specs were provided.
     if (snapAnimationSpec != null) {
         if (state.heightOffset < 0 && state.heightOffset > state.heightOffsetLimit) {
             AnimationState(initialValue = state.heightOffset).animateTo(

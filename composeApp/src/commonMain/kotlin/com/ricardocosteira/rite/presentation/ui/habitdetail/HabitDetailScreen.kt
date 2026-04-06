@@ -33,6 +33,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -40,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
@@ -101,73 +104,54 @@ fun HabitDetailScreen(
     onDeleteHabit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec(
-        collapsedToolbarHeight = 64.dp
-    )
-
     Scaffold(
-        modifier = modifier.nestedScroll(toolbarSpec.nestedScrollConnection),
+        modifier = modifier,
         topBar = {
-            if (!state.isLoading && state.habit != null) {
-                DynamicCollapsingToolbar(
-                    toolbarSpec = toolbarSpec,
-                    //backgroundColor = MaterialTheme.colorScheme.background,
-                    backgroundColor = MaterialTheme.colorScheme.primary,
-                    centerContent = false,
-                    stackVertically = true,
-                    collapsedElevation = 0.dp,
-                    navigationIcon = {
-                        IconButton(onClick = onBackClick) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(Res.string.common_cd_back)
-                            )
-                        }
-                    },
-                    actions = {
-                        Row {
-                            IconButton(onClick = onEditHabit) {
-                                Icon(
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = stringResource(
-                                        Res.string.habit_detail_cd_edit
-                                    ),
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                            IconButton(onClick = onArchiveHabit) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Inventory2,
-                                    contentDescription = stringResource(
-                                        Res.string.habit_form_cd_archive
-                                    ),
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                            IconButton(onClick = onDeleteHabit) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Delete,
-                                    contentDescription = stringResource(
-                                        Res.string.habit_form_cd_delete
-                                    ),
-                                    tint = MaterialTheme.colorScheme.error,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                        }
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(Res.string.common_cd_back)
+                        )
                     }
-                ) { scrollProgress ->
-                    HabitDetailToolbarContent(
-                        habitName = state.habit.name.uppercase(),
-                        categoryLabel = if (state.habit.type == HabitType.BINARY) {
-                            stringResource(Res.string.habit_detail_category_binary)
-                        } else {
-                            stringResource(Res.string.habit_detail_category_quantitative)
-                        },
-                        scrollProgress = scrollProgress
-                    )
-                }
-            }
+                },
+                actions = {
+                    IconButton(onClick = onEditHabit) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(
+                                Res.string.habit_detail_cd_edit
+                            ),
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                    IconButton(onClick = onArchiveHabit) {
+                        Icon(
+                            imageVector = Icons.Outlined.Inventory2,
+                            contentDescription = stringResource(
+                                Res.string.habit_form_cd_archive
+                            ),
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                    IconButton(onClick = onDeleteHabit) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = stringResource(
+                                Res.string.habit_form_cd_delete
+                            ),
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = Color.Transparent
+                )
+            )
         }
     ) { paddingValues ->
         if (state.isLoading || state.habit == null || state.instance == null) {
@@ -185,7 +169,29 @@ fun HabitDetailScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp)
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
+                // Category label
+                Text(
+                    text = if (state.habit.type == HabitType.BINARY) {
+                        stringResource(Res.string.habit_detail_category_binary)
+                    } else {
+                        stringResource(Res.string.habit_detail_category_quantitative)
+                    },
+                    style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.sp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Habit name
+                Text(
+                    text = state.habit.name.uppercase(),
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.ExtraBold
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
 
                 // Progress ring in card
                 ProgressRingCard(state = state)
@@ -232,44 +238,6 @@ fun HabitDetailScreen(
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
-    }
-}
-
-@Composable
-private fun HabitDetailToolbarContent(
-    habitName: String,
-    categoryLabel: String,
-    scrollProgress: Float,
-    modifier: Modifier = Modifier
-) {
-    // Expanded: category label + habit name (full width, left-aligned)
-    // As user scrolls, category fades out and name shrinks/fades
-    // The collapsing toolbar handles the height reduction
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-    ) {
-        // Category label — fades out first
-        Text(
-            text = categoryLabel,
-            style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.sp),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.alpha((1f - scrollProgress * 2f).coerceAtLeast(0f))
-        )
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        // Habit name
-        Text(
-            text = habitName,
-            style = MaterialTheme.typography.headlineLarge.copy(
-                fontWeight = FontWeight.ExtraBold
-            ),
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
