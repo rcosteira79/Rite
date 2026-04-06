@@ -19,10 +19,10 @@
     <string name="habit_detail_action_undo">Undo</string>
     <string name="habit_detail_action_undo_last">Undo last</string>
     <string name="habit_detail_enforcement_limits">ENFORCEMENT LIMITS</string>
-    <string name="habit_detail_heatmap_none">None</string>
+    <string name="habit_detail_heatmap_perfect">Perfect</string>
+    <string name="habit_detail_heatmap_best_effort">Best Effort</string>
     <string name="habit_detail_heatmap_partial">Partial</string>
-    <string name="habit_detail_heatmap_almost">Almost</string>
-    <string name="habit_detail_heatmap_complete">Complete</string>
+    <string name="habit_detail_heatmap_failed">Failed</string>
     <string name="habit_detail_heatmap_skipped">Skipped</string>
     <string name="habit_detail_cd_edit">Edit habit</string>
     <string name="habit_detail_progress">%1$d of %2$d %3$s</string>

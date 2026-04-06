@@ -3,6 +3,7 @@ package com.ricardocosteira.rite.presentation.ui.theme
 import android.app.Activity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -19,5 +20,12 @@ actual fun RiteTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
         }
     }
 
-    MaterialTheme(colorScheme = colorScheme, typography = habitLockTypography(), content = content)
+    val classificationColors = dayClassificationColors(isDarkTheme = darkTheme)
+    CompositionLocalProvider(LocalDayClassificationColors provides classificationColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = habitLockTypography(),
+            content = content
+        )
+    }
 }

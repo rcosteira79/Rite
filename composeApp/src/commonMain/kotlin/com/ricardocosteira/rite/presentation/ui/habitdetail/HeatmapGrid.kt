@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitStatus
+import com.ricardocosteira.rite.presentation.ui.theme.LocalDayClassificationColors
 import com.ricardocosteira.rite.util.todayIn
 import kotlin.time.Clock
 import kotlinx.datetime.DatePeriod
@@ -29,10 +30,10 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
-import rite.composeapp.generated.resources.habit_detail_heatmap_almost
-import rite.composeapp.generated.resources.habit_detail_heatmap_complete
-import rite.composeapp.generated.resources.habit_detail_heatmap_none
+import rite.composeapp.generated.resources.habit_detail_heatmap_best_effort
+import rite.composeapp.generated.resources.habit_detail_heatmap_failed
 import rite.composeapp.generated.resources.habit_detail_heatmap_partial
+import rite.composeapp.generated.resources.habit_detail_heatmap_perfect
 import rite.composeapp.generated.resources.habit_detail_heatmap_skipped
 
 private val CELL_GAP = 2.dp
@@ -117,14 +118,15 @@ fun HeatmapGrid(heatmapData: List<HeatmapDay>, modifier: Modifier = Modifier) {
 
 @Composable
 private fun HeatmapCell(day: HeatmapDay?, size: Dp, modifier: Modifier = Modifier) {
+    val classificationColors = LocalDayClassificationColors.current
     val color = when {
-        day == null -> MaterialTheme.colorScheme.surfaceContainerLow
-        day.status == HabitStatus.SKIPPED -> MaterialTheme.colorScheme.outlineVariant
-        day.status == HabitStatus.SUSPENDED -> MaterialTheme.colorScheme.surfaceContainerLow
-        day.completionPercentage >= 1.0f -> MaterialTheme.colorScheme.primary
-        day.completionPercentage >= 0.5f -> MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
-        day.completionPercentage > 0f -> MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-        else -> MaterialTheme.colorScheme.surfaceContainerHigh
+        day == null -> classificationColors.noData
+        day.status == HabitStatus.SKIPPED -> classificationColors.skipped
+        day.status == HabitStatus.SUSPENDED -> classificationColors.noData
+        day.completionPercentage >= 1.0f -> classificationColors.perfect
+        day.completionPercentage >= 0.5f -> classificationColors.bestEffort
+        day.completionPercentage > 0f -> classificationColors.partial
+        else -> classificationColors.failed
     }
 
     Box(
@@ -136,33 +138,34 @@ private fun HeatmapCell(day: HeatmapDay?, size: Dp, modifier: Modifier = Modifie
 
 @Composable
 private fun HeatmapLegend(cellSize: Dp, modifier: Modifier = Modifier) {
+    val classificationColors = LocalDayClassificationColors.current
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         LegendItem(
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            label = stringResource(Res.string.habit_detail_heatmap_none),
+            color = classificationColors.perfect,
+            label = stringResource(Res.string.habit_detail_heatmap_perfect),
             size = cellSize
         )
         LegendItem(
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+            color = classificationColors.bestEffort,
+            label = stringResource(Res.string.habit_detail_heatmap_best_effort),
+            size = cellSize
+        )
+        LegendItem(
+            color = classificationColors.partial,
             label = stringResource(Res.string.habit_detail_heatmap_partial),
             size = cellSize
         )
         LegendItem(
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
-            label = stringResource(Res.string.habit_detail_heatmap_almost),
+            color = classificationColors.failed,
+            label = stringResource(Res.string.habit_detail_heatmap_failed),
             size = cellSize
         )
         LegendItem(
-            color = MaterialTheme.colorScheme.primary,
-            label = stringResource(Res.string.habit_detail_heatmap_complete),
-            size = cellSize
-        )
-        LegendItem(
-            color = MaterialTheme.colorScheme.outlineVariant,
+            color = classificationColors.skipped,
             label = stringResource(Res.string.habit_detail_heatmap_skipped),
             size = cellSize
         )
