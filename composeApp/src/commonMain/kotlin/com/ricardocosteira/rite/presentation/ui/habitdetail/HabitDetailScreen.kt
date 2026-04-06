@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.SkipNext
 import androidx.compose.material3.CircularProgressIndicator
@@ -395,76 +396,249 @@ private fun ActionButtons(
     modifier: Modifier = Modifier
 ) {
     val habit = state.habit ?: return
-    val hasProgress: Boolean = (state.instance?.currentProgress ?: 0) > 0
 
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        if (habit.type == HabitType.BINARY) {
+            BinaryActions(
+                state = state,
+                onComplete = onComplete,
+                onUndo = onUndo,
+                onSkip = onSkip
+            )
+        } else {
+            QuantitativeActions(
+                state = state,
+                onIncrementProgress = onIncrementProgress,
+                onUndoIncrement = onUndoIncrement,
+                onCustomProgress = onCustomProgress,
+                onUndo = onUndo,
+                onSkip = onSkip
+            )
+        }
+    }
+}
+
+@Composable
+private fun BinaryActions(
+    state: HabitDetailState,
+    onComplete: () -> Unit,
+    onUndo: () -> Unit,
+    onSkip: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         if (state.isResolved && (state.isCompleted || state.isSkipped)) {
-            // Undo button when completed or skipped (both binary and quantitative)
             PrimaryButton(onClick = onUndo) {
                 Text(stringResource(Res.string.habit_detail_action_undo))
             }
-        } else if (habit.type == HabitType.BINARY) {
+        } else {
+            // "Complete" primary button
             PrimaryButton(
                 onClick = onComplete,
                 enabled = !state.isResolved
             ) {
                 Text(stringResource(Res.string.habit_detail_action_complete))
             }
+        }
+
+        // Skip row (when not resolved)
+        if (!state.isResolved) {
+            SkipRow(onSkip = onSkip, isSkipLocked = state.isSkipLocked)
+        }
+    }
+}
+
+private val STEPPER_BUTTON_SIZE = 48.dp
+
+@Composable
+private fun QuantitativeActions(
+    state: HabitDetailState,
+    onIncrementProgress: () -> Unit,
+    onUndoIncrement: () -> Unit,
+    onCustomProgress: () -> Unit,
+    onUndo: () -> Unit,
+    onSkip: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val habit = state.habit ?: return
+    val instance = state.instance ?: return
+    val hasProgress: Boolean = instance.currentProgress > 0
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        if (state.isResolved && (state.isCompleted || state.isSkipped)) {
+            PrimaryButton(onClick = onUndo) {
+                Text(stringResource(Res.string.habit_detail_action_undo))
+            }
         } else {
-            // Quantitative: +N button
-            PrimaryButton(
-                onClick = onIncrementProgress,
-                enabled = !state.isResolved
+            // Quantity stepper
+            Surface(
+                shape = RoundedCornerShape(CARD_CORNER),
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                val increment: Int = habit.defaultIncrement
-                val unit: String = habit.unit?.uppercase() ?: ""
-                Text("+$increment $unit")
-            }
-
-            // Custom button
-            OutlinedButton(
-                onClick = onCustomProgress,
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !state.isSkipped && !state.isFailed
-            ) {
-                Text(stringResource(Res.string.habit_detail_action_custom))
-            }
-
-            // Undo last increment (when there's progress to undo)
-            if (hasProgress && !state.isResolved) {
-                TextButton(
-                    onClick = onUndoIncrement,
-                    modifier = Modifier.fillMaxWidth()
+                Row(
+                    modifier = Modifier.padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        text = stringResource(Res.string.habit_detail_action_undo_last),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    // Minus button
+                    Surface(
+                        onClick = onUndoIncrement,
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surface,
+                        enabled = hasProgress,
+                        modifier = Modifier.size(STEPPER_BUTTON_SIZE)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = "−",
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = if (hasProgress) {
+                                    MaterialTheme.colorScheme.onSurface
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                }
+                            )
+                        }
+                    }
+
+                    // Current value + unit label
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "${instance.currentProgress}",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontWeight = FontWeight.ExtraBold
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "CURRENT ${habit.unit?.uppercase() ?: ""}".trim(),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                letterSpacing = 0.5.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    // Plus button
+                    Surface(
+                        onClick = onIncrementProgress,
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier.size(STEPPER_BUTTON_SIZE)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = "+",
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
                 }
             }
         }
 
-        // Skip button (when not resolved)
+        // Skip row + edit (custom input) button
         if (!state.isResolved) {
-            TextButton(
-                onClick = onSkip,
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !state.isSkipLocked
+            SkipRow(
+                onSkip = onSkip,
+                isSkipLocked = state.isSkipLocked,
+                trailingButton = {
+                    Surface(
+                        onClick = onCustomProgress,
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        modifier = Modifier.size(STEPPER_BUTTON_SIZE)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = stringResource(
+                                    Res.string.habit_detail_action_custom
+                                ),
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun SkipRow(
+    onSkip: () -> Unit,
+    isSkipLocked: Boolean,
+    modifier: Modifier = Modifier,
+    trailingButton: @Composable (() -> Unit)? = null
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Surface(
+            onClick = onSkip,
+            shape = RoundedCornerShape(CARD_CORNER),
+            color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
+            enabled = !isSkipLocked,
+            modifier = Modifier.weight(1f).height(STEPPER_BUTTON_SIZE)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                Icon(
+                    imageVector = Icons.Outlined.SkipNext,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = if (!isSkipLocked) {
+                        MaterialTheme.colorScheme.onSecondaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.38f)
+                    }
+                )
+                Spacer(modifier = Modifier.size(6.dp))
                 Text(
                     text = stringResource(Res.string.habit_detail_action_skip),
                     style = MaterialTheme.typography.labelLarge,
-                    color = if (!state.isSkipLocked) {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                    color = if (!isSkipLocked) {
+                        MaterialTheme.colorScheme.onSecondaryContainer
                     } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
+                        MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.38f)
                     }
                 )
             }
+        }
+
+        if (trailingButton != null) {
+            trailingButton()
         }
     }
 }
