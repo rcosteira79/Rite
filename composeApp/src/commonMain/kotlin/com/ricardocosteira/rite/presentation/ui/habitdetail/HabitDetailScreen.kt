@@ -1,8 +1,10 @@
 package com.ricardocosteira.rite.presentation.ui.habitdetail
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +29,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -36,7 +39,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -104,13 +109,28 @@ fun HabitDetailScreen(
     onDeleteHabit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scrollState: ScrollState = rememberScrollState()
+    val isScrolled: Boolean by remember { derivedStateOf { scrollState.value > 0 } }
+    val filledColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest
+    val targetColor: Color = if (isScrolled) filledColor else filledColor.copy(alpha = 0f)
+    val iconContainerColor: Color by animateColorAsState(
+        targetValue = targetColor,
+        animationSpec = tween(durationMillis = 200),
+        label = "iconContainerColor"
+    )
+
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {},
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
+                    IconButton(
+                        onClick = onBackClick,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = iconContainerColor
+                        )
+                    ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(Res.string.common_cd_back)
@@ -118,7 +138,12 @@ fun HabitDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = onEditHabit) {
+                    IconButton(
+                        onClick = onEditHabit,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = iconContainerColor
+                        )
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = stringResource(
@@ -127,7 +152,12 @@ fun HabitDetailScreen(
                             modifier = Modifier.size(22.dp)
                         )
                     }
-                    IconButton(onClick = onArchiveHabit) {
+                    IconButton(
+                        onClick = onArchiveHabit,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = iconContainerColor
+                        )
+                    ) {
                         Icon(
                             imageVector = Icons.Outlined.Inventory2,
                             contentDescription = stringResource(
@@ -136,7 +166,12 @@ fun HabitDetailScreen(
                             modifier = Modifier.size(22.dp)
                         )
                     }
-                    IconButton(onClick = onDeleteHabit) {
+                    IconButton(
+                        onClick = onDeleteHabit,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = iconContainerColor
+                        )
+                    ) {
                         Icon(
                             imageVector = Icons.Outlined.Delete,
                             contentDescription = stringResource(
@@ -166,7 +201,7 @@ fun HabitDetailScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .padding(horizontal = 24.dp)
             ) {
                 // Category label

@@ -337,8 +337,7 @@ internal fun HabitFormScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    //containerColor = Color.Transparent,
-                    containerColor = MaterialTheme.colorScheme.primary,
+                    containerColor = Color.Transparent,
                     scrolledContainerColor = Color.Transparent
                 )
             )
