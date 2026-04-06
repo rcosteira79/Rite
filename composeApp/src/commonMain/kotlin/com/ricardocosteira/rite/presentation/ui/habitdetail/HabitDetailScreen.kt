@@ -103,16 +103,7 @@ fun HabitDetailScreen(
                     toolbarSpec = toolbarSpec,
                     backgroundColor = MaterialTheme.colorScheme.background,
                     centerContent = false,
-                    collapsedElevation = 0.dp,
-                    navigationIcon = {
-                        IconButton(onClick = onBackClick) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(Res.string.common_cd_back)
-                            )
-                        }
-                    },
-                    navigationIconVerticalArrangement = Arrangement.Center
+                    collapsedElevation = 0.dp
                 ) { scrollProgress ->
                     HabitDetailToolbarContent(
                         habitName = state.habit.name.uppercase(),
@@ -121,7 +112,8 @@ fun HabitDetailScreen(
                         } else {
                             stringResource(Res.string.habit_detail_category_quantitative)
                         },
-                        scrollProgress = scrollProgress
+                        scrollProgress = scrollProgress,
+                        onBackClick = onBackClick
                     )
                 }
             }
@@ -197,45 +189,70 @@ private fun HabitDetailToolbarContent(
     habitName: String,
     categoryLabel: String,
     scrollProgress: Float,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Category fades out as user scrolls
-    // Habit name translates up and centers horizontally when collapsed
-    Box(modifier = modifier.fillMaxWidth().padding(horizontal = 24.dp)) {
-        Column {
-            // Category label — fades out
+    Column(modifier = modifier.fillMaxWidth()) {
+        // Back arrow — always visible, aligned left
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(Res.string.common_cd_back)
+                )
+            }
+
+            // Collapsed title — appears inline with the back arrow when scrolled
+            if (scrollProgress > 0.5f) {
+                Text(
+                    text = habitName,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.ExtraBold
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier
+                        .weight(1f)
+                        .alpha((scrollProgress - 0.5f) * 2f),
+                    textAlign = TextAlign.Center
+                )
+                // Spacer to balance the back button for centering
+                Spacer(modifier = Modifier.size(48.dp))
+            }
+        }
+
+        // Expanded content — category + habit name, fades out on scroll
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .alpha(1f - (scrollProgress * 2f).coerceAtMost(1f))
+                .graphicsLayer {
+                    scaleY = (1f - scrollProgress).coerceAtLeast(0f)
+                    transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0f, 0f)
+                }
+        ) {
+            // Category label
             Text(
                 text = categoryLabel,
                 style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.sp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .alpha(1f - scrollProgress)
-                    .graphicsLayer {
-                        // Collapse height to 0 as progress increases
-                        scaleY = 1f - scrollProgress
-                        transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0f, 0f)
-                    }
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(
-                modifier = Modifier.height((4 * (1f - scrollProgress)).dp)
-            )
+            Spacer(modifier = Modifier.height(4.dp))
 
-            // Habit name — stays visible, shrinks and centers
+            // Habit name — large
             Text(
                 text = habitName,
                 style = MaterialTheme.typography.headlineLarge.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = androidx.compose.ui.unit.lerp(
-                        MaterialTheme.typography.headlineLarge.fontSize,
-                        MaterialTheme.typography.titleMedium.fontSize,
-                        scrollProgress
-                    )
+                    fontWeight = FontWeight.ExtraBold
                 ),
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = if (scrollProgress > 0.5f) TextAlign.Center else TextAlign.Start,
-                modifier = Modifier.fillMaxWidth()
+                color = MaterialTheme.colorScheme.onSurface
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
