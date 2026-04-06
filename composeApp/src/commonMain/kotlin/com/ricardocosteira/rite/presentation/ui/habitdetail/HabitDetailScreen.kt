@@ -31,27 +31,30 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
+import com.ricardocosteira.rite.presentation.ui.components.toolbar.DynamicCollapsingToolbar
+import com.ricardocosteira.rite.presentation.ui.components.toolbar.pinnedExitUntilCollapsedToolbarSpec
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.common_cd_back
 import rite.composeapp.generated.resources.habit_detail_action_complete
-import rite.composeapp.generated.resources.habit_detail_action_completed
 import rite.composeapp.generated.resources.habit_detail_action_custom
-import rite.composeapp.generated.resources.habit_detail_action_goal_reached
 import rite.composeapp.generated.resources.habit_detail_action_skip
 import rite.composeapp.generated.resources.habit_detail_action_undo
 import rite.composeapp.generated.resources.habit_detail_action_undo_last
@@ -75,6 +78,7 @@ private const val ARC_START_ANGLE = -90f
 private const val PROGRESS_ANIMATION_DURATION = 400
 private const val PERCENTAGE_MULTIPLIER = 100
 private val CARD_CORNER = 16.dp
+private val STEPPER_BUTTON_SIZE = 48.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,20 +93,38 @@ fun HabitDetailScreen(
     onUndoIncrement: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec()
+
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(toolbarSpec.nestedScrollConnection),
         topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(Res.string.common_cd_back)
-                        )
-                    }
+            if (!state.isLoading && state.habit != null) {
+                DynamicCollapsingToolbar(
+                    toolbarSpec = toolbarSpec,
+                    backgroundColor = MaterialTheme.colorScheme.background,
+                    centerContent = false,
+                    collapsedElevation = 0.dp,
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(Res.string.common_cd_back)
+                            )
+                        }
+                    },
+                    navigationIconVerticalArrangement = Arrangement.Center
+                ) { scrollProgress ->
+                    HabitDetailToolbarContent(
+                        habitName = state.habit.name.uppercase(),
+                        categoryLabel = if (state.habit.type == HabitType.BINARY) {
+                            stringResource(Res.string.habit_detail_category_binary)
+                        } else {
+                            stringResource(Res.string.habit_detail_category_quantitative)
+                        },
+                        scrollProgress = scrollProgress
+                    )
                 }
-            )
+            }
         }
     ) { paddingValues ->
         if (state.isLoading || state.habit == null || state.instance == null) {
@@ -120,29 +142,7 @@ fun HabitDetailScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp)
             ) {
-                // Category label
-                Text(
-                    text = if (state.habit.type == HabitType.BINARY) {
-                        stringResource(Res.string.habit_detail_category_binary)
-                    } else {
-                        stringResource(Res.string.habit_detail_category_quantitative)
-                    },
-                    style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.sp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Habit name
-                Text(
-                    text = state.habit.name.uppercase(),
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.ExtraBold
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Progress ring in card
                 ProgressRingCard(state = state)
@@ -188,6 +188,54 @@ fun HabitDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
             }
+        }
+    }
+}
+
+@Composable
+private fun HabitDetailToolbarContent(
+    habitName: String,
+    categoryLabel: String,
+    scrollProgress: Float,
+    modifier: Modifier = Modifier
+) {
+    // Category fades out as user scrolls
+    // Habit name translates up and centers horizontally when collapsed
+    Box(modifier = modifier.fillMaxWidth().padding(horizontal = 24.dp)) {
+        Column {
+            // Category label — fades out
+            Text(
+                text = categoryLabel,
+                style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.sp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .alpha(1f - scrollProgress)
+                    .graphicsLayer {
+                        // Collapse height to 0 as progress increases
+                        scaleY = 1f - scrollProgress
+                        transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0f, 0f)
+                    }
+            )
+
+            Spacer(
+                modifier = Modifier.height((4 * (1f - scrollProgress)).dp)
+            )
+
+            // Habit name — stays visible, shrinks and centers
+            Text(
+                text = habitName,
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = androidx.compose.ui.unit.lerp(
+                        MaterialTheme.typography.headlineLarge.fontSize,
+                        MaterialTheme.typography.titleMedium.fontSize,
+                        scrollProgress
+                    )
+                ),
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = if (scrollProgress > 0.5f) TextAlign.Center else TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -438,7 +486,6 @@ private fun BinaryActions(
                 Text(stringResource(Res.string.habit_detail_action_undo))
             }
         } else {
-            // "Complete" primary button
             PrimaryButton(
                 onClick = onComplete,
                 enabled = !state.isResolved
@@ -447,14 +494,11 @@ private fun BinaryActions(
             }
         }
 
-        // Skip row (when not resolved)
         if (!state.isResolved) {
             SkipRow(onSkip = onSkip, isSkipLocked = state.isSkipLocked)
         }
     }
 }
-
-private val STEPPER_BUTTON_SIZE = 48.dp
 
 @Composable
 private fun QuantitativeActions(
@@ -490,7 +534,6 @@ private fun QuantitativeActions(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Minus button
                     Surface(
                         onClick = onUndoIncrement,
                         shape = RoundedCornerShape(12.dp),
@@ -516,7 +559,6 @@ private fun QuantitativeActions(
                         }
                     }
 
-                    // Current value + unit label
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "${instance.currentProgress}",
@@ -534,7 +576,6 @@ private fun QuantitativeActions(
                         )
                     }
 
-                    // Plus button
                     Surface(
                         onClick = onIncrementProgress,
                         shape = RoundedCornerShape(12.dp),
@@ -558,7 +599,6 @@ private fun QuantitativeActions(
             }
         }
 
-        // Skip row + edit (custom input) button
         if (!state.isResolved) {
             SkipRow(
                 onSkip = onSkip,
