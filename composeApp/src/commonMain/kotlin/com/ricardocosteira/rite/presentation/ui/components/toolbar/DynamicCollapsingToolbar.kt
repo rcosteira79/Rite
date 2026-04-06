@@ -48,9 +48,6 @@ private const val UNBOUNDED_SIZE = Int.MAX_VALUE
 /** Matches M3 TopAppBar internal horizontal padding (TopAppBarHorizontalPadding). */
 private val TOOLBAR_HORIZONTAL_PADDING = 4.dp
 
-/** Matches M3 TopAppBar vertical centering: (64dp container - 48dp icon) / 2 = 8dp. */
-private val TOOLBAR_VERTICAL_PADDING = 8.dp
-
 /**
  * @param stackVertically When true, the navigation icon is placed above the content in expanded
  * state, and the content gets full width. When collapsed, the nav icon stays top-left and the
@@ -175,7 +172,6 @@ private fun CollapsingToolbarLayout(
         modifier = modifier
     ) { measurables, constraints ->
         val horizontalPaddingPx: Int = TOOLBAR_HORIZONTAL_PADDING.roundToPx()
-        val verticalPaddingPx: Int = TOOLBAR_VERTICAL_PADDING.roundToPx()
 
         val navigationIconPlaceable = measurables
             .fastFirst { it.layoutId == "navigationIcon" }
@@ -191,10 +187,12 @@ private fun CollapsingToolbarLayout(
             .fastFirst { it.layoutId == "content" }
             .measure(constraints.copy(minWidth = 0, maxWidth = maxContentWidth))
 
-        val navIconHeightWithPadding: Int = navigationIconPlaceable.height + verticalPaddingPx * 2
+        // In stacked mode, the collapsed row height is the min height (from collapsedHeight).
+        // The nav icon is centered within that row, and expanded content goes below it.
+        val collapsedRowHeight: Int = constraints.minHeight
 
         val expandedHeight: Int = if (stackVertically) {
-            navIconHeightWithPadding + contentPlaceable.height
+            collapsedRowHeight + contentPlaceable.height
         } else {
             contentPlaceable.height
         }
@@ -233,16 +231,18 @@ private fun CollapsingToolbarLayout(
             backgroundContentPlaceable.placeRelative(x = 0, y = 0)
 
             if (stackVertically) {
-                // Nav icon at top-left with M3-matching padding
+                // Nav icon centered within the collapsed row height
+                val navIconY: Int =
+                    (collapsedRowHeight - navigationIconPlaceable.height) / 2
                 navigationIconPlaceable.placeRelative(
                     x = horizontalPaddingPx,
-                    y = verticalPaddingPx
+                    y = navIconY.coerceAtLeast(0)
                 )
 
-                // Content below nav icon (including its padding) in expanded
+                // Content below the collapsed row area
                 contentPlaceable.placeRelative(
                     x = 0,
-                    y = navIconHeightWithPadding
+                    y = collapsedRowHeight
                 )
             } else {
                 navigationIconPlaceable.placeRelative(

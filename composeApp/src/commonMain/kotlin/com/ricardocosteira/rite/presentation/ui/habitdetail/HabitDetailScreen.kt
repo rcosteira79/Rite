@@ -93,7 +93,9 @@ fun HabitDetailScreen(
     onUndoIncrement: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec()
+    val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec(
+        collapsedToolbarHeight = 64.dp
+    )
 
     Scaffold(
         modifier = modifier.nestedScroll(toolbarSpec.nestedScrollConnection),
