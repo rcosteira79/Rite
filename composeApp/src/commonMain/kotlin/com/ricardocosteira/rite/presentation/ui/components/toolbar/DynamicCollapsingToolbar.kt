@@ -45,6 +45,9 @@ import kotlin.math.roundToInt
 const val COLLAPSING_TOOLBAR_TEST_TAG = "collapsing_toolbar"
 private const val UNBOUNDED_SIZE = Int.MAX_VALUE
 
+/** Matches M3 TopAppBar internal horizontal padding (TopAppBarHorizontalPadding). */
+private val TOOLBAR_HORIZONTAL_PADDING = 4.dp
+
 /**
  * @param stackVertically When true, the navigation icon is placed above the content in expanded
  * state, and the content gets full width. When collapsed, the nav icon stays top-left and the
@@ -168,6 +171,8 @@ private fun CollapsingToolbarLayout(
         },
         modifier = modifier
     ) { measurables, constraints ->
+        val horizontalPaddingPx: Int = TOOLBAR_HORIZONTAL_PADDING.roundToPx()
+
         val navigationIconPlaceable = measurables
             .fastFirst { it.layoutId == "navigationIcon" }
             .measure(constraints.copy(minWidth = 0))
@@ -222,8 +227,11 @@ private fun CollapsingToolbarLayout(
             backgroundContentPlaceable.placeRelative(x = 0, y = 0)
 
             if (stackVertically) {
-                // Nav icon always at top-left
-                navigationIconPlaceable.placeRelative(x = 0, y = 0)
+                // Nav icon at top-left with horizontal padding
+                navigationIconPlaceable.placeRelative(
+                    x = horizontalPaddingPx,
+                    y = 0
+                )
 
                 // Content below nav icon in expanded, slides up as it collapses
                 contentPlaceable.placeRelative(
@@ -232,7 +240,7 @@ private fun CollapsingToolbarLayout(
                 )
             } else {
                 navigationIconPlaceable.placeRelative(
-                    x = 0,
+                    x = horizontalPaddingPx,
                     y = when (navigationIconVerticalArrangement) {
                         Arrangement.Center -> (layoutHeight - navigationIconPlaceable.height) / 2
                         Arrangement.Bottom -> layoutHeight - navigationIconPlaceable.height
@@ -241,8 +249,8 @@ private fun CollapsingToolbarLayout(
                 )
 
                 var baseX = (constraints.maxWidth - contentPlaceable.width) / 2
-                if (!centerContent && baseX < navigationIconPlaceable.width) {
-                    baseX += (navigationIconPlaceable.width - baseX)
+                if (!centerContent && baseX < navigationIconPlaceable.width + horizontalPaddingPx) {
+                    baseX += (navigationIconPlaceable.width + horizontalPaddingPx - baseX)
                 }
 
                 contentPlaceable.placeRelative(
