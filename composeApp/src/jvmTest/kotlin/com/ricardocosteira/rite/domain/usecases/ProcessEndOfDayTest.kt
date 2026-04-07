@@ -33,7 +33,7 @@ class ProcessEndOfDayTest {
         }
         val db = RiteDatabase(driver)
         return TestDeps(
-            userRepository = UserRepositoryImpl(database = db),
+            userRepository = UserRepositoryImpl(database = db, ioDispatcher = Dispatchers.IO),
             habitRepository = HabitRepositoryImpl(database = db, ioDispatcher = Dispatchers.IO),
             habitInstanceRepository = HabitInstanceRepositoryImpl(
                 database = db,
