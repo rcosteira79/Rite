@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -59,15 +59,15 @@ fun QuantitativeInputBottomSheet(
         ) {
             Text(
                 text = stringResource(Res.string.quantitative_input_title),
-                style = MaterialTheme.typography.titleLarge
+                style = RiteAppTheme.typography.titleLarge
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = habit.name,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = RiteAppTheme.typography.bodyLarge,
+                color = RiteAppTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -89,8 +89,8 @@ fun QuantitativeInputBottomSheet(
                             habit.targetValue
                         )
                     },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = RiteAppTheme.typography.bodyMedium,
+                    color = RiteAppTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -119,7 +119,7 @@ fun QuantitativeInputBottomSheet(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = habit.unit,
-                        style = MaterialTheme.typography.bodyLarge
+                        style = RiteAppTheme.typography.bodyLarge
                     )
                 }
             }

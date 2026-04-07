@@ -29,7 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -189,7 +189,7 @@ internal fun TodayScreen(
                 if (!state.isLoading) {
                     DynamicCollapsingToolbar(
                         toolbarSpec = toolbarSpec,
-                        backgroundColor = MaterialTheme.colorScheme.background,
+                        backgroundColor = RiteAppTheme.colorScheme.background,
                         centerContent = false,
                         collapsedElevation = 0.dp
                     ) { scrollProgress ->
@@ -444,7 +444,7 @@ private fun TimezoneWarningBanner(previousTimezone: String?, onDismiss: () -> Un
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+            containerColor = RiteAppTheme.colorScheme.tertiaryContainer
         )
     ) {
         Row(
@@ -457,16 +457,16 @@ private fun TimezoneWarningBanner(previousTimezone: String?, onDismiss: () -> Un
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = stringResource(Res.string.today_timezone_changed_title),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                    style = RiteAppTheme.typography.titleSmall,
+                    color = RiteAppTheme.colorScheme.onTertiaryContainer
                 )
                 Text(
                     text = stringResource(
                         Res.string.today_timezone_changed_message,
                         previousTimezone ?: ""
                     ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                    style = RiteAppTheme.typography.bodySmall,
+                    color = RiteAppTheme.colorScheme.onTertiaryContainer
                 )
             }
             TextButton(onClick = onDismiss) {
@@ -491,7 +491,7 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
                 .size(160.dp)
                 .clip(RoundedCornerShape(32.dp))
                 .background(
-                    MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)
+                    RiteAppTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)
                 )
         )
 
@@ -500,9 +500,9 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
         // Heading
         Text(
             text = stringResource(Res.string.today_empty_state_heading),
-            style = MaterialTheme.typography.headlineSmall,
+            style = RiteAppTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = RiteAppTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -510,8 +510,8 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
         // Subtext
         Text(
             text = stringResource(Res.string.today_empty_state_subtext),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = RiteAppTheme.typography.bodyMedium,
+            color = RiteAppTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 48.dp)
         )
@@ -523,8 +523,8 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
             onClick = onAddFirstHabit,
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                containerColor = RiteAppTheme.colorScheme.primaryContainer,
+                contentColor = RiteAppTheme.colorScheme.onPrimaryContainer
             ),
             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
         ) {
@@ -536,7 +536,7 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = stringResource(Res.string.today_empty_state_cta),
-                style = MaterialTheme.typography.labelLarge,
+                style = RiteAppTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold
             )
         }

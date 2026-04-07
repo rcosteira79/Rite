@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,7 +18,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitStatus
-import com.ricardocosteira.rite.presentation.ui.theme.LocalDayClassificationColors
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import com.ricardocosteira.rite.util.todayIn
 import kotlin.time.Clock
 import kotlinx.datetime.DatePeriod
@@ -80,8 +79,8 @@ fun HeatmapGrid(heatmapData: List<HeatmapDay>, modifier: Modifier = Modifier) {
                             if (label.isNotEmpty()) {
                                 Text(
                                     text = label,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    style = RiteAppTheme.typography.labelSmall,
+                                    color = RiteAppTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -118,16 +117,16 @@ fun HeatmapGrid(heatmapData: List<HeatmapDay>, modifier: Modifier = Modifier) {
 
 @Composable
 private fun HeatmapCell(day: HeatmapDay?, size: Dp, modifier: Modifier = Modifier) {
-    val classificationColors = LocalDayClassificationColors.current
+    val colorScheme = RiteAppTheme.colorScheme
     val color = when {
-        day == null -> classificationColors.noData
-        day.status == HabitStatus.FAILED -> classificationColors.failed
-        day.status == HabitStatus.SKIPPED -> classificationColors.skipped
-        day.status == HabitStatus.SUSPENDED -> classificationColors.noData
-        day.completionPercentage >= 1.0f -> classificationColors.perfect
-        day.completionPercentage >= 0.5f -> classificationColors.bestEffort
-        day.completionPercentage > 0f -> classificationColors.partial
-        else -> classificationColors.noData
+        day == null -> colorScheme.noData
+        day.status == HabitStatus.FAILED -> colorScheme.failed
+        day.status == HabitStatus.SKIPPED -> colorScheme.skipped
+        day.status == HabitStatus.SUSPENDED -> colorScheme.noData
+        day.completionPercentage >= 1.0f -> colorScheme.perfect
+        day.completionPercentage >= 0.5f -> colorScheme.bestEffort
+        day.completionPercentage > 0f -> colorScheme.partial
+        else -> colorScheme.noData
     }
 
     Box(
@@ -139,34 +138,34 @@ private fun HeatmapCell(day: HeatmapDay?, size: Dp, modifier: Modifier = Modifie
 
 @Composable
 private fun HeatmapLegend(cellSize: Dp, modifier: Modifier = Modifier) {
-    val classificationColors = LocalDayClassificationColors.current
+    val colorScheme = RiteAppTheme.colorScheme
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         LegendItem(
-            color = classificationColors.perfect,
+            color = colorScheme.perfect,
             label = stringResource(Res.string.habit_detail_heatmap_perfect),
             size = cellSize
         )
         LegendItem(
-            color = classificationColors.bestEffort,
+            color = colorScheme.bestEffort,
             label = stringResource(Res.string.habit_detail_heatmap_best_effort),
             size = cellSize
         )
         LegendItem(
-            color = classificationColors.partial,
+            color = colorScheme.partial,
             label = stringResource(Res.string.habit_detail_heatmap_partial),
             size = cellSize
         )
         LegendItem(
-            color = classificationColors.failed,
+            color = colorScheme.failed,
             label = stringResource(Res.string.habit_detail_heatmap_failed),
             size = cellSize
         )
         LegendItem(
-            color = classificationColors.skipped,
+            color = colorScheme.skipped,
             label = stringResource(Res.string.habit_detail_heatmap_skipped),
             size = cellSize
         )
@@ -192,8 +191,8 @@ private fun LegendItem(
         )
         Text(
             text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = RiteAppTheme.typography.labelSmall,
+            color = RiteAppTheme.colorScheme.onSurfaceVariant
         )
     }
 }

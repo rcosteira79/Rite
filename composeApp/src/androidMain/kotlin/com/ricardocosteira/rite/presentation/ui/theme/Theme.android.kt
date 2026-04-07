@@ -10,7 +10,7 @@ import androidx.core.view.WindowCompat
 
 @Composable
 actual fun RiteTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val riteColors = if (darkTheme) DarkRiteColorScheme else LightRiteColorScheme
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -20,11 +20,9 @@ actual fun RiteTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
         }
     }
 
-    val classificationColors =
-        if (darkTheme) DarkDayClassificationColors else LightDayClassificationColors
-    CompositionLocalProvider(LocalDayClassificationColors provides classificationColors) {
+    CompositionLocalProvider(LocalRiteColorScheme provides riteColors) {
         MaterialTheme(
-            colorScheme = colorScheme,
+            colorScheme = riteColors.toMaterialColorScheme(),
             typography = habitLockTypography(),
             content = content
         )

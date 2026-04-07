@@ -2,7 +2,7 @@ package com.ricardocosteira.rite.presentation.ui.habitdetail
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -71,7 +71,7 @@ fun HabitDetailRoute(
                         viewModel.deleteHabit()
                     },
                     colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
+                        contentColor = RiteAppTheme.colorScheme.error
                     )
                 ) {
                     Text(stringResource(Res.string.habit_form_delete_dialog_confirm))

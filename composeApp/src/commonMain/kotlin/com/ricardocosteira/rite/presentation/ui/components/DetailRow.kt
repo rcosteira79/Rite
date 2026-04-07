@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -46,7 +46,7 @@ fun DetailRow(
         if (showTopDivider) {
             HorizontalDivider(
                 thickness = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant
+                color = RiteAppTheme.colorScheme.outlineVariant
             )
         }
 
@@ -71,12 +71,12 @@ fun DetailRow(
                 modifier = Modifier
                     .size(IconContainerSize)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                    .background(RiteAppTheme.colorScheme.surfaceContainerLow)
                     .then(
                         if (isDarkTheme) {
                             Modifier.border(
                                 1.dp,
-                                MaterialTheme.colorScheme.outlineVariant,
+                                RiteAppTheme.colorScheme.outlineVariant,
                                 CircleShape
                             )
                         } else {
@@ -96,15 +96,15 @@ fun DetailRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = RiteAppTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = RiteAppTheme.colorScheme.onSurface
                 )
                 if (subtitle.isNotEmpty()) {
                     Text(
                         text = subtitle,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = RiteAppTheme.typography.bodySmall,
+                        color = RiteAppTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }

@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -71,7 +71,7 @@ fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false)
                 .graphicsLayer { rotationZ = 12f }
                 .border(
                     width = 40.dp,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                    color = RiteAppTheme.colorScheme.primary.copy(alpha = 0.12f),
                     shape = CircleShape
                 )
         )
@@ -81,10 +81,10 @@ fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false)
 
             Text(
                 text = stringResource(Res.string.philosophy_heading),
-                style = MaterialTheme.typography.headlineLarge.copy(
+                style = RiteAppTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.ExtraBold
                 ),
-                color = MaterialTheme.colorScheme.onSurface,
+                color = RiteAppTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .alpha(headlineAlpha.value)
                     .graphicsLayer { translationY = headlineTranslateY.value.dp.toPx() }
@@ -99,7 +99,7 @@ fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false)
                     .width((36 * accentWidth.value).dp)
                     .height(3.dp)
                     .background(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = RiteAppTheme.colorScheme.primary,
                         shape = RoundedCornerShape(2.dp)
                     )
             )
@@ -108,8 +108,8 @@ fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false)
 
             Text(
                 text = stringResource(Res.string.philosophy_body),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = RiteAppTheme.typography.bodyLarge,
+                color = RiteAppTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.alpha(bodyAlpha.value)
             )
         }

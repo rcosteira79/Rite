@@ -21,7 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -132,14 +132,14 @@ private fun ArchivedHabitsScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = stringResource(Res.string.archived_empty_state_heading),
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = RiteAppTheme.typography.headlineSmall,
+                            color = RiteAppTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = stringResource(Res.string.archived_empty_state_subtext),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = RiteAppTheme.typography.bodyMedium,
+                            color = RiteAppTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -178,7 +178,7 @@ private fun ArchivedHabitCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            containerColor = RiteAppTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         )
     ) {
         Row(
@@ -191,23 +191,23 @@ private fun ArchivedHabitCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = habit.name,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = RiteAppTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 if (habit.description != null) {
                     Text(
                         text = habit.description,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = RiteAppTheme.typography.bodySmall,
+                        color = RiteAppTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
                 Text(
                     text = stringResource(Res.string.archived_best_streak, habit.longestStreak),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
+                    style = RiteAppTheme.typography.labelSmall,
+                    color = RiteAppTheme.colorScheme.primary
                 )
             }
 
@@ -216,14 +216,14 @@ private fun ArchivedHabitCard(
                     Icon(
                         Icons.Default.Refresh,
                         contentDescription = stringResource(Res.string.archived_cd_restore),
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = RiteAppTheme.colorScheme.primary
                     )
                 }
                 IconButton(onClick = onDeleteClick) {
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = stringResource(Res.string.archived_cd_delete),
-                        tint = MaterialTheme.colorScheme.error
+                        tint = RiteAppTheme.colorScheme.error
                     )
                 }
             }

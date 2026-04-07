@@ -19,7 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -117,7 +117,7 @@ private fun PendingHabitCard(
 
     Surface(
         shape = RoundedCornerShape(CARD_CORNER_RADIUS),
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        color = RiteAppTheme.colorScheme.surfaceContainerLow,
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(CARD_CORNER_RADIUS))
@@ -139,18 +139,18 @@ private fun PendingHabitCard(
                         Row(verticalAlignment = Alignment.Bottom) {
                             Text(
                                 text = "$currentValue",
-                                style = MaterialTheme.typography.headlineSmall.copy(
+                                style = RiteAppTheme.typography.headlineSmall.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
-                                color = MaterialTheme.colorScheme.primary
+                                color = RiteAppTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.width(2.dp))
                             Text(
                                 text = "/ $targetValue $unitText".trim(),
-                                style = MaterialTheme.typography.labelSmall.copy(
+                                style = RiteAppTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Medium
                                 ),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = RiteAppTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                         }
@@ -158,11 +158,11 @@ private fun PendingHabitCard(
 
                     Text(
                         text = habit.name.uppercase(),
-                        style = MaterialTheme.typography.titleSmall.copy(
+                        style = RiteAppTheme.typography.titleSmall.copy(
                             fontSize = HABIT_NAME_SIZE,
                             fontWeight = FontWeight.Bold
                         ),
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = RiteAppTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -171,8 +171,8 @@ private fun PendingHabitCard(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = habit.description,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = RiteAppTheme.typography.bodySmall,
+                            color = RiteAppTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -192,22 +192,22 @@ private fun PendingHabitCard(
                         )
                         Surface(
                             shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
-                            color = MaterialTheme.colorScheme.primaryContainer,
+                            color = RiteAppTheme.colorScheme.primaryContainer,
                             onClick = onIncrementProgress
                         ) {
                             Text(
                                 text = incrementLabel,
-                                style = MaterialTheme.typography.labelMedium.copy(
+                                style = RiteAppTheme.typography.labelMedium.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                color = RiteAppTheme.colorScheme.onPrimaryContainer,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                             )
                         }
                     } else {
                         Surface(
                             shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
-                            color = MaterialTheme.colorScheme.primaryContainer,
+                            color = RiteAppTheme.colorScheme.primaryContainer,
                             onClick = onComplete
                         ) {
                             Icon(
@@ -215,7 +215,7 @@ private fun PendingHabitCard(
                                 contentDescription = stringResource(
                                     Res.string.today_action_complete
                                 ),
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                tint = RiteAppTheme.colorScheme.onPrimaryContainer,
                                 modifier = Modifier.padding(8.dp)
                             )
                         }
@@ -224,10 +224,10 @@ private fun PendingHabitCard(
                     if (!habit.isSkipLocked) {
                         Text(
                             text = stringResource(Res.string.common_skip).uppercase(),
-                            style = MaterialTheme.typography.labelMedium.copy(
+                            style = RiteAppTheme.typography.labelMedium.copy(
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = RiteAppTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(BUTTON_CORNER_RADIUS))
                                 .clickable(onClick = onSkip)
@@ -244,14 +244,14 @@ private fun PendingHabitCard(
                         .fillMaxWidth()
                         .height(PROGRESS_BAR_HEIGHT)
                         .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                        .background(RiteAppTheme.colorScheme.surfaceContainerHighest)
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(fraction = habit.progressPercentage)
                             .height(PROGRESS_BAR_HEIGHT)
                             .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
+                            .background(RiteAppTheme.colorScheme.primary.copy(alpha = 0.4f))
                     )
                 }
             }
@@ -271,7 +271,7 @@ private fun ResolvedHabitRow(
 
     Surface(
         shape = RoundedCornerShape(RESOLVED_CORNER_RADIUS),
-        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = rowAlpha),
+        color = RiteAppTheme.colorScheme.primaryContainer.copy(alpha = rowAlpha),
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
@@ -287,13 +287,13 @@ private fun ResolvedHabitRow(
                 modifier = Modifier
                     .size(RESOLVED_ICON_SIZE)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .background(RiteAppTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    tint = RiteAppTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -304,10 +304,10 @@ private fun ResolvedHabitRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = habit.name.uppercase(),
-                    style = MaterialTheme.typography.titleSmall.copy(
+                    style = RiteAppTheme.typography.titleSmall.copy(
                         fontWeight = FontWeight.Bold
                     ),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = RiteAppTheme.colorScheme.onPrimaryContainer,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = if (isFailed) Modifier.alpha(FAILED_ALPHA) else Modifier
@@ -339,8 +339,8 @@ private fun ResolvedHabitRow(
 
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                    style = RiteAppTheme.typography.labelSmall,
+                    color = RiteAppTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                     modifier = if (isFailed) Modifier.alpha(FAILED_ALPHA) else Modifier
                 )
             }
@@ -351,7 +351,7 @@ private fun ResolvedHabitRow(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.Undo,
                         contentDescription = stringResource(Res.string.today_cd_undo),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        tint = RiteAppTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }

@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -123,8 +123,8 @@ internal fun FirstHabitStepCta(
         TextButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = stringResource(Res.string.first_habit_button_skip),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = RiteAppTheme.typography.labelLarge,
+                color = RiteAppTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -147,8 +147,8 @@ internal fun NotificationPermissionStepCta(
         TextButton(onClick = onMaybeLater, modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = stringResource(Res.string.notifications_cta_later),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = RiteAppTheme.typography.labelLarge,
+                color = RiteAppTheme.colorScheme.onSurfaceVariant
             )
         }
     }
