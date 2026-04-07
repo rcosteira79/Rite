@@ -9,6 +9,7 @@ import com.ricardocosteira.rite.util.toLocalDate
 import kotlin.time.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
@@ -79,8 +80,9 @@ class ProcessEndOfDay(
     }
 
     /**
-     * Process weekly habits if we're at the start of a new week.
-     * Checks if any weekly habit from last week is still PENDING and marks it as FAILED.
+     * Process weekly habits:
+     * - WEEKLY (fixed days): Evaluate the day after the last specificDay in the week.
+     * - FLEXIBLE_WEEKLY: Evaluate at week boundary (today == weekStartDay).
      * SUSPENDED instances are not marked as FAILED.
      */
     private suspend fun processWeeklyHabits(today: LocalDate): Int {
@@ -90,56 +92,92 @@ class ProcessEndOfDay(
         for (habit in activeHabits) {
             val schedule = habitRepository.getScheduleForHabit(habit.id) ?: continue
 
-            if (schedule.scheduleType == ScheduleType.WEEKLY) {
-                // Check if today is the start of a new week for this habit
-                if (today.dayOfWeek == schedule.weekStartDay) {
-                    // Get last week's start date
-                    val lastWeekStart = today.minus(7, DateTimeUnit.DAY)
+            val shouldEvaluate: Boolean = when (schedule.scheduleType) {
+                ScheduleType.DAILY -> false
 
-                    // Check if there's an instance from last week
-                    val lastWeekInstance = habitInstanceRepository.getInstanceForHabitAndDate(
-                        habitId = habit.id,
-                        date = lastWeekStart
+                ScheduleType.FLEXIBLE_WEEKLY -> {
+                    today.dayOfWeek == schedule.weekStartDay
+                }
+
+                ScheduleType.WEEKLY -> {
+                    val lastSpecificDay: DayOfWeek = findLastSpecificDay(
+                        specificDays = schedule.specificDays ?: continue,
+                        weekStartDay = schedule.weekStartDay
+                    )
+                    val dayAfterLast: DayOfWeek = lastSpecificDay.next()
+                    today.dayOfWeek == dayAfterLast
+                }
+            }
+
+            if (!shouldEvaluate) continue
+
+            val weekStart: LocalDate = getWeekStartForEvaluation(today, schedule.weekStartDay)
+
+            val lastWeekInstance = habitInstanceRepository.getInstanceForHabitAndDate(
+                habitId = habit.id,
+                date = weekStart
+            )
+
+            // Only process PENDING instances (skip SUSPENDED)
+            if (lastWeekInstance != null && lastWeekInstance.status == HabitStatus.PENDING) {
+                val completedValue: Int = lastWeekInstance.completedValue ?: 0
+                val quota: Int = lastWeekInstance.targetValue ?: 1
+
+                if (completedValue < quota) {
+                    habitInstanceRepository.updateInstanceStatus(
+                        instanceId = lastWeekInstance.id,
+                        status = HabitStatus.FAILED,
+                        completedValue = completedValue,
+                        completedAt = null
                     )
 
-                    // Only process PENDING instances (skip SUSPENDED)
-                    if (lastWeekInstance != null &&
-                        lastWeekInstance.status == HabitStatus.PENDING
-                    ) {
-                        // Check if quota was not met
-                        val completedValue = lastWeekInstance.completedValue ?: 0
-                        val quota = lastWeekInstance.targetValue ?: 1
+                    habitRepository.updateHabitStreak(
+                        habitId = habit.id,
+                        currentStreak = 0,
+                        longestStreak = habit.longestStreak
+                    )
 
-                        if (completedValue < quota) {
-                            habitInstanceRepository.updateInstanceStatus(
-                                instanceId = lastWeekInstance.id,
-                                status = HabitStatus.FAILED,
-                                completedValue = completedValue,
-                                completedAt = null
-                            )
-
-                            // Reset streak for failed habit
-                            habitRepository.updateHabitStreak(
-                                habitId = habit.id,
-                                currentStreak = 0,
-                                longestStreak = habit.longestStreak
-                            )
-
-                            failedCount++
-                        } else {
-                            // Quota was met, mark as completed
-                            habitInstanceRepository.updateInstanceStatus(
-                                instanceId = lastWeekInstance.id,
-                                status = HabitStatus.COMPLETED,
-                                completedValue = completedValue,
-                                completedAt = Clock.System.now()
-                            )
-                        }
-                    }
+                    failedCount++
+                } else {
+                    habitInstanceRepository.updateInstanceStatus(
+                        instanceId = lastWeekInstance.id,
+                        status = HabitStatus.COMPLETED,
+                        completedValue = completedValue,
+                        completedAt = Clock.System.now()
+                    )
                 }
             }
         }
 
         return failedCount
     }
+
+    /**
+     * Finds the last specific day in the week, ordered from weekStartDay.
+     * E.g., with weekStartDay=MONDAY and specificDays={MON, WED, FRI}, returns FRIDAY.
+     */
+    private fun findLastSpecificDay(
+        specificDays: Set<DayOfWeek>,
+        weekStartDay: DayOfWeek
+    ): DayOfWeek = specificDays.maxByOrNull { day ->
+        (day.ordinal - weekStartDay.ordinal + 7) % 7
+    } ?: weekStartDay
+
+    /**
+     * Gets the week start date for evaluation purposes.
+     * For FLEXIBLE_WEEKLY (evaluated on weekStartDay): the previous week started 7 days ago.
+     * For WEEKLY (evaluated day after last specific day): the current week's start.
+     */
+    private fun getWeekStartForEvaluation(today: LocalDate, weekStartDay: DayOfWeek): LocalDate {
+        if (today.dayOfWeek == weekStartDay) {
+            return today.minus(7, DateTimeUnit.DAY)
+        }
+        var current: LocalDate = today
+        while (current.dayOfWeek != weekStartDay) {
+            current = current.minus(1, DateTimeUnit.DAY)
+        }
+        return current
+    }
+
+    private fun DayOfWeek.next(): DayOfWeek = DayOfWeek.entries[(this.ordinal + 1) % 7]
 }
