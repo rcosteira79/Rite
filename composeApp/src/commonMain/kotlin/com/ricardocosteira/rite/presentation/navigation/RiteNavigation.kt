@@ -170,12 +170,6 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                         },
                         onEditHabit = { habitId ->
                             backStack.add(EditHabit(habitId))
-                        },
-                        onArchiveHabit = {
-                            // TODO: archive from detail screen
-                        },
-                        onDeleteHabit = {
-                            // TODO: delete from detail screen
                         }
                     )
                 }

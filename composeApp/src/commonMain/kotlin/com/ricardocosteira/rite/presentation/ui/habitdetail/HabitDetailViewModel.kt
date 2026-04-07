@@ -15,8 +15,12 @@ import com.ricardocosteira.rite.domain.usecases.UndoHabit
 import com.ricardocosteira.rite.domain.usecases.UndoLastIncrement
 import com.ricardocosteira.rite.util.todayIn
 import kotlin.time.Clock
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -40,6 +44,9 @@ class HabitDetailViewModel(
 
     private val _state = MutableStateFlow(HabitDetailState())
     val state: StateFlow<HabitDetailState> = _state.asStateFlow()
+
+    private val _events = MutableSharedFlow<HabitDetailEvent>()
+    val events: SharedFlow<HabitDetailEvent> = _events.asSharedFlow()
 
     init {
         loadDetail()
@@ -67,7 +74,7 @@ class HabitDetailViewModel(
             val allInstances: List<HabitInstance> =
                 habitInstanceRepository.getInstancesForHabit(instance.habitId)
 
-            val heatmapData: List<HeatmapDay> = allInstances
+            val heatmapData = allInstances
                 .filter { it.date >= startDate && it.date <= today }
                 .map { inst ->
                     HeatmapDay(
@@ -76,6 +83,7 @@ class HabitDetailViewModel(
                         status = inst.status
                     )
                 }
+                .toImmutableList()
 
             val consecutiveSkips: Int = calculateConsecutiveSkips(allInstances)
 
@@ -154,6 +162,22 @@ class HabitDetailViewModel(
 
     fun dismissCustomInput() {
         _state.update { it.copy(showCustomInput = false) }
+    }
+
+    fun archiveHabit() {
+        val habitId: String = _state.value.habit?.id ?: return
+        viewModelScope.launch {
+            habitRepository.archiveHabit(habitId)
+            _events.emit(HabitDetailEvent.NavigateBack)
+        }
+    }
+
+    fun deleteHabit() {
+        val habitId: String = _state.value.habit?.id ?: return
+        viewModelScope.launch {
+            habitRepository.deleteHabit(habitId)
+            _events.emit(HabitDetailEvent.NavigateBack)
+        }
     }
 
     private fun calculateConsecutiveSkips(instances: List<HabitInstance>): Int {

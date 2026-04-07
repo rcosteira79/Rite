@@ -27,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,11 +41,7 @@ import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.common_skip
 import rite.composeapp.generated.resources.today_action_complete
-import rite.composeapp.generated.resources.today_action_custom
-import rite.composeapp.generated.resources.today_action_increment
 import rite.composeapp.generated.resources.today_action_increment_short
-import rite.composeapp.generated.resources.today_badge_in_progress
-import rite.composeapp.generated.resources.today_badge_pending
 import rite.composeapp.generated.resources.today_cd_undo
 import rite.composeapp.generated.resources.today_resolved_completed_at
 import rite.composeapp.generated.resources.today_resolved_failed
@@ -55,18 +50,15 @@ import rite.composeapp.generated.resources.today_resolved_skipped_at
 private val CARD_CORNER_RADIUS = 24.dp
 private val RESOLVED_CORNER_RADIUS = 16.dp
 private val BUTTON_CORNER_RADIUS = 12.dp
-private val BUTTON_HEIGHT = 56.dp
 private val ACTION_ROW_GAP = 12.dp
 private val PROGRESS_BAR_CORNER_RADIUS = 99.dp
 
-private val COLLAPSED_VERTICAL_PADDING = 16.dp
-private val COLLAPSED_HORIZONTAL_PADDING = 24.dp
+private val CARD_VERTICAL_PADDING = 16.dp
+private val CARD_HORIZONTAL_PADDING = 24.dp
 
-private val HABIT_NAME_COLLAPSED_SIZE = 15.sp
-private val HABIT_NAME_EXPANDED_SIZE = 18.sp
+private val HABIT_NAME_SIZE = 15.sp
 
-private val PROGRESS_BAR_COLLAPSED_HEIGHT = 3.dp
-private val PROGRESS_BAR_EXPANDED_HEIGHT = 8.dp
+private val PROGRESS_BAR_HEIGHT = 3.dp
 
 private val RESOLVED_ICON_SIZE = 40.dp
 
@@ -76,7 +68,6 @@ private const val FAILED_ALPHA = 0.5f
 @Composable
 fun HabitCard(
     habit: TodayHabitUiModel,
-    isExpanded: Boolean,
     onClick: () -> Unit,
     onComplete: () -> Unit,
     onSkip: () -> Unit,
@@ -97,7 +88,6 @@ fun HabitCard(
     } else {
         PendingHabitCard(
             habit = habit,
-            isExpanded = isExpanded,
             onClick = onClick,
             onComplete = onComplete,
             onSkip = onSkip,
@@ -112,7 +102,6 @@ fun HabitCard(
 @Composable
 private fun PendingHabitCard(
     habit: TodayHabitUiModel,
-    isExpanded: Boolean,
     onClick: () -> Unit,
     onComplete: () -> Unit,
     onSkip: () -> Unit,
@@ -125,7 +114,6 @@ private fun PendingHabitCard(
     val targetValue: Int = habit.targetValue ?: 0
     val unitText: String = habit.unit?.uppercase() ?: ""
     val isQuantitative: Boolean = habit.type == HabitType.QUANTITATIVE
-    val hasProgress: Boolean = currentValue > 0
 
     Surface(
         shape = RoundedCornerShape(CARD_CORNER_RADIUS),
@@ -137,18 +125,16 @@ private fun PendingHabitCard(
     ) {
         Column(
             modifier = Modifier.padding(
-                horizontal = COLLAPSED_HORIZONTAL_PADDING,
-                vertical = COLLAPSED_VERTICAL_PADDING
+                horizontal = CARD_HORIZONTAL_PADDING,
+                vertical = CARD_VERTICAL_PADDING
             )
         ) {
-            // Header row: always visible
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    // Quantitative: progress counter
                     if (isQuantitative) {
                         Row(verticalAlignment = Alignment.Bottom) {
                             Text(
@@ -170,26 +156,24 @@ private fun PendingHabitCard(
                         }
                     }
 
-                    // Habit name: always visible
                     Text(
                         text = habit.name.uppercase(),
                         style = MaterialTheme.typography.titleSmall.copy(
-                            fontSize = if (isExpanded) HABIT_NAME_EXPANDED_SIZE else HABIT_NAME_COLLAPSED_SIZE,
+                            fontSize = HABIT_NAME_SIZE,
                             fontWeight = FontWeight.Bold
                         ),
                         color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = if (isExpanded) 2 else 1,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    // Description: always visible if present
                     if (habit.description != null) {
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = if (isExpanded) habit.description.uppercase() else habit.description,
+                            text = habit.description,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = if (isExpanded) 2 else 1,
+                            maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
@@ -197,147 +181,78 @@ private fun PendingHabitCard(
 
                 Spacer(modifier = Modifier.width(ACTION_ROW_GAP))
 
-                // Collapsed: quick actions / Expanded: badge
-                if (!isExpanded) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (isQuantitative) {
-                            val incrementLabel: String = stringResource(
-                                Res.string.today_action_increment_short,
-                                habit.defaultIncrement
-                            )
-                            Surface(
-                                shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                onClick = onIncrementProgress
-                            ) {
-                                Text(
-                                    text = incrementLabel,
-                                    style = MaterialTheme.typography.labelMedium.copy(
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                                )
-                            }
-                        } else {
-                            Surface(
-                                shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                onClick = onComplete
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = stringResource(
-                                        Res.string.today_action_complete
-                                    ),
-                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                        }
-
-                        if (!habit.isSkipLocked) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (isQuantitative) {
+                        val incrementLabel: String = stringResource(
+                            Res.string.today_action_increment_short,
+                            habit.defaultIncrement
+                        )
+                        Surface(
+                            shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            onClick = onIncrementProgress
+                        ) {
                             Text(
-                                text = stringResource(Res.string.common_skip).uppercase(),
+                                text = incrementLabel,
                                 style = MaterialTheme.typography.labelMedium.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(BUTTON_CORNER_RADIUS))
-                                    .clickable(onClick = onSkip)
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                        }
+                    } else {
+                        Surface(
+                            shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            onClick = onComplete
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = stringResource(
+                                    Res.string.today_action_complete
+                                ),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.padding(8.dp)
                             )
                         }
                     }
-                } else {
-                    StatusBadge(
-                        text = if (isQuantitative && hasProgress) {
-                            stringResource(Res.string.today_badge_in_progress)
-                        } else {
-                            stringResource(Res.string.today_badge_pending)
-                        }
-                    )
+
+                    if (!habit.isSkipLocked) {
+                        Text(
+                            text = stringResource(Res.string.common_skip).uppercase(),
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(BUTTON_CORNER_RADIUS))
+                                .clickable(onClick = onSkip)
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
                 }
             }
 
-            // Progress bar: quantitative only, height animates
             if (isQuantitative) {
-                Spacer(modifier = Modifier.height(if (isExpanded) 16.dp else 10.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(
-                            if (isExpanded) PROGRESS_BAR_EXPANDED_HEIGHT else PROGRESS_BAR_COLLAPSED_HEIGHT
-                        )
+                        .height(PROGRESS_BAR_HEIGHT)
                         .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
                         .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(fraction = habit.progressPercentage)
-                            .height(
-                                if (isExpanded) PROGRESS_BAR_EXPANDED_HEIGHT else PROGRESS_BAR_COLLAPSED_HEIGHT
-                            )
+                            .height(PROGRESS_BAR_HEIGHT)
                             .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
                             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
                     )
-                }
-            }
-
-            // Expanded action buttons
-            if (isExpanded) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP)
-                ) {
-                    if (isQuantitative) {
-                        val incrementLabel: String = stringResource(
-                            Res.string.today_action_increment,
-                            habit.defaultIncrement,
-                            unitText
-                        )
-                        ActionButton(
-                            text = incrementLabel,
-                            onClick = onIncrementProgress,
-                            isPrimary = true,
-                            modifier = Modifier.weight(1f)
-                        )
-                        ActionButton(
-                            text = stringResource(Res.string.today_action_custom),
-                            onClick = onCustomProgress,
-                            isPrimary = false
-                        )
-                    } else {
-                        ActionButton(
-                            text = stringResource(Res.string.today_action_complete),
-                            onClick = onComplete,
-                            isPrimary = true,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    if (!habit.isSkipLocked) {
-                        ActionButton(
-                            text = stringResource(Res.string.common_skip),
-                            onClick = onSkip,
-                            isPrimary = false
-                        )
-                    }
-
-                    if (isQuantitative && hasProgress) {
-                        IconButton(onClick = onUndo) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Undo,
-                                contentDescription = stringResource(Res.string.today_cd_undo),
-                                tint = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                    }
                 }
             }
         }
@@ -444,66 +359,6 @@ private fun ResolvedHabitRow(
     }
 }
 
-@Composable
-private fun StatusBadge(text: String) {
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHighest
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontWeight = FontWeight.Medium
-            ),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-        )
-    }
-}
-
-@Composable
-private fun ActionButton(
-    text: String,
-    onClick: () -> Unit,
-    isPrimary: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val backgroundColor: Color = if (isPrimary) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.surfaceContainerHighest
-    }
-
-    val textColor: Color = if (isPrimary) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
-
-    Surface(
-        shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
-        color = backgroundColor,
-        onClick = onClick,
-        modifier = modifier
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(BUTTON_HEIGHT)
-                .then(if (isPrimary) Modifier.fillMaxWidth() else Modifier)
-                .padding(horizontal = 16.dp)
-        ) {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                color = textColor
-            )
-        }
-    }
-}
-
 // --- Previews ---
 
 @Preview
@@ -512,7 +367,6 @@ private fun BinaryCollapsedPreview() {
     RiteThemeFallback {
         HabitCard(
             habit = previewBinaryHabit(),
-            isExpanded = false,
             onClick = {},
             onComplete = {},
             onSkip = {},

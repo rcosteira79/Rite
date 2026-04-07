@@ -15,6 +15,7 @@
 - [ ] Persist daily target value when switching between binary and quantitative habit types
 - [ ] Animate complete button and metrics in habit detail screen
 - [ ] Rethink Habit Score — should reach 100% after completing daily for the recommended habit-forming period (~66 days?). Currently overshoots well past 100%. Research and redesign the formula
+- [ ] Wrap HabitDetailViewModel repository dependencies behind use cases returning Result
 
 ## Future Features
 

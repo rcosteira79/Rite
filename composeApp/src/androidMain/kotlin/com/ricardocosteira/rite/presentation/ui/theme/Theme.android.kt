@@ -20,7 +20,8 @@ actual fun RiteTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
         }
     }
 
-    val classificationColors = dayClassificationColors(isDarkTheme = darkTheme)
+    val classificationColors =
+        if (darkTheme) DarkDayClassificationColors else LightDayClassificationColors
     CompositionLocalProvider(LocalDayClassificationColors provides classificationColors) {
         MaterialTheme(
             colorScheme = colorScheme,
