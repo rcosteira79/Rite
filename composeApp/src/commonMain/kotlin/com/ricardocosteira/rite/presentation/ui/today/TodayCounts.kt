@@ -23,7 +23,10 @@ private val resolvedStatuses: Set<HabitStatus> = setOf(
  * a full "unit" of progress is reached (e.g. 1.8 → 1).
  */
 fun List<TodayHabitUiModel>.computeCounts(): TodayCounts {
-    val daily: List<TodayHabitUiModel> = filter { it.isDaily && !it.isSuspended }
+    val daily: List<TodayHabitUiModel> = filter {
+        (it.isDaily || it.isFixedWeekly) &&
+            !it.isSuspended
+    }
     val progress: Double = daily.sumOf { habit ->
         when {
             habit.status in resolvedStatuses -> 1.0
