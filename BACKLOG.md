@@ -2,6 +2,7 @@
 
 ## Post-MVP Polish
 
+- [ ] Flexible weekly habits — complete N times per week on any day, no specific days assigned
 - [ ] Day-detail calendar view (tap a day to see that day's habits)
 - [x] Habit detail screen (streaks, score, heatmap, actions)
 - [ ] Leave/suspension mode UI (domain logic complete, needs UI entry point)
@@ -30,3 +31,4 @@
 - [ ] Bag-of-words matching for habit creation — auto-suggest icon based on habit name
 - [ ] Update app icon
 - [ ] Fix flaky TodayViewModelSwipeTest — inject test dispatchers into repositories instead of using real Dispatchers.IO
+- [ ] Inject Clock into ProcessEndOfDay so tests can control "today" — needed for proper assertions on WEEKLY/FLEXIBLE_WEEKLY evaluation timing
