@@ -137,6 +137,8 @@ import rite.composeapp.generated.resources.habit_form_reminder_off
 import rite.composeapp.generated.resources.habit_form_reminder_title
 import rite.composeapp.generated.resources.habit_form_reminder_type_fixed
 import rite.composeapp.generated.resources.habit_form_reminder_type_periodic
+import rite.composeapp.generated.resources.habit_form_schedule_any_day
+import rite.composeapp.generated.resources.habit_form_schedule_specific_days
 import rite.composeapp.generated.resources.habit_form_section_daily_target
 import rite.composeapp.generated.resources.habit_form_section_habit_name
 import rite.composeapp.generated.resources.habit_form_section_schedule
@@ -584,14 +586,51 @@ internal fun HabitFormScreen(
                     )
                     ScheduleTypePill(
                         text = stringResource(Res.string.common_weekly),
-                        isSelected = state.scheduleType == ScheduleType.WEEKLY,
+                        isSelected = state.scheduleType == ScheduleType.WEEKLY ||
+                            state.scheduleType == ScheduleType.FLEXIBLE_WEEKLY,
                         onClick = {
-                            onAction(HabitFormUiAction.ScheduleTypeChanged(ScheduleType.WEEKLY))
+                            // Default to WEEKLY (specific days) when first selecting weekly
+                            if (state.scheduleType == ScheduleType.DAILY) {
+                                onAction(HabitFormUiAction.ScheduleTypeChanged(ScheduleType.WEEKLY))
+                            }
                         }
                     )
                 }
             }
 
+            // Weekly sub-type selection: Specific days vs Any day
+            AnimatedVisibility(
+                visible = state.scheduleType == ScheduleType.WEEKLY ||
+                    state.scheduleType == ScheduleType.FLEXIBLE_WEEKLY,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        ScheduleTypePill(
+                            text = stringResource(Res.string.habit_form_schedule_specific_days),
+                            isSelected = state.scheduleType == ScheduleType.WEEKLY,
+                            onClick = {
+                                onAction(HabitFormUiAction.ScheduleTypeChanged(ScheduleType.WEEKLY))
+                            }
+                        )
+                        ScheduleTypePill(
+                            text = stringResource(Res.string.habit_form_schedule_any_day),
+                            isSelected = state.scheduleType == ScheduleType.FLEXIBLE_WEEKLY,
+                            onClick = {
+                                onAction(
+                                    HabitFormUiAction.ScheduleTypeChanged(
+                                        ScheduleType.FLEXIBLE_WEEKLY
+                                    )
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+
+            // Day picker — only for WEEKLY (specific days)
             AnimatedVisibility(
                 visible = state.scheduleType == ScheduleType.WEEKLY,
                 enter = expandVertically() + fadeIn(),
