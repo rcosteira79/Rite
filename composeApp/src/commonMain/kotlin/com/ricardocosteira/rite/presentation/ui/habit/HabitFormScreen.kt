@@ -43,7 +43,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -84,6 +83,7 @@ import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
 import com.ricardocosteira.rite.presentation.ui.components.QuantityStepper
 import com.ricardocosteira.rite.presentation.ui.components.SchedulePicker
 import com.ricardocosteira.rite.presentation.ui.components.TypeToggle
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -463,8 +463,8 @@ internal fun HabitFormScreen(
                     )
                     Text(
                         text = stringResource(Res.string.habit_form_increment_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = RiteAppTheme.typography.bodySmall,
+                        color = RiteAppTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 4.dp)
                     )
                 }
