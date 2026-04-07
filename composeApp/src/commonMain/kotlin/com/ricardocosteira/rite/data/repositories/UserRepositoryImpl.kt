@@ -3,44 +3,42 @@ package com.ricardocosteira.rite.data.repositories
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.ricardocosteira.rite.data.database.RiteDatabase
+import com.ricardocosteira.rite.di.IoDispatcher
 import com.ricardocosteira.rite.domain.models.UndoPolicy
 import com.ricardocosteira.rite.domain.models.User
 import com.ricardocosteira.rite.domain.repositories.UserRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import me.tatarka.inject.annotations.Inject
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 @Inject
 class UserRepositoryImpl(
-    private val database: RiteDatabase
+    private val database: RiteDatabase,
+    private val ioDispatcher: IoDispatcher
 ) : UserRepository {
 
     private val queries = database.riteQueries
 
-    override fun observeUser(): Flow<User?> {
-        return queries.getUser()
-            .asFlow()
-            .mapToOneOrNull(Dispatchers.IO)
-            .map { userEntity: com.ricardocosteira.rite.data.database.User? ->
-                userEntity?.let { mapToUser(it) }
-            }
-    }
+    override fun observeUser(): Flow<User?> = queries.getUser()
+        .asFlow()
+        .mapToOneOrNull(ioDispatcher)
+        .map { userEntity: com.ricardocosteira.rite.data.database.User? ->
+            userEntity?.let { mapToUser(it) }
+        }
 
-    override suspend fun getUser(): User? = withContext(Dispatchers.IO) {
+    override suspend fun getUser(): User? = withContext(ioDispatcher) {
         queries.getUser()
             .executeAsOneOrNull()
             ?.let { mapToUser(it) }
     }
 
-    override suspend fun createDefaultUser(timezone: TimeZone): User = withContext(Dispatchers.IO) {
+    override suspend fun createDefaultUser(timezone: TimeZone): User = withContext(ioDispatcher) {
         val userId = generateUuid()
         val now = Clock.System.now()
 
@@ -71,7 +69,7 @@ class UserRepositoryImpl(
         )
     }
 
-    override suspend fun updateUser(user: User): Unit = withContext(Dispatchers.IO) {
+    override suspend fun updateUser(user: User): Unit = withContext(ioDispatcher) {
         queries.updateUser(
             timezone = user.timezone.id,
             previousTimezone = user.previousTimezone?.id,
@@ -89,7 +87,7 @@ class UserRepositoryImpl(
         userId: String,
         newTimezone: TimeZone,
         previousTimezone: TimeZone
-    ): Unit = withContext(Dispatchers.IO) {
+    ): Unit = withContext(ioDispatcher) {
         queries.updateUserTimezone(
             timezone = newTimezone.id,
             previousTimezone = previousTimezone.id,
@@ -97,30 +95,26 @@ class UserRepositoryImpl(
         )
     }
 
-    override suspend fun setOnboardingCompleted(
-        userId: String,
-        isCompleted: Boolean
-    ): Unit = withContext(Dispatchers.IO) {
-        queries.updateUserOnboardingCompleted(
-            onboardingCompleted = if (isCompleted) 1 else 0,
-            id = userId
-        )
-    }
+    override suspend fun setOnboardingCompleted(userId: String, isCompleted: Boolean): Unit =
+        withContext(ioDispatcher) {
+            queries.updateUserOnboardingCompleted(
+                onboardingCompleted = if (isCompleted) 1 else 0,
+                id = userId
+            )
+        }
 
-    private fun mapToUser(entity: com.ricardocosteira.rite.data.database.User): User {
-        return User(
-            id = entity.id,
-            timezone = TimeZone.of(entity.timezone),
-            previousTimezone = entity.previousTimezone?.let { TimeZone.of(it) },
-            undoPolicy = UndoPolicy.valueOf(entity.undoPolicy),
-            maxSnoozeDurationMinutes = entity.maxSnoozeDurationMinutes.toInt(),
-            maxSnoozesPerHabitPerDay = entity.maxSnoozesPerHabitPerDay?.toInt(),
-            maxConsecutiveSkips = entity.maxConsecutiveSkips?.toInt(),
-            isOnboardingCompleted = entity.onboardingCompleted == 1L,
-            dailySummaryTime = entity.dailySummaryTime?.let { LocalTime.parse(it) },
-            createdAt = kotlin.time.Instant.parse(entity.createdAt)
-        )
-    }
+    private fun mapToUser(entity: com.ricardocosteira.rite.data.database.User): User = User(
+        id = entity.id,
+        timezone = TimeZone.of(entity.timezone),
+        previousTimezone = entity.previousTimezone?.let { TimeZone.of(it) },
+        undoPolicy = UndoPolicy.valueOf(entity.undoPolicy),
+        maxSnoozeDurationMinutes = entity.maxSnoozeDurationMinutes.toInt(),
+        maxSnoozesPerHabitPerDay = entity.maxSnoozesPerHabitPerDay?.toInt(),
+        maxConsecutiveSkips = entity.maxConsecutiveSkips?.toInt(),
+        isOnboardingCompleted = entity.onboardingCompleted == 1L,
+        dailySummaryTime = entity.dailySummaryTime?.let { LocalTime.parse(it) },
+        createdAt = kotlin.time.Instant.parse(entity.createdAt)
+    )
 }
 
 internal expect fun generateUuid(): String
