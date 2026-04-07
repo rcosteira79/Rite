@@ -30,13 +30,11 @@ import kotlin.time.Clock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -47,70 +45,35 @@ import kotlinx.datetime.toLocalDateTime
  * Uses real repository implementations backed by an in-memory JdbcSqliteDriver so that
  * the full data layer (SQLDelight queries, mappers, dispatchers) is exercised end-to-end.
  *
- * NOTE ON DISPATCHER: `loadTodayHabits()` uses `withContext(Dispatchers.Default)` for
- * the habit-mapping step. Since `StandardTestDispatcher` does not replace
- * `Dispatchers.Default`, `advanceUntilIdle()` cannot guarantee the real-thread work is
- * done. Tests use `awaitState` (a polling helper) to wait for state to settle rather
- * than relying on virtual-time advancement alone.
+ * All dispatchers (IO, Default, Main) are replaced with the test dispatcher so that
+ * virtual-time control is deterministic — no real threads, no polling.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class TodayViewModelSwipeTest {
 
-    /**
-     * Polls the ViewModel state until [condition] is true, using short coroutine delays
-     * to yield control and allow pending scheduler tasks to run between polls.
-     *
-     * Background: `loadTodayHabits` dispatches a mapping step to `Dispatchers.Default`
-     * (a real thread pool). After `advanceUntilIdle()`, the test scheduler may be
-     * temporarily empty while that real-thread work is in-flight. Short `delay` calls
-     * here re-enter the coroutine machinery and process the resumed continuation once
-     * the real thread posts it back to the Main/test dispatcher.
-     *
-     * Uses 1ms virtual-time steps to stay well within the 5-second undo timeout budget.
-     */
-    private suspend fun TestScope.awaitState(
-        viewModel: TodayViewModel,
-        maxIterations: Int = 500,
-        condition: (TodayState) -> Boolean
-    ): Boolean {
-        repeat(maxIterations) {
-            if (condition(viewModel.state.value)) return true
-            // Yield to real thread pools (IO/Default) so they can complete and post
-            // continuations back to the test dispatcher. The Thread.sleep gives real
-            // threads time to finish on slow CI machines where virtual-time-only
-            // yielding is insufficient.
-            withContext(Dispatchers.IO) {}
-            advanceUntilIdle()
-            Thread.sleep(5)
-            advanceUntilIdle()
-        }
-        return condition(viewModel.state.value)
-    }
-
     @Test
     fun `deleteHabit removes habit from state and sets pendingDelete`() = runTest {
-        // Given
         val testDispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
         try {
-            val deps = buildDependencies()
+            // Given
+            val deps = buildDependencies(testDispatcher)
             val inputHabitId = "habit-1"
             val inputHabitName = "Morning Meditation"
             deps.seedHabitWithTodayInstance(habitId = inputHabitId, habitName = inputHabitName)
 
-            val viewModel = buildViewModelWithScheduler(deps)
+            val viewModel = buildViewModel(deps, testDispatcher)
             advanceUntilIdle()
 
-            // Wait for loadTodayHabits to complete (including Dispatchers.Default step)
-            val isLoaded: Boolean = awaitState(viewModel) {
-                it.pendingDaily.any { habit -> habit.habitId == inputHabitId }
-            }
-            assertTrue(isLoaded, "Expected habit to be in pendingDaily before delete")
+            assertTrue(
+                viewModel.state.value.pendingDaily.any { it.habitId == inputHabitId },
+                "Expected habit to be in pendingDaily before delete"
+            )
 
             // When — deleteHabit is synchronous: state updates happen immediately before returning
             viewModel.deleteHabit(inputHabitId)
-            // Do NOT call advanceUntilIdle() here — it would advance virtual time past the 5-second
-            // undo timeout, committing the delete and resetting pendingDelete.
+            // Do NOT call advanceUntilIdle() here — it would advance virtual time past the
+            // 5-second undo timeout, committing the delete and resetting pendingDelete.
 
             // Then
             val actualState = viewModel.state.value
@@ -135,27 +98,22 @@ class TodayViewModelSwipeTest {
 
     @Test
     fun `deleteHabit defers actual repository delete until timeout`() = runTest {
-        // Given
         val testDispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
         try {
-            val deps = buildDependencies()
+            // Given
+            val deps = buildDependencies(testDispatcher)
             val inputHabitId = "habit-1"
             deps.seedHabitWithTodayInstance(habitId = inputHabitId)
 
-            val viewModel = buildViewModelWithScheduler(deps)
-            awaitState(viewModel) { it.pendingDaily.any { habit -> habit.habitId == inputHabitId } }
+            val viewModel = buildViewModel(deps, testDispatcher)
+            advanceUntilIdle()
 
             // When — delete. Do NOT call advanceUntilIdle() — it would drain the 5s delay.
             viewModel.deleteHabit(inputHabitId)
 
             // Then — habit still in real repository (delete is deferred).
-            // Use withContext(Dispatchers.IO) to query the DB directly, avoiding
-            // re-entry into the test scheduler which would advance virtual time
-            // and drain the undo delay.
-            val actualHabit: Habit? = withContext(Dispatchers.IO) {
-                deps.habitRepository.getHabitById(inputHabitId)
-            }
+            val actualHabit: Habit? = deps.habitRepository.getHabitById(inputHabitId)
             assertNotNull(
                 actualHabit,
                 "Expected habit to still exist in repository before undo timeout"
@@ -167,25 +125,27 @@ class TodayViewModelSwipeTest {
 
     @Test
     fun `deleteHabit commits to repository after undo timeout`() = runTest {
-        // Given
         val testDispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
         try {
-            val deps = buildDependencies()
+            // Given
+            val deps = buildDependencies(testDispatcher)
             val inputHabitId = "habit-1"
             deps.seedHabitWithTodayInstance(habitId = inputHabitId)
 
-            val viewModel = buildViewModelWithScheduler(deps)
-            awaitState(viewModel) { it.pendingDaily.any { habit -> habit.habitId == inputHabitId } }
+            val viewModel = buildViewModel(deps, testDispatcher)
+            advanceUntilIdle()
 
             // When — delete, then advance past the undo timeout (5 seconds)
             viewModel.deleteHabit(inputHabitId)
             advanceTimeBy(6_000L)
-            // Wait for the IO-dispatched delete and state update to complete
-            val isCommitted: Boolean = awaitState(viewModel) { it.pendingDelete == null }
-            assertTrue(isCommitted, "Expected pendingDelete to be null after delete committed")
+            advanceUntilIdle()
 
             // Then — habit deleted from repository after timeout
+            assertNull(
+                viewModel.state.value.pendingDelete,
+                "Expected pendingDelete to be null after delete committed"
+            )
             val actualHabit: Habit? = deps.habitRepository.getHabitById(inputHabitId)
             assertNull(
                 actualHabit,
@@ -198,16 +158,16 @@ class TodayViewModelSwipeTest {
 
     @Test
     fun `undoDelete cancels pending delete and restores habit to state`() = runTest {
-        // Given
         val testDispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
         try {
-            val deps = buildDependencies()
+            // Given
+            val deps = buildDependencies(testDispatcher)
             val inputHabitId = "habit-1"
             deps.seedHabitWithTodayInstance(habitId = inputHabitId)
 
-            val viewModel = buildViewModelWithScheduler(deps)
-            awaitState(viewModel) { it.pendingDaily.any { habit -> habit.habitId == inputHabitId } }
+            val viewModel = buildViewModel(deps, testDispatcher)
+            advanceUntilIdle()
 
             viewModel.deleteHabit(inputHabitId)
             // Verify habit was removed from state synchronously
@@ -216,20 +176,18 @@ class TodayViewModelSwipeTest {
                 "Expected habit to be removed from state after deleteHabit"
             )
 
-            // When — undo before timeout. undoDelete() is synchronous (clears pendingDelete)
-            // and then triggers loadTodayHabits() via viewModelScope.launch.
+            // When — undo before timeout
             viewModel.undoDelete()
-            // Wait for loadTodayHabits triggered by undoDelete to complete
-            val isRestored: Boolean = awaitState(viewModel) {
-                it.pendingDelete == null &&
-                    it.pendingDaily.any { habit -> habit.habitId == inputHabitId }
-            }
+            advanceUntilIdle()
 
             // Then
-            assertTrue(isRestored, "Expected habit to be restored to pendingDaily after undoDelete")
             assertNull(
                 viewModel.state.value.pendingDelete,
                 "Expected pendingDelete to be null after undoDelete"
+            )
+            assertTrue(
+                viewModel.state.value.pendingDaily.any { it.habitId == inputHabitId },
+                "Expected habit to be restored to pendingDaily after undoDelete"
             )
             // Habit still exists in repository (delete was cancelled)
             val actualHabit: Habit? = deps.habitRepository.getHabitById(inputHabitId)
@@ -244,16 +202,16 @@ class TodayViewModelSwipeTest {
 
     @Test
     fun `undoDelete does not commit to repository even after timeout elapses`() = runTest {
-        // Given
         val testDispatcher = StandardTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
         try {
-            val deps = buildDependencies()
+            // Given
+            val deps = buildDependencies(testDispatcher)
             val inputHabitId = "habit-1"
             deps.seedHabitWithTodayInstance(habitId = inputHabitId)
 
-            val viewModel = buildViewModelWithScheduler(deps)
-            awaitState(viewModel) { it.pendingDaily.any { habit -> habit.habitId == inputHabitId } }
+            val viewModel = buildViewModel(deps, testDispatcher)
+            advanceUntilIdle()
 
             viewModel.deleteHabit(inputHabitId)
 
@@ -276,11 +234,11 @@ class TodayViewModelSwipeTest {
     @Test
     fun `second delete cancels first pending delete and commits it before starting new undo`() =
         runTest {
-            // Given
             val testDispatcher = StandardTestDispatcher(testScheduler)
             Dispatchers.setMain(testDispatcher)
             try {
-                val deps = buildDependencies()
+                // Given
+                val deps = buildDependencies(testDispatcher)
                 val inputFirstHabitId = "habit-1"
                 val inputSecondHabitId = "habit-2"
                 deps.seedHabitWithTodayInstance(
@@ -292,12 +250,14 @@ class TodayViewModelSwipeTest {
                     instanceId = "instance-2"
                 )
 
-                val viewModel = buildViewModelWithScheduler(deps)
-                val isBothLoaded: Boolean = awaitState(viewModel) {
-                    it.pendingDaily.any { habit -> habit.habitId == inputFirstHabitId } &&
-                        it.pendingDaily.any { habit -> habit.habitId == inputSecondHabitId }
-                }
-                assertTrue(isBothLoaded, "Expected both habits to be loaded into pendingDaily")
+                val viewModel = buildViewModel(deps, testDispatcher)
+                advanceUntilIdle()
+
+                assertTrue(
+                    viewModel.state.value.pendingDaily.any { it.habitId == inputFirstHabitId } &&
+                        viewModel.state.value.pendingDaily.any { it.habitId == inputSecondHabitId },
+                    "Expected both habits to be loaded into pendingDaily"
+                )
 
                 // When — delete first, then delete second (cancels first undo job)
                 viewModel.deleteHabit(inputFirstHabitId)
@@ -322,10 +282,13 @@ class TodayViewModelSwipeTest {
                 )
 
                 // Advance past timeout — second habit should be deleted from repository.
-                // Use awaitState to allow IO-dispatched DB operations to complete.
                 advanceTimeBy(6_000L)
-                val isBothDeleted: Boolean = awaitState(viewModel) { it.pendingDelete == null }
-                assertTrue(isBothDeleted, "Expected pendingDelete to be null after timeout")
+                advanceUntilIdle()
+
+                assertNull(
+                    viewModel.state.value.pendingDelete,
+                    "Expected pendingDelete to be null after timeout"
+                )
 
                 val actualFirstHabit: Habit? = deps.habitRepository.getHabitById(inputFirstHabitId)
                 val actualSecondHabit: Habit? = deps.habitRepository.getHabitById(
@@ -344,23 +307,28 @@ class TodayViewModelSwipeTest {
             }
         }
 
-    private fun buildDependencies(): TestDependencies = TestDependencies()
+    private fun buildDependencies(
+        testDispatcher: kotlinx.coroutines.CoroutineDispatcher
+    ): TestDependencies = TestDependencies(testDispatcher)
 
-    private fun buildViewModelWithScheduler(deps: TestDependencies): TodayViewModel =
-        TodayViewModel(
-            userRepository = deps.userRepository,
-            habitRepository = deps.habitRepository,
-            habitInstanceRepository = deps.habitInstanceRepository,
-            generateDailyHabits = deps.generateDailyHabits,
-            processEndOfDay = deps.processEndOfDay,
-            completeHabit = deps.completeHabit,
-            skipHabit = deps.skipHabit,
-            undoHabit = deps.undoHabit,
-            undoLastIncrement = deps.undoLastIncrement,
-            habitNotification = HabitNotification()
-        )
+    private fun buildViewModel(
+        deps: TestDependencies,
+        testDispatcher: kotlinx.coroutines.CoroutineDispatcher
+    ): TodayViewModel = TodayViewModel(
+        userRepository = deps.userRepository,
+        habitRepository = deps.habitRepository,
+        habitInstanceRepository = deps.habitInstanceRepository,
+        generateDailyHabits = deps.generateDailyHabits,
+        processEndOfDay = deps.processEndOfDay,
+        completeHabit = deps.completeHabit,
+        skipHabit = deps.skipHabit,
+        undoHabit = deps.undoHabit,
+        undoLastIncrement = deps.undoLastIncrement,
+        habitNotification = HabitNotification(),
+        defaultDispatcher = testDispatcher
+    )
 
-    inner class TestDependencies {
+    inner class TestDependencies(testDispatcher: kotlinx.coroutines.CoroutineDispatcher) {
 
         private val driver: JdbcSqliteDriver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY).also {
             RiteDatabase.Schema.create(it)
@@ -368,18 +336,19 @@ class TodayViewModelSwipeTest {
         private val database: RiteDatabase = RiteDatabase(driver)
 
         val habitRepository: HabitRepositoryImpl =
-            HabitRepositoryImpl(database = database, ioDispatcher = Dispatchers.IO)
+            HabitRepositoryImpl(database = database, ioDispatcher = testDispatcher)
 
         val habitInstanceRepository: HabitInstanceRepositoryImpl =
-            HabitInstanceRepositoryImpl(database = database, ioDispatcher = Dispatchers.IO)
+            HabitInstanceRepositoryImpl(database = database, ioDispatcher = testDispatcher)
 
-        val userRepository: UserRepositoryImpl = UserRepositoryImpl(database = database)
+        val userRepository: UserRepositoryImpl =
+            UserRepositoryImpl(database = database, ioDispatcher = testDispatcher)
 
         private val completionEventRepository: HabitCompletionEventRepositoryImpl =
-            HabitCompletionEventRepositoryImpl(database = database)
+            HabitCompletionEventRepositoryImpl(database = database, ioDispatcher = testDispatcher)
 
         private val leavePeriodRepository: LeavePeriodRepositoryImpl =
-            LeavePeriodRepositoryImpl(database = database)
+            LeavePeriodRepositoryImpl(database = database, ioDispatcher = testDispatcher)
 
         private val uuidProvider: UuidProvider = object : UuidProvider {
             private var counter: Int = 0
