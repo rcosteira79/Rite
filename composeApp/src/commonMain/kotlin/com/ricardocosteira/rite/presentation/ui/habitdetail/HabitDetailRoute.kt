@@ -13,8 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.rite.di.LocalAppComponent
-import com.ricardocosteira.rite.domain.models.ScheduleType
-import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import com.ricardocosteira.rite.presentation.ui.today.QuantitativeInputBottomSheet
 import org.jetbrains.compose.resources.stringResource
@@ -88,25 +86,10 @@ fun HabitDetailRoute(
     val customInputHabit = state.habit
     if (state.showCustomInput && customInputHabit != null) {
         QuantitativeInputBottomSheet(
-            habit = TodayHabitUiModel(
-                instanceId = customInputHabit.instanceId,
-                habitId = customInputHabit.habitId,
-                name = customInputHabit.name,
-                description = customInputHabit.description,
-                type = customInputHabit.type,
-                status = customInputHabit.status,
-                targetValue = customInputHabit.targetValue,
-                completedValue = customInputHabit.completedValue,
-                unit = customInputHabit.unit,
-                defaultIncrement = customInputHabit.defaultIncrement,
-                progressPercentage = customInputHabit.progressPercentage,
-                isSkipLocked = customInputHabit.isSkipLocked,
-                currentStreak = customInputHabit.currentStreak,
-                longestStreak = customInputHabit.longestStreak,
-                scorePercentage = customInputHabit.habitScore,
-                cadence = ScheduleType.DAILY,
-                completedAtText = null
-            ),
+            name = customInputHabit.name,
+            completedValue = customInputHabit.completedValue,
+            targetValue = customInputHabit.targetValue,
+            unit = customInputHabit.unit,
             onConfirm = { value ->
                 viewModel.addCustomProgress(value)
                 viewModel.dismissCustomInput()

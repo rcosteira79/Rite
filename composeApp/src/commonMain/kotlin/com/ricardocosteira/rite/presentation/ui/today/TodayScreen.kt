@@ -29,7 +29,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -59,6 +58,7 @@ import com.ricardocosteira.rite.presentation.ui.components.toolbar.DynamicCollap
 import com.ricardocosteira.rite.presentation.ui.components.toolbar.pinnedExitUntilCollapsedToolbarSpec
 import com.ricardocosteira.rite.presentation.ui.haptics.HapticController
 import com.ricardocosteira.rite.presentation.ui.haptics.rememberHapticController
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import com.ricardocosteira.rite.util.formatMonthAbbreviation
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
@@ -148,7 +148,10 @@ fun TodayScreen(
         val habit = state.habits.find { it.instanceId == instanceId }
         if (habit != null) {
             QuantitativeInputBottomSheet(
-                habit = habit,
+                name = habit.name,
+                completedValue = habit.completedValue,
+                targetValue = habit.targetValue,
+                unit = habit.unit,
                 onConfirm = { value -> viewModel.completeQuantitativeHabit(instanceId, value) },
                 onDismiss = viewModel::dismissQuantitativeInput
             )
