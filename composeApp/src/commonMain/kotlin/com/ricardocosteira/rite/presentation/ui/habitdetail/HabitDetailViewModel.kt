@@ -65,7 +65,10 @@ class HabitDetailViewModel(
                     return@launch
                 }
 
-            val habit = habitRepository.getHabitById(instance.habitId)
+            val habit = habitRepository.getHabitById(instance.habitId) ?: run {
+                _state.update { it.copy(isLoading = false) }
+                return@launch
+            }
             val user = userRepository.getUser()
             val maxSkips: Int? = user?.maxConsecutiveSkips
 
@@ -78,7 +81,7 @@ class HabitDetailViewModel(
                 .filter { it.date >= startDate && it.date <= today }
                 .map { inst ->
                     HeatmapDay(
-                        date = inst.date,
+                        date = inst.date.toString(),
                         completionPercentage = inst.progressPercentage(),
                         status = inst.status
                     )
@@ -87,12 +90,30 @@ class HabitDetailViewModel(
 
             val consecutiveSkips: Int = calculateConsecutiveSkips(allInstances)
 
+            val uiModel = HabitDetailUiModel(
+                habitId = habit.id,
+                instanceId = instance.id,
+                name = habit.name,
+                description = habit.description,
+                type = habit.type,
+                unit = habit.unit,
+                defaultIncrement = habit.defaultIncrement,
+                status = instance.status,
+                currentProgress = instance.currentProgress,
+                targetValue = instance.targetValue,
+                completedValue = instance.completedValue,
+                progressPercentage = instance.progressPercentage(),
+                isQuantitativeComplete = instance.isQuantitativeComplete(),
+                currentStreak = habit.currentStreak,
+                longestStreak = habit.longestStreak,
+                habitScore = habit.calculateScore().percentage,
+                maxConsecutiveSkips = maxSkips,
+                currentConsecutiveSkips = consecutiveSkips
+            )
+
             _state.update {
                 it.copy(
-                    habit = habit,
-                    instance = instance,
-                    maxConsecutiveSkips = maxSkips,
-                    currentConsecutiveSkips = consecutiveSkips,
+                    habit = uiModel,
                     heatmapData = heatmapData,
                     isLoading = false
                 )
@@ -101,7 +122,7 @@ class HabitDetailViewModel(
     }
 
     fun completeBinary() {
-        val instanceId: String = _state.value.instance?.id ?: return
+        val instanceId: String = _state.value.habit?.instanceId ?: return
         viewModelScope.launch {
             completeHabit.executeBinary(instanceId, CompletionSource.IN_APP)
             loadDetail()
@@ -109,7 +130,7 @@ class HabitDetailViewModel(
     }
 
     fun incrementProgress() {
-        val instanceId: String = _state.value.instance?.id ?: return
+        val instanceId: String = _state.value.habit?.instanceId ?: return
         val increment: Int = _state.value.habit?.defaultIncrement ?: 1
         viewModelScope.launch {
             completeHabit.executeQuantitative(instanceId, increment, CompletionSource.IN_APP)
@@ -118,7 +139,7 @@ class HabitDetailViewModel(
     }
 
     fun addCustomProgress(amount: Int) {
-        val instanceId: String = _state.value.instance?.id ?: return
+        val instanceId: String = _state.value.habit?.instanceId ?: return
         viewModelScope.launch {
             completeHabit.executeQuantitative(instanceId, amount, CompletionSource.IN_APP)
             loadDetail()
@@ -126,7 +147,7 @@ class HabitDetailViewModel(
     }
 
     fun skip() {
-        val instanceId: String = _state.value.instance?.id ?: return
+        val instanceId: String = _state.value.habit?.instanceId ?: return
         viewModelScope.launch {
             skipHabit.execute(instanceId)
             loadDetail()
@@ -134,22 +155,19 @@ class HabitDetailViewModel(
     }
 
     fun undo() {
-        val instanceId: String = _state.value.instance?.id ?: return
-        val habit = _state.value.habit
+        val habit = _state.value.habit ?: return
         viewModelScope.launch {
-            if (habit?.type == HabitType.QUANTITATIVE && _state.value.isCompleted) {
-                // For completed quantitative habits, undo last increment (revert to previous progress)
-                undoLastIncrement.execute(instanceId)
+            if (habit.type == HabitType.QUANTITATIVE && habit.isCompleted) {
+                undoLastIncrement.execute(habit.instanceId)
             } else {
-                // For binary habits or skipped habits, full undo
-                undoHabit.execute(instanceId)
+                undoHabit.execute(habit.instanceId)
             }
             loadDetail()
         }
     }
 
     fun undoIncrement() {
-        val instanceId: String = _state.value.instance?.id ?: return
+        val instanceId: String = _state.value.habit?.instanceId ?: return
         viewModelScope.launch {
             undoLastIncrement.execute(instanceId)
             loadDetail()
@@ -165,7 +183,7 @@ class HabitDetailViewModel(
     }
 
     fun archiveHabit() {
-        val habitId: String = _state.value.habit?.id ?: return
+        val habitId: String = _state.value.habit?.habitId ?: return
         viewModelScope.launch {
             habitRepository.archiveHabit(habitId)
             _events.emit(HabitDetailEvent.NavigateBack)
@@ -173,7 +191,7 @@ class HabitDetailViewModel(
     }
 
     fun deleteHabit() {
-        val habitId: String = _state.value.habit?.id ?: return
+        val habitId: String = _state.value.habit?.habitId ?: return
         viewModelScope.launch {
             habitRepository.deleteHabit(habitId)
             _events.emit(HabitDetailEvent.NavigateBack)

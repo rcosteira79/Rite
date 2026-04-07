@@ -1,23 +1,37 @@
 package com.ricardocosteira.rite.presentation.ui.habitdetail
 
-import com.ricardocosteira.rite.domain.models.Habit
-import com.ricardocosteira.rite.domain.models.HabitInstance
 import com.ricardocosteira.rite.domain.models.HabitStatus
+import com.ricardocosteira.rite.domain.models.HabitType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.datetime.LocalDate
 
 data class HabitDetailState(
-    val habit: Habit? = null,
-    val instance: HabitInstance? = null,
-    val maxConsecutiveSkips: Int? = null,
-    val currentConsecutiveSkips: Int = 0,
+    val habit: HabitDetailUiModel? = null,
     val heatmapData: ImmutableList<HeatmapDay> = persistentListOf(),
     val isLoading: Boolean = true,
     val showCustomInput: Boolean = false
-) {
-    val habitScore: Int = habit?.calculateScore()?.percentage ?: 0
+)
 
+data class HabitDetailUiModel(
+    val habitId: String,
+    val instanceId: String,
+    val name: String,
+    val description: String?,
+    val type: HabitType,
+    val unit: String?,
+    val defaultIncrement: Int,
+    val status: HabitStatus,
+    val currentProgress: Int,
+    val targetValue: Int?,
+    val completedValue: Int?,
+    val progressPercentage: Float,
+    val isQuantitativeComplete: Boolean,
+    val currentStreak: Int,
+    val longestStreak: Int,
+    val habitScore: Int,
+    val maxConsecutiveSkips: Int?,
+    val currentConsecutiveSkips: Int,
+) {
     val skipsRemaining: Int? = maxConsecutiveSkips?.let { max ->
         (max - currentConsecutiveSkips).coerceAtLeast(0)
     }
@@ -26,15 +40,13 @@ data class HabitDetailState(
         currentConsecutiveSkips >= max
     } ?: false
 
-    val isCompleted: Boolean = instance?.status == HabitStatus.COMPLETED
+    val isCompleted: Boolean = status == HabitStatus.COMPLETED
 
-    val isSkipped: Boolean = instance?.status == HabitStatus.SKIPPED
+    val isSkipped: Boolean = status == HabitStatus.SKIPPED
 
-    val isFailed: Boolean = instance?.status == HabitStatus.FAILED
+    val isFailed: Boolean = status == HabitStatus.FAILED
 
     val isResolved: Boolean = isCompleted || isSkipped || isFailed
-
-    val isQuantitativeComplete: Boolean = instance?.isQuantitativeComplete() ?: false
 }
 
-data class HeatmapDay(val date: LocalDate, val completionPercentage: Float, val status: HabitStatus)
+data class HeatmapDay(val date: String, val completionPercentage: Float, val status: HabitStatus)

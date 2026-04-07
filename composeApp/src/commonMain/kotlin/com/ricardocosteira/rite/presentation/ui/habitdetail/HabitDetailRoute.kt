@@ -2,7 +2,6 @@ package com.ricardocosteira.rite.presentation.ui.habitdetail
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
-import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -16,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import com.ricardocosteira.rite.presentation.ui.today.QuantitativeInputBottomSheet
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
@@ -53,7 +53,7 @@ fun HabitDetailRoute(
         onSkip = viewModel::skip,
         onUndo = viewModel::undo,
         onUndoIncrement = viewModel::undoIncrement,
-        onEditHabit = { state.habit?.id?.let(onEditHabit) },
+        onEditHabit = { state.habit?.habitId?.let(onEditHabit) },
         onArchiveHabit = viewModel::archiveHabit,
         onDeleteHabit = { isDeleteDialogVisible = true },
         modifier = modifier
@@ -85,26 +85,25 @@ fun HabitDetailRoute(
         )
     }
 
-    if (state.showCustomInput && state.habit != null && state.instance != null) {
-        val habit = state.habit!!
-        val instance = state.instance!!
+    val customInputHabit = state.habit
+    if (state.showCustomInput && customInputHabit != null) {
         QuantitativeInputBottomSheet(
             habit = TodayHabitUiModel(
-                instanceId = instance.id,
-                habitId = habit.id,
-                name = habit.name,
-                description = habit.description,
-                type = habit.type,
-                status = instance.status,
-                targetValue = instance.targetValue,
-                completedValue = instance.completedValue,
-                unit = habit.unit,
-                defaultIncrement = habit.defaultIncrement,
-                progressPercentage = instance.progressPercentage(),
-                isSkipLocked = state.isSkipLocked,
-                currentStreak = habit.currentStreak,
-                longestStreak = habit.longestStreak,
-                scorePercentage = state.habitScore,
+                instanceId = customInputHabit.instanceId,
+                habitId = customInputHabit.habitId,
+                name = customInputHabit.name,
+                description = customInputHabit.description,
+                type = customInputHabit.type,
+                status = customInputHabit.status,
+                targetValue = customInputHabit.targetValue,
+                completedValue = customInputHabit.completedValue,
+                unit = customInputHabit.unit,
+                defaultIncrement = customInputHabit.defaultIncrement,
+                progressPercentage = customInputHabit.progressPercentage,
+                isSkipLocked = customInputHabit.isSkipLocked,
+                currentStreak = customInputHabit.currentStreak,
+                longestStreak = customInputHabit.longestStreak,
+                scorePercentage = customInputHabit.habitScore,
                 cadence = ScheduleType.DAILY,
                 completedAtText = null
             ),

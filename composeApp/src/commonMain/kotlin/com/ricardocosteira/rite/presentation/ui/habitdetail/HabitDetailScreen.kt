@@ -30,7 +30,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -52,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.common_cd_back
@@ -182,7 +182,7 @@ fun HabitDetailScreen(
             )
         }
     ) { paddingValues ->
-        if (state.isLoading || state.habit == null || state.instance == null) {
+        if (state.isLoading || state.habit == null) {
             Box(
                 modifier = Modifier.fillMaxSize().padding(paddingValues),
                 contentAlignment = Alignment.Center
@@ -271,19 +271,18 @@ fun HabitDetailScreen(
 
 @Composable
 private fun ProgressRingCard(state: HabitDetailState, modifier: Modifier = Modifier) {
-    val instance = state.instance ?: return
     val habit = state.habit ?: return
 
     val targetProgress: Float = if (habit.type == HabitType.BINARY) {
-        if (state.isCompleted) 1f else 0f
+        if (habit.isCompleted) 1f else 0f
     } else {
-        instance.progressPercentage().coerceIn(0f, 1f)
+        habit.progressPercentage.coerceIn(0f, 1f)
     }
 
     val percentage: Int = if (habit.type == HabitType.BINARY) {
-        if (state.isCompleted) PERCENTAGE_MULTIPLIER else 0
+        if (habit.isCompleted) PERCENTAGE_MULTIPLIER else 0
     } else {
-        (instance.progressPercentage() * PERCENTAGE_MULTIPLIER).toInt()
+        (habit.progressPercentage * PERCENTAGE_MULTIPLIER).toInt()
     }
 
     val sweepAngle: Float by animateFloatAsState(
@@ -353,8 +352,8 @@ private fun ProgressRingCard(state: HabitDetailState, modifier: Modifier = Modif
                 Text(
                     text = stringResource(
                         Res.string.habit_detail_progress,
-                        instance.currentProgress,
-                        instance.targetValue ?: 0,
+                        habit.currentProgress,
+                        habit.targetValue ?: 0,
                         habit.unit?.uppercase() ?: ""
                     ),
                     style = RiteAppTheme.typography.bodySmall,
@@ -386,7 +385,7 @@ private fun StatsRow(state: HabitDetailState, modifier: Modifier = Modifier) {
             modifier = Modifier.weight(1f)
         )
         StatCard(
-            value = "${state.habitScore}",
+            value = "${habit.habitScore}",
             label = stringResource(Res.string.habit_detail_stat_habit_score),
             suffix = null,
             modifier = Modifier.weight(1f)
@@ -422,10 +421,11 @@ private fun StatCard(value: String, label: String, suffix: String?, modifier: Mo
 
 @Composable
 private fun SkipLimitsCard(state: HabitDetailState, modifier: Modifier = Modifier) {
+    val habit = state.habit ?: return
     val text: String = when {
-        state.maxConsecutiveSkips == null -> stringResource(Res.string.habit_detail_skips_unlimited)
-        state.isSkipLocked -> stringResource(Res.string.habit_detail_skips_none)
-        else -> stringResource(Res.string.habit_detail_skips_remaining, state.skipsRemaining ?: 0)
+        habit.maxConsecutiveSkips == null -> stringResource(Res.string.habit_detail_skips_unlimited)
+        habit.isSkipLocked -> stringResource(Res.string.habit_detail_skips_none)
+        else -> stringResource(Res.string.habit_detail_skips_remaining, habit.skipsRemaining ?: 0)
     }
 
     Surface(
@@ -506,25 +506,27 @@ private fun BinaryActions(
     onSkip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val habit = state.habit ?: return
+
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (state.isResolved && (state.isCompleted || state.isSkipped)) {
+        if (habit.isResolved && (habit.isCompleted || habit.isSkipped)) {
             PrimaryButton(onClick = onUndo) {
                 Text(stringResource(Res.string.habit_detail_action_undo))
             }
         } else {
             PrimaryButton(
                 onClick = onComplete,
-                enabled = !state.isResolved
+                enabled = !habit.isResolved
             ) {
                 Text(stringResource(Res.string.habit_detail_action_complete))
             }
         }
 
-        if (!state.isResolved) {
-            SkipRow(onSkip = onSkip, isSkipLocked = state.isSkipLocked)
+        if (!habit.isResolved) {
+            SkipRow(onSkip = onSkip, isSkipLocked = habit.isSkipLocked)
         }
     }
 }
@@ -540,14 +542,13 @@ private fun QuantitativeActions(
     modifier: Modifier = Modifier
 ) {
     val habit = state.habit ?: return
-    val instance = state.instance ?: return
-    val hasProgress: Boolean = instance.currentProgress > 0
+    val hasProgress: Boolean = habit.currentProgress > 0
 
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (state.isResolved && (state.isCompleted || state.isSkipped)) {
+        if (habit.isResolved && (habit.isCompleted || habit.isSkipped)) {
             PrimaryButton(onClick = onUndo) {
                 Text(stringResource(Res.string.habit_detail_action_undo))
             }
@@ -571,7 +572,7 @@ private fun QuantitativeActions(
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "${instance.currentProgress}",
+                            text = "${habit.currentProgress}",
                             style = RiteAppTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.ExtraBold
                             ),
@@ -591,10 +592,10 @@ private fun QuantitativeActions(
             }
         }
 
-        if (!state.isResolved) {
+        if (!habit.isResolved) {
             SkipRow(
                 onSkip = onSkip,
-                isSkipLocked = state.isSkipLocked,
+                isSkipLocked = habit.isSkipLocked,
                 trailingButton = {
                     IconSurface(
                         onClick = onCustomProgress,

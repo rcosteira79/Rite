@@ -56,7 +56,7 @@ fun HeatmapGrid(heatmapData: List<HeatmapDay>, modifier: Modifier = Modifier) {
     val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
     val startDate: LocalDate = today.minus(DatePeriod(days = 90))
 
-    val dataByDate: Map<LocalDate, HeatmapDay> = heatmapData.associateBy { it.date }
+    val dataByDate: Map<String, HeatmapDay> = heatmapData.associateBy { it.date }
 
     val weeks: List<List<LocalDate?>> = buildWeeks(startDate, today)
     val weekCount: Int = weeks.size
@@ -98,7 +98,7 @@ fun HeatmapGrid(heatmapData: List<HeatmapDay>, modifier: Modifier = Modifier) {
                                     Box(modifier = Modifier.size(cellSize))
                                 } else {
                                     HeatmapCell(
-                                        day = dataByDate[date],
+                                        day = dataByDate[date.toString()],
                                         size = cellSize
                                     )
                                 }
