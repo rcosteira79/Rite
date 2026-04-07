@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,14 +22,16 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
-import rite.composeapp.generated.resources.Res
-import rite.composeapp.generated.resources.first_habit_button_create
-import rite.composeapp.generated.resources.first_habit_button_skip
-import rite.composeapp.generated.resources.philosophy_cta_accept
-import rite.composeapp.generated.resources.strictness_cta_continue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.first_habit_button_create
+import rite.composeapp.generated.resources.first_habit_button_skip
+import rite.composeapp.generated.resources.notifications_cta_enable
+import rite.composeapp.generated.resources.notifications_cta_later
+import rite.composeapp.generated.resources.philosophy_cta_accept
+import rite.composeapp.generated.resources.strictness_cta_continue
 
 @Composable
 private fun CtaContainer(
@@ -121,8 +123,32 @@ internal fun FirstHabitStepCta(
         TextButton(onClick = onSkip, modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = stringResource(Res.string.first_habit_button_skip),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = RiteAppTheme.typography.labelLarge,
+                color = RiteAppTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+internal fun NotificationPermissionStepCta(
+    onEnableNotifications: () -> Unit,
+    onMaybeLater: () -> Unit,
+    modifier: Modifier = Modifier,
+    reduceMotion: Boolean = false
+) {
+    CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
+        PrimaryButton(onClick = onEnableNotifications) {
+            Text(stringResource(Res.string.notifications_cta_enable))
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        TextButton(onClick = onMaybeLater, modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = stringResource(Res.string.notifications_cta_later),
+                style = RiteAppTheme.typography.labelLarge,
+                color = RiteAppTheme.colorScheme.onSurfaceVariant
             )
         }
     }

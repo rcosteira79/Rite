@@ -26,7 +26,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -142,12 +142,12 @@ private fun ExpandedHeader(
         ) {
             Text(
                 text = motivationalTitle,
-                style = MaterialTheme.typography.headlineLarge.copy(
+                style = RiteAppTheme.typography.headlineLarge.copy(
                     fontSize = 28.sp,
                     fontWeight = FontWeight.ExtraBold,
                     lineHeight = 32.sp
                 ),
-                color = MaterialTheme.colorScheme.primary
+                color = RiteAppTheme.colorScheme.primary
             )
 
             val subtitleText: String = if (!hasHabits) {
@@ -160,10 +160,10 @@ private fun ExpandedHeader(
 
             Text(
                 text = subtitleText,
-                style = MaterialTheme.typography.bodyMedium.copy(
+                style = RiteAppTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Medium
                 ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = RiteAppTheme.colorScheme.onSurfaceVariant
             )
 
             if (strictnessPreset != null) {
@@ -209,11 +209,11 @@ private fun CollapsedHeader(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = motivationalTitle,
-                style = MaterialTheme.typography.headlineSmall.copy(
+                style = RiteAppTheme.typography.headlineSmall.copy(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold
                 ),
-                color = MaterialTheme.colorScheme.primary,
+                color = RiteAppTheme.colorScheme.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -234,8 +234,8 @@ private fun CollapsedHeader(
 
                 Text(
                     text = subtitleText,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = RiteAppTheme.typography.bodySmall,
+                    color = RiteAppTheme.colorScheme.onSurfaceVariant
                 )
 
                 if (strictnessPreset != null) {
@@ -259,19 +259,19 @@ private fun CollapsedHeader(
             ) {
                 Text(
                     text = "$percentage%",
-                    style = MaterialTheme.typography.titleMedium.copy(
+                    style = RiteAppTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.ExtraBold
                     ),
-                    color = MaterialTheme.colorScheme.primary
+                    color = RiteAppTheme.colorScheme.primary
                 )
 
                 Text(
                     text = stringResource(Res.string.today_header_done_label).uppercase(),
-                    style = MaterialTheme.typography.labelSmall.copy(
+                    style = RiteAppTheme.typography.labelSmall.copy(
                         letterSpacing = 1.5.sp,
                         fontWeight = FontWeight.Bold
                     ),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = RiteAppTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -284,10 +284,10 @@ private fun StrictnessPresetPill(preset: StrictnessPreset, isCompact: Boolean = 
 
     Surface(
         shape = RoundedCornerShape(PILL_CORNER_PERCENT),
-        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = PILL_BACKGROUND_ALPHA),
+        color = RiteAppTheme.colorScheme.primaryContainer.copy(alpha = PILL_BACKGROUND_ALPHA),
         modifier = Modifier.border(
             width = 1.dp,
-            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = PILL_BORDER_ALPHA),
+            color = RiteAppTheme.colorScheme.primaryContainer.copy(alpha = PILL_BORDER_ALPHA),
             shape = RoundedCornerShape(PILL_CORNER_PERCENT)
         )
     ) {
@@ -305,11 +305,11 @@ private fun StrictnessPresetPill(preset: StrictnessPreset, isCompact: Boolean = 
 
             Text(
                 text = presetName,
-                style = MaterialTheme.typography.labelSmall.copy(
+                style = RiteAppTheme.typography.labelSmall.copy(
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.8.sp
                 ),
-                color = MaterialTheme.colorScheme.primary
+                color = RiteAppTheme.colorScheme.primary
             )
         }
     }
@@ -331,7 +331,7 @@ private fun PulsingDot(modifier: Modifier = Modifier) {
         label = "PulsingDotAlpha"
     )
 
-    val dotColor = MaterialTheme.colorScheme.primary
+    val dotColor = RiteAppTheme.colorScheme.primary
 
     Canvas(modifier = modifier) {
         drawCircle(
@@ -363,8 +363,8 @@ private fun DailyProgressRing(
         label = "progress-ring"
     )
 
-    val trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
-    val progressColor = MaterialTheme.colorScheme.primary
+    val trackColor = RiteAppTheme.colorScheme.surfaceContainerHighest
+    val progressColor = RiteAppTheme.colorScheme.primary
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -408,19 +408,19 @@ private fun DailyProgressRing(
             ) {
                 Text(
                     text = "$percentage%",
-                    style = MaterialTheme.typography.titleLarge.copy(
+                    style = RiteAppTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.ExtraBold
                     ),
-                    color = MaterialTheme.colorScheme.primary
+                    color = RiteAppTheme.colorScheme.primary
                 )
 
                 Text(
                     text = stringResource(Res.string.today_header_day_label).uppercase(),
-                    style = MaterialTheme.typography.labelSmall.copy(
+                    style = RiteAppTheme.typography.labelSmall.copy(
                         letterSpacing = 2.sp,
                         fontWeight = FontWeight.ExtraBold
                     ),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = RiteAppTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

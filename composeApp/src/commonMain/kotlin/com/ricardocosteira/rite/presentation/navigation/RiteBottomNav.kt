@@ -8,7 +8,7 @@ import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -38,9 +38,9 @@ fun RiteBottomNav(
     val hapticController: HapticController = rememberHapticController()
 
     val navItemColors = NavigationBarItemDefaults.colors(
-        indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-        selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        selectedTextColor = MaterialTheme.colorScheme.primary
+        indicatorColor = RiteAppTheme.colorScheme.primaryContainer,
+        selectedIconColor = RiteAppTheme.colorScheme.onPrimaryContainer,
+        selectedTextColor = RiteAppTheme.colorScheme.primary
     )
 
     NavigationBar(modifier = modifier) {

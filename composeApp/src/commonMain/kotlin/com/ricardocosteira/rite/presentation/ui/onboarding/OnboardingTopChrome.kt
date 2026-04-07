@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -23,18 +23,22 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.common_cd_onboarding_step
 import rite.composeapp.generated.resources.common_skip
-import org.jetbrains.compose.resources.stringResource
 
-private const val TOTAL_STEPS = 3
 private const val DONE_DOT_ALPHA = 0.45f
 
 @Composable
-fun OnboardingTopChrome(currentStep: Int, onSkip: () -> Unit, modifier: Modifier = Modifier) {
+fun OnboardingTopChrome(
+    currentStep: Int,
+    totalSteps: Int,
+    onSkip: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val stepDescription =
-        stringResource(Res.string.common_cd_onboarding_step, currentStep + 1, TOTAL_STEPS)
+        stringResource(Res.string.common_cd_onboarding_step, currentStep + 1, totalSteps)
 
     Row(
         modifier = modifier.padding(horizontal = 24.dp, vertical = 8.dp),
@@ -43,6 +47,7 @@ fun OnboardingTopChrome(currentStep: Int, onSkip: () -> Unit, modifier: Modifier
     ) {
         ProgressDots(
             currentStep = currentStep,
+            totalSteps = totalSteps,
             modifier = Modifier
                 .weight(1f)
                 .semantics {
@@ -53,21 +58,21 @@ fun OnboardingTopChrome(currentStep: Int, onSkip: () -> Unit, modifier: Modifier
         TextButton(onClick = onSkip) {
             Text(
                 text = stringResource(Res.string.common_skip),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = RiteAppTheme.typography.labelLarge,
+                color = RiteAppTheme.colorScheme.onSurfaceVariant
             )
         }
     }
 }
 
 @Composable
-private fun ProgressDots(currentStep: Int, modifier: Modifier = Modifier) {
+private fun ProgressDots(currentStep: Int, totalSteps: Int, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        repeat(TOTAL_STEPS) { index ->
+        repeat(totalSteps) { index ->
             StepDot(
                 state = when {
                     index < currentStep -> DotState.Done
@@ -103,9 +108,9 @@ private fun StepDot(state: DotState, modifier: Modifier = Modifier) {
     )
 
     val color = if (state == DotState.Inactive) {
-        MaterialTheme.colorScheme.surfaceVariant
+        RiteAppTheme.colorScheme.surfaceVariant
     } else {
-        MaterialTheme.colorScheme.primary
+        RiteAppTheme.colorScheme.primary
     }
 
     Box(

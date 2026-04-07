@@ -63,20 +63,7 @@ An open-source habit tracker that turns your goals into daily rituals through us
 
 ### Planned
 
-**Post-MVP polish:**
-- Day-detail calendar view (tap a day to see that day's habits)
-- Leave/suspension mode UI (domain logic complete, needs UI entry point)
-- Notification permission onboarding screen
-- Habit form IME handling (keyboard occludes bottom buttons)
-- Animated collapsing toolbar transition on Today screen
-
-**Future features:**
-- Weekly Reflection / insights card (exploring on-device Gemma 4 E2B for natural language summaries)
-- Periodic reminder scheduling (interval-based within a time window)
-- Create/edit habit UI for custom increment values
-- Active vs silent tracking notification toggle in Settings
-- iOS activation
-- Comprehensive unit test coverage
+See [BACKLOG.md](./BACKLOG.md) for the full list of planned work.
 
 ---
 

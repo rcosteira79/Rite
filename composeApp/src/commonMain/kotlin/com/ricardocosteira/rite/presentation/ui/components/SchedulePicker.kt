@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -124,14 +124,14 @@ private fun PresetPill(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor = if (isSelected) {
-        MaterialTheme.colorScheme.primaryContainer
+        RiteAppTheme.colorScheme.primaryContainer
     } else {
-        MaterialTheme.colorScheme.surfaceContainerHighest
+        RiteAppTheme.colorScheme.surfaceContainerHighest
     }
     val contentColor = if (isSelected) {
-        MaterialTheme.colorScheme.onPrimaryContainer
+        RiteAppTheme.colorScheme.onPrimaryContainer
     } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
+        RiteAppTheme.colorScheme.onSurfaceVariant
     }
 
     Box(
@@ -147,7 +147,7 @@ private fun PresetPill(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelSmall,
+            style = RiteAppTheme.typography.labelSmall,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
             color = contentColor
         )
@@ -162,14 +162,14 @@ private fun DayChip(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor = if (isSelected) {
-        MaterialTheme.colorScheme.primaryContainer
+        RiteAppTheme.colorScheme.primaryContainer
     } else {
-        MaterialTheme.colorScheme.surfaceContainerHighest
+        RiteAppTheme.colorScheme.surfaceContainerHighest
     }
     val contentColor = if (isSelected) {
-        MaterialTheme.colorScheme.onPrimaryContainer
+        RiteAppTheme.colorScheme.onPrimaryContainer
     } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
+        RiteAppTheme.colorScheme.onSurfaceVariant
     }
 
     Box(
@@ -186,7 +186,7 @@ private fun DayChip(
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.labelMedium,
+            style = RiteAppTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             color = contentColor
         )

@@ -8,14 +8,6 @@
 
 Full reimplementation of the Today screen, replacing the current TopAppBar + accent-bar card layout with a motivational collapsing header, redesigned habit cards with expand/collapse interaction, and a standard M3 bottom navigation bar. The existing ViewModel and state management are extended, not rewritten.
 
-## Out of Scope
-
-- Weekly Reflection / insights card (separate feature)
-- Animated collapsing toolbar transition (follow-up PR — crossfade only for now)
-- Swipe-to-edit/delete on habit cards (follow-up PR)
-- Create/edit habit UI for setting `defaultIncrement` (separate brainstorming session)
-- Animate title in new/edit habit screens (follow-up PR)
-
 ---
 
 ## 1. Data & State Changes
@@ -98,9 +90,7 @@ Single row, space-between:
 
 ### 2.3 Transition
 
-**This PR:** crossfade between expanded and collapsed.
-
-**Follow-up PR animation:** Ring + percentage move to collapsed position faster than other elements. While title/pill settle, the ring arc unfurls into a horizontal line that slides off-screen right. After the line exits, "Done" fades in beneath the percentage.
+Crossfade between expanded and collapsed. See `FOLLOWUP.md` for the planned animated transition.
 
 ---
 

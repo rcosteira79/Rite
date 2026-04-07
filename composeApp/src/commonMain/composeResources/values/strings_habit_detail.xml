@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="habit_detail_category_binary">BINARY RITUAL</string>
+    <string name="habit_detail_category_quantitative">QUANTITATIVE PURSUIT</string>
+    <string name="habit_detail_stat_current_streak">Current Streak</string>
+    <string name="habit_detail_stat_longest_streak">Longest Streak</string>
+    <string name="habit_detail_stat_habit_score">Habit Score</string>
+    <string name="habit_detail_stat_days">Days</string>
+    <string name="habit_detail_skips_remaining">%1$d skips remaining</string>
+    <string name="habit_detail_skips_unlimited">Unlimited skips</string>
+    <string name="habit_detail_skips_none">No skips remaining</string>
+    <string name="habit_detail_heatmap_title">Last 3 months</string>
+    <string name="habit_detail_action_complete">Complete</string>
+    <string name="habit_detail_action_completed">Completed</string>
+    <string name="habit_detail_action_skip">Skip</string>
+    <string name="habit_detail_action_skipped">Skipped</string>
+    <string name="habit_detail_action_custom">Custom</string>
+    <string name="habit_detail_action_goal_reached">Goal reached</string>
+    <string name="habit_detail_action_undo">Undo</string>
+    <string name="habit_detail_action_undo_last">Undo last</string>
+    <string name="habit_detail_enforcement_limits">ENFORCEMENT LIMITS</string>
+    <string name="habit_detail_heatmap_perfect">Perfect</string>
+    <string name="habit_detail_heatmap_best_effort">Best Effort</string>
+    <string name="habit_detail_heatmap_partial">Partial</string>
+    <string name="habit_detail_heatmap_failed">Failed</string>
+    <string name="habit_detail_heatmap_skipped">Skipped</string>
+    <string name="habit_detail_cd_edit">Edit habit</string>
+    <string name="habit_detail_progress">%1$d of %2$d %3$s</string>
+</resources>

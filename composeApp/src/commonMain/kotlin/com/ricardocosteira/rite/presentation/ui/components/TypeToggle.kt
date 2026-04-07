@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -40,14 +40,14 @@ fun TypeToggle(
         HabitType.entries.forEach { type ->
             val isSelected = selected == type
             val backgroundColor = if (isSelected) {
-                MaterialTheme.colorScheme.primaryContainer
+                RiteAppTheme.colorScheme.primaryContainer
             } else {
-                MaterialTheme.colorScheme.surfaceContainerLow
+                RiteAppTheme.colorScheme.surfaceContainerLow
             }
             val contentColor = if (isSelected) {
-                MaterialTheme.colorScheme.onPrimaryContainer
+                RiteAppTheme.colorScheme.onPrimaryContainer
             } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
+                RiteAppTheme.colorScheme.onSurfaceVariant
             }
             val label = stringResource(type.labelRes)
 
@@ -60,7 +60,7 @@ fun TypeToggle(
                         if (!isSelected && isDarkTheme) {
                             Modifier.border(
                                 1.dp,
-                                MaterialTheme.colorScheme.outlineVariant,
+                                RiteAppTheme.colorScheme.outlineVariant,
                                 PillShape
                             )
                         } else {
@@ -75,7 +75,7 @@ fun TypeToggle(
             ) {
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.labelLarge,
+                    style = RiteAppTheme.typography.labelLarge,
                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                     color = contentColor
                 )

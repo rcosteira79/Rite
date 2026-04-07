@@ -36,6 +36,8 @@ fun OnboardingWizard(
     snackbarHostState: SnackbarHostState,
     onStepChange: (Int) -> Unit,
     onSkip: () -> Unit,
+    onContinueFromNotificationPermission: () -> Unit,
+    onEnableNotifications: () -> Unit,
     onContinueFromStrictness: () -> Unit,
     onCreateHabit: () -> Unit,
     onSkipFirstHabit: () -> Unit,
@@ -56,6 +58,7 @@ fun OnboardingWizard(
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             OnboardingTopChrome(
                 currentStep = currentStep,
+                totalSteps = state.totalSteps,
                 onSkip = onSkip,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -95,27 +98,42 @@ fun OnboardingWizard(
                                 )
                             }
 
-                            2 -> {
-                                FirstHabitStep(
-                                    habitName = state.habitName,
-                                    habitType = state.habitType,
-                                    targetValue = state.targetValue,
-                                    unit = state.unit,
-                                    selectedDays = state.selectedDays,
-                                    onHabitNameChange = onHabitNameChange,
-                                    onHabitTypeChange = onHabitTypeChange,
-                                    onTargetValueChange = onTargetValueChange,
-                                    onUnitChange = onUnitChange,
-                                    onSelectedDaysChange = onSelectedDaysChange,
-                                    modifier = Modifier.weight(1f).fillMaxWidth()
-                                )
-                                FirstHabitStepCta(
-                                    state = state,
-                                    onCreateHabit = onCreateHabit,
-                                    onSkip = onSkipFirstHabit,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    reduceMotion = true
-                                )
+                            else -> when {
+                                step == state.notificationStepIndex && state.showNotificationStep -> {
+                                    NotificationPermissionStep(
+                                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                                        reduceMotion = reduceMotion
+                                    )
+                                    NotificationPermissionStepCta(
+                                        onEnableNotifications = onEnableNotifications,
+                                        onMaybeLater = onContinueFromNotificationPermission,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        reduceMotion = reduceMotion
+                                    )
+                                }
+
+                                step == state.firstHabitStepIndex -> {
+                                    FirstHabitStep(
+                                        habitName = state.habitName,
+                                        habitType = state.habitType,
+                                        targetValue = state.targetValue,
+                                        unit = state.unit,
+                                        selectedDays = state.selectedDays,
+                                        onHabitNameChange = onHabitNameChange,
+                                        onHabitTypeChange = onHabitTypeChange,
+                                        onTargetValueChange = onTargetValueChange,
+                                        onUnitChange = onUnitChange,
+                                        onSelectedDaysChange = onSelectedDaysChange,
+                                        modifier = Modifier.weight(1f).fillMaxWidth()
+                                    )
+                                    FirstHabitStepCta(
+                                        state = state,
+                                        onCreateHabit = onCreateHabit,
+                                        onSkip = onSkipFirstHabit,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        reduceMotion = reduceMotion
+                                    )
+                                }
                             }
                         }
                     }
@@ -169,27 +187,42 @@ fun OnboardingWizard(
                                 )
                             }
 
-                            2 -> {
-                                FirstHabitStep(
-                                    habitName = state.habitName,
-                                    habitType = state.habitType,
-                                    targetValue = state.targetValue,
-                                    unit = state.unit,
-                                    selectedDays = state.selectedDays,
-                                    onHabitNameChange = onHabitNameChange,
-                                    onHabitTypeChange = onHabitTypeChange,
-                                    onTargetValueChange = onTargetValueChange,
-                                    onUnitChange = onUnitChange,
-                                    onSelectedDaysChange = onSelectedDaysChange,
-                                    modifier = Modifier.weight(1f).fillMaxWidth()
-                                )
-                                FirstHabitStepCta(
-                                    state = state,
-                                    onCreateHabit = onCreateHabit,
-                                    onSkip = onSkipFirstHabit,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    reduceMotion = reduceMotion
-                                )
+                            else -> when {
+                                step == state.notificationStepIndex && state.showNotificationStep -> {
+                                    NotificationPermissionStep(
+                                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                                        reduceMotion = reduceMotion
+                                    )
+                                    NotificationPermissionStepCta(
+                                        onEnableNotifications = onEnableNotifications,
+                                        onMaybeLater = onContinueFromNotificationPermission,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        reduceMotion = reduceMotion
+                                    )
+                                }
+
+                                step == state.firstHabitStepIndex -> {
+                                    FirstHabitStep(
+                                        habitName = state.habitName,
+                                        habitType = state.habitType,
+                                        targetValue = state.targetValue,
+                                        unit = state.unit,
+                                        selectedDays = state.selectedDays,
+                                        onHabitNameChange = onHabitNameChange,
+                                        onHabitTypeChange = onHabitTypeChange,
+                                        onTargetValueChange = onTargetValueChange,
+                                        onUnitChange = onUnitChange,
+                                        onSelectedDaysChange = onSelectedDaysChange,
+                                        modifier = Modifier.weight(1f).fillMaxWidth()
+                                    )
+                                    FirstHabitStepCta(
+                                        state = state,
+                                        onCreateHabit = onCreateHabit,
+                                        onSkip = onSkipFirstHabit,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        reduceMotion = reduceMotion
+                                    )
+                                }
                             }
                         }
                     }

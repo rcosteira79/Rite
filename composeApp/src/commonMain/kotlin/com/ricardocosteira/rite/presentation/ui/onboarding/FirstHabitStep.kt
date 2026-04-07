@@ -26,7 +26,7 @@ import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
@@ -64,8 +64,8 @@ private val HabitTypeCardIconSize = 26.dp
 
 @Composable
 private fun onboardingTextFieldColors(): TextFieldColors = TextFieldDefaults.colors(
-    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+    focusedContainerColor = RiteAppTheme.colorScheme.surfaceContainerHighest,
+    unfocusedContainerColor = RiteAppTheme.colorScheme.surfaceContainerHighest,
     focusedIndicatorColor = Color.Transparent,
     unfocusedIndicatorColor = Color.Transparent,
     disabledIndicatorColor = Color.Transparent
@@ -93,8 +93,8 @@ fun FirstHabitStep(
     ) {
         Text(
             text = stringResource(Res.string.first_habit_heading),
-            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold),
-            color = MaterialTheme.colorScheme.onSurface,
+            style = RiteAppTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold),
+            color = RiteAppTheme.colorScheme.onSurface,
             modifier = Modifier.semantics { heading() }
         )
 
@@ -105,7 +105,7 @@ fun FirstHabitStep(
                 .width(36.dp)
                 .height(3.dp)
                 .background(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = RiteAppTheme.colorScheme.primary,
                     shape = RoundedCornerShape(2.dp)
                 )
         )
@@ -114,8 +114,8 @@ fun FirstHabitStep(
 
         Text(
             text = stringResource(Res.string.first_habit_subtext),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = RiteAppTheme.typography.bodyLarge,
+            color = RiteAppTheme.colorScheme.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -205,15 +205,15 @@ private fun HabitTypeCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         border = if (isSelected) {
-            BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer)
+            BorderStroke(2.dp, RiteAppTheme.colorScheme.primaryContainer)
         } else {
             BorderStroke(2.dp, Color.Transparent)
         },
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.surfaceContainerHighest
+                RiteAppTheme.colorScheme.surfaceContainerHighest
             } else {
-                MaterialTheme.colorScheme.surfaceContainerLow
+                RiteAppTheme.colorScheme.surfaceContainerLow
             }
         )
     ) {
@@ -223,23 +223,23 @@ private fun HabitTypeCard(
                 contentDescription = null,
                 modifier = Modifier.size(HabitTypeCardIconSize),
                 tint = if (isSelected) {
-                    MaterialTheme.colorScheme.primary
+                    RiteAppTheme.colorScheme.primary
                 } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
+                    RiteAppTheme.colorScheme.onSurfaceVariant
                 }
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = label,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface,
+                style = RiteAppTheme.typography.titleSmall,
+                color = RiteAppTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = description,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = RiteAppTheme.typography.bodySmall,
+                color = RiteAppTheme.colorScheme.onSurfaceVariant
             )
             if (expandedContent != null) {
                 AnimatedVisibility(
