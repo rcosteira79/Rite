@@ -3,6 +3,7 @@ package com.ricardocosteira.rite.presentation.ui.today
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.rite.di.AppScope
+import com.ricardocosteira.rite.di.DefaultDispatcher
 import com.ricardocosteira.rite.domain.models.CompletionSource
 import com.ricardocosteira.rite.domain.models.Habit
 import com.ricardocosteira.rite.domain.models.HabitInstance
@@ -31,7 +32,6 @@ import com.ricardocosteira.rite.util.toLocalDate
 import kotlin.time.Clock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -71,7 +71,8 @@ class TodayViewModel(
     private val skipHabit: SkipHabit,
     private val undoHabit: UndoHabit,
     private val undoLastIncrement: UndoLastIncrement,
-    private val habitNotification: HabitNotification
+    private val habitNotification: HabitNotification,
+    private val defaultDispatcher: DefaultDispatcher
 ) : ViewModel() {
     private val _state = MutableStateFlow(TodayState())
     val state: StateFlow<TodayState> = _state.asStateFlow()
@@ -139,7 +140,7 @@ class TodayViewModel(
                 // Map to UI models — runs on Default to keep the main thread free.
                 // The date range query returns daily instances from earlier in the week too,
                 // so we filter those out: only today's daily instances + all weekly instances.
-                val habits: ImmutableList<TodayHabitUiModel> = withContext(Dispatchers.Default) {
+                val habits: ImmutableList<TodayHabitUiModel> = withContext(defaultDispatcher) {
                     coroutineScope {
                         instances.mapNotNull { instance ->
                             val habitDeferred = async {

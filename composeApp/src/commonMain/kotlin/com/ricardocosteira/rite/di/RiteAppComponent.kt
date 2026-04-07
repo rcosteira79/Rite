@@ -56,6 +56,11 @@ abstract class RiteAppComponent(
     @Provides
     fun provideIoDispatcher(): IoDispatcher = Dispatchers.IO
 
+    // Default Dispatcher (singleton)
+    @AppScope
+    @Provides
+    fun provideDefaultDispatcher(): DefaultDispatcher = Dispatchers.Default
+
     // Database (singleton)
     @AppScope
     @Provides
