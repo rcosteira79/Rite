@@ -79,10 +79,16 @@ class UndoHabit(
         if (instance.status == HabitStatus.COMPLETED) {
             val habit = habitRepository.getHabitById(instance.habitId)
             if (habit != null && habit.currentStreak > 0) {
+                val newCurrentStreak: Int = habit.currentStreak - 1
+                val newLongestStreak: Int = if (habit.currentStreak == habit.longestStreak) {
+                    newCurrentStreak
+                } else {
+                    habit.longestStreak
+                }
                 habitRepository.updateHabitStreak(
                     habitId = habit.id,
-                    currentStreak = habit.currentStreak - 1,
-                    longestStreak = habit.longestStreak
+                    currentStreak = newCurrentStreak,
+                    longestStreak = newLongestStreak
                 )
             }
         }

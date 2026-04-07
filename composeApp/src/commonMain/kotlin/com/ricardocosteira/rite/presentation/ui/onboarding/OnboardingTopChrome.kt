@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -58,8 +58,8 @@ fun OnboardingTopChrome(
         TextButton(onClick = onSkip) {
             Text(
                 text = stringResource(Res.string.common_skip),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = RiteAppTheme.typography.labelLarge,
+                color = RiteAppTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -108,9 +108,9 @@ private fun StepDot(state: DotState, modifier: Modifier = Modifier) {
     )
 
     val color = if (state == DotState.Inactive) {
-        MaterialTheme.colorScheme.surfaceVariant
+        RiteAppTheme.colorScheme.surfaceVariant
     } else {
-        MaterialTheme.colorScheme.primary
+        RiteAppTheme.colorScheme.primary
     }
 
     Box(

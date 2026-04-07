@@ -3,7 +3,7 @@
 ## Post-MVP Polish
 
 - [ ] Day-detail calendar view (tap a day to see that day's habits)
-- [ ] Habit detail screen (streaks, score history, completion stats)
+- [x] Habit detail screen (streaks, score, heatmap, actions)
 - [ ] Leave/suspension mode UI (domain logic complete, needs UI entry point)
 - [x] Notification permission onboarding screen
 - [x] Habit form IME handling (keyboard occludes bottom buttons)
@@ -13,6 +13,9 @@
 - [ ] Check spec_notifications for missing notification features
 - [ ] Discard confirmation on create habit screen; on edit screen, only prompt if there are unsaved changes
 - [ ] Persist daily target value when switching between binary and quantitative habit types
+- [ ] Animate complete button and metrics in habit detail screen
+- [ ] Rethink Habit Score — should reach 100% after completing daily for the recommended habit-forming period (~66 days?). Currently overshoots well past 100%. Research and redesign the formula
+- [ ] Wrap HabitDetailViewModel repository dependencies behind use cases returning Result
 
 ## Future Features
 
@@ -22,7 +25,7 @@
 - [ ] Active vs silent tracking notification toggle in Settings
 - [ ] iOS activation
 - [ ] Comprehensive unit test coverage
-- [ ] Allow habit overachieving (continue incrementing past daily target)
+- [ ] Ascension mode — visual treatment for quantitative habits that go beyond 100% (ring colour shift, celebratory UI)
 - [ ] Block distracting apps when there are pending habits (needs brainstorming)
 - [ ] Bag-of-words matching for habit creation — auto-suggest icon based on habit name
 - [ ] Update app icon

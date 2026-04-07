@@ -23,7 +23,7 @@ import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -87,7 +87,7 @@ fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Bool
                 .graphicsLayer { rotationZ = 12f }
                 .border(
                     width = 40.dp,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                    color = RiteAppTheme.colorScheme.primary.copy(alpha = 0.12f),
                     shape = CircleShape
                 )
         )
@@ -97,10 +97,10 @@ fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Bool
 
             Text(
                 text = stringResource(Res.string.notifications_heading),
-                style = MaterialTheme.typography.headlineLarge.copy(
+                style = RiteAppTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.ExtraBold
                 ),
-                color = MaterialTheme.colorScheme.onSurface,
+                color = RiteAppTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .alpha(headlineAlpha.value)
                     .graphicsLayer { translationY = headlineTranslateY.value.dp.toPx() }
@@ -114,7 +114,7 @@ fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Bool
                     .width((36 * accentWidth.value).dp)
                     .height(3.dp)
                     .background(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = RiteAppTheme.colorScheme.primary,
                         shape = RoundedCornerShape(2.dp)
                     )
             )
@@ -123,8 +123,8 @@ fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Bool
 
             Text(
                 text = stringResource(Res.string.notifications_body),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = RiteAppTheme.typography.bodyLarge,
+                color = RiteAppTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.alpha(bodyAlpha.value)
             )
 
@@ -166,7 +166,7 @@ private fun NotificationPreviewCard(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                color = RiteAppTheme.colorScheme.surfaceContainerLow,
                 shape = RoundedCornerShape(16.dp)
             )
             .padding(16.dp),
@@ -176,7 +176,7 @@ private fun NotificationPreviewCard(
             modifier = Modifier
                 .size(40.dp)
                 .background(
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    color = RiteAppTheme.colorScheme.surfaceContainerHigh,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
@@ -185,7 +185,7 @@ private fun NotificationPreviewCard(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
-                tint = MaterialTheme.colorScheme.primary
+                tint = RiteAppTheme.colorScheme.primary
             )
         }
 
@@ -194,13 +194,13 @@ private fun NotificationPreviewCard(
         Column {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onSurface
+                style = RiteAppTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                color = RiteAppTheme.colorScheme.onSurface
             )
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = RiteAppTheme.typography.bodySmall,
+                color = RiteAppTheme.colorScheme.onSurfaceVariant
             )
         }
     }

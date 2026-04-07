@@ -12,7 +12,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,8 +37,8 @@ fun QuantityStepper(
     modifier: Modifier = Modifier
 ) {
     val isDarkTheme = isSystemInDarkTheme()
-    val buttonBackground = MaterialTheme.colorScheme.surfaceContainerLow
-    val buttonBorder = MaterialTheme.colorScheme.outlineVariant
+    val buttonBackground = RiteAppTheme.colorScheme.surfaceContainerLow
+    val buttonBorder = RiteAppTheme.colorScheme.outlineVariant
 
     Row(
         modifier = modifier,
@@ -64,18 +64,18 @@ fun QuantityStepper(
                 imageVector = Icons.Default.Remove,
                 contentDescription = stringResource(Res.string.quantity_stepper_cd_decrease),
                 tint = if (value > MIN_VALUE) {
-                    MaterialTheme.colorScheme.primary
+                    RiteAppTheme.colorScheme.primary
                 } else {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_CONTENT_ALPHA)
+                    RiteAppTheme.colorScheme.onSurface.copy(alpha = DISABLED_CONTENT_ALPHA)
                 }
             )
         }
 
         Text(
             text = value.toString(),
-            style = MaterialTheme.typography.headlineSmall,
+            style = RiteAppTheme.typography.headlineSmall,
             fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = RiteAppTheme.colorScheme.onSurface
         )
 
         IconButton(
@@ -95,14 +95,14 @@ fun QuantityStepper(
             Icon(
                 imageVector = Icons.Default.Add,
                 contentDescription = stringResource(Res.string.quantity_stepper_cd_increase),
-                tint = MaterialTheme.colorScheme.primary
+                tint = RiteAppTheme.colorScheme.primary
             )
         }
 
         Text(
             text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = RiteAppTheme.typography.labelSmall,
+            color = RiteAppTheme.colorScheme.onSurfaceVariant
         )
     }
 }

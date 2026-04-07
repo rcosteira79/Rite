@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -26,7 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
+import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.common_cancel
 import rite.composeapp.generated.resources.quantitative_input_button_add
@@ -35,12 +35,14 @@ import rite.composeapp.generated.resources.quantitative_input_current_with_unit
 import rite.composeapp.generated.resources.quantitative_input_label_amount
 import rite.composeapp.generated.resources.quantitative_input_quick_add
 import rite.composeapp.generated.resources.quantitative_input_title
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuantitativeInputBottomSheet(
-    habit: TodayHabitUiModel,
+    name: String,
+    completedValue: Int?,
+    targetValue: Int?,
+    unit: String?,
     onConfirm: (Int) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -59,38 +61,37 @@ fun QuantitativeInputBottomSheet(
         ) {
             Text(
                 text = stringResource(Res.string.quantitative_input_title),
-                style = MaterialTheme.typography.titleLarge
+                style = RiteAppTheme.typography.titleLarge
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = habit.name,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = name,
+                style = RiteAppTheme.typography.bodyLarge,
+                color = RiteAppTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Current progress
-            if (habit.targetValue != null) {
+            if (targetValue != null) {
                 Text(
-                    text = if (habit.unit != null) {
+                    text = if (unit != null) {
                         stringResource(
                             Res.string.quantitative_input_current_with_unit,
-                            habit.completedValue ?: 0,
-                            habit.targetValue,
-                            habit.unit
+                            completedValue ?: 0,
+                            targetValue,
+                            unit
                         )
                     } else {
                         stringResource(
                             Res.string.quantitative_input_current_no_unit,
-                            habit.completedValue ?: 0,
-                            habit.targetValue
+                            completedValue ?: 0,
+                            targetValue
                         )
                     },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = RiteAppTheme.typography.bodyMedium,
+                    color = RiteAppTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -104,7 +105,6 @@ fun QuantitativeInputBottomSheet(
                 OutlinedTextField(
                     value = inputValue,
                     onValueChange = { newValue ->
-                        // Only allow positive integers
                         if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
                             inputValue = newValue
                         }
@@ -115,16 +115,15 @@ fun QuantitativeInputBottomSheet(
                     modifier = Modifier.width(120.dp)
                 )
 
-                if (habit.unit != null) {
+                if (unit != null) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = habit.unit,
-                        style = MaterialTheme.typography.bodyLarge
+                        text = unit,
+                        style = RiteAppTheme.typography.bodyLarge
                     )
                 }
             }
 
-            // Quick add buttons
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(

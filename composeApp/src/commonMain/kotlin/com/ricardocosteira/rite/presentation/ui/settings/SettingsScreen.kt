@@ -23,7 +23,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -168,7 +168,7 @@ private fun SettingsScreen(
                     ) {
                         Text(
                             text = stringResource(Res.string.settings_notifications_label),
-                            style = MaterialTheme.typography.bodyMedium
+                            style = RiteAppTheme.typography.bodyMedium
                         )
                         Switch(
                             checked = notificationSettings.isEnabled,
@@ -217,7 +217,7 @@ private fun SettingsScreen(
                                 Res.string.settings_snooze_max_duration,
                                 state.maxSnoozeDurationMinutes
                             ),
-                            style = MaterialTheme.typography.bodyMedium
+                            style = RiteAppTheme.typography.bodyMedium
                         )
 
                         var sliderValue by remember(state.maxSnoozeDurationMinutes) {
@@ -246,7 +246,7 @@ private fun SettingsScreen(
                                     text = stringResource(
                                         Res.string.settings_snooze_unlimited_label
                                     ),
-                                    style = MaterialTheme.typography.bodyMedium
+                                    style = RiteAppTheme.typography.bodyMedium
                                 )
                                 Text(
                                     text = if (state.maxSnoozesPerHabitPerDay == null) {
@@ -259,8 +259,8 @@ private fun SettingsScreen(
                                             state.maxSnoozesPerHabitPerDay
                                         )
                                     },
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    style = RiteAppTheme.typography.bodySmall,
+                                    color = RiteAppTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             Switch(
@@ -285,7 +285,7 @@ private fun SettingsScreen(
                         Column {
                             Text(
                                 text = stringResource(Res.string.settings_skip_unlimited_label),
-                                style = MaterialTheme.typography.bodyMedium
+                                style = RiteAppTheme.typography.bodyMedium
                             )
                             Text(
                                 text = if (state.maxConsecutiveSkips == null) {
@@ -296,8 +296,8 @@ private fun SettingsScreen(
                                         state.maxConsecutiveSkips
                                     )
                                 },
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                style = RiteAppTheme.typography.bodySmall,
+                                color = RiteAppTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Switch(
@@ -316,12 +316,12 @@ private fun SettingsScreen(
                     Column {
                         Text(
                             text = stringResource(Res.string.settings_info_timezone_label),
-                            style = MaterialTheme.typography.bodyMedium
+                            style = RiteAppTheme.typography.bodyMedium
                         )
                         Text(
                             text = state.currentTimezone,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = RiteAppTheme.typography.bodySmall,
+                            color = RiteAppTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -339,12 +339,12 @@ private fun SettingsScreen(
                 ) {
                     Text(
                         text = stringResource(Res.string.settings_archived_habits),
-                        style = MaterialTheme.typography.bodyLarge
+                        style = RiteAppTheme.typography.bodyLarge
                     )
                     Icon(
                         Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = RiteAppTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -357,8 +357,8 @@ private fun SettingsSection(title: String, content: @Composable () -> Unit) {
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary
+            style = RiteAppTheme.typography.titleMedium,
+            color = RiteAppTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(12.dp))
         content()
@@ -387,11 +387,11 @@ private fun UndoPolicyOption(
             onClick = null
         )
         Column(modifier = Modifier.padding(start = 12.dp)) {
-            Text(text = title, style = MaterialTheme.typography.bodyMedium)
+            Text(text = title, style = RiteAppTheme.typography.bodyMedium)
             Text(
                 text = description,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = RiteAppTheme.typography.bodySmall,
+                color = RiteAppTheme.colorScheme.onSurfaceVariant
             )
         }
     }

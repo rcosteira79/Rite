@@ -43,7 +43,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -272,7 +272,7 @@ internal fun HabitFormScreen(
 
     val scrollState: ScrollState = rememberScrollState()
     val isScrolled: Boolean by remember { derivedStateOf { scrollState.value > 0 } }
-    val filledColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest
+    val filledColor: Color = RiteAppTheme.colorScheme.surfaceContainerHighest
     val targetColor: Color = if (isScrolled) {
         filledColor
     } else {
@@ -330,7 +330,7 @@ internal fun HabitFormScreen(
                                 contentDescription = stringResource(
                                     Res.string.habit_form_cd_delete
                                 ),
-                                tint = MaterialTheme.colorScheme.error,
+                                tint = RiteAppTheme.colorScheme.error,
                                 modifier = Modifier.size(22.dp)
                             )
                         }
@@ -347,8 +347,7 @@ internal fun HabitFormScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(top = paddingValues.calculateTopPadding())
-                .padding(bottom = paddingValues.calculateBottomPadding())
+                .padding(paddingValues)
                 .padding(horizontal = 24.dp, vertical = 20.dp)
         ) {
             // Heading
@@ -358,9 +357,9 @@ internal fun HabitFormScreen(
                 } else {
                     stringResource(Res.string.habit_form_title_new_habit)
                 },
-                style = MaterialTheme.typography.headlineLarge,
+                style = RiteAppTheme.typography.headlineLarge,
                 fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = RiteAppTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -370,15 +369,15 @@ internal fun HabitFormScreen(
                 modifier = Modifier
                     .width(36.dp)
                     .height(3.dp)
-                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
+                    .background(RiteAppTheme.colorScheme.primary, RoundedCornerShape(2.dp))
             )
 
             if (!state.isEditing) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(Res.string.habit_form_subtitle_create),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = RiteAppTheme.typography.bodyLarge,
+                    color = RiteAppTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -504,8 +503,8 @@ internal fun HabitFormScreen(
             if (!state.isNotificationPermissionGranted) {
                 Text(
                     text = stringResource(Res.string.habit_form_notification_permission_denied),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error,
+                    style = RiteAppTheme.typography.bodySmall,
+                    color = RiteAppTheme.colorScheme.error,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onAction(HabitFormUiAction.NotificationSettingsClicked) }
@@ -514,8 +513,8 @@ internal fun HabitFormScreen(
             } else if (state.showBothEnabledHint) {
                 Text(
                     text = stringResource(Res.string.habit_form_both_notifications_hint),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = RiteAppTheme.typography.bodySmall,
+                    color = RiteAppTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
@@ -524,7 +523,7 @@ internal fun HabitFormScreen(
 
             Surface(
                 shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                color = RiteAppTheme.colorScheme.surfaceContainerLow,
                 shadowElevation = 1.dp,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -532,9 +531,9 @@ internal fun HabitFormScreen(
                     DetailRow(
                         icon = Icons.Outlined.Notifications,
                         iconTint = if (state.hasReminder) {
-                            MaterialTheme.colorScheme.onSurface
+                            RiteAppTheme.colorScheme.onSurface
                         } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
+                            RiteAppTheme.colorScheme.onSurfaceVariant
                         },
                         title = stringResource(Res.string.habit_form_reminder_title),
                         subtitle = reminderSubtitle,
@@ -560,9 +559,9 @@ internal fun HabitFormScreen(
                     DetailRow(
                         icon = Icons.Outlined.Notifications,
                         iconTint = if (state.isTrackingEnabled) {
-                            MaterialTheme.colorScheme.onSurface
+                            RiteAppTheme.colorScheme.onSurface
                         } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
+                            RiteAppTheme.colorScheme.onSurfaceVariant
                         },
                         title = stringResource(Res.string.habit_form_tracking_title),
                         subtitle = stringResource(Res.string.habit_form_tracking_subtitle),
@@ -583,9 +582,9 @@ internal fun HabitFormScreen(
                     DetailRow(
                         icon = Icons.Outlined.Edit,
                         iconTint = if (isNoteExpanded) {
-                            MaterialTheme.colorScheme.onSurface
+                            RiteAppTheme.colorScheme.onSurface
                         } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
+                            RiteAppTheme.colorScheme.onSurfaceVariant
                         },
                         title = if (isNoteExpanded) {
                             stringResource(Res.string.habit_form_note_expanded_title)
@@ -656,7 +655,7 @@ internal fun HabitFormScreen(
                     } else {
                         stringResource(Res.string.habit_form_button_discard_draft)
                     },
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = RiteAppTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -667,9 +666,9 @@ internal fun HabitFormScreen(
 private fun SectionLabel(resource: StringResource) {
     Text(
         text = stringResource(resource),
-        style = MaterialTheme.typography.labelSmall,
+        style = RiteAppTheme.typography.labelSmall,
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
+        color = RiteAppTheme.colorScheme.onSurfaceVariant
     )
 }
 
@@ -689,7 +688,7 @@ private fun UnderlineTextField(
         modifier = modifier.fillMaxWidth(),
         keyboardOptions = keyboardOptions,
         placeholder = if (placeholder.isNotEmpty()) {
-            { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+            { Text(placeholder, color = RiteAppTheme.colorScheme.onSurfaceVariant) }
         } else {
             null
         },
@@ -697,7 +696,7 @@ private fun UnderlineTextField(
             {
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = RiteAppTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -706,10 +705,10 @@ private fun UnderlineTextField(
         },
         shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-            unfocusedIndicatorColor = MaterialTheme.colorScheme.outlineVariant
+            focusedContainerColor = RiteAppTheme.colorScheme.surfaceContainerHighest,
+            unfocusedContainerColor = RiteAppTheme.colorScheme.surfaceContainerHighest,
+            focusedIndicatorColor = RiteAppTheme.colorScheme.primary,
+            unfocusedIndicatorColor = RiteAppTheme.colorScheme.outlineVariant
         ),
         maxLines = maxLines,
         singleLine = maxLines == 1
@@ -726,14 +725,14 @@ private fun ScheduleTypePill(
     val isDarkTheme = isSystemInDarkTheme()
     val pillShape = RoundedCornerShape(percent = 50)
     val backgroundColor = if (isSelected) {
-        MaterialTheme.colorScheme.primaryContainer
+        RiteAppTheme.colorScheme.primaryContainer
     } else {
-        MaterialTheme.colorScheme.surfaceContainerLow
+        RiteAppTheme.colorScheme.surfaceContainerLow
     }
     val contentColor = if (isSelected) {
-        MaterialTheme.colorScheme.onPrimaryContainer
+        RiteAppTheme.colorScheme.onPrimaryContainer
     } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
+        RiteAppTheme.colorScheme.onSurfaceVariant
     }
 
     Box(
@@ -742,7 +741,7 @@ private fun ScheduleTypePill(
             .background(backgroundColor)
             .then(
                 if (!isSelected && isDarkTheme) {
-                    Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, pillShape)
+                    Modifier.border(1.dp, RiteAppTheme.colorScheme.outlineVariant, pillShape)
                 } else {
                     Modifier
                 }
@@ -755,7 +754,7 @@ private fun ScheduleTypePill(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelSmall,
+            style = RiteAppTheme.typography.labelSmall,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
             color = contentColor
         )
@@ -778,7 +777,7 @@ private fun ReminderTimePickerDialog(
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surface
+            color = RiteAppTheme.colorScheme.surface
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
@@ -813,7 +812,7 @@ private fun DeleteHabitDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
             TextButton(
                 onClick = onConfirm,
                 colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colorScheme.error
+                    contentColor = RiteAppTheme.colorScheme.error
                 )
             ) {
                 Text(stringResource(Res.string.habit_form_delete_dialog_confirm))

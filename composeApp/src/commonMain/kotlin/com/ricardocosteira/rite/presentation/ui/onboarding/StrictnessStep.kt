@@ -27,7 +27,7 @@ import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -77,8 +77,8 @@ fun StrictnessStep(
 
         Text(
             text = stringResource(Res.string.strictness_heading),
-            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold),
-            color = MaterialTheme.colorScheme.onSurface,
+            style = RiteAppTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold),
+            color = RiteAppTheme.colorScheme.onSurface,
             modifier = Modifier.semantics { heading() }
         )
 
@@ -89,7 +89,7 @@ fun StrictnessStep(
                 .width(36.dp)
                 .height(3.dp)
                 .background(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = RiteAppTheme.colorScheme.primary,
                     shape = RoundedCornerShape(2.dp)
                 )
         )
@@ -98,8 +98,8 @@ fun StrictnessStep(
 
         Text(
             text = stringResource(Res.string.strictness_subtext),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = RiteAppTheme.typography.bodyMedium,
+            color = RiteAppTheme.colorScheme.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -126,9 +126,9 @@ private fun PresetCard(
 ) {
     val backgroundColor by animateColorAsState(
         targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.primaryContainer
+            RiteAppTheme.colorScheme.primaryContainer
         } else {
-            MaterialTheme.colorScheme.surfaceContainerLow
+            RiteAppTheme.colorScheme.surfaceContainerLow
         },
         animationSpec = if (reduceMotion) snap() else tween(200),
         label = "presetCardBackground"
@@ -159,9 +159,9 @@ private fun PresetCard(
             .border(
                 width = 1.dp,
                 color = if (isSelected) {
-                    MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f)
+                    RiteAppTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f)
                 } else {
-                    MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                    RiteAppTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
                 },
                 shape = RoundedCornerShape(cornerRadius)
             ).background(backgroundColor)
@@ -186,7 +186,7 @@ private fun PresetCard(
     ) {
         if (isSelected) {
             // onPrimaryContainer: Forest Discipline #FFFFFF / Stoic Night #E5E2DF
-            val cardContent = MaterialTheme.colorScheme.onPrimaryContainer
+            val cardContent = RiteAppTheme.colorScheme.onPrimaryContainer
             // === SELECTED STATE ===
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -210,7 +210,7 @@ private fun PresetCard(
                     ) {
                         Text(
                             text = stringResource(Res.string.strictness_badge_recommended),
-                            style = MaterialTheme.typography.labelSmall.copy(
+                            style = RiteAppTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 0.12.sp
                             ),
@@ -222,13 +222,13 @@ private fun PresetCard(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = preset.label,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                style = RiteAppTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 color = cardContent
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = preset.description,
-                style = MaterialTheme.typography.bodySmall,
+                style = RiteAppTheme.typography.bodySmall,
                 color = cardContent.copy(alpha = 0.8f)
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -247,12 +247,12 @@ private fun PresetCard(
                 ) {
                     Text(
                         text = rule.key,
-                        style = MaterialTheme.typography.labelSmall,
+                        style = RiteAppTheme.typography.labelSmall,
                         color = cardContent.copy(alpha = 0.6f)
                     )
                     Text(
                         text = rule.value,
-                        style = MaterialTheme.typography.labelSmall.copy(
+                        style = RiteAppTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.SemiBold
                         ),
                         color = cardContent
@@ -266,9 +266,9 @@ private fun PresetCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 val iconTint = if (preset == OnboardingStrictnessPreset.UNWAVERING) {
-                    MaterialTheme.colorScheme.error
+                    RiteAppTheme.colorScheme.error
                 } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
+                    RiteAppTheme.colorScheme.onSurfaceVariant
                 }
                 Icon(
                     imageVector = preset.icon(),
@@ -280,22 +280,22 @@ private fun PresetCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = preset.label,
-                        style = MaterialTheme.typography.titleSmall.copy(
+                        style = RiteAppTheme.typography.titleSmall.copy(
                             fontWeight = FontWeight.Bold
                         ),
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = RiteAppTheme.colorScheme.onSurface
                     )
                     Text(
                         text = preset.collapsedSummary,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = RiteAppTheme.typography.labelSmall,
+                        color = RiteAppTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Icon(
                     imageVector = Icons.Outlined.ExpandMore,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.outlineVariant
+                    tint = RiteAppTheme.colorScheme.outlineVariant
                 )
             }
         }
