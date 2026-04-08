@@ -134,6 +134,7 @@ private fun StepperButton(
         onClick = onClick,
         shape = RoundedCornerShape(MainButtonCorner),
         color = RiteAppTheme.colorScheme.surface,
+        shadowElevation = 2.dp,
         enabled = enabled,
         modifier = modifier.size(MainButtonSize)
     ) {
