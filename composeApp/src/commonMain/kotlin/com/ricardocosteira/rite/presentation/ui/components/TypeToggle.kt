@@ -8,13 +8,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitType
@@ -31,8 +31,8 @@ import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import org.jetbrains.compose.resources.stringResource
 
 private val ContainerShape = RoundedCornerShape(22.dp)
-private val IndicatorShape = RoundedCornerShape(18.dp)
-private val IndicatorPadding = 4.dp
+private const val INDICATOR_PADDING_FRACTION = 0.01f
+private const val INDICATOR_CORNER_RADIUS = 18f
 private const val ANIMATION_DURATION_MS = 250
 
 @Composable
@@ -52,7 +52,10 @@ fun TypeToggle(
         label = "indicatorFraction"
     )
 
-    BoxWithConstraints(
+    val indicatorColor = RiteAppTheme.colorScheme.primaryContainer
+    val paddingPx = 4.dp
+
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(ContainerShape)
@@ -65,21 +68,26 @@ fun TypeToggle(
                 }
             )
     ) {
-        val containerWidth = maxWidth
-        val indicatorWidth = (containerWidth - IndicatorPadding * 2) / itemCount
-        val indicatorOffset = IndicatorPadding + indicatorWidth * animatedFraction * itemCount
-
-        Box(
+        Row(
             modifier = Modifier
-                .offset(x = indicatorOffset)
-                .padding(vertical = IndicatorPadding)
-                .width(indicatorWidth)
-                .fillMaxHeight()
-                .clip(IndicatorShape)
-                .background(RiteAppTheme.colorScheme.primaryContainer)
-        )
+                .fillMaxWidth()
+                .drawBehind {
+                    val padding = paddingPx.toPx()
+                    val indicatorWidth = (size.width - padding * 2) / itemCount
+                    val indicatorX = padding + indicatorWidth * animatedFraction * itemCount
+                    val indicatorHeight = size.height - padding * 2
 
-        Row(modifier = Modifier.fillMaxWidth()) {
+                    drawRoundRect(
+                        color = indicatorColor,
+                        topLeft = Offset(indicatorX, padding),
+                        size = Size(indicatorWidth, indicatorHeight),
+                        cornerRadius = CornerRadius(
+                            INDICATOR_CORNER_RADIUS * density,
+                            INDICATOR_CORNER_RADIUS * density
+                        )
+                    )
+                }
+        ) {
             HabitType.entries.forEach { type ->
                 val isSelected: Boolean = selected == type
                 val contentColor = if (isSelected) {
