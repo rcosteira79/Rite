@@ -173,11 +173,20 @@ private fun FineStepperButton(
     enabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
+    val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+    val isPressed: Boolean by interactionSource.collectIsPressedAsState()
+    val elevation: Dp by animateDpAsState(
+        targetValue = if (isPressed) 3.dp else 1.dp,
+        label = "fineStepperButtonElevation"
+    )
+
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(FineButtonCorner),
         color = RiteAppTheme.colorScheme.surfaceContainer,
+        shadowElevation = elevation,
         enabled = enabled,
+        interactionSource = interactionSource,
         modifier = modifier.size(FineButtonSize)
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
