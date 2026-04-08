@@ -76,6 +76,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
@@ -140,7 +141,9 @@ fun HabitFormScreen(
     snackbarHostState: SnackbarHostState
 ) {
     val factory = LocalAppComponent.current.habitFormViewModelFactory
-    val viewModel = remember { factory.create(habitIdToEdit) }
+    val viewModel: HabitFormViewModel = viewModel(key = habitIdToEdit) {
+        factory.create(habitIdToEdit)
+    }
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val messageRequiredFields = stringResource(Res.string.habit_form_error_required_fields)
@@ -182,10 +185,9 @@ fun HabitFormScreen(
             when (action) {
                 is HabitFormUiAction.NameChanged -> viewModel.updateName(action.name)
 
-                is HabitFormUiAction.DescriptionChanged ->
-                    viewModel.updateDescription(
-                        action.description
-                    )
+                is HabitFormUiAction.DescriptionChanged -> viewModel.updateDescription(
+                    action.description
+                )
 
                 is HabitFormUiAction.TypeChanged -> viewModel.updateType(action.type)
 
@@ -193,31 +195,32 @@ fun HabitFormScreen(
 
                 is HabitFormUiAction.UnitChanged -> viewModel.updateUnit(action.unit)
 
-                is HabitFormUiAction.DefaultIncrementChanged ->
-                    viewModel.updateDefaultIncrement(action.value)
+                is HabitFormUiAction.DefaultIncrementChanged -> viewModel.updateDefaultIncrement(
+                    action.value
+                )
 
-                is HabitFormUiAction.ScheduleTypeChanged ->
-                    viewModel.updateScheduleType(
-                        action.scheduleType
-                    )
+                is HabitFormUiAction.ScheduleTypeChanged -> viewModel.updateScheduleType(
+                    action.scheduleType
+                )
 
-                is HabitFormUiAction.SelectedDaysChanged ->
-                    viewModel.updateSelectedDays(
-                        action.days
-                    )
+                is HabitFormUiAction.SelectedDaysChanged -> viewModel.updateSelectedDays(
+                    action.days
+                )
 
                 is HabitFormUiAction.QuotaChanged -> viewModel.updateQuota(action.quota)
 
-                is HabitFormUiAction.HasReminderChanged ->
-                    viewModel.updateHasReminder(
-                        action.hasReminder
-                    )
+                is HabitFormUiAction.HasReminderChanged -> viewModel.updateHasReminder(
+                    action.hasReminder
+                )
 
-                is HabitFormUiAction.ReminderTimeChanged ->
-                    viewModel.updateReminderTime(
-                        action.hour,
-                        action.minute
-                    )
+                is HabitFormUiAction.ReminderTimeChanged -> viewModel.updateReminderTime(
+                    action.hour,
+                    action.minute
+                )
+
+                is HabitFormUiAction.IsTrackingEnabledChanged -> viewModel.updateIsTrackingEnabled(
+                    action.isEnabled
+                )
 
                 HabitFormUiAction.SaveClicked -> viewModel.saveHabit()
 
@@ -229,11 +232,7 @@ fun HabitFormScreen(
 
                 HabitFormUiAction.DiscardChangesClicked -> viewModel.discardChanges()
 
-                is HabitFormUiAction.IsTrackingEnabledChanged ->
-                    viewModel.updateIsTrackingEnabled(action.isEnabled)
-
-                HabitFormUiAction.NotificationSettingsClicked ->
-                    viewModel.openNotificationSettings()
+                HabitFormUiAction.NotificationSettingsClicked -> viewModel.openNotificationSettings()
             }
         }
     )

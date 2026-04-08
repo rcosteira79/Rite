@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import com.ricardocosteira.rite.presentation.ui.today.QuantitativeInputBottomSheet
@@ -30,7 +31,9 @@ fun HabitDetailRoute(
     modifier: Modifier = Modifier
 ) {
     val factory = LocalAppComponent.current.habitDetailViewModelFactory
-    val viewModel = remember { factory.create(instanceId) }
+    val viewModel: HabitDetailViewModel = viewModel(key = instanceId) {
+        factory.create(instanceId)
+    }
     val state by viewModel.state.collectAsStateWithLifecycle()
     var isDeleteDialogVisible by remember { mutableStateOf(false) }
 
