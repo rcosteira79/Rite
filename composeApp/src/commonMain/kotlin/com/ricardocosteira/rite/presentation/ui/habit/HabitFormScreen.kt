@@ -140,9 +140,9 @@ fun HabitFormScreen(
     onNavigateBack: () -> Unit,
     snackbarHostState: SnackbarHostState
 ) {
-    val factory = LocalAppComponent.current.habitFormViewModelFactory
+    val createViewModel = LocalAppComponent.current.createHabitFormViewModel
     val viewModel: HabitFormViewModel = viewModel(key = habitIdToEdit) {
-        factory.create(habitIdToEdit)
+        createViewModel(habitIdToEdit)
     }
     val state by viewModel.state.collectAsStateWithLifecycle()
 

@@ -28,6 +28,7 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
 private class HabitNotFoundException : Exception()
@@ -39,7 +40,7 @@ class HabitFormViewModel(
     private val createHabit: CreateHabit,
     private val uuidProvider: UuidProvider,
     private val habitNotification: HabitNotification,
-    private val habitIdToEdit: String? = null
+    @Assisted private val habitIdToEdit: String? = null
 ) : ViewModel() {
     private val _state = MutableStateFlow(HabitFormState())
 
@@ -63,14 +64,6 @@ class HabitFormViewModel(
         if (habitIdToEdit != null) {
             loadHabit(habitIdToEdit)
         }
-    }
-
-    /**
-     * Factory interface for creating HabitFormViewModel instances.
-     * Used by dependency injection to allow dynamic habit ID parameter.
-     */
-    interface Factory {
-        fun create(habitIdToEdit: String? = null): HabitFormViewModel
     }
 
     private fun loadHabit(habitId: String) {

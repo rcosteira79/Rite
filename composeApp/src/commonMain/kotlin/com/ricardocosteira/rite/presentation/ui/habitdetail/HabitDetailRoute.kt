@@ -30,9 +30,9 @@ fun HabitDetailRoute(
     onEditHabit: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val factory = LocalAppComponent.current.habitDetailViewModelFactory
+    val createViewModel = LocalAppComponent.current.createHabitDetailViewModel
     val viewModel: HabitDetailViewModel = viewModel(key = instanceId) {
-        factory.create(instanceId)
+        createViewModel(instanceId)
     }
     val state by viewModel.state.collectAsStateWithLifecycle()
     var isDeleteDialogVisible by remember { mutableStateOf(false) }
