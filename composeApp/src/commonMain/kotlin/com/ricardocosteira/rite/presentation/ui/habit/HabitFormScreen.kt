@@ -43,6 +43,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -445,21 +447,57 @@ internal fun HabitFormScreen(
             ) {
                 Column {
                     Spacer(modifier = Modifier.height(12.dp))
-                    UnderlineTextField(
+                    OutlinedTextField(
                         value = state.unit,
                         onValueChange = { onAction(HabitFormUiAction.UnitChanged(it)) },
-                        label = stringResource(Res.string.habit_form_unit_label),
-                        placeholder = stringResource(Res.string.habit_form_placeholder_unit)
+                        label = {
+                            Text(
+                                text = stringResource(Res.string.habit_form_unit_label),
+                                style = RiteAppTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                        },
+                        placeholder = {
+                            Text(
+                                text = stringResource(Res.string.habit_form_placeholder_unit),
+                                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = RiteAppTheme.colorScheme.primary,
+                            unfocusedBorderColor = RiteAppTheme.colorScheme.outlineVariant
+                        )
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    UnderlineTextField(
+                    OutlinedTextField(
                         value = state.defaultIncrement,
                         onValueChange = { onAction(HabitFormUiAction.DefaultIncrementChanged(it)) },
-                        label = stringResource(Res.string.habit_form_increment_label),
-                        placeholder = stringResource(Res.string.habit_form_placeholder_increment),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        label = {
+                            Text(
+                                text = stringResource(Res.string.habit_form_increment_label),
+                                style = RiteAppTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                        },
+                        placeholder = {
+                            Text(
+                                text = stringResource(Res.string.habit_form_placeholder_increment),
+                                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = RiteAppTheme.colorScheme.primary,
+                            unfocusedBorderColor = RiteAppTheme.colorScheme.outlineVariant
+                        )
                     )
                     Text(
                         text = stringResource(Res.string.habit_form_increment_hint),
