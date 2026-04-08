@@ -415,8 +415,6 @@ internal fun HabitFormScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // DAILY TARGET
-            SectionLabel(Res.string.habit_form_section_daily_target)
-
             AnimatedVisibility(
                 visible = state.type == HabitType.QUANTITATIVE,
                 enter = expandVertically() + fadeIn(),
@@ -434,13 +432,15 @@ internal fun HabitFormScreen(
                 }
 
                 Column {
+                    SectionLabel(Res.string.habit_form_section_daily_target)
                     Spacer(modifier = Modifier.height(12.dp))
                     QuantityStepper(
                         value = state.stepperValue,
                         onValueChange = { newValue: Int ->
                             onAction(state.stepperChangeAction(newValue))
                         },
-                        label = stepperLabel
+                        label = stepperLabel,
+                        modifier = Modifier.padding(start = 8.dp)
                     )
                 }
             }
