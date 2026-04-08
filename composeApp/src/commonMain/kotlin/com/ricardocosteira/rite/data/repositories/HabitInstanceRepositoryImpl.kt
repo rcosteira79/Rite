@@ -107,4 +107,12 @@ class HabitInstanceRepositoryImpl(
             id = instanceId
         )
     }
+
+    override suspend fun updateInstanceTargetValue(instanceId: String, targetValue: Int?): Unit =
+        withContext(ioDispatcher) {
+            queries.updateInstanceTargetValue(
+                targetValue = targetValue?.toLong(),
+                id = instanceId
+            )
+        }
 }

@@ -102,50 +102,6 @@ abstract class RiteAppComponent(
     @Provides
     fun provideSnoozeRepository(impl: SnoozeRepositoryImpl): SnoozeRepository = impl
 
-    // Factory for HabitFormViewModel (needs habitIdToEdit parameter)
-    @AppScope
-    @Provides
-    fun provideHabitFormViewModelFactory(
-        habitRepository: HabitRepository,
-        habitInstanceRepository: HabitInstanceRepository,
-        createHabit: CreateHabit,
-        uuidProvider: UuidProvider,
-        habitNotification: HabitNotification
-    ): HabitFormViewModel.Factory = object : HabitFormViewModel.Factory {
-        override fun create(habitIdToEdit: String?): HabitFormViewModel = HabitFormViewModel(
-            habitRepository,
-            habitInstanceRepository,
-            createHabit,
-            uuidProvider,
-            habitNotification,
-            habitIdToEdit
-        )
-    }
-
-    // Factory for HabitDetailViewModel (needs instanceId parameter)
-    @AppScope
-    @Provides
-    fun provideHabitDetailViewModelFactory(
-        habitRepository: HabitRepository,
-        habitInstanceRepository: HabitInstanceRepository,
-        userRepository: UserRepository,
-        completeHabit: CompleteHabit,
-        skipHabit: SkipHabit,
-        undoHabit: UndoHabit,
-        undoLastIncrement: UndoLastIncrement
-    ): HabitDetailViewModel.Factory = object : HabitDetailViewModel.Factory {
-        override fun create(instanceId: String): HabitDetailViewModel = HabitDetailViewModel(
-            habitRepository,
-            habitInstanceRepository,
-            userRepository,
-            completeHabit,
-            skipHabit,
-            undoHabit,
-            undoLastIncrement,
-            instanceId
-        )
-    }
-
     // Public accessors for App initialization
     abstract val startupViewModel: StartupViewModel
     abstract val userRepository: UserRepository
@@ -156,8 +112,8 @@ abstract class RiteAppComponent(
     abstract val calendarViewModel: CalendarViewModel
     abstract val settingsViewModel: SettingsViewModel
     abstract val archivedHabitsViewModel: ArchivedHabitsViewModel
-    abstract val habitFormViewModelFactory: HabitFormViewModel.Factory
-    abstract val habitDetailViewModelFactory: HabitDetailViewModel.Factory
+    abstract val createHabitFormViewModel: (String?) -> HabitFormViewModel
+    abstract val createHabitDetailViewModel: (String) -> HabitDetailViewModel
 
     // Accessors for workers and receivers
     abstract val generateDailyHabits: GenerateDailyHabits

@@ -58,4 +58,7 @@
     <string name="habit_form_periodic_hours">hr</string>
     <string name="habit_form_periodic_interval_hint">Interval</string>
     <string name="habit_form_periodic_invalid_window">Start time must be before end time</string>
+    <string name="habit_form_increment_label">INCREMENT BY</string>
+    <string name="habit_form_placeholder_increment">1</string>
+    <string name="habit_form_increment_hint">Quick-increment amount on the Today screen</string>
 </resources>

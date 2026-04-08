@@ -28,9 +28,12 @@ import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
+import me.tatarka.inject.annotations.Assisted
+import me.tatarka.inject.annotations.Inject
 
 private const val HEATMAP_DAYS = 90
 
+@Inject
 class HabitDetailViewModel(
     private val habitRepository: HabitRepository,
     private val habitInstanceRepository: HabitInstanceRepository,
@@ -39,7 +42,7 @@ class HabitDetailViewModel(
     private val skipHabit: SkipHabit,
     private val undoHabit: UndoHabit,
     private val undoLastIncrement: UndoLastIncrement,
-    private val instanceId: String
+    @Assisted private val instanceId: String
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HabitDetailState())
@@ -208,9 +211,5 @@ class HabitDetailViewModel(
             }
         }
         return count
-    }
-
-    interface Factory {
-        fun create(instanceId: String): HabitDetailViewModel
     }
 }

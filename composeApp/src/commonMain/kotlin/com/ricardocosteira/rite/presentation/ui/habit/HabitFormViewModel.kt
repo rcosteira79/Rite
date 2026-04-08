@@ -28,6 +28,7 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
 private class HabitNotFoundException : Exception()
@@ -39,7 +40,7 @@ class HabitFormViewModel(
     private val createHabit: CreateHabit,
     private val uuidProvider: UuidProvider,
     private val habitNotification: HabitNotification,
-    private val habitIdToEdit: String? = null
+    @Assisted private val habitIdToEdit: String? = null
 ) : ViewModel() {
     private val _state = MutableStateFlow(HabitFormState())
 
@@ -67,14 +68,6 @@ class HabitFormViewModel(
         }
     }
 
-    /**
-     * Factory interface for creating HabitFormViewModel instances.
-     * Used by dependency injection to allow dynamic habit ID parameter.
-     */
-    interface Factory {
-        fun create(habitIdToEdit: String? = null): HabitFormViewModel
-    }
-
     private fun loadHabit(habitId: String) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
@@ -94,6 +87,7 @@ class HabitFormViewModel(
                             type = habit.type,
                             targetValue = habit.targetValue?.toString() ?: "",
                             unit = habit.unit ?: "",
+                            defaultIncrement = habit.defaultIncrement.toString(),
                             scheduleType = schedule?.scheduleType ?: ScheduleType.DAILY,
                             selectedDays = schedule?.specificDays ?: DayOfWeek.entries.toSet(),
                             quota = schedule?.quota?.toString() ?: "1",
@@ -136,6 +130,18 @@ class HabitFormViewModel(
 
     fun updateUnit(unit: String) {
         _state.update { it.copy(unit = unit) }
+    }
+
+    fun updateDefaultIncrement(value: String) {
+        val filtered: String = value.filter { char: Char -> char.isDigit() }
+        val sanitized: String = if (filtered.startsWith("0") && filtered.length > 1) {
+            filtered.dropWhile { it == '0' }.ifEmpty { "" }
+        } else if (filtered == "0") {
+            ""
+        } else {
+            filtered
+        }
+        _state.update { it.copy(defaultIncrement = sanitized) }
     }
 
     fun updateScheduleType(scheduleType: ScheduleType) {
@@ -285,6 +291,7 @@ class HabitFormViewModel(
                         null
                     },
                     unit = state.unit.trim().takeIf { it.isNotEmpty() },
+                    defaultIncrement = state.defaultIncrement.toIntOrNull() ?: 1,
                     scheduleType = state.scheduleType,
                     quota = state.quota.toIntOrNull() ?: 1,
                     specificDays = specificDays,
@@ -319,6 +326,7 @@ class HabitFormViewModel(
                 null
             },
             unit = state.unit.trim().takeIf { it.isNotEmpty() },
+            defaultIncrement = state.defaultIncrement.toIntOrNull() ?: 1,
             isTrackingEnabled = state.isTrackingEnabled
         )
 
@@ -373,6 +381,16 @@ class HabitFormViewModel(
             habitRepository.createReminderForHabit(
                 reminder.copy(habitId = habitId, id = uuidProvider.generate())
             )
+        }
+
+        // Update today's instance target value if needed
+        if (todayInstance != null) {
+            val newTargetValue: Int? = if (state.type == HabitType.QUANTITATIVE) {
+                state.targetValue.toIntOrNull()
+            } else {
+                null
+            }
+            habitInstanceRepository.updateInstanceTargetValue(todayInstance.id, newTargetValue)
         }
 
         // Reschedule with new config

@@ -164,6 +164,7 @@ UPDATE Habit SET
     type = ?,
     targetValue = ?,
     unit = ?,
+    defaultIncrement = ?,
     isTrackingEnabled = ?,
     isActive = ?,
     isArchived = ?,
@@ -263,6 +264,9 @@ UPDATE HabitInstance SET status = ?, completedValue = ?, completedAt = ? WHERE i
 
 updateInstanceCompletedValue:
 UPDATE HabitInstance SET completedValue = ? WHERE id = ?;
+
+updateInstanceTargetValue:
+UPDATE HabitInstance SET targetValue = ? WHERE id = ?;
 
 -- HabitCompletionEvent queries
 getEventsForInstance:

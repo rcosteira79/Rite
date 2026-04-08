@@ -264,6 +264,8 @@ private class FakeHabitInstanceRepository : HabitInstanceRepository {
 
     override suspend fun updateInstanceCompletedValue(instanceId: String, completedValue: Int) =
         Unit
+
+    override suspend fun updateInstanceTargetValue(instanceId: String, targetValue: Int?) = Unit
 }
 
 private class FakeLeavePeriodRepository : LeavePeriodRepository {

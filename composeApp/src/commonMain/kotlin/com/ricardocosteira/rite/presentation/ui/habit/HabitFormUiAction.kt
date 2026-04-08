@@ -16,6 +16,8 @@ sealed interface HabitFormUiAction {
 
     data class UnitChanged(val unit: String) : HabitFormUiAction
 
+    data class DefaultIncrementChanged(val value: String) : HabitFormUiAction
+
     data class ScheduleTypeChanged(val scheduleType: ScheduleType) : HabitFormUiAction
 
     data class SelectedDaysChanged(val days: Set<DayOfWeek>) : HabitFormUiAction
