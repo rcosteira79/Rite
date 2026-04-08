@@ -140,7 +140,15 @@ class HabitFormViewModel(
     }
 
     fun updateDefaultIncrement(value: String) {
-        _state.update { it.copy(defaultIncrement = value) }
+        val filtered: String = value.filter { char: Char -> char.isDigit() }
+        val sanitized: String = if (filtered.startsWith("0") && filtered.length > 1) {
+            filtered.dropWhile { it == '0' }.ifEmpty { "" }
+        } else if (filtered == "0") {
+            ""
+        } else {
+            filtered
+        }
+        _state.update { it.copy(defaultIncrement = sanitized) }
     }
 
     fun updateScheduleType(scheduleType: ScheduleType) {
