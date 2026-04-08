@@ -1,13 +1,20 @@
 package com.ricardocosteira.rite.presentation.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -18,11 +25,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 
-private val StepperButtonSize = 48.dp
+private val MainButtonSize = 48.dp
+private val FineButtonSize = 32.dp
 private val CardCorner = 16.dp
-private val ButtonCorner = 12.dp
+private val MainButtonCorner = 12.dp
+private val FineButtonCorner = 8.dp
 private const val MIN_VALUE = 1
 private const val DISABLED_CONTENT_ALPHA = 0.38f
+private const val FINE_STEP = 1
 
 @Composable
 fun QuantityStepper(
@@ -33,7 +43,9 @@ fun QuantityStepper(
     step: Int = 1
 ) {
     val effectiveStep: Int = step.coerceAtLeast(1)
+    val showFineControls: Boolean = effectiveStep > 1
     val canDecrement: Boolean = value - effectiveStep >= MIN_VALUE
+    val canFineDecrement: Boolean = value > MIN_VALUE
 
     Surface(
         shape = RoundedCornerShape(CardCorner),
@@ -45,11 +57,32 @@ fun QuantityStepper(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            StepperButton(
-                text = "−",
-                onClick = { onValueChange((value - effectiveStep).coerceAtLeast(MIN_VALUE)) },
-                enabled = canDecrement
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                AnimatedVisibility(
+                    visible = showFineControls,
+                    enter = expandHorizontally(expandFrom = Alignment.Start) + fadeIn(),
+                    exit = shrinkHorizontally(shrinkTowards = Alignment.Start) + fadeOut()
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        FineStepperButton(
+                            text = "−1",
+                            onClick = {
+                                onValueChange((value - FINE_STEP).coerceAtLeast(MIN_VALUE))
+                            },
+                            enabled = canFineDecrement
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                    }
+                }
+
+                StepperButton(
+                    text = "−",
+                    onClick = {
+                        onValueChange((value - effectiveStep).coerceAtLeast(MIN_VALUE))
+                    },
+                    enabled = canDecrement
+                )
+            }
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
@@ -66,10 +99,26 @@ fun QuantityStepper(
                 )
             }
 
-            StepperButton(
-                text = "+",
-                onClick = { onValueChange(value + effectiveStep) }
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                StepperButton(
+                    text = "+",
+                    onClick = { onValueChange(value + effectiveStep) }
+                )
+
+                AnimatedVisibility(
+                    visible = showFineControls,
+                    enter = expandHorizontally(expandFrom = Alignment.End) + fadeIn(),
+                    exit = shrinkHorizontally(shrinkTowards = Alignment.End) + fadeOut()
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        FineStepperButton(
+                            text = "+1",
+                            onClick = { onValueChange(value + FINE_STEP) }
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -83,10 +132,10 @@ private fun StepperButton(
 ) {
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(ButtonCorner),
+        shape = RoundedCornerShape(MainButtonCorner),
         color = RiteAppTheme.colorScheme.surface,
         enabled = enabled,
-        modifier = modifier.size(StepperButtonSize)
+        modifier = modifier.size(MainButtonSize)
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
             Text(
@@ -94,6 +143,34 @@ private fun StepperButton(
                 style = RiteAppTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                 color = if (enabled) {
                     RiteAppTheme.colorScheme.onSurface
+                } else {
+                    RiteAppTheme.colorScheme.onSurface.copy(alpha = DISABLED_CONTENT_ALPHA)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun FineStepperButton(
+    text: String,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(FineButtonCorner),
+        color = RiteAppTheme.colorScheme.surfaceContainer,
+        enabled = enabled,
+        modifier = modifier.size(FineButtonSize)
+    ) {
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = text,
+                style = RiteAppTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                color = if (enabled) {
+                    RiteAppTheme.colorScheme.onSurfaceVariant
                 } else {
                     RiteAppTheme.colorScheme.onSurface.copy(alpha = DISABLED_CONTENT_ALPHA)
                 }
