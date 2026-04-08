@@ -325,7 +325,13 @@ internal fun TodayScreen(
                                     onClick = {},
                                     onComplete = {},
                                     onSkip = {},
-                                    onUndo = { onUndo(habit.instanceId) },
+                                    onUndo = {
+                                        if (habit.type == HabitType.QUANTITATIVE) {
+                                            onUndoLastIncrement(habit.instanceId)
+                                        } else {
+                                            onUndo(habit.instanceId)
+                                        }
+                                    },
                                     onIncrementProgress = {},
                                     onCustomProgress = {}
                                 )
@@ -408,7 +414,13 @@ internal fun TodayScreen(
                                         onClick = {},
                                         onComplete = {},
                                         onSkip = {},
-                                        onUndo = { onUndo(habit.instanceId) },
+                                        onUndo = {
+                                            if (habit.type == HabitType.QUANTITATIVE) {
+                                                onUndoLastIncrement(habit.instanceId)
+                                            } else {
+                                                onUndo(habit.instanceId)
+                                            }
+                                        },
                                         onIncrementProgress = {},
                                         onCustomProgress = {}
                                     )
