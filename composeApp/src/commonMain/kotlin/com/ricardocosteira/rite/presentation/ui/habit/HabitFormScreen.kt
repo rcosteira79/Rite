@@ -112,7 +112,6 @@ import rite.composeapp.generated.resources.habit_form_delete_dialog_confirm
 import rite.composeapp.generated.resources.habit_form_delete_dialog_title
 import rite.composeapp.generated.resources.habit_form_error_habit_not_found
 import rite.composeapp.generated.resources.habit_form_error_required_fields
-import rite.composeapp.generated.resources.habit_form_increment_hint
 import rite.composeapp.generated.resources.habit_form_increment_label
 import rite.composeapp.generated.resources.habit_form_note_collapsed_subtitle
 import rite.composeapp.generated.resources.habit_form_note_collapsed_title
@@ -417,28 +416,34 @@ internal fun HabitFormScreen(
 
             // DAILY TARGET
             SectionLabel(Res.string.habit_form_section_daily_target)
-            Spacer(modifier = Modifier.height(8.dp))
 
-            val cadence: String = if (state.scheduleType == ScheduleType.DAILY) {
-                stringResource(Res.string.habit_form_cadence_day)
-            } else {
-                stringResource(Res.string.habit_form_cadence_week)
-            }
-            val stepperLabel: String = if (state.type == HabitType.QUANTITATIVE &&
-                state.unit.isNotBlank()
+            AnimatedVisibility(
+                visible = state.type == HabitType.QUANTITATIVE,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
             ) {
-                "${state.unit} / $cadence"
-            } else {
-                "${stringResource(Res.string.habit_form_stepper_label_times)} / $cadence"
-            }
+                val cadence: String = if (state.scheduleType == ScheduleType.DAILY) {
+                    stringResource(Res.string.habit_form_cadence_day)
+                } else {
+                    stringResource(Res.string.habit_form_cadence_week)
+                }
+                val stepperLabel: String = if (state.unit.isNotBlank()) {
+                    "${state.unit} / $cadence"
+                } else {
+                    "${stringResource(Res.string.habit_form_stepper_label_times)} / $cadence"
+                }
 
-            QuantityStepper(
-                value = state.stepperValue,
-                onValueChange = { newValue: Int ->
-                    onAction(state.stepperChangeAction(newValue))
-                },
-                label = stepperLabel
-            )
+                Column {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    QuantityStepper(
+                        value = state.stepperValue,
+                        onValueChange = { newValue: Int ->
+                            onAction(state.stepperChangeAction(newValue))
+                        },
+                        label = stepperLabel
+                    )
+                }
+            }
 
             AnimatedVisibility(
                 visible = state.type == HabitType.QUANTITATIVE,
@@ -498,12 +503,6 @@ internal fun HabitFormScreen(
                             focusedBorderColor = RiteAppTheme.colorScheme.primary,
                             unfocusedBorderColor = RiteAppTheme.colorScheme.outlineVariant
                         )
-                    )
-                    Text(
-                        text = stringResource(Res.string.habit_form_increment_hint),
-                        style = RiteAppTheme.typography.bodySmall,
-                        color = RiteAppTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp)
                     )
                 }
             }
