@@ -164,6 +164,7 @@ UPDATE Habit SET
     type = ?,
     targetValue = ?,
     unit = ?,
+    defaultIncrement = ?,
     isTrackingEnabled = ?,
     isActive = ?,
     isArchived = ?,
