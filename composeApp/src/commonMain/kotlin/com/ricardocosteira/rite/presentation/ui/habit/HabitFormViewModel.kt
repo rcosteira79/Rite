@@ -189,6 +189,9 @@ class HabitFormViewModel(
     }
 
     fun discardDraft() {
+        _state.value = HabitFormState(
+            isNotificationPermissionGranted = habitNotification.isNotificationPermissionGranted()
+        )
         viewModelScope.launch { _events.emit(HabitFormEvent.NavigateBack) }
     }
 

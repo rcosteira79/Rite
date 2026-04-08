@@ -439,7 +439,7 @@ internal fun HabitFormScreen(
                             onAction(state.stepperChangeAction(newValue))
                         },
                         label = stepperLabel,
-                        modifier = Modifier.padding(start = 8.dp)
+                        step = state.defaultIncrement.toIntOrNull() ?: 1
                     )
                 }
             }
