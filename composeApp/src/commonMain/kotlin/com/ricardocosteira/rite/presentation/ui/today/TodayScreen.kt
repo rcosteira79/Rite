@@ -371,9 +371,7 @@ internal fun TodayScreen(
                                     },
                                     onSkip = { onSkip(habit.instanceId) },
                                     onUndo = {
-                                        if (habit.type == HabitType.QUANTITATIVE &&
-                                            habit.status == HabitStatus.PENDING
-                                        ) {
+                                        if (habit.type == HabitType.QUANTITATIVE) {
                                             onUndoLastIncrement(habit.instanceId)
                                         } else {
                                             onUndo(habit.instanceId)
