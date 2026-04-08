@@ -43,7 +43,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -70,10 +71,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
@@ -83,6 +86,7 @@ import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
 import com.ricardocosteira.rite.presentation.ui.components.QuantityStepper
 import com.ricardocosteira.rite.presentation.ui.components.SchedulePicker
 import com.ricardocosteira.rite.presentation.ui.components.TypeToggle
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -109,10 +113,12 @@ import rite.composeapp.generated.resources.habit_form_delete_dialog_confirm
 import rite.composeapp.generated.resources.habit_form_delete_dialog_title
 import rite.composeapp.generated.resources.habit_form_error_habit_not_found
 import rite.composeapp.generated.resources.habit_form_error_required_fields
+import rite.composeapp.generated.resources.habit_form_increment_label
 import rite.composeapp.generated.resources.habit_form_note_collapsed_subtitle
 import rite.composeapp.generated.resources.habit_form_note_collapsed_title
 import rite.composeapp.generated.resources.habit_form_note_expanded_title
 import rite.composeapp.generated.resources.habit_form_notification_permission_denied
+import rite.composeapp.generated.resources.habit_form_placeholder_increment
 import rite.composeapp.generated.resources.habit_form_placeholder_unit
 import rite.composeapp.generated.resources.habit_form_reminder_off
 import rite.composeapp.generated.resources.habit_form_reminder_title
@@ -134,8 +140,10 @@ fun HabitFormScreen(
     onNavigateBack: () -> Unit,
     snackbarHostState: SnackbarHostState
 ) {
-    val factory = LocalAppComponent.current.habitFormViewModelFactory
-    val viewModel = remember { factory.create(habitIdToEdit) }
+    val createViewModel = LocalAppComponent.current.createHabitFormViewModel
+    val viewModel: HabitFormViewModel = viewModel {
+        createViewModel(habitIdToEdit)
+    }
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val messageRequiredFields = stringResource(Res.string.habit_form_error_required_fields)
@@ -177,10 +185,9 @@ fun HabitFormScreen(
             when (action) {
                 is HabitFormUiAction.NameChanged -> viewModel.updateName(action.name)
 
-                is HabitFormUiAction.DescriptionChanged ->
-                    viewModel.updateDescription(
-                        action.description
-                    )
+                is HabitFormUiAction.DescriptionChanged -> viewModel.updateDescription(
+                    action.description
+                )
 
                 is HabitFormUiAction.TypeChanged -> viewModel.updateType(action.type)
 
@@ -188,28 +195,32 @@ fun HabitFormScreen(
 
                 is HabitFormUiAction.UnitChanged -> viewModel.updateUnit(action.unit)
 
-                is HabitFormUiAction.ScheduleTypeChanged ->
-                    viewModel.updateScheduleType(
-                        action.scheduleType
-                    )
+                is HabitFormUiAction.DefaultIncrementChanged -> viewModel.updateDefaultIncrement(
+                    action.value
+                )
 
-                is HabitFormUiAction.SelectedDaysChanged ->
-                    viewModel.updateSelectedDays(
-                        action.days
-                    )
+                is HabitFormUiAction.ScheduleTypeChanged -> viewModel.updateScheduleType(
+                    action.scheduleType
+                )
+
+                is HabitFormUiAction.SelectedDaysChanged -> viewModel.updateSelectedDays(
+                    action.days
+                )
 
                 is HabitFormUiAction.QuotaChanged -> viewModel.updateQuota(action.quota)
 
-                is HabitFormUiAction.HasReminderChanged ->
-                    viewModel.updateHasReminder(
-                        action.hasReminder
-                    )
+                is HabitFormUiAction.HasReminderChanged -> viewModel.updateHasReminder(
+                    action.hasReminder
+                )
 
-                is HabitFormUiAction.ReminderTimeChanged ->
-                    viewModel.updateReminderTime(
-                        action.hour,
-                        action.minute
-                    )
+                is HabitFormUiAction.ReminderTimeChanged -> viewModel.updateReminderTime(
+                    action.hour,
+                    action.minute
+                )
+
+                is HabitFormUiAction.IsTrackingEnabledChanged -> viewModel.updateIsTrackingEnabled(
+                    action.isEnabled
+                )
 
                 HabitFormUiAction.SaveClicked -> viewModel.saveHabit()
 
@@ -221,11 +232,7 @@ fun HabitFormScreen(
 
                 HabitFormUiAction.DiscardChangesClicked -> viewModel.discardChanges()
 
-                is HabitFormUiAction.IsTrackingEnabledChanged ->
-                    viewModel.updateIsTrackingEnabled(action.isEnabled)
-
-                HabitFormUiAction.NotificationSettingsClicked ->
-                    viewModel.openNotificationSettings()
+                HabitFormUiAction.NotificationSettingsClicked -> viewModel.openNotificationSettings()
             }
         }
     )
@@ -407,29 +414,35 @@ internal fun HabitFormScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // DAILY TARGET
-            SectionLabel(Res.string.habit_form_section_daily_target)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            val cadence: String = if (state.scheduleType == ScheduleType.DAILY) {
-                stringResource(Res.string.habit_form_cadence_day)
-            } else {
-                stringResource(Res.string.habit_form_cadence_week)
-            }
-            val stepperLabel: String = if (state.type == HabitType.QUANTITATIVE &&
-                state.unit.isNotBlank()
+            AnimatedVisibility(
+                visible = state.type == HabitType.QUANTITATIVE,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
             ) {
-                "${state.unit} / $cadence"
-            } else {
-                "${stringResource(Res.string.habit_form_stepper_label_times)} / $cadence"
-            }
+                val cadence: String = if (state.scheduleType == ScheduleType.DAILY) {
+                    stringResource(Res.string.habit_form_cadence_day)
+                } else {
+                    stringResource(Res.string.habit_form_cadence_week)
+                }
+                val stepperLabel: String = if (state.unit.isNotBlank()) {
+                    "${state.unit} / $cadence"
+                } else {
+                    "${stringResource(Res.string.habit_form_stepper_label_times)} / $cadence"
+                }
 
-            QuantityStepper(
-                value = state.stepperValue,
-                onValueChange = { newValue: Int ->
-                    onAction(state.stepperChangeAction(newValue))
-                },
-                label = stepperLabel
-            )
+                Column {
+                    SectionLabel(Res.string.habit_form_section_daily_target)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    QuantityStepper(
+                        value = state.stepperValue,
+                        onValueChange = { newValue: Int ->
+                            onAction(state.stepperChangeAction(newValue))
+                        },
+                        label = stepperLabel,
+                        step = state.defaultIncrement.toIntOrNull() ?: 1
+                    )
+                }
+            }
 
             AnimatedVisibility(
                 visible = state.type == HabitType.QUANTITATIVE,
@@ -438,11 +451,57 @@ internal fun HabitFormScreen(
             ) {
                 Column {
                     Spacer(modifier = Modifier.height(12.dp))
-                    UnderlineTextField(
+                    OutlinedTextField(
                         value = state.unit,
                         onValueChange = { onAction(HabitFormUiAction.UnitChanged(it)) },
-                        label = stringResource(Res.string.habit_form_unit_label),
-                        placeholder = stringResource(Res.string.habit_form_placeholder_unit)
+                        label = {
+                            Text(
+                                text = stringResource(Res.string.habit_form_unit_label),
+                                style = RiteAppTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                        },
+                        placeholder = {
+                            Text(
+                                text = stringResource(Res.string.habit_form_placeholder_unit),
+                                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = RiteAppTheme.colorScheme.primary,
+                            unfocusedBorderColor = RiteAppTheme.colorScheme.outlineVariant
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = state.defaultIncrement,
+                        onValueChange = { onAction(HabitFormUiAction.DefaultIncrementChanged(it)) },
+                        label = {
+                            Text(
+                                text = stringResource(Res.string.habit_form_increment_label),
+                                style = RiteAppTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                        },
+                        placeholder = {
+                            Text(
+                                text = stringResource(Res.string.habit_form_placeholder_increment),
+                                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = RiteAppTheme.colorScheme.primary,
+                            unfocusedBorderColor = RiteAppTheme.colorScheme.outlineVariant
+                        )
                     )
                 }
             }

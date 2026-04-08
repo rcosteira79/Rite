@@ -107,6 +107,7 @@ class HabitRepositoryImpl(
                 type = habit.type.name,
                 targetValue = habit.targetValue?.toLong(),
                 unit = habit.unit,
+                defaultIncrement = habit.defaultIncrement.toLong(),
                 isTrackingEnabled = if (habit.isTrackingEnabled) 1L else 0L,
                 isActive = if (habit.isActive) 1 else 0,
                 isArchived = if (habit.isArchived) 1 else 0,
