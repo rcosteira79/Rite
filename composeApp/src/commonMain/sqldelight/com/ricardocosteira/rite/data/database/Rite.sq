@@ -264,6 +264,9 @@ UPDATE HabitInstance SET status = ?, completedValue = ?, completedAt = ? WHERE i
 updateInstanceCompletedValue:
 UPDATE HabitInstance SET completedValue = ? WHERE id = ?;
 
+updateInstanceTargetValue:
+UPDATE HabitInstance SET targetValue = ? WHERE id = ?;
+
 -- HabitCompletionEvent queries
 getEventsForInstance:
 SELECT * FROM HabitCompletionEvent WHERE habitInstanceId = ? ORDER BY timestamp ASC;

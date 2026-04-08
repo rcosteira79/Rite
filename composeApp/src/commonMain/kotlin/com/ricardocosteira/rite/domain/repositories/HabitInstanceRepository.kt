@@ -67,4 +67,9 @@ interface HabitInstanceRepository {
      * Update just the completed value of an instance.
      */
     suspend fun updateInstanceCompletedValue(instanceId: String, completedValue: Int)
+
+    /**
+     * Update the target value of an instance.
+     */
+    suspend fun updateInstanceTargetValue(instanceId: String, targetValue: Int?)
 }

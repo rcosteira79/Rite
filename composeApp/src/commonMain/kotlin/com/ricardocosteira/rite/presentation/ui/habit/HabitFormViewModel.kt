@@ -362,6 +362,13 @@ class HabitFormViewModel(
             habitInstanceRepository.getInstanceForHabitAndDate(habitId, today)
 
         if (todayInstance != null) {
+            val newTargetValue: Int? = if (state.type == HabitType.QUANTITATIVE) {
+                state.targetValue.toIntOrNull()
+            } else {
+                null
+            }
+            habitInstanceRepository.updateInstanceTargetValue(todayInstance.id, newTargetValue)
+
             habitNotification.cancelReminder(todayInstance.id)
 
             if (reminder != null) {
