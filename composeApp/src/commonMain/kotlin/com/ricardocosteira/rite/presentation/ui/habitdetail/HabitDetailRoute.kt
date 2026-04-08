@@ -31,7 +31,7 @@ fun HabitDetailRoute(
     modifier: Modifier = Modifier
 ) {
     val createViewModel = LocalAppComponent.current.createHabitDetailViewModel
-    val viewModel: HabitDetailViewModel = viewModel(key = instanceId) {
+    val viewModel: HabitDetailViewModel = viewModel {
         createViewModel(instanceId)
     }
     val state by viewModel.state.collectAsStateWithLifecycle()
