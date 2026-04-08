@@ -80,6 +80,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
+import com.ricardocosteira.rite.generateUuid
 import com.ricardocosteira.rite.presentation.ui.BackHandler
 import com.ricardocosteira.rite.presentation.ui.components.DetailRow
 import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
@@ -141,7 +142,8 @@ fun HabitFormScreen(
     snackbarHostState: SnackbarHostState
 ) {
     val createViewModel = LocalAppComponent.current.createHabitFormViewModel
-    val viewModel: HabitFormViewModel = viewModel(key = habitIdToEdit) {
+    val viewModelKey: String = rememberSaveable { habitIdToEdit ?: generateUuid() }
+    val viewModel: HabitFormViewModel = viewModel(key = viewModelKey) {
         createViewModel(habitIdToEdit)
     }
     val state by viewModel.state.collectAsStateWithLifecycle()
