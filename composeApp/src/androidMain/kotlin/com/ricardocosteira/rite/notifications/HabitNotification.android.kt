@@ -46,10 +46,6 @@ actual class HabitNotification(private val context: Context) {
         }
     }
 
-    actual fun cancelReminder(instanceId: String) {
-        scheduler.cancelNotificationsForInstance(instanceId)
-    }
-
     actual fun cancelReminder(instanceId: String, reminder: HabitReminder?) {
         if (reminder != null && reminder.reminderType == ReminderType.PERIODIC) {
             val slotCount: Int = PeriodicReminderCalculator.computeSlotCount(

@@ -384,6 +384,7 @@ class HabitFormScreenshotTest {
     // --- Periodic reminder enabled ---
 
     @Test
+    @Config(qualifiers = "w360dp-h1200dp-420dpi")
     fun habitForm_create_periodicReminderEnabled_lightTheme() {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = false) {
@@ -409,6 +410,7 @@ class HabitFormScreenshotTest {
     }
 
     @Test
+    @Config(qualifiers = "w360dp-h1200dp-420dpi")
     fun habitForm_create_periodicReminderEnabled_darkTheme() {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = true) {

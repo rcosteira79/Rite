@@ -237,17 +237,23 @@ fun HabitFormScreen(
                     action.isEnabled
                 )
 
-                is HabitFormUiAction.ReminderTypeChanged ->
-                    viewModel.updateReminderType(action.reminderType)
+                is HabitFormUiAction.ReminderTypeChanged -> viewModel.updateReminderType(
+                    action.reminderType
+                )
 
-                is HabitFormUiAction.IntervalChanged ->
-                    viewModel.updateIntervalMinutes(action.interval)
+                is HabitFormUiAction.IntervalChanged -> viewModel.updateIntervalMinutes(
+                    action.interval
+                )
 
-                is HabitFormUiAction.PeriodicStartTimeChanged ->
-                    viewModel.updatePeriodicStartTime(action.hour, action.minute)
+                is HabitFormUiAction.PeriodicStartTimeChanged -> viewModel.updatePeriodicStartTime(
+                    action.hour,
+                    action.minute
+                )
 
-                is HabitFormUiAction.PeriodicEndTimeChanged ->
-                    viewModel.updatePeriodicEndTime(action.hour, action.minute)
+                is HabitFormUiAction.PeriodicEndTimeChanged -> viewModel.updatePeriodicEndTime(
+                    action.hour,
+                    action.minute
+                )
 
                 HabitFormUiAction.SaveClicked -> viewModel.saveHabit()
 
@@ -275,8 +281,8 @@ internal fun HabitFormScreen(
     var isNoteExpanded by rememberSaveable { mutableStateOf(false) }
     var isDeleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     var isTimePickerVisible by rememberSaveable { mutableStateOf(false) }
-    var isStartTimePickerVisible by remember { mutableStateOf(false) }
-    var isEndTimePickerVisible by remember { mutableStateOf(false) }
+    var isStartTimePickerVisible by rememberSaveable { mutableStateOf(false) }
+    var isEndTimePickerVisible by rememberSaveable { mutableStateOf(false) }
 
     if (state.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -990,6 +996,8 @@ private fun ScheduleTypePill(
     }
 }
 
+private const val TIME_PLACEHOLDER = "--:--"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PeriodicReminderConfig(
@@ -1093,7 +1101,7 @@ private fun PeriodicReminderConfig(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
-                text = startTime?.formatAmPm() ?: "--:--",
+                text = startTime?.formatAmPm() ?: TIME_PLACEHOLDER,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
@@ -1123,7 +1131,7 @@ private fun PeriodicReminderConfig(
                 }
             )
             Text(
-                text = endTime?.formatAmPm() ?: "--:--",
+                text = endTime?.formatAmPm() ?: TIME_PLACEHOLDER,
                 style = MaterialTheme.typography.bodyMedium,
                 color = if (isWindowInvalid) {
                     MaterialTheme.colorScheme.error
