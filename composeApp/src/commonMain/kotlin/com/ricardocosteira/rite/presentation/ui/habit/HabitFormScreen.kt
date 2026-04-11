@@ -1,6 +1,7 @@
 package com.ricardocosteira.rite.presentation.ui.habit
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -43,9 +44,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -72,6 +77,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -79,6 +85,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.domain.models.HabitType
+import com.ricardocosteira.rite.domain.models.ReminderType
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.presentation.ui.BackHandler
 import com.ricardocosteira.rite.presentation.ui.components.DetailRow
@@ -118,10 +125,18 @@ import rite.composeapp.generated.resources.habit_form_note_collapsed_subtitle
 import rite.composeapp.generated.resources.habit_form_note_collapsed_title
 import rite.composeapp.generated.resources.habit_form_note_expanded_title
 import rite.composeapp.generated.resources.habit_form_notification_permission_denied
+import rite.composeapp.generated.resources.habit_form_periodic_every
+import rite.composeapp.generated.resources.habit_form_periodic_from
+import rite.composeapp.generated.resources.habit_form_periodic_hours
+import rite.composeapp.generated.resources.habit_form_periodic_invalid_window
+import rite.composeapp.generated.resources.habit_form_periodic_minutes
+import rite.composeapp.generated.resources.habit_form_periodic_until
 import rite.composeapp.generated.resources.habit_form_placeholder_increment
 import rite.composeapp.generated.resources.habit_form_placeholder_unit
 import rite.composeapp.generated.resources.habit_form_reminder_off
 import rite.composeapp.generated.resources.habit_form_reminder_title
+import rite.composeapp.generated.resources.habit_form_reminder_type_fixed
+import rite.composeapp.generated.resources.habit_form_reminder_type_periodic
 import rite.composeapp.generated.resources.habit_form_section_daily_target
 import rite.composeapp.generated.resources.habit_form_section_habit_name
 import rite.composeapp.generated.resources.habit_form_section_schedule
@@ -222,6 +237,24 @@ fun HabitFormScreen(
                     action.isEnabled
                 )
 
+                is HabitFormUiAction.ReminderTypeChanged -> viewModel.updateReminderType(
+                    action.reminderType
+                )
+
+                is HabitFormUiAction.IntervalChanged -> viewModel.updateIntervalMinutes(
+                    action.interval
+                )
+
+                is HabitFormUiAction.PeriodicStartTimeChanged -> viewModel.updatePeriodicStartTime(
+                    action.hour,
+                    action.minute
+                )
+
+                is HabitFormUiAction.PeriodicEndTimeChanged -> viewModel.updatePeriodicEndTime(
+                    action.hour,
+                    action.minute
+                )
+
                 HabitFormUiAction.SaveClicked -> viewModel.saveHabit()
 
                 HabitFormUiAction.DeleteClicked -> viewModel.deleteHabit()
@@ -248,6 +281,8 @@ internal fun HabitFormScreen(
     var isNoteExpanded by rememberSaveable { mutableStateOf(false) }
     var isDeleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     var isTimePickerVisible by rememberSaveable { mutableStateOf(false) }
+    var isStartTimePickerVisible by rememberSaveable { mutableStateOf(false) }
+    var isEndTimePickerVisible by rememberSaveable { mutableStateOf(false) }
 
     if (state.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -274,6 +309,30 @@ internal fun HabitFormScreen(
                 isTimePickerVisible = false
             },
             onDismiss = { isTimePickerVisible = false }
+        )
+    }
+
+    // Start time picker for periodic reminders
+    if (isStartTimePickerVisible) {
+        ReminderTimePickerDialog(
+            initialTime = state.startTime ?: LocalTime(8, 0),
+            onConfirm = { hour: Int, minute: Int ->
+                onAction(HabitFormUiAction.PeriodicStartTimeChanged(hour, minute))
+                isStartTimePickerVisible = false
+            },
+            onDismiss = { isStartTimePickerVisible = false }
+        )
+    }
+
+    // End time picker for periodic reminders
+    if (isEndTimePickerVisible) {
+        ReminderTimePickerDialog(
+            initialTime = state.endTime ?: LocalTime(22, 0),
+            onConfirm = { hour: Int, minute: Int ->
+                onAction(HabitFormUiAction.PeriodicEndTimeChanged(hour, minute))
+                isEndTimePickerVisible = false
+            },
+            onDismiss = { isEndTimePickerVisible = false }
         )
     }
 
@@ -553,7 +612,25 @@ internal fun HabitFormScreen(
 
             // Reminder + Note card
             val reminderSubtitle: String = if (state.hasReminder) {
-                state.reminderTime?.formatAmPm().orEmpty()
+                when (state.reminderType) {
+                    ReminderType.FIXED -> state.reminderTime?.formatAmPm().orEmpty()
+
+                    ReminderType.PERIODIC -> {
+                        val interval = state.intervalMinutes.toIntOrNull()
+                        if (interval != null && state.startTime != null && state.endTime != null) {
+                            val intervalText = if (interval >= 60 && interval % 60 == 0) {
+                                "${interval / 60}${stringResource(
+                                    Res.string.habit_form_periodic_hours
+                                )}"
+                            } else {
+                                "$interval${stringResource(Res.string.habit_form_periodic_minutes)}"
+                            }
+                            "${stringResource(Res.string.habit_form_periodic_every)} $intervalText"
+                        } else {
+                            stringResource(Res.string.habit_form_reminder_type_periodic)
+                        }
+                    }
+                }
             } else {
                 stringResource(Res.string.habit_form_reminder_off)
             }
@@ -596,7 +673,9 @@ internal fun HabitFormScreen(
                         },
                         title = stringResource(Res.string.habit_form_reminder_title),
                         subtitle = reminderSubtitle,
-                        onClick = if (state.hasReminder) {
+                        onClick = if (state.hasReminder &&
+                            state.reminderType == ReminderType.FIXED
+                        ) {
                             { isTimePickerVisible = true }
                         } else {
                             null
@@ -607,13 +686,110 @@ internal fun HabitFormScreen(
                                 checked = state.hasReminder,
                                 onCheckedChange = { checked: Boolean ->
                                     onAction(HabitFormUiAction.HasReminderChanged(checked))
-                                    if (checked) isTimePickerVisible = true
                                 },
                                 enabled = state.areNotificationTogglesEnabled
                             )
                         },
                         modifier = Modifier.padding(horizontal = 12.dp)
                     )
+
+                    // Reminder type selector and config (animated)
+                    AnimatedVisibility(
+                        visible = state.hasReminder,
+                        enter = expandVertically() + fadeIn(),
+                        exit = shrinkVertically() + fadeOut()
+                    ) {
+                        Column(modifier = Modifier.padding(horizontal = 12.dp)) {
+                            // Segmented button row
+                            SingleChoiceSegmentedButtonRow(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                            ) {
+                                SegmentedButton(
+                                    selected = state.reminderType == ReminderType.FIXED,
+                                    onClick = {
+                                        onAction(
+                                            HabitFormUiAction.ReminderTypeChanged(
+                                                ReminderType.FIXED
+                                            )
+                                        )
+                                    },
+                                    shape = SegmentedButtonDefaults.itemShape(
+                                        index = 0,
+                                        count = 2
+                                    )
+                                ) {
+                                    Text(
+                                        text = stringResource(
+                                            Res.string.habit_form_reminder_type_fixed
+                                        )
+                                    )
+                                }
+                                SegmentedButton(
+                                    selected = state.reminderType == ReminderType.PERIODIC,
+                                    onClick = {
+                                        onAction(
+                                            HabitFormUiAction.ReminderTypeChanged(
+                                                ReminderType.PERIODIC
+                                            )
+                                        )
+                                    },
+                                    shape = SegmentedButtonDefaults.itemShape(
+                                        index = 1,
+                                        count = 2
+                                    )
+                                ) {
+                                    Text(
+                                        text = stringResource(
+                                            Res.string.habit_form_reminder_type_periodic
+                                        )
+                                    )
+                                }
+                            }
+
+                            // Content crossfade between Fixed and Periodic
+                            Crossfade(
+                                targetState = state.reminderType,
+                                label = "reminder_type_content"
+                            ) { currentType: ReminderType ->
+                                when (currentType) {
+                                    ReminderType.FIXED -> {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable { isTimePickerVisible = true }
+                                                .padding(vertical = 12.dp),
+                                            horizontalArrangement = Arrangement.Center
+                                        ) {
+                                            Text(
+                                                text = state.resolvedReminderTime.formatAmPm(),
+                                                style = MaterialTheme.typography.titleLarge,
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+
+                                    ReminderType.PERIODIC -> {
+                                        PeriodicReminderConfig(
+                                            intervalMinutes = state.intervalMinutes,
+                                            startTime = state.startTime,
+                                            endTime = state.endTime,
+                                            onIntervalChanged = { interval: String ->
+                                                onAction(
+                                                    HabitFormUiAction.IntervalChanged(interval)
+                                                )
+                                            },
+                                            onStartTimeClick = {
+                                                isStartTimePickerVisible = true
+                                            },
+                                            onEndTimeClick = { isEndTimePickerVisible = true }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     DetailRow(
                         icon = Icons.Outlined.Notifications,
@@ -817,6 +993,172 @@ private fun ScheduleTypePill(
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
             color = contentColor
         )
+    }
+}
+
+private const val TIME_PLACEHOLDER = "--:--"
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PeriodicReminderConfig(
+    intervalMinutes: String,
+    startTime: LocalTime?,
+    endTime: LocalTime?,
+    onIntervalChanged: (String) -> Unit,
+    onStartTimeClick: () -> Unit,
+    onEndTimeClick: () -> Unit
+) {
+    val isWindowInvalid: Boolean = startTime != null && endTime != null && startTime >= endTime
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        // Interval row with unit toggle
+        var isHoursMode by remember {
+            mutableStateOf(
+                intervalMinutes.toIntOrNull()?.let { it >= 60 && it % 60 == 0 } ?: false
+            )
+        }
+        val displayValue: String = if (isHoursMode) {
+            val mins = intervalMinutes.toIntOrNull() ?: 0
+            if (mins > 0) (mins / 60).toString() else ""
+        } else {
+            intervalMinutes
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(Res.string.habit_form_periodic_every),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedTextField(
+                    value = displayValue,
+                    onValueChange = { value: String ->
+                        if (value.all { it.isDigit() }) {
+                            val rawMinutes: Int = if (isHoursMode) {
+                                (value.toIntOrNull() ?: 0) * 60
+                            } else {
+                                value.toIntOrNull() ?: 0
+                            }
+                            onIntervalChanged(rawMinutes.toString())
+                        }
+                    },
+                    modifier = Modifier.width(72.dp),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(
+                        textAlign = TextAlign.Center
+                    ),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+                SingleChoiceSegmentedButtonRow {
+                    SegmentedButton(
+                        selected = !isHoursMode,
+                        onClick = { isHoursMode = false },
+                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.habit_form_periodic_minutes),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                    SegmentedButton(
+                        selected = isHoursMode,
+                        onClick = { isHoursMode = true },
+                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.habit_form_periodic_hours),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                }
+            }
+        }
+
+        // From row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onStartTimeClick),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(Res.string.habit_form_periodic_from),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = startTime?.formatAmPm() ?: TIME_PLACEHOLDER,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
+
+        // Until row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onEndTimeClick),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(Res.string.habit_form_periodic_until),
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (isWindowInvalid) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
+            )
+            Text(
+                text = endTime?.formatAmPm() ?: TIME_PLACEHOLDER,
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (isWindowInvalid) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.primary
+                },
+                modifier = Modifier
+                    .background(
+                        color = if (isWindowInvalid) {
+                            MaterialTheme.colorScheme.errorContainer
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainerHighest
+                        },
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
+
+        // Validation error
+        if (isWindowInvalid) {
+            Text(
+                text = stringResource(Res.string.habit_form_periodic_invalid_window),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
     }
 }
 

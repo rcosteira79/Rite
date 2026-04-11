@@ -50,7 +50,7 @@
 ## Future Features
 
 - [ ] Weekly Reflection / insights card (exploring on-device Gemma 4 E2B for natural language summaries)
-- [ ] Periodic reminder scheduling (interval-based within a time window)
+- [x] Periodic reminder scheduling (interval-based within a time window)
 - [ ] Create/edit habit UI for custom increment values
 - [ ] Active vs silent tracking notification toggle in Settings
 - [ ] iOS activation

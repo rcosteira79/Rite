@@ -7,6 +7,7 @@ import com.ricardocosteira.rite.di.DefaultDispatcher
 import com.ricardocosteira.rite.domain.models.CompletionSource
 import com.ricardocosteira.rite.domain.models.Habit
 import com.ricardocosteira.rite.domain.models.HabitInstance
+import com.ricardocosteira.rite.domain.models.HabitReminder
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
@@ -226,6 +227,11 @@ class TodayViewModel(
         }
     }
 
+    private suspend fun cancelReminderForHabit(instanceId: String, habitId: String) {
+        val reminder: HabitReminder? = habitRepository.getRemindersForHabit(habitId).firstOrNull()
+        habitNotification.cancelReminder(instanceId, reminder)
+    }
+
     fun completeHabit(instanceId: String) {
         viewModelScope.launch {
             val habit = _state.value.habits.find { it.instanceId == instanceId } ?: return@launch
@@ -238,7 +244,7 @@ class TodayViewModel(
             val result = completeHabit.executeBinary(instanceId, CompletionSource.IN_APP)
 
             result.onSuccess {
-                habitNotification.cancelReminder(instanceId)
+                cancelReminderForHabit(instanceId, habit.habitId)
                 loadTodayHabits()
                 // No snackbar — card state change is the feedback
             }.onFailure { error ->
@@ -249,6 +255,7 @@ class TodayViewModel(
 
     fun completeQuantitativeHabit(instanceId: String, value: Int) {
         viewModelScope.launch {
+            val habit = _state.value.habits.find { it.instanceId == instanceId }
             _state.update { it.copy(showQuantitativeInputFor = null) }
 
             val result = completeHabit.executeQuantitative(
@@ -258,8 +265,8 @@ class TodayViewModel(
             )
 
             result.onSuccess { updatedInstance ->
-                if (updatedInstance.isQuantitativeComplete()) {
-                    habitNotification.cancelReminder(instanceId)
+                if (updatedInstance.isQuantitativeComplete() && habit != null) {
+                    cancelReminderForHabit(instanceId, habit.habitId)
                 }
                 loadTodayHabits()
             }.onFailure { error ->
@@ -281,7 +288,7 @@ class TodayViewModel(
 
             result.onSuccess { updatedInstance: HabitInstance ->
                 if (updatedInstance.isQuantitativeComplete()) {
-                    habitNotification.cancelReminder(instanceId)
+                    cancelReminderForHabit(instanceId, habit.habitId)
                 }
                 loadTodayHabits()
             }.onFailure { error: Throwable ->
@@ -300,10 +307,11 @@ class TodayViewModel(
 
     fun skipHabit(instanceId: String) {
         viewModelScope.launch {
+            val habit = _state.value.habits.find { it.instanceId == instanceId }
             val result = skipHabit.execute(instanceId)
 
             result.onSuccess {
-                habitNotification.cancelReminder(instanceId)
+                if (habit != null) cancelReminderForHabit(instanceId, habit.habitId)
                 loadTodayHabits()
             }.onFailure { error ->
                 when (error) {

@@ -46,6 +46,8 @@ class HabitFormViewModel(
 
     private companion object {
         private val DEFAULT_REMINDER_TIME = HabitFormState.DEFAULT_REMINDER_TIME
+        private val DEFAULT_PERIODIC_START_TIME = LocalTime(8, 0)
+        private val DEFAULT_PERIODIC_END_TIME = LocalTime(22, 0)
     }
 
     val state: StateFlow<HabitFormState> = _state.asStateFlow()
@@ -119,16 +121,7 @@ class HabitFormViewModel(
     }
 
     fun updateType(type: HabitType) {
-        _state.update {
-            it.copy(
-                type = type,
-                reminderType = if (type == HabitType.QUANTITATIVE) {
-                    ReminderType.PERIODIC
-                } else {
-                    ReminderType.FIXED
-                }
-            )
-        }
+        _state.update { it.copy(type = type) }
     }
 
     fun updateTargetValue(targetValue: String) {
@@ -177,7 +170,21 @@ class HabitFormViewModel(
     }
 
     fun updateReminderType(reminderType: ReminderType) {
-        _state.update { it.copy(reminderType = reminderType) }
+        _state.update {
+            when (reminderType) {
+                ReminderType.PERIODIC -> it.copy(
+                    reminderType = reminderType,
+                    startTime = it.startTime ?: DEFAULT_PERIODIC_START_TIME,
+                    endTime = it.endTime ?: DEFAULT_PERIODIC_END_TIME
+                )
+
+                ReminderType.FIXED -> it.copy(
+                    reminderType = reminderType,
+                    startTime = null,
+                    endTime = null
+                )
+            }
+        }
     }
 
     fun updateReminderTime(hour: Int, minute: Int) {
@@ -194,6 +201,14 @@ class HabitFormViewModel(
 
     fun updateEndTime(time: LocalTime) {
         _state.update { it.copy(endTime = time) }
+    }
+
+    fun updatePeriodicStartTime(hour: Int, minute: Int) {
+        _state.update { it.copy(startTime = LocalTime(hour, minute)) }
+    }
+
+    fun updatePeriodicEndTime(hour: Int, minute: Int) {
+        _state.update { it.copy(endTime = LocalTime(hour, minute)) }
     }
 
     fun discardDraft() {
@@ -347,7 +362,19 @@ class HabitFormViewModel(
             )
         }
 
-        val existingReminders = habitRepository.getRemindersForHabit(habitId)
+        val existingReminders: List<HabitReminder> = habitRepository.getRemindersForHabit(habitId)
+        val today: LocalDate =
+            Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
+        val todayInstance: HabitInstance? =
+            habitInstanceRepository.getInstanceForHabitAndDate(habitId, today)
+
+        // Cancel existing alarms before deleting reminders (need reminder config for periodic cancellation)
+        if (todayInstance != null) {
+            val existingReminder: HabitReminder? = existingReminders.firstOrNull()
+            habitNotification.cancelReminder(todayInstance.id, existingReminder)
+        }
+
+        // Now safe to delete old reminders
         existingReminders.forEach { habitRepository.deleteReminder(it.id) }
 
         if (reminder != null) {
@@ -356,11 +383,7 @@ class HabitFormViewModel(
             )
         }
 
-        val today: LocalDate =
-            Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
-        val todayInstance: HabitInstance? =
-            habitInstanceRepository.getInstanceForHabitAndDate(habitId, today)
-
+        // Update today's instance target value if needed
         if (todayInstance != null) {
             val newTargetValue: Int? = if (state.type == HabitType.QUANTITATIVE) {
                 state.targetValue.toIntOrNull()
@@ -368,16 +391,15 @@ class HabitFormViewModel(
                 null
             }
             habitInstanceRepository.updateInstanceTargetValue(todayInstance.id, newTargetValue)
+        }
 
-            habitNotification.cancelReminder(todayInstance.id)
-
-            if (reminder != null) {
-                val savedReminders: List<HabitReminder> =
-                    habitRepository.getRemindersForHabit(habitId)
-                val savedReminder: HabitReminder? = savedReminders.firstOrNull()
-                if (savedReminder != null) {
-                    habitNotification.scheduleReminder(updatedHabit, savedReminder, todayInstance)
-                }
+        // Reschedule with new config
+        if (todayInstance != null && reminder != null) {
+            val savedReminders: List<HabitReminder> =
+                habitRepository.getRemindersForHabit(habitId)
+            val savedReminder: HabitReminder? = savedReminders.firstOrNull()
+            if (savedReminder != null) {
+                habitNotification.scheduleReminder(updatedHabit, savedReminder, todayInstance)
             }
         }
     }
