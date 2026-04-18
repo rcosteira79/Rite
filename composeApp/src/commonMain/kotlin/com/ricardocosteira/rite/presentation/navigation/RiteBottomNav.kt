@@ -38,9 +38,9 @@ fun RiteBottomNav(
     val hapticController: HapticController = rememberHapticController()
 
     val navItemColors = NavigationBarItemDefaults.colors(
-        indicatorColor = RiteAppTheme.colorScheme.primaryContainer,
-        selectedIconColor = RiteAppTheme.colorScheme.onPrimaryContainer,
-        selectedTextColor = RiteAppTheme.colorScheme.primary
+        indicatorColor = RiteAppTheme.colors.primaryContainer,
+        selectedIconColor = RiteAppTheme.colors.onPrimaryContainer,
+        selectedTextColor = RiteAppTheme.colors.primary
     )
 
     NavigationBar(modifier = modifier) {

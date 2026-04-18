@@ -106,7 +106,7 @@ private fun CalendarScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = RiteAppTheme.colorScheme.primaryContainer
+                    containerColor = RiteAppTheme.colors.primaryContainer
                 )
             ) {
                 Row(
@@ -119,24 +119,24 @@ private fun CalendarScreen(
                         Text(
                             text = "${state.perfectDaysCount}",
                             style = RiteAppTheme.typography.headlineMedium,
-                            color = RiteAppTheme.colorScheme.onPrimaryContainer
+                            color = RiteAppTheme.colors.onPrimaryContainer
                         )
                         Text(
                             text = stringResource(Res.string.calendar_stats_perfect_days),
                             style = RiteAppTheme.typography.bodySmall,
-                            color = RiteAppTheme.colorScheme.onPrimaryContainer
+                            color = RiteAppTheme.colors.onPrimaryContainer
                         )
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "${state.totalDaysTracked}",
                             style = RiteAppTheme.typography.headlineMedium,
-                            color = RiteAppTheme.colorScheme.onPrimaryContainer
+                            color = RiteAppTheme.colors.onPrimaryContainer
                         )
                         Text(
                             text = stringResource(Res.string.calendar_stats_days_tracked),
                             style = RiteAppTheme.typography.bodySmall,
-                            color = RiteAppTheme.colorScheme.onPrimaryContainer
+                            color = RiteAppTheme.colors.onPrimaryContainer
                         )
                     }
                 }
@@ -188,7 +188,7 @@ private fun CalendarScreen(
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Center,
                         style = RiteAppTheme.typography.labelSmall,
-                        color = RiteAppTheme.colorScheme.onSurfaceVariant
+                        color = RiteAppTheme.colors.onSurfaceVariant
                     )
                 }
             }
@@ -241,15 +241,15 @@ private fun CalendarScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     LegendItem(
-                        color = RiteAppTheme.colorScheme.primary,
+                        color = RiteAppTheme.colors.primary,
                         label = stringResource(Res.string.calendar_legend_perfect)
                     )
                     LegendItem(
-                        color = RiteAppTheme.colorScheme.tertiary,
+                        color = RiteAppTheme.colors.tertiary,
                         label = stringResource(Res.string.calendar_legend_best_effort)
                     )
                     LegendItem(
-                        color = RiteAppTheme.colorScheme.secondary,
+                        color = RiteAppTheme.colors.secondary,
                         label = stringResource(Res.string.calendar_legend_partial)
                     )
                 }
@@ -258,15 +258,15 @@ private fun CalendarScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     LegendItem(
-                        color = RiteAppTheme.colorScheme.error.copy(alpha = 0.7f),
+                        color = RiteAppTheme.colors.error.copy(alpha = 0.7f),
                         label = stringResource(Res.string.calendar_legend_rough_day)
                     )
                     LegendItem(
-                        color = RiteAppTheme.colorScheme.error,
+                        color = RiteAppTheme.colors.error,
                         label = stringResource(Res.string.common_failed)
                     )
                     LegendItem(
-                        color = RiteAppTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        color = RiteAppTheme.colors.surfaceVariant.copy(alpha = 0.5f),
                         label = stringResource(Res.string.calendar_legend_future)
                     )
                 }
@@ -278,32 +278,32 @@ private fun CalendarScreen(
 @Composable
 private fun CalendarDayCell(day: CalendarDayUiModel, onClick: () -> Unit) {
     val backgroundColor = when (day.classification) {
-        DayClassification.PERFECT -> RiteAppTheme.colorScheme.primary
-        DayClassification.BEST_EFFORT -> RiteAppTheme.colorScheme.tertiary
-        DayClassification.PARTIAL -> RiteAppTheme.colorScheme.secondary
-        DayClassification.ROUGH_DAY -> RiteAppTheme.colorScheme.error.copy(alpha = 0.7f)
-        DayClassification.FAILED -> RiteAppTheme.colorScheme.error
-        DayClassification.FUTURE -> RiteAppTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        DayClassification.NONE -> RiteAppTheme.colorScheme.surfaceVariant
+        DayClassification.PERFECT -> RiteAppTheme.colors.primary
+        DayClassification.BEST_EFFORT -> RiteAppTheme.colors.tertiary
+        DayClassification.PARTIAL -> RiteAppTheme.colors.secondary
+        DayClassification.ROUGH_DAY -> RiteAppTheme.colors.error.copy(alpha = 0.7f)
+        DayClassification.FAILED -> RiteAppTheme.colors.error
+        DayClassification.FUTURE -> RiteAppTheme.colors.surfaceVariant.copy(alpha = 0.5f)
+        DayClassification.NONE -> RiteAppTheme.colors.surfaceVariant
     }
 
     val textColor = when (day.classification) {
-        DayClassification.PERFECT -> RiteAppTheme.colorScheme.onPrimary
+        DayClassification.PERFECT -> RiteAppTheme.colors.onPrimary
 
-        DayClassification.BEST_EFFORT -> RiteAppTheme.colorScheme.onTertiary
+        DayClassification.BEST_EFFORT -> RiteAppTheme.colors.onTertiary
 
-        DayClassification.PARTIAL -> RiteAppTheme.colorScheme.onSecondary
+        DayClassification.PARTIAL -> RiteAppTheme.colors.onSecondary
 
-        DayClassification.ROUGH_DAY -> RiteAppTheme.colorScheme.onError
+        DayClassification.ROUGH_DAY -> RiteAppTheme.colors.onError
 
-        DayClassification.FAILED -> RiteAppTheme.colorScheme.onError
+        DayClassification.FAILED -> RiteAppTheme.colors.onError
 
         DayClassification.FUTURE ->
-            RiteAppTheme.colorScheme.onSurfaceVariant.copy(
+            RiteAppTheme.colors.onSurfaceVariant.copy(
                 alpha = 0.5f
             )
 
-        DayClassification.NONE -> RiteAppTheme.colorScheme.onSurfaceVariant
+        DayClassification.NONE -> RiteAppTheme.colors.onSurfaceVariant
     }
 
     val isClickable =
@@ -340,7 +340,7 @@ private fun LegendItem(color: androidx.compose.ui.graphics.Color, label: String)
         Text(
             text = label,
             style = RiteAppTheme.typography.labelSmall,
-            color = RiteAppTheme.colorScheme.onSurfaceVariant
+            color = RiteAppTheme.colors.onSurfaceVariant
         )
     }
 }

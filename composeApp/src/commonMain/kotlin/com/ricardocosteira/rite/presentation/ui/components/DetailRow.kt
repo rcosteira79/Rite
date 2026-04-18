@@ -46,7 +46,7 @@ fun DetailRow(
         if (showTopDivider) {
             HorizontalDivider(
                 thickness = 1.dp,
-                color = RiteAppTheme.colorScheme.outlineVariant
+                color = RiteAppTheme.colors.outlineVariant
             )
         }
 
@@ -71,12 +71,12 @@ fun DetailRow(
                 modifier = Modifier
                     .size(IconContainerSize)
                     .clip(CircleShape)
-                    .background(RiteAppTheme.colorScheme.surfaceContainerLow)
+                    .background(RiteAppTheme.colors.surfaceContainerLow)
                     .then(
                         if (isDarkTheme) {
                             Modifier.border(
                                 1.dp,
-                                RiteAppTheme.colorScheme.outlineVariant,
+                                RiteAppTheme.colors.outlineVariant,
                                 CircleShape
                             )
                         } else {
@@ -98,13 +98,13 @@ fun DetailRow(
                     text = title,
                     style = RiteAppTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = RiteAppTheme.colorScheme.onSurface
+                    color = RiteAppTheme.colors.onSurface
                 )
                 if (subtitle.isNotEmpty()) {
                     Text(
                         text = subtitle,
                         style = RiteAppTheme.typography.bodySmall,
-                        color = RiteAppTheme.colorScheme.onSurfaceVariant
+                        color = RiteAppTheme.colors.onSurfaceVariant
                     )
                 }
             }

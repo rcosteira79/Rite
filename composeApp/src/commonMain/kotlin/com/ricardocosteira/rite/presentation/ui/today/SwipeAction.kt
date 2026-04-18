@@ -34,15 +34,15 @@ enum class SwipeAction(
 
     @Composable
     fun backgroundColor(): Color = when (this) {
-        DELETE -> RiteAppTheme.colorScheme.errorContainer
-        EDIT -> RiteAppTheme.colorScheme.secondaryContainer
-        REST -> RiteAppTheme.colorScheme.surface
+        DELETE -> RiteAppTheme.colors.errorContainer
+        EDIT -> RiteAppTheme.colors.secondaryContainer
+        REST -> RiteAppTheme.colors.surface
     }
 
     @Composable
     fun iconTint(): Color = when (this) {
-        DELETE -> RiteAppTheme.colorScheme.onErrorContainer
-        EDIT -> RiteAppTheme.colorScheme.onSecondaryContainer
-        REST -> RiteAppTheme.colorScheme.onSurface
+        DELETE -> RiteAppTheme.colors.onErrorContainer
+        EDIT -> RiteAppTheme.colors.onSecondaryContainer
+        REST -> RiteAppTheme.colors.onSurface
     }
 }

@@ -80,7 +80,7 @@ fun HeatmapGrid(heatmapData: List<HeatmapDay>, modifier: Modifier = Modifier) {
                                 Text(
                                     text = label,
                                     style = RiteAppTheme.typography.labelSmall,
-                                    color = RiteAppTheme.colorScheme.onSurfaceVariant
+                                    color = RiteAppTheme.colors.onSurfaceVariant
                                 )
                             }
                         }
@@ -117,16 +117,16 @@ fun HeatmapGrid(heatmapData: List<HeatmapDay>, modifier: Modifier = Modifier) {
 
 @Composable
 private fun HeatmapCell(day: HeatmapDay?, size: Dp, modifier: Modifier = Modifier) {
-    val colorScheme = RiteAppTheme.colorScheme
+    val colorScheme = RiteAppTheme.colors
     val color = when {
-        day == null -> colorScheme.noData
-        day.status == HabitStatus.FAILED -> colorScheme.failed
-        day.status == HabitStatus.SKIPPED -> colorScheme.skipped
-        day.status == HabitStatus.SUSPENDED -> colorScheme.noData
-        day.completionPercentage >= 1.0f -> colorScheme.perfect
-        day.completionPercentage >= 0.5f -> colorScheme.bestEffort
-        day.completionPercentage > 0f -> colorScheme.partial
-        else -> colorScheme.noData
+        day == null -> colorScheme.dayNone
+        day.status == HabitStatus.FAILED -> colorScheme.dayFailed
+        day.status == HabitStatus.SKIPPED -> colorScheme.daySkipped
+        day.status == HabitStatus.SUSPENDED -> colorScheme.dayNone
+        day.completionPercentage >= 1.0f -> colorScheme.dayPerfect
+        day.completionPercentage >= 0.5f -> colorScheme.dayBestEffort
+        day.completionPercentage > 0f -> colorScheme.dayPartial
+        else -> colorScheme.dayNone
     }
 
     Box(
@@ -138,34 +138,34 @@ private fun HeatmapCell(day: HeatmapDay?, size: Dp, modifier: Modifier = Modifie
 
 @Composable
 private fun HeatmapLegend(cellSize: Dp, modifier: Modifier = Modifier) {
-    val colorScheme = RiteAppTheme.colorScheme
+    val colorScheme = RiteAppTheme.colors
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         LegendItem(
-            color = colorScheme.perfect,
+            color = colorScheme.dayPerfect,
             label = stringResource(Res.string.habit_detail_heatmap_perfect),
             size = cellSize
         )
         LegendItem(
-            color = colorScheme.bestEffort,
+            color = colorScheme.dayBestEffort,
             label = stringResource(Res.string.habit_detail_heatmap_best_effort),
             size = cellSize
         )
         LegendItem(
-            color = colorScheme.partial,
+            color = colorScheme.dayPartial,
             label = stringResource(Res.string.habit_detail_heatmap_partial),
             size = cellSize
         )
         LegendItem(
-            color = colorScheme.failed,
+            color = colorScheme.dayFailed,
             label = stringResource(Res.string.habit_detail_heatmap_failed),
             size = cellSize
         )
         LegendItem(
-            color = colorScheme.skipped,
+            color = colorScheme.daySkipped,
             label = stringResource(Res.string.habit_detail_heatmap_skipped),
             size = cellSize
         )
@@ -192,7 +192,7 @@ private fun LegendItem(
         Text(
             text = label,
             style = RiteAppTheme.typography.labelSmall,
-            color = RiteAppTheme.colorScheme.onSurfaceVariant
+            color = RiteAppTheme.colors.onSurfaceVariant
         )
     }
 }

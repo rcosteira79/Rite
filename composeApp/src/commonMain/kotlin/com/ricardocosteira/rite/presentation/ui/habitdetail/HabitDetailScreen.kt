@@ -103,7 +103,7 @@ fun HabitDetailScreen(
 ) {
     val scrollState: ScrollState = rememberScrollState()
     val isScrolled: Boolean by remember { derivedStateOf { scrollState.value > 0 } }
-    val filledColor: Color = RiteAppTheme.colorScheme.surfaceContainerHighest
+    val filledColor: Color = RiteAppTheme.colors.surfaceContainerHighest
     val targetColor: Color = if (isScrolled) filledColor else filledColor.copy(alpha = 0f)
     val iconContainerColor: Color by animateColorAsState(
         targetValue = targetColor,
@@ -113,7 +113,7 @@ fun HabitDetailScreen(
 
     Scaffold(
         modifier = modifier,
-        containerColor = RiteAppTheme.colorScheme.background,
+        containerColor = RiteAppTheme.colors.background,
         topBar = {
             TopAppBar(
                 title = {},
@@ -170,7 +170,7 @@ fun HabitDetailScreen(
                             contentDescription = stringResource(
                                 Res.string.habit_form_cd_delete
                             ),
-                            tint = RiteAppTheme.colorScheme.error,
+                            tint = RiteAppTheme.colors.error,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -205,7 +205,7 @@ fun HabitDetailScreen(
                         stringResource(Res.string.habit_detail_category_quantitative)
                     },
                     style = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 1.sp),
-                    color = RiteAppTheme.colorScheme.onSurfaceVariant
+                    color = RiteAppTheme.colors.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -216,7 +216,7 @@ fun HabitDetailScreen(
                     style = RiteAppTheme.typography.headlineLarge.copy(
                         fontWeight = FontWeight.ExtraBold
                     ),
-                    color = RiteAppTheme.colorScheme.onSurface
+                    color = RiteAppTheme.colors.onSurface
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -253,7 +253,7 @@ fun HabitDetailScreen(
                 Text(
                     text = stringResource(Res.string.habit_detail_heatmap_title),
                     style = RiteAppTheme.typography.titleMedium,
-                    color = RiteAppTheme.colorScheme.primary
+                    color = RiteAppTheme.colors.primary
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -291,12 +291,12 @@ private fun ProgressRingCard(state: HabitDetailState, modifier: Modifier = Modif
         label = "detail-progress-ring"
     )
 
-    val trackColor = RiteAppTheme.colorScheme.surfaceContainerHighest
-    val progressColor = RiteAppTheme.colorScheme.primary
+    val trackColor = RiteAppTheme.colors.surfaceContainerHighest
+    val progressColor = RiteAppTheme.colors.primary
 
     Surface(
         shape = RoundedCornerShape(CARD_CORNER),
-        color = RiteAppTheme.colorScheme.surfaceContainerLow,
+        color = RiteAppTheme.colors.surfaceContainerLow,
         modifier = modifier.fillMaxWidth()
     ) {
         Column(
@@ -342,7 +342,7 @@ private fun ProgressRingCard(state: HabitDetailState, modifier: Modifier = Modif
                     style = RiteAppTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.ExtraBold
                     ),
-                    color = RiteAppTheme.colorScheme.primary
+                    color = RiteAppTheme.colors.primary
                 )
             }
 
@@ -357,7 +357,7 @@ private fun ProgressRingCard(state: HabitDetailState, modifier: Modifier = Modif
                         habit.unit?.uppercase() ?: ""
                     ),
                     style = RiteAppTheme.typography.bodySmall,
-                    color = RiteAppTheme.colorScheme.onSurfaceVariant
+                    color = RiteAppTheme.colors.onSurfaceVariant
                 )
             }
         }
@@ -397,7 +397,7 @@ private fun StatsRow(state: HabitDetailState, modifier: Modifier = Modifier) {
 private fun StatCard(value: String, label: String, suffix: String?, modifier: Modifier = Modifier) {
     Surface(
         shape = RoundedCornerShape(CARD_CORNER),
-        color = RiteAppTheme.colorScheme.surfaceContainerLow,
+        color = RiteAppTheme.colors.surfaceContainerLow,
         modifier = modifier
     ) {
         Column(
@@ -407,13 +407,13 @@ private fun StatCard(value: String, label: String, suffix: String?, modifier: Mo
             Text(
                 text = label.uppercase(),
                 style = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 0.5.sp),
-                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                color = RiteAppTheme.colors.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = if (suffix != null) "$value $suffix" else value,
                 style = RiteAppTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                color = RiteAppTheme.colorScheme.onSurface
+                color = RiteAppTheme.colors.onSurface
             )
         }
     }
@@ -430,7 +430,7 @@ private fun SkipLimitsCard(state: HabitDetailState, modifier: Modifier = Modifie
 
     Surface(
         shape = RoundedCornerShape(CARD_CORNER),
-        color = RiteAppTheme.colorScheme.surfaceContainerLow,
+        color = RiteAppTheme.colors.surfaceContainerLow,
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
@@ -442,20 +442,20 @@ private fun SkipLimitsCard(state: HabitDetailState, modifier: Modifier = Modifie
                 Text(
                     text = stringResource(Res.string.habit_detail_enforcement_limits),
                     style = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 0.5.sp),
-                    color = RiteAppTheme.colorScheme.onSurfaceVariant
+                    color = RiteAppTheme.colors.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = text,
                     style = RiteAppTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                    color = RiteAppTheme.colorScheme.primary
+                    color = RiteAppTheme.colors.primary
                 )
             }
             Icon(
                 imageVector = Icons.Outlined.Lock,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
-                tint = RiteAppTheme.colorScheme.onSurfaceVariant
+                tint = RiteAppTheme.colors.onSurfaceVariant
             )
         }
     }
@@ -556,7 +556,7 @@ private fun QuantitativeActions(
             // Quantity stepper
             Surface(
                 shape = RoundedCornerShape(CARD_CORNER),
-                color = RiteAppTheme.colorScheme.surfaceContainerLow,
+                color = RiteAppTheme.colors.surfaceContainerLow,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -576,14 +576,14 @@ private fun QuantitativeActions(
                             style = RiteAppTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.ExtraBold
                             ),
-                            color = RiteAppTheme.colorScheme.onSurface
+                            color = RiteAppTheme.colors.onSurface
                         )
                         Text(
                             text = habit.unit?.uppercase() ?: "",
                             style = RiteAppTheme.typography.labelSmall.copy(
                                 letterSpacing = 0.5.sp
                             ),
-                            color = RiteAppTheme.colorScheme.onSurfaceVariant
+                            color = RiteAppTheme.colors.onSurfaceVariant
                         )
                     }
 
@@ -618,7 +618,7 @@ private fun StepperButton(
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(12.dp),
-        color = RiteAppTheme.colorScheme.surface,
+        color = RiteAppTheme.colors.surface,
         enabled = enabled,
         modifier = modifier.size(STEPPER_BUTTON_SIZE)
     ) {
@@ -627,9 +627,9 @@ private fun StepperButton(
                 text = text,
                 style = RiteAppTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                 color = if (enabled) {
-                    RiteAppTheme.colorScheme.onSurface
+                    RiteAppTheme.colors.onSurface
                 } else {
-                    RiteAppTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    RiteAppTheme.colors.onSurface.copy(alpha = 0.38f)
                 }
             )
         }
@@ -646,7 +646,7 @@ private fun IconSurface(
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(12.dp),
-        color = RiteAppTheme.colorScheme.surfaceContainerHigh,
+        color = RiteAppTheme.colors.surfaceContainerHigh,
         modifier = modifier.size(STEPPER_BUTTON_SIZE)
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
@@ -654,7 +654,7 @@ private fun IconSurface(
                 imageVector = icon,
                 contentDescription = contentDescription,
                 modifier = Modifier.size(20.dp),
-                tint = RiteAppTheme.colorScheme.onSurfaceVariant
+                tint = RiteAppTheme.colors.onSurfaceVariant
             )
         }
     }
@@ -668,9 +668,9 @@ private fun SkipRow(
     trailingButton: @Composable (() -> Unit)? = null
 ) {
     val contentColor = if (!isSkipLocked) {
-        RiteAppTheme.colorScheme.onSecondaryContainer
+        RiteAppTheme.colors.onSecondaryContainer
     } else {
-        RiteAppTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.38f)
+        RiteAppTheme.colors.onSecondaryContainer.copy(alpha = 0.38f)
     }
 
     Row(
@@ -681,7 +681,7 @@ private fun SkipRow(
         Surface(
             onClick = onSkip,
             shape = RoundedCornerShape(CARD_CORNER),
-            color = RiteAppTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
+            color = RiteAppTheme.colors.secondaryContainer.copy(alpha = 0.4f),
             enabled = !isSkipLocked,
             modifier = Modifier.weight(1f).height(STEPPER_BUTTON_SIZE)
         ) {

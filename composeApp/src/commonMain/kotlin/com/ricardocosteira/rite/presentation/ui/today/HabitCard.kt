@@ -117,7 +117,7 @@ private fun PendingHabitCard(
 
     Surface(
         shape = RoundedCornerShape(CARD_CORNER_RADIUS),
-        color = RiteAppTheme.colorScheme.surfaceContainerLow,
+        color = RiteAppTheme.colors.surfaceContainerLow,
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(CARD_CORNER_RADIUS))
@@ -142,7 +142,7 @@ private fun PendingHabitCard(
                                 style = RiteAppTheme.typography.headlineSmall.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
-                                color = RiteAppTheme.colorScheme.primary
+                                color = RiteAppTheme.colors.primary
                             )
                             Spacer(modifier = Modifier.width(2.dp))
                             Text(
@@ -150,7 +150,7 @@ private fun PendingHabitCard(
                                 style = RiteAppTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Medium
                                 ),
-                                color = RiteAppTheme.colorScheme.onSurfaceVariant,
+                                color = RiteAppTheme.colors.onSurfaceVariant,
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                         }
@@ -162,7 +162,7 @@ private fun PendingHabitCard(
                             fontSize = HABIT_NAME_SIZE,
                             fontWeight = FontWeight.Bold
                         ),
-                        color = RiteAppTheme.colorScheme.onSurface,
+                        color = RiteAppTheme.colors.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -172,7 +172,7 @@ private fun PendingHabitCard(
                         Text(
                             text = habit.description,
                             style = RiteAppTheme.typography.bodySmall,
-                            color = RiteAppTheme.colorScheme.onSurfaceVariant,
+                            color = RiteAppTheme.colors.onSurfaceVariant,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -192,7 +192,7 @@ private fun PendingHabitCard(
                         )
                         Surface(
                             shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
-                            color = RiteAppTheme.colorScheme.primaryContainer,
+                            color = RiteAppTheme.colors.primaryContainer,
                             onClick = onIncrementProgress
                         ) {
                             Text(
@@ -200,14 +200,14 @@ private fun PendingHabitCard(
                                 style = RiteAppTheme.typography.labelMedium.copy(
                                     fontWeight = FontWeight.Bold
                                 ),
-                                color = RiteAppTheme.colorScheme.onPrimaryContainer,
+                                color = RiteAppTheme.colors.onPrimaryContainer,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                             )
                         }
                     } else {
                         Surface(
                             shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
-                            color = RiteAppTheme.colorScheme.primaryContainer,
+                            color = RiteAppTheme.colors.primaryContainer,
                             onClick = onComplete
                         ) {
                             Icon(
@@ -215,7 +215,7 @@ private fun PendingHabitCard(
                                 contentDescription = stringResource(
                                     Res.string.today_action_complete
                                 ),
-                                tint = RiteAppTheme.colorScheme.onPrimaryContainer,
+                                tint = RiteAppTheme.colors.onPrimaryContainer,
                                 modifier = Modifier.padding(8.dp)
                             )
                         }
@@ -227,7 +227,7 @@ private fun PendingHabitCard(
                             style = RiteAppTheme.typography.labelMedium.copy(
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = RiteAppTheme.colorScheme.onSurfaceVariant,
+                            color = RiteAppTheme.colors.onSurfaceVariant,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(BUTTON_CORNER_RADIUS))
                                 .clickable(onClick = onSkip)
@@ -244,14 +244,14 @@ private fun PendingHabitCard(
                         .fillMaxWidth()
                         .height(PROGRESS_BAR_HEIGHT)
                         .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                        .background(RiteAppTheme.colorScheme.surfaceContainerHighest)
+                        .background(RiteAppTheme.colors.surfaceContainerHighest)
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(fraction = habit.progressPercentage)
                             .height(PROGRESS_BAR_HEIGHT)
                             .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                            .background(RiteAppTheme.colorScheme.primary.copy(alpha = 0.4f))
+                            .background(RiteAppTheme.colors.primary.copy(alpha = 0.4f))
                     )
                 }
             }
@@ -271,7 +271,7 @@ private fun ResolvedHabitRow(
 
     Surface(
         shape = RoundedCornerShape(RESOLVED_CORNER_RADIUS),
-        color = RiteAppTheme.colorScheme.primaryContainer.copy(alpha = rowAlpha),
+        color = RiteAppTheme.colors.primaryContainer.copy(alpha = rowAlpha),
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
@@ -287,13 +287,13 @@ private fun ResolvedHabitRow(
                 modifier = Modifier
                     .size(RESOLVED_ICON_SIZE)
                     .clip(CircleShape)
-                    .background(RiteAppTheme.colorScheme.primaryContainer),
+                    .background(RiteAppTheme.colors.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
-                    tint = RiteAppTheme.colorScheme.onPrimaryContainer,
+                    tint = RiteAppTheme.colors.onPrimaryContainer,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -307,7 +307,7 @@ private fun ResolvedHabitRow(
                     style = RiteAppTheme.typography.titleSmall.copy(
                         fontWeight = FontWeight.Bold
                     ),
-                    color = RiteAppTheme.colorScheme.onPrimaryContainer,
+                    color = RiteAppTheme.colors.onPrimaryContainer,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = if (isFailed) Modifier.alpha(FAILED_ALPHA) else Modifier
@@ -340,7 +340,7 @@ private fun ResolvedHabitRow(
                 Text(
                     text = subtitle,
                     style = RiteAppTheme.typography.labelSmall,
-                    color = RiteAppTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                    color = RiteAppTheme.colors.onPrimaryContainer.copy(alpha = 0.7f),
                     modifier = if (isFailed) Modifier.alpha(FAILED_ALPHA) else Modifier
                 )
             }
@@ -351,7 +351,7 @@ private fun ResolvedHabitRow(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.Undo,
                         contentDescription = stringResource(Res.string.today_cd_undo),
-                        tint = RiteAppTheme.colorScheme.onPrimaryContainer
+                        tint = RiteAppTheme.colors.onPrimaryContainer
                     )
                 }
             }

@@ -78,7 +78,7 @@ fun StrictnessStep(
         Text(
             text = stringResource(Res.string.strictness_heading),
             style = RiteAppTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold),
-            color = RiteAppTheme.colorScheme.onSurface,
+            color = RiteAppTheme.colors.onSurface,
             modifier = Modifier.semantics { heading() }
         )
 
@@ -89,7 +89,7 @@ fun StrictnessStep(
                 .width(36.dp)
                 .height(3.dp)
                 .background(
-                    color = RiteAppTheme.colorScheme.primary,
+                    color = RiteAppTheme.colors.primary,
                     shape = RoundedCornerShape(2.dp)
                 )
         )
@@ -99,7 +99,7 @@ fun StrictnessStep(
         Text(
             text = stringResource(Res.string.strictness_subtext),
             style = RiteAppTheme.typography.bodyMedium,
-            color = RiteAppTheme.colorScheme.onSurfaceVariant
+            color = RiteAppTheme.colors.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -126,9 +126,9 @@ private fun PresetCard(
 ) {
     val backgroundColor by animateColorAsState(
         targetValue = if (isSelected) {
-            RiteAppTheme.colorScheme.primaryContainer
+            RiteAppTheme.colors.primaryContainer
         } else {
-            RiteAppTheme.colorScheme.surfaceContainerLow
+            RiteAppTheme.colors.surfaceContainerLow
         },
         animationSpec = if (reduceMotion) snap() else tween(200),
         label = "presetCardBackground"
@@ -159,9 +159,9 @@ private fun PresetCard(
             .border(
                 width = 1.dp,
                 color = if (isSelected) {
-                    RiteAppTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f)
+                    RiteAppTheme.colors.onPrimaryContainer.copy(alpha = 0.15f)
                 } else {
-                    RiteAppTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                    RiteAppTheme.colors.outlineVariant.copy(alpha = 0.3f)
                 },
                 shape = RoundedCornerShape(cornerRadius)
             ).background(backgroundColor)
@@ -186,7 +186,7 @@ private fun PresetCard(
     ) {
         if (isSelected) {
             // onPrimaryContainer: Forest Discipline #FFFFFF / Stoic Night #E5E2DF
-            val cardContent = RiteAppTheme.colorScheme.onPrimaryContainer
+            val cardContent = RiteAppTheme.colors.onPrimaryContainer
             // === SELECTED STATE ===
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -266,9 +266,9 @@ private fun PresetCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 val iconTint = if (preset == OnboardingStrictnessPreset.UNWAVERING) {
-                    RiteAppTheme.colorScheme.error
+                    RiteAppTheme.colors.error
                 } else {
-                    RiteAppTheme.colorScheme.onSurfaceVariant
+                    RiteAppTheme.colors.onSurfaceVariant
                 }
                 Icon(
                     imageVector = preset.icon(),
@@ -283,19 +283,19 @@ private fun PresetCard(
                         style = RiteAppTheme.typography.titleSmall.copy(
                             fontWeight = FontWeight.Bold
                         ),
-                        color = RiteAppTheme.colorScheme.onSurface
+                        color = RiteAppTheme.colors.onSurface
                     )
                     Text(
                         text = preset.collapsedSummary,
                         style = RiteAppTheme.typography.labelSmall,
-                        color = RiteAppTheme.colorScheme.onSurfaceVariant
+                        color = RiteAppTheme.colors.onSurfaceVariant
                     )
                 }
                 Icon(
                     imageVector = Icons.Outlined.ExpandMore,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    tint = RiteAppTheme.colorScheme.outlineVariant
+                    tint = RiteAppTheme.colors.outlineVariant
                 )
             }
         }

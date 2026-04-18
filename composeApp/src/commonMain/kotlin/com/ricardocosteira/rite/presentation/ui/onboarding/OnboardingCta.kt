@@ -124,7 +124,7 @@ internal fun FirstHabitStepCta(
             Text(
                 text = stringResource(Res.string.first_habit_button_skip),
                 style = RiteAppTheme.typography.labelLarge,
-                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                color = RiteAppTheme.colors.onSurfaceVariant
             )
         }
     }
@@ -148,7 +148,7 @@ internal fun NotificationPermissionStepCta(
             Text(
                 text = stringResource(Res.string.notifications_cta_later),
                 style = RiteAppTheme.typography.labelLarge,
-                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                color = RiteAppTheme.colors.onSurfaceVariant
             )
         }
     }

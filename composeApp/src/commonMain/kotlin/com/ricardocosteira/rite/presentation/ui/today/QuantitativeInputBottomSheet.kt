@@ -69,7 +69,7 @@ fun QuantitativeInputBottomSheet(
             Text(
                 text = name,
                 style = RiteAppTheme.typography.bodyLarge,
-                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                color = RiteAppTheme.colors.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -91,7 +91,7 @@ fun QuantitativeInputBottomSheet(
                         )
                     },
                     style = RiteAppTheme.typography.bodyMedium,
-                    color = RiteAppTheme.colorScheme.onSurfaceVariant
+                    color = RiteAppTheme.colors.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))

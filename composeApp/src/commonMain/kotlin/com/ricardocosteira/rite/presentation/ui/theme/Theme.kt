@@ -81,13 +81,13 @@ private val ForestDarkOnBackground = Color(0xFFE5E2DF)
 data class RiteColorScheme(
     private val material: ColorScheme,
     // Day classification colours — heatmap, calendar, etc.
-    val perfect: Color,
-    val bestEffort: Color,
-    val partial: Color,
-    val roughDay: Color,
-    val failed: Color,
-    val noData: Color,
-    val skipped: Color
+    val dayPerfect: Color,
+    val dayBestEffort: Color,
+    val dayPartial: Color,
+    val dayRoughDay: Color,
+    val dayFailed: Color,
+    val dayNone: Color,
+    val daySkipped: Color
 ) {
     // M3 delegation
     val primary: Color get() = material.primary
@@ -191,30 +191,30 @@ internal val DarkColorScheme = darkColorScheme(
 
 internal val LightRiteColorScheme = RiteColorScheme(
     material = LightColorScheme,
-    perfect = Color(0xFF4CAF7A),
-    bestEffort = Color(0xFF26A8BF),
-    partial = Color(0xFF5C7CDB),
-    roughDay = Color(0xFFCD8B62),
-    failed = Color(0xFFE57373),
-    noData = Color(0xFFE0E0E0),
-    skipped = Color(0xFFBDBDBD)
+    dayPerfect = Color(0xFF4CAF7A),
+    dayBestEffort = Color(0xFF26A8BF),
+    dayPartial = Color(0xFF5C7CDB),
+    dayRoughDay = Color(0xFFCD8B62),
+    dayFailed = Color(0xFFE57373),
+    dayNone = Color(0xFFE0E0E0),
+    daySkipped = Color(0xFFBDBDBD)
 )
 
 internal val DarkRiteColorScheme = RiteColorScheme(
     material = DarkColorScheme,
-    perfect = Color(0xFF2D6B4A),
-    bestEffort = Color(0xFF1F7A8A),
-    partial = Color(0xFF3B5998),
-    roughDay = Color(0xFF8B5E3C),
-    failed = Color(0xFF8B3A3A),
-    noData = Color(0xFF333333),
-    skipped = Color(0xFF5A5A5A)
+    dayPerfect = Color(0xFF2D6B4A),
+    dayBestEffort = Color(0xFF1F7A8A),
+    dayPartial = Color(0xFF3B5998),
+    dayRoughDay = Color(0xFF8B5E3C),
+    dayFailed = Color(0xFF8B3A3A),
+    dayNone = Color(0xFF333333),
+    daySkipped = Color(0xFF5A5A5A)
 )
 
 val LocalRiteColorScheme = staticCompositionLocalOf { DarkRiteColorScheme }
 
 object RiteAppTheme {
-    val colorScheme: RiteColorScheme
+    val colors: RiteColorScheme
         @Composable @ReadOnlyComposable
         get() = LocalRiteColorScheme.current
 

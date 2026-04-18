@@ -64,8 +64,8 @@ private val HabitTypeCardIconSize = 26.dp
 
 @Composable
 private fun onboardingTextFieldColors(): TextFieldColors = TextFieldDefaults.colors(
-    focusedContainerColor = RiteAppTheme.colorScheme.surfaceContainerHighest,
-    unfocusedContainerColor = RiteAppTheme.colorScheme.surfaceContainerHighest,
+    focusedContainerColor = RiteAppTheme.colors.surfaceContainerHighest,
+    unfocusedContainerColor = RiteAppTheme.colors.surfaceContainerHighest,
     focusedIndicatorColor = Color.Transparent,
     unfocusedIndicatorColor = Color.Transparent,
     disabledIndicatorColor = Color.Transparent
@@ -94,7 +94,7 @@ fun FirstHabitStep(
         Text(
             text = stringResource(Res.string.first_habit_heading),
             style = RiteAppTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold),
-            color = RiteAppTheme.colorScheme.onSurface,
+            color = RiteAppTheme.colors.onSurface,
             modifier = Modifier.semantics { heading() }
         )
 
@@ -105,7 +105,7 @@ fun FirstHabitStep(
                 .width(36.dp)
                 .height(3.dp)
                 .background(
-                    color = RiteAppTheme.colorScheme.primary,
+                    color = RiteAppTheme.colors.primary,
                     shape = RoundedCornerShape(2.dp)
                 )
         )
@@ -115,7 +115,7 @@ fun FirstHabitStep(
         Text(
             text = stringResource(Res.string.first_habit_subtext),
             style = RiteAppTheme.typography.bodyLarge,
-            color = RiteAppTheme.colorScheme.onSurfaceVariant
+            color = RiteAppTheme.colors.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -205,15 +205,15 @@ private fun HabitTypeCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         border = if (isSelected) {
-            BorderStroke(2.dp, RiteAppTheme.colorScheme.primaryContainer)
+            BorderStroke(2.dp, RiteAppTheme.colors.primaryContainer)
         } else {
             BorderStroke(2.dp, Color.Transparent)
         },
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) {
-                RiteAppTheme.colorScheme.surfaceContainerHighest
+                RiteAppTheme.colors.surfaceContainerHighest
             } else {
-                RiteAppTheme.colorScheme.surfaceContainerLow
+                RiteAppTheme.colors.surfaceContainerLow
             }
         )
     ) {
@@ -223,23 +223,23 @@ private fun HabitTypeCard(
                 contentDescription = null,
                 modifier = Modifier.size(HabitTypeCardIconSize),
                 tint = if (isSelected) {
-                    RiteAppTheme.colorScheme.primary
+                    RiteAppTheme.colors.primary
                 } else {
-                    RiteAppTheme.colorScheme.onSurfaceVariant
+                    RiteAppTheme.colors.onSurfaceVariant
                 }
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = label,
                 style = RiteAppTheme.typography.titleSmall,
-                color = RiteAppTheme.colorScheme.onSurface,
+                color = RiteAppTheme.colors.onSurface,
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = description,
                 style = RiteAppTheme.typography.bodySmall,
-                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                color = RiteAppTheme.colors.onSurfaceVariant
             )
             if (expandedContent != null) {
                 AnimatedVisibility(

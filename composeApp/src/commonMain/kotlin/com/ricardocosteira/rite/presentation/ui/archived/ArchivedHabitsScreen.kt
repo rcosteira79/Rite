@@ -133,13 +133,13 @@ private fun ArchivedHabitsScreen(
                         Text(
                             text = stringResource(Res.string.archived_empty_state_heading),
                             style = RiteAppTheme.typography.headlineSmall,
-                            color = RiteAppTheme.colorScheme.onSurfaceVariant
+                            color = RiteAppTheme.colors.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = stringResource(Res.string.archived_empty_state_subtext),
                             style = RiteAppTheme.typography.bodyMedium,
-                            color = RiteAppTheme.colorScheme.onSurfaceVariant
+                            color = RiteAppTheme.colors.onSurfaceVariant
                         )
                     }
                 }
@@ -178,7 +178,7 @@ private fun ArchivedHabitCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = RiteAppTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            containerColor = RiteAppTheme.colors.surfaceVariant.copy(alpha = 0.5f)
         )
     ) {
         Row(
@@ -199,7 +199,7 @@ private fun ArchivedHabitCard(
                     Text(
                         text = habit.description,
                         style = RiteAppTheme.typography.bodySmall,
-                        color = RiteAppTheme.colorScheme.onSurfaceVariant,
+                        color = RiteAppTheme.colors.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -207,7 +207,7 @@ private fun ArchivedHabitCard(
                 Text(
                     text = stringResource(Res.string.archived_best_streak, habit.longestStreak),
                     style = RiteAppTheme.typography.labelSmall,
-                    color = RiteAppTheme.colorScheme.primary
+                    color = RiteAppTheme.colors.primary
                 )
             }
 
@@ -216,14 +216,14 @@ private fun ArchivedHabitCard(
                     Icon(
                         Icons.Default.Refresh,
                         contentDescription = stringResource(Res.string.archived_cd_restore),
-                        tint = RiteAppTheme.colorScheme.primary
+                        tint = RiteAppTheme.colors.primary
                     )
                 }
                 IconButton(onClick = onDeleteClick) {
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = stringResource(Res.string.archived_cd_delete),
-                        tint = RiteAppTheme.colorScheme.error
+                        tint = RiteAppTheme.colors.error
                     )
                 }
             }
