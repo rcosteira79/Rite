@@ -11,14 +11,21 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.StrictnessPreset as DomainStrictnessPreset
@@ -29,6 +36,7 @@ import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.today_cd_add_habit
 import rite.composeapp.generated.resources.today_header_salute_all_done
 import rite.composeapp.generated.resources.today_header_salute_empty
 import rite.composeapp.generated.resources.today_header_subtitle_all_done
@@ -186,8 +194,6 @@ internal fun DomainStrictnessPreset.toPillPreset(): PillPreset = when (this) {
     DomainStrictnessPreset.UNWAVERING -> PillPreset.Unwavering
 }
 
-// Implemented in Task 13 — this stub keeps TodayHeader (and thus TodayScreen) compilable
-// with the new signature.
 @Composable
 internal fun TodayHeaderCollapsed(
     saluteKey: StringResource?,
@@ -197,5 +203,62 @@ internal fun TodayHeaderCollapsed(
     strictnessPreset: DomainStrictnessPreset?,
     onAddHabit: () -> Unit
 ) {
-    Row(modifier = Modifier.fillMaxWidth().height(56.dp)) {}
+    val colors = RiteAppTheme.colors
+    val typo = RiteAppTheme.typography
+    val pct = (dailyProgressFraction.coerceIn(0f, 1f) * 100).toInt()
+    val done = (dailyTotal - pendingCount).coerceAtLeast(0)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(
+                horizontal = RiteAppTheme.spacing.gap6,
+                vertical = RiteAppTheme.spacing.gap3
+            ),
+        horizontalArrangement = Arrangement.spacedBy(RiteAppTheme.spacing.gap3),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = saluteShortLine(saluteKey),
+                style = typo.titleMedium,
+                color = colors.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = "$done / $dailyTotal · $pct%",
+                style = typo.eyebrow,
+                color = colors.onSurfaceMuted
+            )
+        }
+        if (strictnessPreset != null) {
+            StrictnessPill(preset = strictnessPreset.toPillPreset(), animated = false)
+        }
+        Surface(
+            onClick = onAddHabit,
+            shape = RiteAppTheme.shapes.pill,
+            color = Color.Transparent,
+            contentColor = colors.onSurface,
+            modifier = Modifier.size(36.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(Res.string.today_cd_add_habit),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+    }
 }
+
+@Composable
+private fun saluteShortLine(saluteKey: StringResource?): String =
+    saluteKey?.let { stringResource(it) }
+        ?: stringResource(Res.string.today_header_salute_all_done)
