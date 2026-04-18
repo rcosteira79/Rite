@@ -152,6 +152,7 @@ fun TodayScreen(
                 completedValue = habit.completedValue,
                 targetValue = habit.targetValue,
                 unit = habit.unit,
+                defaultIncrement = habit.defaultIncrement,
                 onConfirm = { value -> viewModel.completeQuantitativeHabit(instanceId, value) },
                 onDismiss = viewModel::dismissQuantitativeInput
             )

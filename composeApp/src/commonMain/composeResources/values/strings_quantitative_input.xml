@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="quantitative_input_title">Add progress</string>
-    <string name="quantitative_input_current_with_unit">Current: %1$d/%2$d %3$s</string>
-    <string name="quantitative_input_current_no_unit">Current: %1$d/%2$d</string>
-    <string name="quantitative_input_label_amount">Amount</string>
-    <string name="quantitative_input_quick_add">+%1$d</string>
-    <string name="quantitative_input_button_add">Add</string>
+    <string name="quantitative_input_subtitle_with_unit">Log %1$s · target %2$d %1$s</string>
+    <string name="quantitative_input_subtitle_no_unit">Log progress · target %1$d</string>
+    <string name="quantitative_input_quick_add_label">+%1$d</string>
+    <string name="quantitative_input_save">Save</string>
+    <string name="quantitative_input_cd_decrement">Decrement</string>
+    <string name="quantitative_input_cd_increment">Increment</string>
 </resources>
