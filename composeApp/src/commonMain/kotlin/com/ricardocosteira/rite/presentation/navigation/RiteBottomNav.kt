@@ -8,20 +8,21 @@ import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
-import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.presentation.ui.haptics.HapticController
 import com.ricardocosteira.rite.presentation.ui.haptics.rememberHapticController
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
+import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.nav_history
 import rite.composeapp.generated.resources.nav_settings
 import rite.composeapp.generated.resources.nav_today
-import org.jetbrains.compose.resources.stringResource
 
 enum class BottomNavTab {
     TODAY,
@@ -36,14 +37,22 @@ fun RiteBottomNav(
     modifier: Modifier = Modifier
 ) {
     val hapticController: HapticController = rememberHapticController()
+    val colors = RiteAppTheme.colors
 
     val navItemColors = NavigationBarItemDefaults.colors(
-        indicatorColor = RiteAppTheme.colors.primaryContainer,
-        selectedIconColor = RiteAppTheme.colors.onPrimaryContainer,
-        selectedTextColor = RiteAppTheme.colors.primary
+        selectedIconColor = colors.onSurface,
+        unselectedIconColor = colors.onSurfaceMuted,
+        selectedTextColor = colors.onSurface,
+        unselectedTextColor = colors.onSurfaceMuted,
+        indicatorColor = colors.surfaceContainer
     )
 
-    NavigationBar(modifier = modifier) {
+    NavigationBar(
+        modifier = modifier,
+        containerColor = colors.surface,
+        contentColor = colors.onSurface,
+        tonalElevation = 0.dp
+    ) {
         NavigationBarItem(
             selected = currentTab == BottomNavTab.TODAY,
             onClick = {
@@ -61,7 +70,12 @@ fun RiteBottomNav(
                     contentDescription = stringResource(Res.string.nav_today)
                 )
             },
-            label = { Text(stringResource(Res.string.nav_today)) }
+            label = {
+                Text(
+                    text = stringResource(Res.string.nav_today),
+                    style = RiteAppTheme.typography.labelSmall
+                )
+            }
         )
         NavigationBarItem(
             selected = currentTab == BottomNavTab.HISTORY,
@@ -80,7 +94,12 @@ fun RiteBottomNav(
                     contentDescription = stringResource(Res.string.nav_history)
                 )
             },
-            label = { Text(stringResource(Res.string.nav_history)) }
+            label = {
+                Text(
+                    text = stringResource(Res.string.nav_history),
+                    style = RiteAppTheme.typography.labelSmall
+                )
+            }
         )
         NavigationBarItem(
             selected = currentTab == BottomNavTab.SETTINGS,
@@ -99,7 +118,12 @@ fun RiteBottomNav(
                     contentDescription = stringResource(Res.string.nav_settings)
                 )
             },
-            label = { Text(stringResource(Res.string.nav_settings)) }
+            label = {
+                Text(
+                    text = stringResource(Res.string.nav_settings),
+                    style = RiteAppTheme.typography.labelSmall
+                )
+            }
         )
     }
 }
