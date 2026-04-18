@@ -93,6 +93,7 @@ fun HabitDetailRoute(
             completedValue = customInputHabit.completedValue,
             targetValue = customInputHabit.targetValue,
             unit = customInputHabit.unit,
+            defaultIncrement = customInputHabit.defaultIncrement,
             onConfirm = { value ->
                 viewModel.addCustomProgress(value)
                 viewModel.dismissCustomInput()
