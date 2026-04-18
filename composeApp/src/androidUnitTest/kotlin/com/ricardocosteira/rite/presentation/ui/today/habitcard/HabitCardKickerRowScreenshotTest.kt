@@ -27,55 +27,22 @@ class HabitCardKickerRowScreenshotTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    @Test
-    fun kicker_only_pending() = render(
-        state = HabitCardState.Pending,
-        kicker = "DAILY · 12 MIN",
-        streakDays = null
-    )
+    @Test fun pending() = render(HabitCardState.Pending, "DAILY · 12 MIN")
 
-    @Test
-    fun kicker_with_streak_pending() = render(
-        state = HabitCardState.Pending,
-        kicker = "DAILY · 30 PAGES",
-        streakDays = 14
-    )
+    @Test fun completed() = render(HabitCardState.Completed, "DAILY · 12 MIN")
 
-    @Test
-    fun kicker_with_streak_completed() = render(
-        state = HabitCardState.Completed,
-        kicker = "DAILY · 12 MIN",
-        streakDays = 15
-    )
+    @Test fun skipped() = render(HabitCardState.Skipped, "DAILY · 12 MIN")
 
-    @Test
-    fun kicker_skipped_hides_streak() = render(
-        state = HabitCardState.Skipped,
-        kicker = "DAILY · 12 MIN",
-        streakDays = 14
-    )
+    @Test fun failed() = render(HabitCardState.Failed, "YESTERDAY · MISSED")
 
-    @Test
-    fun kicker_suspended_hides_streak() = render(
-        state = HabitCardState.Suspended,
-        kicker = "PAUSED UNTIL APR 22",
-        streakDays = 14
-    )
+    @Test fun suspended() = render(HabitCardState.Suspended, "PAUSED UNTIL APR 22")
 
-    @Test
-    fun kicker_failed_shows_streak_zero() = render(
-        state = HabitCardState.Failed,
-        kicker = "YESTERDAY · MISSED",
-        streakDays = 0
-    )
-
-    private fun render(state: HabitCardState, kicker: String, streakDays: Int?) {
+    private fun render(state: HabitCardState, kicker: String) {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = false) {
                 HabitCardKickerRow(
                     state = state,
                     kicker = kicker,
-                    streakDays = streakDays,
                     modifier = Modifier.fillMaxWidth().padding(16.dp)
                 )
             }

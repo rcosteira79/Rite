@@ -1,10 +1,13 @@
 package com.ricardocosteira.rite.presentation.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -23,6 +26,15 @@ fun ProgressRing(
     label: String? = null
 ) {
     val clamped = progress.coerceIn(0f, 1f)
+    val motion = RiteAppTheme.motion
+    val animated by animateFloatAsState(
+        targetValue = clamped,
+        animationSpec = tween(
+            durationMillis = motion.deliberate.inWholeMilliseconds.toInt(),
+            easing = motion.easeQuiet
+        ),
+        label = "ring-progress"
+    )
     val track = RiteAppTheme.colors.outlineVariant
     val bar = RiteAppTheme.colors.primary
 
@@ -46,7 +58,7 @@ fun ProgressRing(
             drawArc(
                 color = bar,
                 startAngle = -90f,
-                sweepAngle = 360f * clamped,
+                sweepAngle = 360f * animated,
                 useCenter = false,
                 topLeft = topLeft,
                 size = arcSize,
