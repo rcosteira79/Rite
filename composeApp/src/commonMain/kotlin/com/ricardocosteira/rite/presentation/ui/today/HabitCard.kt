@@ -1,5 +1,6 @@
 package com.ricardocosteira.rite.presentation.ui.today
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,10 +30,10 @@ import com.ricardocosteira.rite.presentation.ui.today.habitcard.MarginRule
 import com.ricardocosteira.rite.presentation.ui.today.habitcard.visualsFor
 
 private val CARD_VERTICAL_PADDING = 14.dp
-private val CARD_LEFT_PADDING = 22.dp
+private val CARD_LEFT_PADDING = 6.dp
 private val CARD_RIGHT_PADDING = 16.dp
 private val BODY_COLUMN_GAP = 4.dp
-private val RULE_RIGHT_GAP = 14.dp
+private val RULE_RIGHT_GAP = 11.dp
 
 @Composable
 fun HabitCard(
@@ -51,12 +52,21 @@ fun HabitCard(
             type = habit.type,
             progressPercentage = habit.progressPercentage,
         )
+    val colors = RiteAppTheme.colors
+    val background: Color = when (visuals.state) {
+        HabitCardState.Pending, HabitCardState.PendingInProgress -> colors.surface
+        HabitCardState.Completed -> colors.primaryContainer.copy(alpha = 0.55f)
+        HabitCardState.Failed -> colors.errorContainer.copy(alpha = 0.5f)
+        HabitCardState.Suspended -> colors.suspend.copy(alpha = 0.1f)
+        HabitCardState.Skipped -> Color.Transparent
+    }
 
     Surface(
         onClick = onClick,
         shape = RiteAppTheme.shapes.sm,
-        color = Color.Transparent,
-        contentColor = RiteAppTheme.colors.onSurface,
+        color = background,
+        contentColor = colors.onSurface,
+        border = BorderStroke(1.dp, colors.outlineVariant),
         modifier = modifier.fillMaxWidth(),
     ) {
         Row(
@@ -134,7 +144,6 @@ private fun HabitCardBody(
         HabitCardKickerRow(
             state = state,
             kicker = todayHabitKicker(habit, state),
-            streakDays = habit.currentStreak,
         )
         Text(
             text = habit.name,
