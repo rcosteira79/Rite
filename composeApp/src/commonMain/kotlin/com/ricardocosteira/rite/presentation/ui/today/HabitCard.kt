@@ -6,9 +6,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -85,12 +87,14 @@ fun HabitCard(
     ) {
         Row(
             modifier =
-                Modifier.padding(
-                    start = CARD_LEFT_PADDING,
-                    end = CARD_RIGHT_PADDING,
-                    top = CARD_VERTICAL_PADDING,
-                    bottom = CARD_VERTICAL_PADDING,
-                ),
+                Modifier
+                    .height(IntrinsicSize.Min)
+                    .padding(
+                        start = CARD_LEFT_PADDING,
+                        end = CARD_RIGHT_PADDING,
+                        top = CARD_VERTICAL_PADDING,
+                        bottom = CARD_VERTICAL_PADDING,
+                    ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             MarginRule(

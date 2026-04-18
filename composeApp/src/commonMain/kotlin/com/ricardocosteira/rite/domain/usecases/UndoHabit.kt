@@ -2,13 +2,16 @@ package com.ricardocosteira.rite.domain.usecases
 
 import com.ricardocosteira.rite.domain.models.HabitInstance
 import com.ricardocosteira.rite.domain.models.HabitStatus
+import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.domain.models.UndoPolicy
 import com.ricardocosteira.rite.domain.repositories.HabitCompletionEventRepository
 import com.ricardocosteira.rite.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.rite.domain.repositories.HabitRepository
 import com.ricardocosteira.rite.domain.repositories.UserRepository
 import kotlin.time.Clock
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import me.tatarka.inject.annotations.Inject
 
@@ -41,7 +44,14 @@ class UndoHabit(
 
             UndoPolicy.TODAY_ONLY -> {
                 val today = Clock.System.now().toLocalDate(user.timezone)
-                if (instance.date != today) {
+                val schedule = habitRepository.getScheduleForHabit(instance.habitId)
+                val inRange: Boolean = when (schedule?.scheduleType) {
+                    ScheduleType.WEEKLY, ScheduleType.FLEXIBLE_WEEKLY ->
+                        today in instance.date..instance.date.plus(6, DateTimeUnit.DAY)
+
+                    else -> instance.date == today
+                }
+                if (!inRange) {
                     return Result.failure(
                         UndoNotAllowedException("Can only undo today's habits")
                     )

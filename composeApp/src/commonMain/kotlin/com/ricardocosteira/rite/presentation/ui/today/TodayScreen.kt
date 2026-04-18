@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -34,14 +35,15 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.rite.di.LocalAppComponent
-import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
+import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.rite.presentation.ui.components.RiteDivider
 import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarContent
 import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVariant
 import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVisuals
 import com.ricardocosteira.rite.presentation.ui.components.toolbar.DynamicCollapsingToolbar
 import com.ricardocosteira.rite.presentation.ui.components.toolbar.pinnedExitUntilCollapsedToolbarSpec
+import com.ricardocosteira.rite.presentation.ui.haptics.HapticController
 import com.ricardocosteira.rite.presentation.ui.haptics.rememberHapticController
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import org.jetbrains.compose.resources.getString
@@ -69,6 +71,11 @@ import rite.composeapp.generated.resources.today_section_weekly
 private val BOTTOM_CLEARANCE = 80.dp
 private val TOP_BREATHING_ROOM = 8.dp
 private val SECTION_GAP = 16.dp
+
+private sealed interface HabitFeedItem {
+    data class Card(val model: TodayHabitUiModel) : HabitFeedItem
+    data class Divider(val id: String) : HabitFeedItem
+}
 
 @Composable
 fun TodayScreen(
@@ -335,83 +342,24 @@ internal fun TodayScreen(
                         )
                     }
 
-                    items(
-                        items = state.pendingDaily,
-                        key = { it.instanceId }
-                    ) { habit ->
-                        SwipeableHabitCard(
-                            onEdit = { onEdit(habit.habitId) },
-                            onDelete = { onDelete(habit.habitId) },
-                            hapticController = hapticController,
-                            modifier = Modifier.animateItem()
-                        ) {
-                            HabitCard(
-                                habit = habit,
-                                onClick = {
-                                    onNavigateToDetail(habit.instanceId)
-                                },
-                                onComplete = {
-                                    if (habit.type == HabitType.BINARY) {
-                                        onComplete(habit.instanceId)
-                                    } else {
-                                        onIncrementProgress(habit.instanceId)
-                                    }
-                                },
-                                onSkip = { onSkip(habit.instanceId) },
-                                onUndo = {
-                                    if (habit.type == HabitType.QUANTITATIVE) {
-                                        onUndoLastIncrement(habit.instanceId)
-                                    } else {
-                                        onUndo(habit.instanceId)
-                                    }
-                                },
-                                onIncrementProgress = { onIncrementProgress(habit.instanceId) },
-                                onCustomProgress = { onCustomProgress(habit.instanceId) }
-                            )
-                        }
-                    }
-
-                    if (state.resolvedDaily.isNotEmpty()) {
-                        item(key = "daily_divider") {
-                            RiteDivider(
-                                modifier = Modifier.padding(horizontal = RiteAppTheme.spacing.gap4)
-                            )
-                        }
-
-                        items(
-                            items = state.resolvedDaily,
-                            key = { it.instanceId }
-                        ) { habit ->
-                            SwipeableHabitCard(
-                                onEdit = { onEdit(habit.habitId) },
-                                onDelete = { onDelete(habit.habitId) },
-                                hapticController = hapticController,
-                                modifier = Modifier.animateItem()
-                            ) {
-                                HabitCard(
-                                    habit = habit,
-
-                                    onClick = { onNavigateToDetail(habit.instanceId) },
-                                    onComplete = {},
-                                    onSkip = {},
-                                    onUndo = {
-                                        if (habit.type == HabitType.QUANTITATIVE &&
-                                            habit.isCompleted
-                                        ) {
-                                            onUndoLastIncrement(habit.instanceId)
-                                        } else {
-                                            onUndo(habit.instanceId)
-                                        }
-                                    },
-                                    onIncrementProgress = {},
-                                    onCustomProgress = {}
-                                )
-                            }
-                        }
-                    }
+                    habitFeed(
+                        pending = state.pendingDaily,
+                        resolved = state.resolvedDaily,
+                        dividerKey = "daily_divider",
+                        hapticController = hapticController,
+                        onEdit = onEdit,
+                        onDelete = onDelete,
+                        onNavigateToDetail = onNavigateToDetail,
+                        onComplete = onComplete,
+                        onSkip = onSkip,
+                        onUndo = onUndo,
+                        onUndoLastIncrement = onUndoLastIncrement,
+                        onIncrementProgress = onIncrementProgress,
+                        onCustomProgress = onCustomProgress
+                    )
 
                     // WEEKLY GOALS section
-                    if ((state.pendingWeekly.isNotEmpty() || state.resolvedWeekly.isNotEmpty())) {
+                    if (state.pendingWeekly.isNotEmpty() || state.resolvedWeekly.isNotEmpty()) {
                         item(key = "weekly_spacer") {
                             Spacer(modifier = Modifier.height(SECTION_GAP))
                         }
@@ -423,85 +371,104 @@ internal fun TodayScreen(
                             )
                         }
 
-                        items(
-                            items = state.pendingWeekly,
-                            key = { it.instanceId }
-                        ) { habit ->
-                            SwipeableHabitCard(
-                                onEdit = { onEdit(habit.habitId) },
-                                onDelete = { onDelete(habit.habitId) },
-                                hapticController = hapticController,
-                                modifier = Modifier.animateItem()
-                            ) {
-                                HabitCard(
-                                    habit = habit,
-
-                                    onClick = {
-                                        onNavigateToDetail(habit.instanceId)
-                                    },
-                                    onComplete = {
-                                        if (habit.type == HabitType.BINARY) {
-                                            onComplete(habit.instanceId)
-                                        } else {
-                                            onIncrementProgress(habit.instanceId)
-                                        }
-                                    },
-                                    onSkip = { onSkip(habit.instanceId) },
-                                    onUndo = {
-                                        if (habit.type == HabitType.QUANTITATIVE) {
-                                            onUndoLastIncrement(habit.instanceId)
-                                        } else {
-                                            onUndo(habit.instanceId)
-                                        }
-                                    },
-                                    onIncrementProgress = { onIncrementProgress(habit.instanceId) },
-                                    onCustomProgress = { onCustomProgress(habit.instanceId) }
-                                )
-                            }
-                        }
-
-                        if (state.resolvedWeekly.isNotEmpty()) {
-                            item(key = "weekly_divider") {
-                                RiteDivider(
-                                    modifier = Modifier.padding(
-                                        horizontal = RiteAppTheme.spacing.gap4
-                                    )
-                                )
-                            }
-
-                            items(
-                                items = state.resolvedWeekly,
-                                key = { it.instanceId }
-                            ) { habit ->
-                                SwipeableHabitCard(
-                                    onEdit = { onEdit(habit.habitId) },
-                                    onDelete = { onDelete(habit.habitId) },
-                                    hapticController = hapticController,
-                                    modifier = Modifier.animateItem()
-                                ) {
-                                    HabitCard(
-                                        habit = habit,
-
-                                        onClick = { onNavigateToDetail(habit.instanceId) },
-                                        onComplete = {},
-                                        onSkip = {},
-                                        onUndo = {
-                                            if (habit.type == HabitType.QUANTITATIVE &&
-                                                habit.isCompleted
-                                            ) {
-                                                onUndoLastIncrement(habit.instanceId)
-                                            } else {
-                                                onUndo(habit.instanceId)
-                                            }
-                                        },
-                                        onIncrementProgress = {},
-                                        onCustomProgress = {}
-                                    )
-                                }
-                            }
-                        }
+                        habitFeed(
+                            pending = state.pendingWeekly,
+                            resolved = state.resolvedWeekly,
+                            dividerKey = "weekly_divider",
+                            hapticController = hapticController,
+                            onEdit = onEdit,
+                            onDelete = onDelete,
+                            onNavigateToDetail = onNavigateToDetail,
+                            onComplete = onComplete,
+                            onSkip = onSkip,
+                            onUndo = onUndo,
+                            onUndoLastIncrement = onUndoLastIncrement,
+                            onIncrementProgress = onIncrementProgress,
+                            onCustomProgress = onCustomProgress
+                        )
                     }
                 }
+            }
+        }
+    }
+}
+
+private fun LazyListScope.habitFeed(
+    pending: List<TodayHabitUiModel>,
+    resolved: List<TodayHabitUiModel>,
+    dividerKey: String,
+    hapticController: HapticController,
+    onEdit: (String) -> Unit,
+    onDelete: (String) -> Unit,
+    onNavigateToDetail: (String) -> Unit,
+    onComplete: (String) -> Unit,
+    onSkip: (String) -> Unit,
+    onUndo: (String) -> Unit,
+    onUndoLastIncrement: (String) -> Unit,
+    onIncrementProgress: (String) -> Unit,
+    onCustomProgress: (String) -> Unit,
+) {
+    val feed: List<HabitFeedItem> = buildList {
+        pending.forEach { add(HabitFeedItem.Card(it)) }
+        if (pending.isNotEmpty() && resolved.isNotEmpty()) {
+            add(HabitFeedItem.Divider(dividerKey))
+        }
+        resolved.forEach { add(HabitFeedItem.Card(it)) }
+    }
+    items(
+        items = feed,
+        key = { item ->
+            when (item) {
+                is HabitFeedItem.Card -> item.model.instanceId
+                is HabitFeedItem.Divider -> item.id
+            }
+        },
+        contentType = { item ->
+            when (item) {
+                is HabitFeedItem.Card -> "habit-card"
+                is HabitFeedItem.Divider -> "divider"
+            }
+        }
+    ) { item ->
+        when (item) {
+            is HabitFeedItem.Card -> {
+                val habit: TodayHabitUiModel = item.model
+                SwipeableHabitCard(
+                    onEdit = { onEdit(habit.habitId) },
+                    onDelete = { onDelete(habit.habitId) },
+                    hapticController = hapticController,
+                    modifier = Modifier.animateItem()
+                ) {
+                    HabitCard(
+                        habit = habit,
+                        onClick = { onNavigateToDetail(habit.instanceId) },
+                        onComplete = {
+                            if (habit.type == HabitType.BINARY) {
+                                onComplete(habit.instanceId)
+                            } else {
+                                onIncrementProgress(habit.instanceId)
+                            }
+                        },
+                        onSkip = { onSkip(habit.instanceId) },
+                        onUndo = {
+                            if (habit.type == HabitType.QUANTITATIVE && habit.isCompleted) {
+                                onUndoLastIncrement(habit.instanceId)
+                            } else {
+                                onUndo(habit.instanceId)
+                            }
+                        },
+                        onIncrementProgress = { onIncrementProgress(habit.instanceId) },
+                        onCustomProgress = { onCustomProgress(habit.instanceId) }
+                    )
+                }
+            }
+
+            is HabitFeedItem.Divider -> {
+                RiteDivider(
+                    modifier = Modifier
+                        .animateItem()
+                        .padding(horizontal = RiteAppTheme.spacing.gap4)
+                )
             }
         }
     }
