@@ -154,7 +154,8 @@ private fun HabitCardBody(
     val strikethroughProgress by animateFloatAsState(
         targetValue = if (state == HabitCardState.Completed) 1f else 0f,
         animationSpec = tween(
-            durationMillis = motion.deliberate.inWholeMilliseconds.toInt(),
+            durationMillis = motion.standard.inWholeMilliseconds.toInt(),
+            delayMillis = motion.deliberate.inWholeMilliseconds.toInt(),
             easing = motion.easeQuiet
         ),
         label = "habit-card-strikethrough"
@@ -193,7 +194,7 @@ private fun HabitCardBody(
                         color = strikeColor,
                         start = Offset(0f, y),
                         end = Offset(size.width * strikethroughProgress, y),
-                        strokeWidth = 1.dp.toPx()
+                        strokeWidth = 2.dp.toPx()
                     )
                 }
             }
