@@ -1,69 +1,38 @@
 package com.ricardocosteira.rite.presentation.ui.today
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Undo
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
-import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
-import org.jetbrains.compose.resources.stringResource
-import rite.composeapp.generated.resources.Res
-import rite.composeapp.generated.resources.common_skip
-import rite.composeapp.generated.resources.today_action_complete
-import rite.composeapp.generated.resources.today_action_increment_short
-import rite.composeapp.generated.resources.today_cd_undo
-import rite.composeapp.generated.resources.today_resolved_completed_at
-import rite.composeapp.generated.resources.today_resolved_failed
-import rite.composeapp.generated.resources.today_resolved_skipped_at
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
+import com.ricardocosteira.rite.presentation.ui.today.habitcard.HabitCardAction
+import com.ricardocosteira.rite.presentation.ui.today.habitcard.HabitCardKickerRow
+import com.ricardocosteira.rite.presentation.ui.today.habitcard.HabitCardState
+import com.ricardocosteira.rite.presentation.ui.today.habitcard.MarginRule
+import com.ricardocosteira.rite.presentation.ui.today.habitcard.visualsFor
 
-private val CARD_CORNER_RADIUS = 24.dp
-private val RESOLVED_CORNER_RADIUS = 16.dp
-private val BUTTON_CORNER_RADIUS = 12.dp
-private val ACTION_ROW_GAP = 12.dp
-private val PROGRESS_BAR_CORNER_RADIUS = 99.dp
-
-private val CARD_VERTICAL_PADDING = 16.dp
-private val CARD_HORIZONTAL_PADDING = 24.dp
-
-private val HABIT_NAME_SIZE = 15.sp
-
-private val PROGRESS_BAR_HEIGHT = 3.dp
-
-private val RESOLVED_ICON_SIZE = 40.dp
-
-private const val RESOLVED_ALPHA = 0.8f
-private const val FAILED_ALPHA = 0.5f
+private val CARD_VERTICAL_PADDING = 14.dp
+private val CARD_LEFT_PADDING = 22.dp
+private val CARD_RIGHT_PADDING = 16.dp
+private val BODY_COLUMN_GAP = 4.dp
+private val RULE_RIGHT_GAP = 14.dp
 
 @Composable
 fun HabitCard(
@@ -74,328 +43,151 @@ fun HabitCard(
     onUndo: () -> Unit,
     onIncrementProgress: () -> Unit,
     onCustomProgress: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val isResolved: Boolean = habit.isCompleted || habit.isSkipped || habit.isFailed
-
-    if (isResolved) {
-        ResolvedHabitRow(
-            habit = habit,
-            onUndo = onUndo,
-            onClick = onClick,
-            modifier = modifier
+    val visuals =
+        visualsFor(
+            status = habit.status,
+            type = habit.type,
+            progressPercentage = habit.progressPercentage,
         )
-    } else {
-        PendingHabitCard(
-            habit = habit,
-            onClick = onClick,
-            onComplete = onComplete,
-            onSkip = onSkip,
-            onUndo = onUndo,
-            onIncrementProgress = onIncrementProgress,
-            onCustomProgress = onCustomProgress,
-            modifier = modifier
-        )
-    }
-}
-
-@Composable
-private fun PendingHabitCard(
-    habit: TodayHabitUiModel,
-    onClick: () -> Unit,
-    onComplete: () -> Unit,
-    onSkip: () -> Unit,
-    onUndo: () -> Unit,
-    onIncrementProgress: () -> Unit,
-    onCustomProgress: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val currentValue: Int = habit.completedValue ?: 0
-    val targetValue: Int = habit.targetValue ?: 0
-    val unitText: String = habit.unit?.uppercase() ?: ""
-    val isQuantitative: Boolean = habit.type == HabitType.QUANTITATIVE
 
     Surface(
-        shape = RoundedCornerShape(CARD_CORNER_RADIUS),
-        color = RiteAppTheme.colors.surfaceContainerLow,
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(CARD_CORNER_RADIUS))
-            .clickable(onClick = onClick)
-    ) {
-        Column(
-            modifier = Modifier.padding(
-                horizontal = CARD_HORIZONTAL_PADDING,
-                vertical = CARD_VERTICAL_PADDING
-            )
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    if (isQuantitative) {
-                        Row(verticalAlignment = Alignment.Bottom) {
-                            Text(
-                                text = "$currentValue",
-                                style = RiteAppTheme.typography.headlineSmall.copy(
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                color = RiteAppTheme.colors.primary
-                            )
-                            Spacer(modifier = Modifier.width(2.dp))
-                            Text(
-                                text = "/ $targetValue $unitText".trim(),
-                                style = RiteAppTheme.typography.labelSmall.copy(
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                color = RiteAppTheme.colors.onSurfaceVariant,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                        }
-                    }
-
-                    Text(
-                        text = habit.name.uppercase(),
-                        style = RiteAppTheme.typography.titleSmall.copy(
-                            fontSize = HABIT_NAME_SIZE,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = RiteAppTheme.colors.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    if (habit.description != null) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = habit.description,
-                            style = RiteAppTheme.typography.bodySmall,
-                            color = RiteAppTheme.colors.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(ACTION_ROW_GAP))
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(ACTION_ROW_GAP),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (isQuantitative) {
-                        val incrementLabel: String = stringResource(
-                            Res.string.today_action_increment_short,
-                            habit.defaultIncrement
-                        )
-                        Surface(
-                            shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
-                            color = RiteAppTheme.colors.primaryContainer,
-                            onClick = onIncrementProgress
-                        ) {
-                            Text(
-                                text = incrementLabel,
-                                style = RiteAppTheme.typography.labelMedium.copy(
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                color = RiteAppTheme.colors.onPrimaryContainer,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                            )
-                        }
-                    } else {
-                        Surface(
-                            shape = RoundedCornerShape(BUTTON_CORNER_RADIUS),
-                            color = RiteAppTheme.colors.primaryContainer,
-                            onClick = onComplete
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = stringResource(
-                                    Res.string.today_action_complete
-                                ),
-                                tint = RiteAppTheme.colors.onPrimaryContainer,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
-                    }
-
-                    if (!habit.isSkipLocked) {
-                        Text(
-                            text = stringResource(Res.string.common_skip).uppercase(),
-                            style = RiteAppTheme.typography.labelMedium.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = RiteAppTheme.colors.onSurfaceVariant,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(BUTTON_CORNER_RADIUS))
-                                .clickable(onClick = onSkip)
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
-                    }
-                }
-            }
-
-            if (isQuantitative) {
-                Spacer(modifier = Modifier.height(10.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(PROGRESS_BAR_HEIGHT)
-                        .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                        .background(RiteAppTheme.colors.surfaceContainerHighest)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(fraction = habit.progressPercentage)
-                            .height(PROGRESS_BAR_HEIGHT)
-                            .clip(RoundedCornerShape(PROGRESS_BAR_CORNER_RADIUS))
-                            .background(RiteAppTheme.colors.primary.copy(alpha = 0.4f))
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ResolvedHabitRow(
-    habit: TodayHabitUiModel,
-    onUndo: () -> Unit,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val isFailed: Boolean = habit.isFailed
-    val rowAlpha: Float = if (isFailed) FAILED_ALPHA else RESOLVED_ALPHA
-
-    Surface(
-        shape = RoundedCornerShape(RESOLVED_CORNER_RADIUS),
-        color = RiteAppTheme.colors.primaryContainer.copy(alpha = rowAlpha),
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
+        onClick = onClick,
+        shape = RiteAppTheme.shapes.sm,
+        color = Color.Transparent,
+        contentColor = RiteAppTheme.colors.onSurface,
+        modifier = modifier.fillMaxWidth(),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier.padding(
+                    start = CARD_LEFT_PADDING,
+                    end = CARD_RIGHT_PADDING,
+                    top = CARD_VERTICAL_PADDING,
+                    bottom = CARD_VERTICAL_PADDING,
+                ),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Check icon circle
-            Box(
-                modifier = Modifier
-                    .size(RESOLVED_ICON_SIZE)
-                    .clip(CircleShape)
-                    .background(RiteAppTheme.colors.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = null,
-                    tint = RiteAppTheme.colors.onPrimaryContainer,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            // Name and subtitle
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = habit.name.uppercase(),
-                    style = RiteAppTheme.typography.titleSmall.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = RiteAppTheme.colors.onPrimaryContainer,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = if (isFailed) Modifier.alpha(FAILED_ALPHA) else Modifier
-                )
-
-                val subtitle: String = when {
-                    habit.isCompleted -> {
-                        stringResource(
-                            Res.string.today_resolved_completed_at,
-                            habit.completedAtText ?: ""
-                        ).uppercase()
-                    }
-
-                    habit.isSkipped -> {
-                        stringResource(
-                            Res.string.today_resolved_skipped_at,
-                            habit.completedAtText ?: ""
-                        ).uppercase()
-                    }
-
-                    habit.isFailed -> {
-                        stringResource(Res.string.today_resolved_failed).uppercase()
-                    }
-
-                    else -> {
-                        ""
-                    }
-                }
-
-                Text(
-                    text = subtitle,
-                    style = RiteAppTheme.typography.labelSmall,
-                    color = RiteAppTheme.colors.onPrimaryContainer.copy(alpha = 0.7f),
-                    modifier = if (isFailed) Modifier.alpha(FAILED_ALPHA) else Modifier
-                )
-            }
-
-            // Undo button — only for completed and skipped, not failed
-            if (!isFailed) {
-                IconButton(onClick = onUndo) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Undo,
-                        contentDescription = stringResource(Res.string.today_cd_undo),
-                        tint = RiteAppTheme.colors.onPrimaryContainer
-                    )
-                }
-            }
+            MarginRule(
+                state = visuals.state,
+                fillFraction = visuals.fillFraction,
+                modifier =
+                    Modifier
+                        .width(5.dp)
+                        .height(48.dp),
+            )
+            Spacer(modifier = Modifier.width(RULE_RIGHT_GAP))
+            HabitCardBody(
+                habit = habit,
+                state = visuals.state,
+                modifier = Modifier.weight(1f),
+            )
+            HabitCardAction(
+                state = visuals.state,
+                type = habit.type,
+                defaultIncrement = habit.defaultIncrement,
+                skipLocked = habit.isSkipLocked,
+                onComplete = {
+                    if (habit.type == HabitType.BINARY) onComplete() else onIncrementProgress()
+                },
+                onIncrement = onIncrementProgress,
+                onSkip = onSkip,
+                onUndo = onUndo,
+                modifier = Modifier,
+            )
         }
     }
 }
 
-// --- Previews ---
-
-@Preview
 @Composable
-private fun BinaryCollapsedPreview() {
-    RiteThemeFallback {
-        HabitCard(
-            habit = previewBinaryHabit(),
-            onClick = {},
-            onComplete = {},
-            onSkip = {},
-            onUndo = {},
-            onIncrementProgress = {},
-            onCustomProgress = {}
+private fun HabitCardBody(
+    habit: TodayHabitUiModel,
+    state: HabitCardState,
+    modifier: Modifier = Modifier,
+) {
+    val colors = RiteAppTheme.colors
+    val nameColor: Color =
+        when (state) {
+            HabitCardState.Completed -> colors.primary
+            HabitCardState.Failed -> colors.error
+            HabitCardState.Skipped -> colors.onSurfaceMuted
+            HabitCardState.Suspended -> colors.suspend
+            else -> colors.onSurface
+        }
+    val nameDecoration: TextDecoration =
+        if (state == HabitCardState.Completed) TextDecoration.LineThrough else TextDecoration.None
+    val nameStyle =
+        RiteAppTheme.typography.titleLarge.copy(
+            fontStyle = if (state ==
+                HabitCardState.Suspended
+            ) {
+                FontStyle.Italic
+            } else {
+                FontStyle.Normal
+            },
         )
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(BODY_COLUMN_GAP),
+    ) {
+        HabitCardKickerRow(
+            state = state,
+            kicker = todayHabitKicker(habit, state),
+            streakDays = habit.currentStreak,
+        )
+        Text(
+            text = habit.name,
+            style = nameStyle,
+            color = nameColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textDecoration = nameDecoration,
+        )
+        val sub: String? = habitCardSubText(habit, state)
+        if (sub != null) {
+            Text(
+                text = sub,
+                style = RiteAppTheme.typography.mono,
+                color = colors.onSurfaceSubtle,
+            )
+        }
     }
 }
 
-private fun previewBinaryHabit(
-    status: HabitStatus = HabitStatus.PENDING,
-    completedAtText: String? = null
-): TodayHabitUiModel = TodayHabitUiModel(
-    instanceId = "preview-1",
-    habitId = "habit-1",
-    name = "Morning Meditation",
-    description = "10 minutes of mindfulness",
-    type = HabitType.BINARY,
-    status = status,
-    completedValue = null,
-    targetValue = null,
-    unit = null,
-    defaultIncrement = 1,
-    progressPercentage = 0f,
-    isSkipLocked = false,
-    currentStreak = 5,
-    longestStreak = 12,
-    scorePercentage = 85,
-    cadence = ScheduleType.DAILY,
-    completedAtText = completedAtText
-)
+internal fun todayHabitKicker(habit: TodayHabitUiModel, state: HabitCardState): String {
+    val unit: String = habit.unit ?: ""
+    val cur: Int = habit.completedValue ?: 0
+    val target: Int = habit.targetValue ?: 0
+    return when {
+        habit.type == HabitType.QUANTITATIVE &&
+            (state == HabitCardState.Pending || state == HabitCardState.PendingInProgress) ->
+            listOf("$cur", "of", "$target", unit).filter { it.isNotEmpty() }.joinToString(" ")
+
+        habit.type == HabitType.QUANTITATIVE && habit.cadence == ScheduleType.FLEXIBLE_WEEKLY ->
+            listOfNotNull("Any day", "$target $unit per week".takeIf { unit.isNotEmpty() })
+                .joinToString(" · ")
+                .ifBlank { "Weekly" }
+
+        habit.type == HabitType.QUANTITATIVE ->
+            listOfNotNull("Daily", "$target $unit".takeIf { unit.isNotEmpty() || target > 0 })
+                .joinToString(" · ")
+
+        habit.cadence == ScheduleType.FLEXIBLE_WEEKLY ->
+            listOfNotNull("Any day", habit.description).joinToString(" · ")
+
+        habit.cadence == ScheduleType.WEEKLY ->
+            listOfNotNull("Fixed days", habit.description).joinToString(" · ")
+
+        // BINARY DAILY
+        else -> listOfNotNull("Daily", habit.description).joinToString(" · ")
+    }
+}
+
+internal fun habitCardSubText(habit: TodayHabitUiModel, state: HabitCardState): String? =
+    when (state) {
+        HabitCardState.Completed -> habit.completedAtText?.let { "Completed $it" }
+        HabitCardState.Skipped -> habit.completedAtText?.let { "Skipped $it" }
+        else -> null
+    }
