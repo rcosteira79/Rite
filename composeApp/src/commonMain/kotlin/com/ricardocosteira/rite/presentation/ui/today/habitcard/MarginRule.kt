@@ -1,8 +1,11 @@
 package com.ricardocosteira.rite.presentation.ui.today.habitcard
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -62,7 +65,16 @@ fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = 
             else -> Color.Transparent
         }
 
-    val effectiveFill = if (state == HabitCardState.Failed) 1f else fillFraction.coerceIn(0f, 1f)
+    val target = if (state == HabitCardState.Failed) 1f else fillFraction.coerceIn(0f, 1f)
+    val motion = RiteAppTheme.motion
+    val animatedFill by animateFloatAsState(
+        targetValue = target,
+        animationSpec = tween(
+            durationMillis = motion.deliberate.inWholeMilliseconds.toInt(),
+            easing = motion.easeQuiet
+        ),
+        label = "margin-rule-fill"
+    )
 
     Canvas(modifier = modifier.fillMaxHeight()) {
         val widthPx = (if (dashed) DASHED_WIDTH else RULE_WIDTH).toPx()
@@ -83,8 +95,8 @@ fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = 
                 size = Size(widthPx, h),
                 cornerRadius = CornerRadius(CORNER_RADIUS_PX, CORNER_RADIUS_PX),
             )
-            if (effectiveFill > 0f) {
-                val fillHeight = h * effectiveFill
+            if (animatedFill > 0f) {
+                val fillHeight = h * animatedFill
                 drawRoundRect(
                     color = fillColor,
                     topLeft = Offset(0f, h - fillHeight),
