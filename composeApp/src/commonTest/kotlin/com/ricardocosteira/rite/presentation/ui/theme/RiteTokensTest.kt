@@ -2,6 +2,7 @@ package com.ricardocosteira.rite.presentation.ui.theme
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -78,5 +79,40 @@ class RiteTokensTest {
         assertEquals(TextStyle.Default, typography.eyebrow)
         assertEquals(TextStyle.Default, typography.displayItalic)
         assertEquals(TextStyle.Default, typography.mono)
+    }
+
+    @Test
+    fun `toMaterialTypography forwards every M3 slot`() {
+        val marker = TextStyle(fontSize = 999.sp) // sentinel distinct from Default
+        val typography = RiteTypography(
+            displayLarge = marker, displayMedium = marker, displaySmall = marker,
+            headlineLarge = marker, headlineMedium = marker, headlineSmall = marker,
+            titleLarge = marker, titleMedium = marker, titleSmall = marker,
+            bodyLarge = marker, bodyMedium = marker, bodySmall = marker,
+            labelLarge = marker, labelMedium = marker, labelSmall = marker
+        )
+        val m3 = typography.toMaterialTypography()
+        listOf(
+            m3.displayLarge, m3.displayMedium, m3.displaySmall,
+            m3.headlineLarge, m3.headlineMedium, m3.headlineSmall,
+            m3.titleLarge, m3.titleMedium, m3.titleSmall,
+            m3.bodyLarge, m3.bodyMedium, m3.bodySmall,
+            m3.labelLarge, m3.labelMedium, m3.labelSmall
+        ).forEach { assertEquals(marker, it) }
+    }
+
+    @Test
+    fun `toMaterialTypography omits Rite extensions`() {
+        val marker = TextStyle(fontSize = 999.sp)
+        val typography = RiteTypography(eyebrow = marker, displayItalic = marker, mono = marker)
+        val m3 = typography.toMaterialTypography()
+        // None of the 15 M3 slots should have been assigned the extension marker
+        listOf(
+            m3.displayLarge, m3.displayMedium, m3.displaySmall,
+            m3.headlineLarge, m3.headlineMedium, m3.headlineSmall,
+            m3.titleLarge, m3.titleMedium, m3.titleSmall,
+            m3.bodyLarge, m3.bodyMedium, m3.bodySmall,
+            m3.labelLarge, m3.labelMedium, m3.labelSmall
+        ).forEach { assertEquals(TextStyle.Default, it) }
     }
 }
