@@ -8,7 +8,7 @@
     <string name="today_timezone_changed_body_without_previous">Past data stays in your previous timezone. New entries use your current one.</string>
     <string name="today_empty_state_heading">Structure your day.</string>
     <string name="today_empty_state_subtext">Commit to your first habit and begin the path of intentional discipline.</string>
-    <string name="today_empty_state_cta">Add Your First Habit</string>
+    <string name="today_empty_state_cta">Add your first habit</string>
     <string name="today_cd_complete">Complete</string>
     <string name="today_cd_undo">Undo</string>
     <string name="today_status_suspended">Suspended</string>
