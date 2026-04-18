@@ -1,65 +1,42 @@
 package com.ricardocosteira.rite.presentation.ui.today
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
+import com.ricardocosteira.rite.presentation.ui.components.RiteDivider
 import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarContent
 import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVariant
 import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVisuals
 import com.ricardocosteira.rite.presentation.ui.components.toolbar.DynamicCollapsingToolbar
 import com.ricardocosteira.rite.presentation.ui.components.toolbar.pinnedExitUntilCollapsedToolbarSpec
-import com.ricardocosteira.rite.presentation.ui.haptics.HapticController
 import com.ricardocosteira.rite.presentation.ui.haptics.rememberHapticController
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import com.ricardocosteira.rite.util.formatMonthAbbreviation
@@ -67,10 +44,8 @@ import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
-import rite.composeapp.generated.resources.habit_lock_logo
 import rite.composeapp.generated.resources.snackbar_completed_prefix
 import rite.composeapp.generated.resources.snackbar_completed_suffix_no_streak
 import rite.composeapp.generated.resources.snackbar_completed_suffix_with_streak
@@ -84,19 +59,10 @@ import rite.composeapp.generated.resources.snackbar_skipped_prefix
 import rite.composeapp.generated.resources.snackbar_skipped_subtext_remaining
 import rite.composeapp.generated.resources.snackbar_skipped_suffix
 import rite.composeapp.generated.resources.swipe_undo
-import rite.composeapp.generated.resources.today_cd_add_habit
-import rite.composeapp.generated.resources.today_empty_state_cta
-import rite.composeapp.generated.resources.today_empty_state_heading
-import rite.composeapp.generated.resources.today_empty_state_subtext
 import rite.composeapp.generated.resources.today_section_focus
 import rite.composeapp.generated.resources.today_section_this_week
 import rite.composeapp.generated.resources.today_section_weekly
-import rite.composeapp.generated.resources.today_timezone_changed_dismiss
-import rite.composeapp.generated.resources.today_timezone_changed_message
-import rite.composeapp.generated.resources.today_timezone_changed_title
 
-private val DIVIDER_ALPHA = 0.3f
-private val DIVIDER_HORIZONTAL_PADDING = 16.dp
 private val BOTTOM_CLEARANCE = 80.dp
 private val TOP_BREATHING_ROOM = 8.dp
 private val SECTION_GAP = 16.dp
@@ -261,7 +227,7 @@ internal fun TodayScreen(
         topBar = {
             Column {
                 if (state.showTimezoneWarning) {
-                    TimezoneWarningBanner(
+                    TimezoneBanner(
                         previousTimezone = state.previousTimezone,
                         onDismiss = onDismissTimezoneWarning
                     )
@@ -291,16 +257,7 @@ internal fun TodayScreen(
                 }
             }
         },
-        floatingActionButton = {
-            if (state.habits.isNotEmpty()) {
-                FloatingActionButton(onClick = onAddFirstHabit) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(Res.string.today_cd_add_habit)
-                    )
-                }
-            }
-        },
+        floatingActionButton = {},
         modifier = modifier.fillMaxSize()
     ) { scaffoldPadding ->
         when {
@@ -316,7 +273,7 @@ internal fun TodayScreen(
             }
 
             state.habits.isEmpty() -> {
-                EmptyHabitsMessage(onAddFirstHabit = onAddFirstHabit)
+                TodayEmptyState(onAddFirstHabit = onAddFirstHabit)
             }
 
             else -> {
@@ -381,10 +338,8 @@ internal fun TodayScreen(
 
                     if (state.resolvedDaily.isNotEmpty()) {
                         item(key = "daily_divider") {
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .alpha(DIVIDER_ALPHA)
-                                    .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
+                            RiteDivider(
+                                modifier = Modifier.padding(horizontal = RiteAppTheme.spacing.gap4)
                             )
                         }
 
@@ -472,10 +427,10 @@ internal fun TodayScreen(
 
                         if (state.resolvedWeekly.isNotEmpty()) {
                             item(key = "weekly_divider") {
-                                HorizontalDivider(
-                                    modifier = Modifier
-                                        .alpha(DIVIDER_ALPHA)
-                                        .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
+                                RiteDivider(
+                                    modifier = Modifier.padding(
+                                        horizontal = RiteAppTheme.spacing.gap4
+                                    )
                                 )
                             }
 
@@ -529,110 +484,4 @@ private fun rememberFormattedDate(): String {
     }
 
     return remember(localDate) { "$monthAbbreviation ${localDate.day}" }
-}
-
-@Composable
-private fun TimezoneWarningBanner(previousTimezone: String?, onDismiss: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = RiteAppTheme.colors.tertiaryContainer
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(Res.string.today_timezone_changed_title),
-                    style = RiteAppTheme.typography.titleSmall,
-                    color = RiteAppTheme.colors.onTertiaryContainer
-                )
-                Text(
-                    text = stringResource(
-                        Res.string.today_timezone_changed_message,
-                        previousTimezone ?: ""
-                    ),
-                    style = RiteAppTheme.typography.bodySmall,
-                    color = RiteAppTheme.colors.onTertiaryContainer
-                )
-            }
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.today_timezone_changed_dismiss))
-            }
-        }
-    }
-}
-
-@Composable
-private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // App icon
-        Image(
-            painter = painterResource(Res.drawable.habit_lock_logo),
-            contentDescription = null,
-            modifier = Modifier
-                .size(160.dp)
-                .clip(RoundedCornerShape(32.dp))
-                .background(
-                    RiteAppTheme.colors.surfaceContainerHighest.copy(alpha = 0.5f)
-                )
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Heading
-        Text(
-            text = stringResource(Res.string.today_empty_state_heading),
-            style = RiteAppTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = RiteAppTheme.colors.onSurface
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Subtext
-        Text(
-            text = stringResource(Res.string.today_empty_state_subtext),
-            style = RiteAppTheme.typography.bodyMedium,
-            color = RiteAppTheme.colors.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 48.dp)
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // CTA button
-        Button(
-            onClick = onAddFirstHabit,
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = RiteAppTheme.colors.primaryContainer,
-                contentColor = RiteAppTheme.colors.onPrimaryContainer
-            ),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(Res.string.today_empty_state_cta),
-                style = RiteAppTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
 }
