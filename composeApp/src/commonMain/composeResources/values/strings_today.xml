@@ -58,7 +58,8 @@
     <!-- Sections -->
     <string name="today_section_focus">Today's Focus</string>
     <string name="today_section_weekly">Weekly Goals</string>
-    <string name="today_section_this_week">This week</string>
+    <string name="today_section_kept_count">%1$d / %2$d kept</string>
+    <string name="today_section_met_count">%1$d / %2$d met</string>
 
     <!-- Card badges -->
     <string name="today_badge_pending">Pending</string>

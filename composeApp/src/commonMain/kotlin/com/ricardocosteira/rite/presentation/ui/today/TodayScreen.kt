@@ -8,13 +8,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -39,10 +44,6 @@ import com.ricardocosteira.rite.presentation.ui.components.toolbar.DynamicCollap
 import com.ricardocosteira.rite.presentation.ui.components.toolbar.pinnedExitUntilCollapsedToolbarSpec
 import com.ricardocosteira.rite.presentation.ui.haptics.rememberHapticController
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
-import com.ricardocosteira.rite.util.formatMonthAbbreviation
-import kotlin.time.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
@@ -59,8 +60,10 @@ import rite.composeapp.generated.resources.snackbar_skipped_prefix
 import rite.composeapp.generated.resources.snackbar_skipped_subtext_remaining
 import rite.composeapp.generated.resources.snackbar_skipped_suffix
 import rite.composeapp.generated.resources.swipe_undo
+import rite.composeapp.generated.resources.today_cd_add_habit
 import rite.composeapp.generated.resources.today_section_focus
-import rite.composeapp.generated.resources.today_section_this_week
+import rite.composeapp.generated.resources.today_section_kept_count
+import rite.composeapp.generated.resources.today_section_met_count
 import rite.composeapp.generated.resources.today_section_weekly
 
 private val BOTTOM_CLEARANCE = 80.dp
@@ -257,7 +260,26 @@ internal fun TodayScreen(
                 }
             }
         },
-        floatingActionButton = {},
+        floatingActionButton = {
+            if (state.habits.isNotEmpty()) {
+                FloatingActionButton(
+                    onClick = onAddFirstHabit,
+                    shape = CircleShape,
+                    containerColor = RiteAppTheme.colors.onSurface,
+                    contentColor = RiteAppTheme.colors.surface,
+                    elevation = FloatingActionButtonDefaults.elevation(
+                        defaultElevation = 0.dp,
+                        pressedElevation = 0.dp
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(Res.string.today_cd_add_habit),
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+            }
+        },
         modifier = modifier.fillMaxSize()
     ) { scaffoldPadding ->
         when {
@@ -277,7 +299,20 @@ internal fun TodayScreen(
             }
 
             else -> {
-                val formattedDate: String = rememberFormattedDate()
+                val dailyTotal = state.pendingDaily.size + state.resolvedDaily.size
+                val dailyKept = state.resolvedDaily.size
+                val dailyTrailing = stringResource(
+                    Res.string.today_section_kept_count,
+                    dailyKept,
+                    dailyTotal
+                )
+                val weeklyTotal = state.pendingWeekly.size + state.resolvedWeekly.size
+                val weeklyMet = state.resolvedWeekly.size
+                val weeklyTrailing = stringResource(
+                    Res.string.today_section_met_count,
+                    weeklyMet,
+                    weeklyTotal
+                )
 
                 LazyColumn(
                     state = lazyListState,
@@ -296,7 +331,7 @@ internal fun TodayScreen(
                     item(key = "daily_header") {
                         SectionHeader(
                             title = stringResource(Res.string.today_section_focus),
-                            trailingLabel = formattedDate
+                            trailingLabel = dailyTrailing
                         )
                     }
 
@@ -384,7 +419,7 @@ internal fun TodayScreen(
                         item(key = "weekly_header") {
                             SectionHeader(
                                 title = stringResource(Res.string.today_section_weekly),
-                                trailingLabel = stringResource(Res.string.today_section_this_week)
+                                trailingLabel = weeklyTrailing
                             )
                         }
 
@@ -470,18 +505,4 @@ internal fun TodayScreen(
             }
         }
     }
-}
-
-@Composable
-private fun rememberFormattedDate(): String {
-    val now = remember { Clock.System.now() }
-    val localDate = remember(now) {
-        now.toLocalDateTime(TimeZone.currentSystemDefault()).date
-    }
-
-    val monthAbbreviation: String = remember(localDate) {
-        formatMonthAbbreviation(localDate.month)
-    }
-
-    return remember(localDate) { "$monthAbbreviation ${localDate.day}" }
 }
