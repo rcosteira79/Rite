@@ -217,7 +217,7 @@ class TodayViewModel(
                 _state.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message,
+                        error = e.message ?: "Something went wrong",
                         motivationalTitleRes = motivationalTitleResource(
                             motivationalTitleIndexForDate(today)
                         )
@@ -246,9 +246,9 @@ class TodayViewModel(
             result.onSuccess {
                 cancelReminderForHabit(instanceId, habit.habitId)
                 loadTodayHabits()
-                // No snackbar — card state change is the feedback
+                _events.emit(TodayEvent.HabitCompleted(habit.name, newStreak = null))
             }.onFailure { error ->
-                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+                _events.emit(TodayEvent.ShowError(error.message))
             }
         }
     }
@@ -267,10 +267,11 @@ class TodayViewModel(
             result.onSuccess { updatedInstance ->
                 if (updatedInstance.isQuantitativeComplete() && habit != null) {
                     cancelReminderForHabit(instanceId, habit.habitId)
+                    _events.emit(TodayEvent.HabitCompleted(habit.name, newStreak = null))
                 }
                 loadTodayHabits()
             }.onFailure { error ->
-                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+                _events.emit(TodayEvent.ShowError(error.message))
             }
         }
     }
@@ -289,10 +290,11 @@ class TodayViewModel(
             result.onSuccess { updatedInstance: HabitInstance ->
                 if (updatedInstance.isQuantitativeComplete()) {
                     cancelReminderForHabit(instanceId, habit.habitId)
+                    _events.emit(TodayEvent.HabitCompleted(habit.name, newStreak = null))
                 }
                 loadTodayHabits()
             }.onFailure { error: Throwable ->
-                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+                _events.emit(TodayEvent.ShowError(error.message))
             }
         }
     }
@@ -313,14 +315,14 @@ class TodayViewModel(
             result.onSuccess {
                 if (habit != null) cancelReminderForHabit(instanceId, habit.habitId)
                 loadTodayHabits()
+                _events.emit(TodayEvent.HabitSkipped(habit?.name ?: "", skipsRemaining = null))
             }.onFailure { error ->
                 when (error) {
-                    is SkipLockedException -> _events.emit(TodayEvent.SkipLimitReached)
+                    is SkipLockedException ->
+                        _events.emit(TodayEvent.SkipLimitReached(habit?.name ?: ""))
 
                     else ->
-                        _events.emit(
-                            TodayEvent.ShowError(error.message ?: "Something went wrong")
-                        )
+                        _events.emit(TodayEvent.ShowError(error.message))
                 }
             }
         }
@@ -334,7 +336,7 @@ class TodayViewModel(
                 loadTodayHabits()
                 // No snackbar — card state revert is the feedback
             }.onFailure { error ->
-                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+                _events.emit(TodayEvent.ShowError(error.message))
             }
         }
     }
@@ -346,7 +348,7 @@ class TodayViewModel(
             result.onSuccess {
                 loadTodayHabits()
             }.onFailure { error ->
-                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+                _events.emit(TodayEvent.ShowError(error.message))
             }
         }
     }
@@ -369,7 +371,7 @@ class TodayViewModel(
                 habitRepository.deleteHabit(habitId)
                 _state.update { it.copy(pendingDelete = null) }
             } catch (e: Exception) {
-                _events.emit(TodayEvent.ShowError(e.message ?: "Failed to delete habit"))
+                _events.emit(TodayEvent.ShowError(e.message))
                 loadTodayHabits()
             }
         }
@@ -395,9 +397,7 @@ class TodayViewModel(
             try {
                 habitRepository.deleteHabit(previousDelete.habitId)
             } catch (e: Exception) {
-                _events.emit(
-                    TodayEvent.ShowError(e.message ?: "Failed to delete habit")
-                )
+                _events.emit(TodayEvent.ShowError(e.message))
             }
         }
     }
@@ -436,7 +436,7 @@ class TodayViewModel(
                 habitRepository.archiveHabit(habitId)
                 loadTodayHabits()
             } catch (e: Exception) {
-                _events.emit(TodayEvent.ShowError(e.message ?: "Something went wrong"))
+                _events.emit(TodayEvent.ShowError(e.message))
             }
         }
     }

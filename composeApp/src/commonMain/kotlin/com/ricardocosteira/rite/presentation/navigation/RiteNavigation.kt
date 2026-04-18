@@ -23,10 +23,15 @@ import androidx.savedstate.serialization.SavedStateConfiguration
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.presentation.ui.archived.ArchivedHabitsScreen
 import com.ricardocosteira.rite.presentation.ui.calendar.CalendarScreen
+import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbar
+import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarContent
+import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVariant
+import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVisuals
 import com.ricardocosteira.rite.presentation.ui.habit.HabitFormScreen
 import com.ricardocosteira.rite.presentation.ui.habitdetail.HabitDetailRoute
 import com.ricardocosteira.rite.presentation.ui.onboarding.OnboardingRoute
 import com.ricardocosteira.rite.presentation.ui.settings.SettingsScreen
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import com.ricardocosteira.rite.presentation.ui.today.TodayScreen
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -84,7 +89,40 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                 )
             }
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) { data ->
+                val visuals = data.visuals
+                if (visuals is RiteSnackbarVisuals) {
+                    RiteSnackbar(
+                        variant = visuals.variant,
+                        content = visuals.content.copy(
+                            action = visuals.actionLabel?.let { label ->
+                                @Composable {
+                                    androidx.compose.material3.TextButton(
+                                        onClick = { data.performAction() }
+                                    ) {
+                                        androidx.compose.material3.Text(
+                                            text = label.uppercase(),
+                                            style = RiteAppTheme.typography.eyebrow
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    )
+                } else {
+                    // Plain-string fallback from screens not yet migrated.
+                    RiteSnackbar(
+                        variant = RiteSnackbarVariant.Completed,
+                        content = RiteSnackbarContent(
+                            prefix = visuals.message,
+                            emphasized = "",
+                            suffix = ""
+                        )
+                    )
+                }
+            }
+        }
     ) { scaffoldPadding ->
         NavDisplay(
             backStack = backStack,
