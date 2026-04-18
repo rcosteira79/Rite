@@ -62,7 +62,7 @@ fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = 
             else -> Color.Transparent
         }
 
-    val effectiveFill = fillFraction.coerceIn(0f, 1f)
+    val effectiveFill = if (state == HabitCardState.Failed) 1f else fillFraction.coerceIn(0f, 1f)
 
     Canvas(modifier = modifier.fillMaxHeight()) {
         val widthPx = (if (dashed) DASHED_WIDTH else RULE_WIDTH).toPx()

@@ -37,6 +37,8 @@ class MarginRuleScreenshotTest {
 
     @Test fun failed_full() = render(HabitCardState.Failed, 1f)
 
+    @Test fun failed_ignores_partial_fraction() = render(HabitCardState.Failed, 0.2f)
+
     @Test fun skipped_dashed() = render(HabitCardState.Skipped, 0f)
 
     @Test fun suspended_dashed() = render(HabitCardState.Suspended, 0f)
