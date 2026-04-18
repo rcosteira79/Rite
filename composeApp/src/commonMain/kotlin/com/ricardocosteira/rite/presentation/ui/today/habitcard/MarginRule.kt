@@ -28,7 +28,7 @@ fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = 
 
     val trackColor: Color =
         when (state) {
-            HabitCardState.Pending, HabitCardState.PendingInProgress -> colors.surfaceVariant
+            HabitCardState.Pending, HabitCardState.PendingInProgress -> colors.outline
 
             HabitCardState.Completed ->
                 Color(

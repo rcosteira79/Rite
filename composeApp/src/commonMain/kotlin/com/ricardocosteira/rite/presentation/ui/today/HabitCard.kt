@@ -1,5 +1,8 @@
 package com.ricardocosteira.rite.presentation.ui.today
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,11 +15,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitType
@@ -53,18 +58,27 @@ fun HabitCard(
             progressPercentage = habit.progressPercentage,
         )
     val colors = RiteAppTheme.colors
-    val background: Color = when (visuals.state) {
+    val motion = RiteAppTheme.motion
+    val targetBackground: Color = when (visuals.state) {
         HabitCardState.Pending, HabitCardState.PendingInProgress -> colors.surface
         HabitCardState.Completed -> colors.primaryContainer.copy(alpha = 0.55f)
         HabitCardState.Failed -> colors.errorContainer.copy(alpha = 0.5f)
         HabitCardState.Suspended -> colors.suspend.copy(alpha = 0.1f)
         HabitCardState.Skipped -> Color.Transparent
     }
+    val animatedBackground by animateColorAsState(
+        targetValue = targetBackground,
+        animationSpec = tween(
+            durationMillis = motion.deliberate.inWholeMilliseconds.toInt(),
+            easing = motion.easeQuiet
+        ),
+        label = "habit-card-bg"
+    )
 
     Surface(
         onClick = onClick,
         shape = RiteAppTheme.shapes.sm,
-        color = background,
+        color = animatedBackground,
         contentColor = colors.onSurface,
         border = BorderStroke(1.dp, colors.outlineVariant),
         modifier = modifier.fillMaxWidth(),
@@ -116,7 +130,8 @@ private fun HabitCardBody(
     modifier: Modifier = Modifier,
 ) {
     val colors = RiteAppTheme.colors
-    val nameColor: Color =
+    val motion = RiteAppTheme.motion
+    val targetNameColor: Color =
         when (state) {
             HabitCardState.Completed -> colors.primary
             HabitCardState.Failed -> colors.error
@@ -124,8 +139,22 @@ private fun HabitCardBody(
             HabitCardState.Suspended -> colors.suspend
             else -> colors.onSurface
         }
-    val nameDecoration: TextDecoration =
-        if (state == HabitCardState.Completed) TextDecoration.LineThrough else TextDecoration.None
+    val animatedNameColor by animateColorAsState(
+        targetValue = targetNameColor,
+        animationSpec = tween(
+            durationMillis = motion.deliberate.inWholeMilliseconds.toInt(),
+            easing = motion.easeQuiet
+        ),
+        label = "habit-card-name-color"
+    )
+    val strikethroughProgress by animateFloatAsState(
+        targetValue = if (state == HabitCardState.Completed) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = motion.deliberate.inWholeMilliseconds.toInt(),
+            easing = motion.easeQuiet
+        ),
+        label = "habit-card-strikethrough"
+    )
     val nameStyle =
         RiteAppTheme.typography.titleLarge.copy(
             fontStyle = if (state ==
@@ -134,8 +163,9 @@ private fun HabitCardBody(
                 FontStyle.Italic
             } else {
                 FontStyle.Normal
-            },
+            }
         )
+    val strikeColor = animatedNameColor.copy(alpha = 0.5f)
 
     Column(
         modifier = modifier,
@@ -148,10 +178,21 @@ private fun HabitCardBody(
         Text(
             text = habit.name,
             style = nameStyle,
-            color = nameColor,
+            color = animatedNameColor,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            textDecoration = nameDecoration,
+            modifier = Modifier.drawWithContent {
+                drawContent()
+                if (strikethroughProgress > 0f) {
+                    val y = size.height / 2f
+                    drawLine(
+                        color = strikeColor,
+                        start = Offset(0f, y),
+                        end = Offset(size.width * strikethroughProgress, y),
+                        strokeWidth = 1.dp.toPx()
+                    )
+                }
+            }
         )
         val sub: String? = habitCardSubText(habit, state)
         if (sub != null) {

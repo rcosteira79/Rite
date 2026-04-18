@@ -15,7 +15,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
@@ -182,17 +188,30 @@ private fun UndoPill(onClick: () -> Unit, variant: UndoVariant = UndoVariant.Pri
 }
 
 @Composable
-private fun Stamp(label: String, stateColor: Color,) {
-    Surface(
-        shape = RiteAppTheme.shapes.xs,
-        color = Color.Transparent,
-        contentColor = stateColor,
-        border = BorderStroke(1.dp, stateColor.copy(alpha = 0.45f)),
+private fun Stamp(label: String, stateColor: Color) {
+    val strokeColor = stateColor.copy(alpha = 0.45f)
+    Box(
+        modifier = Modifier
+            .drawBehind {
+                val corner = CornerRadius(2.dp.toPx(), 2.dp.toPx())
+                val strokeWidth = 1.dp.toPx()
+                drawRoundRect(
+                    color = strokeColor,
+                    cornerRadius = corner,
+                    style = Stroke(
+                        width = strokeWidth,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 4f), 0f)
+                    ),
+                    topLeft = Offset(strokeWidth / 2f, strokeWidth / 2f),
+                    size = Size(size.width - strokeWidth, size.height - strokeWidth)
+                )
+            }
+            .padding(horizontal = 9.dp, vertical = 5.dp)
     ) {
         Text(
             text = label.uppercase(),
             style = RiteAppTheme.typography.eyebrow,
-            modifier = Modifier.padding(horizontal = 9.dp, vertical = 5.dp),
+            color = stateColor
         )
     }
 }
