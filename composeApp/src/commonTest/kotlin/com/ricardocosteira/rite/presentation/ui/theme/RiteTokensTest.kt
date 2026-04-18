@@ -1,5 +1,6 @@
 package com.ricardocosteira.rite.presentation.ui.theme
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -114,5 +115,27 @@ class RiteTokensTest {
             m3.bodyLarge, m3.bodyMedium, m3.bodySmall,
             m3.labelLarge, m3.labelMedium, m3.labelSmall
         ).forEach { assertEquals(TextStyle.Default, it) }
+    }
+
+    @Test
+    fun `LightSageColors has spec-defined hex values for key slots`() {
+        assertEquals(Color(0xFF5E7F6C), LightSageColors.primary) // c-accent
+        assertEquals(Color(0xFFCFDDD1), LightSageColors.primaryContainer) // c-accent-soft
+        assertEquals(Color(0xFFF6F1EA), LightSageColors.background) // c-bg
+        assertEquals(Color(0xFF1F1E1B), LightSageColors.onSurface) // c-ink
+        assertEquals(Color(0xFF6B6459), LightSageColors.onSurfaceMuted) // c-ink-3
+        assertEquals(Color(0xFFA67A3A), LightSageColors.warn) // c-warn
+        assertEquals(Color(0xFF7A6E85), LightSageColors.suspend) // c-suspend
+        assertEquals(Color(0xFF5E7F6C), LightSageColors.dayPerfect) // = primary
+        assertEquals(Color.Transparent, LightSageColors.dayNone)
+    }
+
+    @Test
+    fun `DarkSageColors has spec-defined hex values for key slots`() {
+        assertEquals(Color(0xFF9FBDA9), DarkSageColors.primary)
+        assertEquals(Color(0xFF141413), DarkSageColors.background)
+        assertEquals(Color(0xFFEDE6D9), DarkSageColors.onSurface)
+        assertEquals(Color(0xFFD0A262), DarkSageColors.warn)
+        assertEquals(Color(0xFFA396AE), DarkSageColors.suspend)
     }
 }
