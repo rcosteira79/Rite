@@ -5,11 +5,11 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 
 enum class SwipeAction(
     val unarmedIcon: ImageVector?,
@@ -36,7 +36,7 @@ enum class SwipeAction(
     fun backgroundColor(): Color = when (this) {
         DELETE -> RiteAppTheme.colors.errorContainer
         EDIT -> RiteAppTheme.colors.secondaryContainer
-        REST -> RiteAppTheme.colors.surface
+        REST -> RiteAppTheme.colors.background
     }
 
     @Composable
