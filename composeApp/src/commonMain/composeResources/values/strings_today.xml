@@ -2,7 +2,6 @@
 <resources>
     <string name="today_cd_add_habit">Add Habit</string>
     <string name="today_timezone_changed_title">Timezone changed</string>
-    <string name="today_timezone_changed_message">Your timezone has changed from %1$s. Past data remains unchanged.</string>
     <string name="today_timezone_changed_dismiss">Dismiss</string>
     <string name="today_timezone_changed_body_with_previous">Past data stays in {from}. New entries use your current timezone.</string>
     <string name="today_timezone_changed_body_without_previous">Past data stays in your previous timezone. New entries use your current one.</string>
