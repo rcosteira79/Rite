@@ -61,4 +61,6 @@
     <string name="habit_form_increment_label">INCREMENT BY</string>
     <string name="habit_form_placeholder_increment">1</string>
     <string name="habit_form_increment_hint">Quick-increment amount on the Today screen</string>
+    <string name="habit_form_schedule_specific_days">Specific days</string>
+    <string name="habit_form_schedule_any_day">Any day</string>
 </resources>

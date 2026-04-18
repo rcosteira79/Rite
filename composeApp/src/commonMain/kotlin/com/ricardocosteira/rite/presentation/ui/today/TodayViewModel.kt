@@ -179,13 +179,13 @@ class TodayViewModel(
                     HabitStatus.FAILED
                 )
 
+                // Fixed weekly habits go into "Today's Focus" alongside daily habits.
+                // Only flexible weekly habits go into "Weekly Goals".
                 val dailyHabits: List<TodayHabitUiModel> = habits.filter {
-                    it.isDaily &&
-                        !it.isSuspended
+                    (it.isDaily || it.isFixedWeekly) && !it.isSuspended
                 }
                 val weeklyHabits: List<TodayHabitUiModel> = habits.filter {
-                    it.isWeekly &&
-                        !it.isSuspended
+                    it.isFlexibleWeekly && !it.isSuspended
                 }
 
                 val (pendingDaily: List<TodayHabitUiModel>, resolvedDaily: List<TodayHabitUiModel>) =

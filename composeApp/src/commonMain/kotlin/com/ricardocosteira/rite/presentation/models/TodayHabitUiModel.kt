@@ -50,7 +50,9 @@ data class TodayHabitUiModel(
     val scoreText: String get() = "$scorePercentage%"
 
     val isDaily: Boolean get() = cadence == ScheduleType.DAILY
-    val isWeekly: Boolean get() = cadence == ScheduleType.WEEKLY
+    val isFixedWeekly: Boolean get() = cadence == ScheduleType.WEEKLY
+    val isFlexibleWeekly: Boolean get() = cadence == ScheduleType.FLEXIBLE_WEEKLY
+    val isWeekly: Boolean get() = isFixedWeekly || isFlexibleWeekly
 }
 
 /**

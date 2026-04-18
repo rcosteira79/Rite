@@ -322,11 +322,13 @@ internal fun TodayScreen(
                                 HabitCard(
                                     habit = habit,
 
-                                    onClick = {},
+                                    onClick = { onNavigateToDetail(habit.instanceId) },
                                     onComplete = {},
                                     onSkip = {},
                                     onUndo = {
-                                        if (habit.type == HabitType.QUANTITATIVE) {
+                                        if (habit.type == HabitType.QUANTITATIVE &&
+                                            habit.isCompleted
+                                        ) {
                                             onUndoLastIncrement(habit.instanceId)
                                         } else {
                                             onUndo(habit.instanceId)
@@ -411,11 +413,13 @@ internal fun TodayScreen(
                                     HabitCard(
                                         habit = habit,
 
-                                        onClick = {},
+                                        onClick = { onNavigateToDetail(habit.instanceId) },
                                         onComplete = {},
                                         onSkip = {},
                                         onUndo = {
-                                            if (habit.type == HabitType.QUANTITATIVE) {
+                                            if (habit.type == HabitType.QUANTITATIVE &&
+                                                habit.isCompleted
+                                            ) {
                                                 onUndoLastIncrement(habit.instanceId)
                                             } else {
                                                 onUndo(habit.instanceId)

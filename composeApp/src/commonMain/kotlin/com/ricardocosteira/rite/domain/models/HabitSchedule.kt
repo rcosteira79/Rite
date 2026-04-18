@@ -5,16 +5,16 @@ import kotlinx.datetime.LocalDate
 
 /**
  * Schedule defining when a habit is expected.
- * Supports both DAILY and WEEKLY cadences.
+ * Supports DAILY, WEEKLY (specific days), and FLEXIBLE_WEEKLY (any day) cadences.
  *
  * @property id Unique identifier for the schedule
  * @property habitId ID of the associated habit
- * @property scheduleType Type of schedule (DAILY or WEEKLY)
+ * @property scheduleType Type of schedule (DAILY, WEEKLY, or FLEXIBLE_WEEKLY)
  * @property startDate When the schedule becomes active
  * @property endDate When the schedule ends (null for ongoing)
  * @property quota Number of completions required per cadence window (default: 1)
- * @property weekStartDay Day the week starts on (for WEEKLY schedules, default: Monday)
- * @property specificDays Specific days when habit should be done (for WEEKLY, null = all days)
+ * @property weekStartDay Day the week starts on (for weekly schedules, default: Monday)
+ * @property specificDays Specific days when habit should be done (for WEEKLY only, null for others)
  */
 data class HabitSchedule(
     val id: String,
@@ -29,7 +29,14 @@ data class HabitSchedule(
     init {
         require(quota > 0) { "Quota must be greater than 0" }
         if (scheduleType == ScheduleType.WEEKLY && specificDays != null) {
-            require(specificDays.isNotEmpty()) { "Specific days cannot be empty for weekly schedules" }
+            require(specificDays.isNotEmpty()) {
+                "Specific days cannot be empty for weekly schedules"
+            }
+        }
+        if (scheduleType == ScheduleType.FLEXIBLE_WEEKLY) {
+            require(specificDays == null) {
+                "Flexible weekly schedules must not have specific days"
+            }
         }
     }
 
@@ -42,9 +49,12 @@ data class HabitSchedule(
 
         return when (scheduleType) {
             ScheduleType.DAILY -> true
+
             ScheduleType.WEEKLY -> {
                 specificDays?.contains(date.dayOfWeek) ?: true
             }
+
+            ScheduleType.FLEXIBLE_WEEKLY -> true
         }
     }
 }
@@ -59,7 +69,12 @@ enum class ScheduleType {
     DAILY,
 
     /**
-     * Habit resets weekly. Quota must be completed within the week.
+     * Habit resets weekly on specific days. Quota must be completed within the week.
      */
-    WEEKLY
+    WEEKLY,
+
+    /**
+     * Habit resets weekly with no specific days. Can be completed any day within the week.
+     */
+    FLEXIBLE_WEEKLY
 }

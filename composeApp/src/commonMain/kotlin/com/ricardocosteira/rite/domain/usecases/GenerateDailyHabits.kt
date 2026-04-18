@@ -82,7 +82,8 @@ class GenerateDailyHabits(
                     }
                 }
 
-                ScheduleType.WEEKLY -> {
+                ScheduleType.WEEKLY,
+                ScheduleType.FLEXIBLE_WEEKLY -> {
                     // Create a weekly instance if none exists for the current week.
                     // Unlike daily habits, weekly instances use the week start date
                     // so they persist across the entire week.

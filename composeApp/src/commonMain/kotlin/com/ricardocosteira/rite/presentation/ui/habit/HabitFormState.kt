@@ -42,7 +42,7 @@ data class HabitFormState(
         val typeValid =
             type == HabitType.BINARY || targetValue.toIntOrNull()?.let { it > 0 } == true
         val quotaValid = quota.toIntOrNull()?.let { it > 0 } == true
-        val daysValid = scheduleType == ScheduleType.DAILY || selectedDays.isNotEmpty()
+        val daysValid = scheduleType != ScheduleType.WEEKLY || selectedDays.isNotEmpty()
 
         return nameValid && typeValid && quotaValid && daysValid
     }

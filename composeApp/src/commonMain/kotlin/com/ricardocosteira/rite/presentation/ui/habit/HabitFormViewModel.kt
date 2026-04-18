@@ -273,10 +273,11 @@ class HabitFormViewModel(
 
     private suspend fun createNewHabit(state: HabitFormState, reminder: HabitReminder?) {
         val today = Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
-        val specificDays = if (state.scheduleType == ScheduleType.WEEKLY) {
-            state.selectedDays
-        } else {
-            null
+        val specificDays: Set<DayOfWeek>? = when (state.scheduleType) {
+            ScheduleType.WEEKLY -> state.selectedDays
+
+            ScheduleType.DAILY,
+            ScheduleType.FLEXIBLE_WEEKLY -> null
         }
 
         val habit: Habit = createHabit
@@ -332,10 +333,11 @@ class HabitFormViewModel(
 
         habitRepository.updateHabit(updatedHabit)
 
-        val specificDays = if (state.scheduleType == ScheduleType.WEEKLY) {
-            state.selectedDays
-        } else {
-            null
+        val specificDays: Set<DayOfWeek>? = when (state.scheduleType) {
+            ScheduleType.WEEKLY -> state.selectedDays
+
+            ScheduleType.DAILY,
+            ScheduleType.FLEXIBLE_WEEKLY -> null
         }
         val existingSchedule = habitRepository.getScheduleForHabit(habitId)
 
