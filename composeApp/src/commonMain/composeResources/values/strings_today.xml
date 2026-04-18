@@ -4,6 +4,8 @@
     <string name="today_timezone_changed_title">Timezone changed</string>
     <string name="today_timezone_changed_message">Your timezone has changed from %1$s. Past data remains unchanged.</string>
     <string name="today_timezone_changed_dismiss">Dismiss</string>
+    <string name="today_timezone_changed_body_with_previous">Past data stays in {from}. New entries use your current timezone.</string>
+    <string name="today_timezone_changed_body_without_previous">Past data stays in your previous timezone. New entries use your current one.</string>
     <string name="today_empty_state_heading">Structure your day.</string>
     <string name="today_empty_state_subtext">Commit to your first habit and begin the path of intentional discipline.</string>
     <string name="today_empty_state_cta">Add Your First Habit</string>
