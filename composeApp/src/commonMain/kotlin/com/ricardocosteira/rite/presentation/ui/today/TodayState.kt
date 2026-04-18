@@ -2,8 +2,7 @@ package com.ricardocosteira.rite.presentation.ui.today
 
 import com.ricardocosteira.rite.domain.models.StrictnessPreset
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
-import rite.composeapp.generated.resources.Res
-import rite.composeapp.generated.resources.today_error_skip_limit_reached
+import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVisuals
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.StringResource
@@ -41,17 +40,17 @@ sealed interface TodayEvent {
 
     data object NavigateToCreateHabit : TodayEvent
 
-    sealed interface ShowSnackbar : TodayEvent {
-        val messageRes: StringResource
-    }
+    data class ShowSnackbar(val visuals: RiteSnackbarVisuals) : TodayEvent
 
-    data object SkipLimitReached : ShowSnackbar {
-        override val messageRes: StringResource = Res.string.today_error_skip_limit_reached
-    }
+    data class HabitCompleted(val habitName: String, val newStreak: Int?) : TodayEvent
 
-    data class ShowError(val message: String) : TodayEvent
+    data class HabitSkipped(val habitName: String, val skipsRemaining: Int?) : TodayEvent
 
     data class HabitDeleted(val habitName: String) : TodayEvent
+
+    data class SkipLimitReached(val habitName: String) : TodayEvent
+
+    data class ShowError(val message: String?) : TodayEvent
 
     data object UndoCompleted : TodayEvent
 }

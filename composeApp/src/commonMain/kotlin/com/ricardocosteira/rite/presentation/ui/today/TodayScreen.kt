@@ -54,6 +54,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
+import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarContent
+import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVariant
+import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVisuals
 import com.ricardocosteira.rite.presentation.ui.components.toolbar.DynamicCollapsingToolbar
 import com.ricardocosteira.rite.presentation.ui.components.toolbar.pinnedExitUntilCollapsedToolbarSpec
 import com.ricardocosteira.rite.presentation.ui.haptics.HapticController
@@ -68,7 +71,18 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.habit_lock_logo
-import rite.composeapp.generated.resources.swipe_habit_deleted
+import rite.composeapp.generated.resources.snackbar_completed_prefix
+import rite.composeapp.generated.resources.snackbar_completed_suffix_no_streak
+import rite.composeapp.generated.resources.snackbar_completed_suffix_with_streak
+import rite.composeapp.generated.resources.snackbar_deleted_prefix
+import rite.composeapp.generated.resources.snackbar_deleted_suffix
+import rite.composeapp.generated.resources.snackbar_failed_prefix
+import rite.composeapp.generated.resources.snackbar_failed_subtext_limit
+import rite.composeapp.generated.resources.snackbar_failed_suffix
+import rite.composeapp.generated.resources.snackbar_generic_error
+import rite.composeapp.generated.resources.snackbar_skipped_prefix
+import rite.composeapp.generated.resources.snackbar_skipped_subtext_remaining
+import rite.composeapp.generated.resources.snackbar_skipped_suffix
 import rite.composeapp.generated.resources.swipe_undo
 import rite.composeapp.generated.resources.today_cd_add_habit
 import rite.composeapp.generated.resources.today_empty_state_cta
@@ -104,23 +118,85 @@ fun TodayScreen(
 
                 TodayEvent.NavigateToCreateHabit -> onNavigateToCreateHabit()
 
-                is TodayEvent.ShowSnackbar ->
+                is TodayEvent.HabitCompleted -> {
+                    val suffix = event.newStreak?.let {
+                        getString(Res.string.snackbar_completed_suffix_with_streak, it)
+                    } ?: getString(Res.string.snackbar_completed_suffix_no_streak)
                     snackbarHostState.showSnackbar(
-                        getString(event.messageRes)
+                        RiteSnackbarVisuals(
+                            variant = RiteSnackbarVariant.Completed,
+                            content = RiteSnackbarContent(
+                                prefix = getString(Res.string.snackbar_completed_prefix),
+                                emphasized = event.habitName,
+                                suffix = suffix
+                            )
+                        )
                     )
+                }
 
-                is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
+                is TodayEvent.HabitSkipped -> {
+                    val subtext = event.skipsRemaining?.let {
+                        val pluralS = if (it == 1) "" else "s"
+                        getString(Res.string.snackbar_skipped_subtext_remaining, it, pluralS)
+                    }
+                    snackbarHostState.showSnackbar(
+                        RiteSnackbarVisuals(
+                            variant = RiteSnackbarVariant.Skipped,
+                            content = RiteSnackbarContent(
+                                prefix = getString(Res.string.snackbar_skipped_prefix),
+                                emphasized = event.habitName,
+                                suffix = getString(Res.string.snackbar_skipped_suffix),
+                                subtext = subtext
+                            )
+                        )
+                    )
+                }
+
+                is TodayEvent.SkipLimitReached -> {
+                    snackbarHostState.showSnackbar(
+                        RiteSnackbarVisuals(
+                            variant = RiteSnackbarVariant.Failed,
+                            content = RiteSnackbarContent(
+                                prefix = getString(Res.string.snackbar_failed_prefix),
+                                emphasized = event.habitName,
+                                suffix = getString(Res.string.snackbar_failed_suffix),
+                                subtext = getString(Res.string.snackbar_failed_subtext_limit)
+                            )
+                        )
+                    )
+                }
 
                 is TodayEvent.HabitDeleted -> {
                     val result = snackbarHostState.showSnackbar(
-                        message = getString(Res.string.swipe_habit_deleted),
-                        actionLabel = getString(Res.string.swipe_undo),
-                        duration = SnackbarDuration.Long
+                        RiteSnackbarVisuals(
+                            variant = RiteSnackbarVariant.Skipped,
+                            content = RiteSnackbarContent(
+                                prefix = getString(Res.string.snackbar_deleted_prefix),
+                                emphasized = event.habitName,
+                                suffix = getString(Res.string.snackbar_deleted_suffix)
+                            ),
+                            actionLabel = getString(Res.string.swipe_undo),
+                            duration = SnackbarDuration.Long
+                        )
                     )
                     if (result == SnackbarResult.ActionPerformed) {
                         viewModel.undoDelete()
                     }
                 }
+
+                is TodayEvent.ShowError -> snackbarHostState.showSnackbar(
+                    RiteSnackbarVisuals(
+                        variant = RiteSnackbarVariant.Failed,
+                        content = RiteSnackbarContent(
+                            prefix = "",
+                            emphasized =
+                                event.message ?: getString(Res.string.snackbar_generic_error),
+                            suffix = ""
+                        )
+                    )
+                )
+
+                is TodayEvent.ShowSnackbar -> snackbarHostState.showSnackbar(event.visuals)
 
                 TodayEvent.UndoCompleted -> {
                     snackbarHostState.currentSnackbarData?.dismiss()
