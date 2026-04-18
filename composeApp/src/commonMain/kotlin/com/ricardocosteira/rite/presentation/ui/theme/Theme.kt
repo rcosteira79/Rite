@@ -11,7 +11,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 val LocalRiteColorScheme = staticCompositionLocalOf { LightSageColors }
 
 object RiteAppTheme {
-    val colors: RiteColorSchemeV2
+    val colors: RiteColorScheme
         @Composable @ReadOnlyComposable
         get() = LocalRiteColorScheme.current
 

@@ -2,7 +2,7 @@ package com.ricardocosteira.rite.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val LightSageColors = RiteColorSchemeV2(
+val LightSageColors = RiteColorScheme(
     // M3 core
     primary = Color(0xFF5E7F6C),
     onPrimary = Color(0xFFFBF7F1),
@@ -63,7 +63,7 @@ val LightSageColors = RiteColorSchemeV2(
     isLight = true
 )
 
-val DarkSageColors = RiteColorSchemeV2(
+val DarkSageColors = RiteColorScheme(
     // M3 core
     primary = Color(0xFF9FBDA9),
     onPrimary = Color(0xFF141413),

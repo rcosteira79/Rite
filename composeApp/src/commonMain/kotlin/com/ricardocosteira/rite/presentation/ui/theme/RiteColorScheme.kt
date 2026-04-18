@@ -7,7 +7,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 @Immutable
-data class RiteColorSchemeV2(
+data class RiteColorScheme(
     // M3 core
     val primary: Color,
     val onPrimary: Color,
