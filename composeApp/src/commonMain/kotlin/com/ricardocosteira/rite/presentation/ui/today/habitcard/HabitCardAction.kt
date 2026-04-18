@@ -148,7 +148,7 @@ private fun SkipChip(onClick: () -> Unit) {
     }
 }
 
-enum class UndoVariant {
+internal enum class UndoVariant {
     Primary,
     Skip,
 }
