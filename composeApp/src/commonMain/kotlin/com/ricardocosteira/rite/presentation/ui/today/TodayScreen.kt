@@ -198,16 +198,18 @@ internal fun TodayScreen(
                         collapsedElevation = 0.dp
                     ) { scrollProgress ->
                         TodayHeader(
-                            motivationalTitle = state.motivationalTitleRes?.let {
-                                stringResource(it)
-                            } ?: "",
+                            saluteKey = state.motivationalTitleRes,
                             pendingCount = state.pendingCount,
-                            hasHabits = state.habits.isNotEmpty(),
-                            strictnessPreset = state.strictnessPreset,
-                            dailyProgressDisplay = state.dailyProgressDisplay,
-                            dailyProgressExact = state.dailyProgressExact,
                             dailyTotal = state.dailyTotal,
-                            isCollapsed = scrollProgress > 0.5f
+                            hasHabits = state.habits.isNotEmpty(),
+                            dailyProgressFraction = if (state.dailyTotal > 0) {
+                                state.dailyProgressExact / state.dailyTotal.toFloat()
+                            } else {
+                                0f
+                            },
+                            strictnessPreset = state.strictnessPreset,
+                            isCollapsed = scrollProgress > 0.5f,
+                            onAddHabit = onAddFirstHabit
                         )
                     }
                 }

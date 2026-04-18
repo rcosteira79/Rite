@@ -47,6 +47,14 @@
     <string name="today_header_no_habits">No habits scheduled yet</string>
     <string name="today_header_day_label">Day</string>
     <string name="today_header_done_label">Done</string>
+    <!-- Header v2 (Task 12) -->
+    <string name="today_header_salute_empty">Structure your day.</string>
+    <string name="today_header_salute_all_done">Day held. Rest.</string>
+    <string name="today_header_subtitle_no_habits">Commit to your first habit and begin the path.</string>
+    <string name="today_header_subtitle_all_done">All %1$d rituals kept.</string>
+    <string name="today_header_subtitle_mixed_one">%1$d ritual pending · %2$d kept.</string>
+    <string name="today_header_subtitle_mixed_many">%1$d rituals pending · %2$d kept.</string>
+    <string name="today_header_ring_label">Day</string>
 
     <!-- Sections -->
     <string name="today_section_focus">Today's Focus</string>
