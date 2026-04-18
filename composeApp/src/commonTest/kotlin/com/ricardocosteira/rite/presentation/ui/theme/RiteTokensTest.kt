@@ -1,5 +1,6 @@
 package com.ricardocosteira.rite.presentation.ui.theme
 
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -48,5 +49,34 @@ class RiteTokensTest {
         val dims = RiteDimensions()
         assertEquals(20.dp, dims.iconDefault)
         assertEquals(44.dp, dims.touchTargetMin)
+    }
+
+    @Test
+    fun `riteTypography exposes M3 slots plus eyebrow, displayItalic, mono extensions`() {
+        // Can't construct the real RiteTypography without @Composable FontFamily — that's
+        // exercised by screenshot tests later. Here, each slot accessor on the default instance
+        // is a compile-time check that the field exists, and asserting it equals TextStyle.Default
+        // confirms the default constructor initializes it. Kotlin reflection is not available on
+        // commonTest/JVM, so this structural check replaces a reflective property-name lookup.
+        val typography = RiteTypography()
+        assertEquals(TextStyle.Default, typography.displayLarge)
+        assertEquals(TextStyle.Default, typography.displayMedium)
+        assertEquals(TextStyle.Default, typography.displaySmall)
+        assertEquals(TextStyle.Default, typography.headlineLarge)
+        assertEquals(TextStyle.Default, typography.headlineMedium)
+        assertEquals(TextStyle.Default, typography.headlineSmall)
+        assertEquals(TextStyle.Default, typography.titleLarge)
+        assertEquals(TextStyle.Default, typography.titleMedium)
+        assertEquals(TextStyle.Default, typography.titleSmall)
+        assertEquals(TextStyle.Default, typography.bodyLarge)
+        assertEquals(TextStyle.Default, typography.bodyMedium)
+        assertEquals(TextStyle.Default, typography.bodySmall)
+        assertEquals(TextStyle.Default, typography.labelLarge)
+        assertEquals(TextStyle.Default, typography.labelMedium)
+        assertEquals(TextStyle.Default, typography.labelSmall)
+        // Rite extensions
+        assertEquals(TextStyle.Default, typography.eyebrow)
+        assertEquals(TextStyle.Default, typography.displayItalic)
+        assertEquals(TextStyle.Default, typography.mono)
     }
 }
