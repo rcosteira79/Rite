@@ -31,8 +31,8 @@ import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 fun ProgressRing(
     progress: Float,
     modifier: Modifier = Modifier,
-    size: Dp = 88.dp,
-    strokeWidth: Dp = 5.dp,
+    size: Dp = 100.dp,
+    strokeWidth: Dp = 6.dp,
     small: Boolean = false,
     capLabel: String? = "Day",
 ) {
