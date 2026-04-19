@@ -134,9 +134,7 @@ internal fun TodayHeaderExpanded(
 
         if (dailyTotal > 0) {
             ProgressRing(
-                progress = dailyProgressFraction.coerceIn(0f, 1f),
-                size = 88.dp,
-                strokeWidth = 5.dp
+                progress = dailyProgressFraction.coerceIn(0f, 1f)
             )
         }
     }
