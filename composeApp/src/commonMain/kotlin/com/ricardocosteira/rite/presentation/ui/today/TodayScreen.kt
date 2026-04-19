@@ -1,5 +1,13 @@
 package com.ricardocosteira.rite.presentation.ui.today
 
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +23,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,47 +31,37 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
-import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarContent
-import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVariant
-import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVisuals
+import com.ricardocosteira.rite.presentation.navigation.AddHabitBoundsTransform
+import com.ricardocosteira.rite.presentation.navigation.AddHabitFabEnter
+import com.ricardocosteira.rite.presentation.navigation.AddHabitFabExit
+import com.ricardocosteira.rite.presentation.navigation.AddHabitIconKey
+import com.ricardocosteira.rite.presentation.navigation.AddHabitSharedKey
+import com.ricardocosteira.rite.presentation.navigation.AddHabitTransitionMs
+import com.ricardocosteira.rite.presentation.navigation.LocalSharedTransitionScope
+import com.ricardocosteira.rite.presentation.navigation.animatedAddHabitSourceShape
 import com.ricardocosteira.rite.presentation.ui.components.toolbar.DynamicCollapsingToolbar
 import com.ricardocosteira.rite.presentation.ui.components.toolbar.pinnedExitUntilCollapsedToolbarSpec
 import com.ricardocosteira.rite.presentation.ui.haptics.HapticController
 import com.ricardocosteira.rite.presentation.ui.haptics.rememberHapticController
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
-import rite.composeapp.generated.resources.snackbar_completed_prefix
-import rite.composeapp.generated.resources.snackbar_completed_suffix_no_streak
-import rite.composeapp.generated.resources.snackbar_completed_suffix_with_streak
-import rite.composeapp.generated.resources.snackbar_deleted_prefix
-import rite.composeapp.generated.resources.snackbar_deleted_suffix
-import rite.composeapp.generated.resources.snackbar_failed_prefix
-import rite.composeapp.generated.resources.snackbar_failed_subtext_limit
-import rite.composeapp.generated.resources.snackbar_failed_suffix
-import rite.composeapp.generated.resources.snackbar_generic_error
-import rite.composeapp.generated.resources.snackbar_skipped_prefix
-import rite.composeapp.generated.resources.snackbar_skipped_subtext_remaining
-import rite.composeapp.generated.resources.snackbar_skipped_suffix
-import rite.composeapp.generated.resources.swipe_undo
 import rite.composeapp.generated.resources.today_cd_add_habit
 import rite.composeapp.generated.resources.today_section_focus
 import rite.composeapp.generated.resources.today_section_kept_count
@@ -86,101 +83,15 @@ fun TodayScreen(
     onNavigateToHabitDetail: (String) -> Unit,
     onNavigateToCreateHabit: () -> Unit,
     onEditHabit: (String) -> Unit,
-    snackbarHostState: SnackbarHostState
 ) {
     val viewModel = LocalAppComponent.current.todayViewModel
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
-        viewModel.events.collect { event: TodayEvent ->
+        viewModel.navEvents.collect { event ->
             when (event) {
-                is TodayEvent.NavigateToHabitDetail -> onNavigateToHabitDetail(event.instanceId)
-
-                TodayEvent.NavigateToCreateHabit -> onNavigateToCreateHabit()
-
-                is TodayEvent.HabitCompleted -> {
-                    val suffix = event.newStreak?.let {
-                        getString(Res.string.snackbar_completed_suffix_with_streak, it)
-                    } ?: getString(Res.string.snackbar_completed_suffix_no_streak)
-                    snackbarHostState.showSnackbar(
-                        RiteSnackbarVisuals(
-                            variant = RiteSnackbarVariant.Completed,
-                            content = RiteSnackbarContent(
-                                prefix = getString(Res.string.snackbar_completed_prefix),
-                                emphasized = event.habitName,
-                                suffix = suffix
-                            )
-                        )
-                    )
-                }
-
-                is TodayEvent.HabitSkipped -> {
-                    val subtext = event.skipsRemaining?.let {
-                        val pluralS = if (it == 1) "" else "s"
-                        getString(Res.string.snackbar_skipped_subtext_remaining, it, pluralS)
-                    }
-                    snackbarHostState.showSnackbar(
-                        RiteSnackbarVisuals(
-                            variant = RiteSnackbarVariant.Skipped,
-                            content = RiteSnackbarContent(
-                                prefix = getString(Res.string.snackbar_skipped_prefix),
-                                emphasized = event.habitName,
-                                suffix = getString(Res.string.snackbar_skipped_suffix),
-                                subtext = subtext
-                            )
-                        )
-                    )
-                }
-
-                is TodayEvent.SkipLimitReached -> {
-                    snackbarHostState.showSnackbar(
-                        RiteSnackbarVisuals(
-                            variant = RiteSnackbarVariant.Failed,
-                            content = RiteSnackbarContent(
-                                prefix = getString(Res.string.snackbar_failed_prefix),
-                                emphasized = event.habitName,
-                                suffix = getString(Res.string.snackbar_failed_suffix),
-                                subtext = getString(Res.string.snackbar_failed_subtext_limit)
-                            )
-                        )
-                    )
-                }
-
-                is TodayEvent.HabitDeleted -> {
-                    val result = snackbarHostState.showSnackbar(
-                        RiteSnackbarVisuals(
-                            variant = RiteSnackbarVariant.Skipped,
-                            content = RiteSnackbarContent(
-                                prefix = getString(Res.string.snackbar_deleted_prefix),
-                                emphasized = event.habitName,
-                                suffix = getString(Res.string.snackbar_deleted_suffix)
-                            ),
-                            actionLabel = getString(Res.string.swipe_undo),
-                            duration = SnackbarDuration.Long
-                        )
-                    )
-                    if (result == SnackbarResult.ActionPerformed) {
-                        viewModel.undoDelete()
-                    }
-                }
-
-                is TodayEvent.ShowError -> snackbarHostState.showSnackbar(
-                    RiteSnackbarVisuals(
-                        variant = RiteSnackbarVariant.Failed,
-                        content = RiteSnackbarContent(
-                            prefix = "",
-                            emphasized =
-                                event.message ?: getString(Res.string.snackbar_generic_error),
-                            suffix = ""
-                        )
-                    )
-                )
-
-                is TodayEvent.ShowSnackbar -> snackbarHostState.showSnackbar(event.visuals)
-
-                TodayEvent.UndoCompleted -> {
-                    snackbarHostState.currentSnackbarData?.dismiss()
-                }
+                is TodayNavEvent.ToHabitDetail -> onNavigateToHabitDetail(event.instanceId)
+                TodayNavEvent.ToCreateHabit -> onNavigateToCreateHabit()
             }
         }
     }
@@ -216,7 +127,7 @@ fun TodayScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun TodayScreen(
     state: TodayState,
@@ -297,21 +208,106 @@ internal fun TodayScreen(
         },
         floatingActionButton = {
             if (state.habits.isNotEmpty()) {
-                FloatingActionButton(
-                    onClick = onAddFirstHabit,
-                    shape = CircleShape,
-                    containerColor = RiteAppTheme.colors.onSurface,
-                    contentColor = RiteAppTheme.colors.surface,
-                    elevation = FloatingActionButtonDefaults.elevation(
-                        defaultElevation = 1.dp,
-                        pressedElevation = 2.dp
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(Res.string.today_cd_add_habit),
-                        modifier = Modifier.size(22.dp)
-                    )
+                val sharedScope = LocalSharedTransitionScope.current
+                val animatedScope = LocalNavAnimatedContentScope.current
+                with(sharedScope) {
+                    val sourceShape = animatedScope.animatedAddHabitSourceShape()
+                    FloatingActionButton(
+                        onClick = onAddFirstHabit,
+                        shape = sourceShape,
+                        containerColor = RiteAppTheme.colors.onSurface,
+                        contentColor = RiteAppTheme.colors.surface,
+                        elevation = FloatingActionButtonDefaults.elevation(
+                            defaultElevation = 6.dp,
+                            pressedElevation = 8.dp
+                        ),
+                        modifier = Modifier.sharedBounds(
+                            sharedContentState = rememberSharedContentState(AddHabitSharedKey),
+                            animatedVisibilityScope = animatedScope,
+                            enter = AddHabitFabEnter,
+                            exit = AddHabitFabExit,
+                            boundsTransform = AddHabitBoundsTransform,
+                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
+                            clipInOverlayDuringTransition = OverlayClip(sourceShape),
+                        )
+                    ) {
+                        // Forward nav (Visible → PostExit): rotate + colour-shift
+                        // during the first 60% so the form content can fade in during
+                        // the last 40%. Back nav (PreEnter → Visible): delay by 40%
+                        // so the form content fades out first, then the icon rotates
+                        // back.
+                        val iconRotationSpec: FiniteAnimationSpec<Float> =
+                            if (animatedScope.transition.targetState ==
+                                EnterExitState.Visible
+                            ) {
+                                tween(
+                                    durationMillis = AddHabitTransitionMs * 4 / 10,
+                                    delayMillis = AddHabitTransitionMs * 6 / 10,
+                                    easing = FastOutSlowInEasing,
+                                )
+                            } else {
+                                tween(
+                                    durationMillis = AddHabitTransitionMs * 4 / 10,
+                                    easing = FastOutSlowInEasing,
+                                )
+                            }
+                        val iconRotation: Float by animatedScope.transition.animateFloat(
+                            transitionSpec = { iconRotationSpec },
+                            label = "fab-icon-rotation",
+                        ) { state ->
+                            if (state == EnterExitState.Visible) 0f else 45f
+                        }
+                        // Color only transitions during the container morph phase
+                        // — forward: 40–100% (expansion). Back: 0–60% (contraction).
+                        val iconColorSpec: FiniteAnimationSpec<Color> =
+                            if (animatedScope.transition.targetState ==
+                                EnterExitState.Visible
+                            ) {
+                                // Back nav: color shifts with contraction (0–60%).
+                                tween(
+                                    durationMillis = AddHabitTransitionMs * 6 / 10,
+                                    easing = FastOutSlowInEasing,
+                                )
+                            } else {
+                                // Forward nav: color shifts with expansion (40–100%).
+                                tween(
+                                    durationMillis = AddHabitTransitionMs * 6 / 10,
+                                    delayMillis = AddHabitTransitionMs * 4 / 10,
+                                    easing = FastOutSlowInEasing,
+                                )
+                            }
+                        val iconColor: Color by animatedScope.transition.animateColor(
+                            transitionSpec = { iconColorSpec },
+                            label = "fab-icon-color",
+                        ) { state ->
+                            if (state == EnterExitState.Visible) {
+                                RiteAppTheme.colors.surface
+                            } else {
+                                RiteAppTheme.colors.onSurface
+                            }
+                        }
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(Res.string.today_cd_add_habit),
+                            tint = iconColor,
+                            modifier = Modifier
+                                // sharedBounds must be *outside* (earlier in chain) so the
+                                // overlay captures the graphicsLayer rotation applied to
+                                // the inner content. With graphicsLayer outside, the
+                                // overlay renders the untransformed Icon and only the
+                                // in-place render shows the rotation.
+                                .sharedBounds(
+                                    sharedContentState = rememberSharedContentState(
+                                        AddHabitIconKey
+                                    ),
+                                    animatedVisibilityScope = animatedScope,
+                                    boundsTransform = AddHabitBoundsTransform,
+                                    zIndexInOverlay = 1f,
+                                )
+                                .size(22.dp)
+                                .graphicsLayer { rotationZ = iconRotation }
+                        )
+                    }
                 }
             }
         },

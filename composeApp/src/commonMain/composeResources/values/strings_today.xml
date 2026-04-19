@@ -84,12 +84,6 @@
     <string name="nav_cd_add_habit">Add habit</string>
 
     <!-- Snackbar copy -->
-    <string name="snackbar_completed_prefix">Completed </string>
-    <string name="snackbar_completed_suffix_no_streak">.</string>
-    <string name="snackbar_completed_suffix_with_streak">. Streak → %1$d days.</string>
-    <string name="snackbar_skipped_prefix">Skipped </string>
-    <string name="snackbar_skipped_suffix">.</string>
-    <string name="snackbar_skipped_subtext_remaining">%1$d skip%2$s remaining this week.</string>
     <string name="snackbar_failed_prefix">Couldn\'t skip </string>
     <string name="snackbar_failed_suffix">.</string>
     <string name="snackbar_failed_subtext_limit">Limit reached for this week.</string>

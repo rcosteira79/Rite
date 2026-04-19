@@ -2,7 +2,14 @@ package com.ricardocosteira.rite.presentation.ui.habit
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -33,6 +40,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Inventory2
@@ -74,6 +82,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -83,10 +92,20 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ReminderType
 import com.ricardocosteira.rite.domain.models.ScheduleType
+import com.ricardocosteira.rite.presentation.navigation.AddHabitBoundsTransform
+import com.ricardocosteira.rite.presentation.navigation.AddHabitFormEnter
+import com.ricardocosteira.rite.presentation.navigation.AddHabitFormExit
+import com.ricardocosteira.rite.presentation.navigation.AddHabitIconKey
+import com.ricardocosteira.rite.presentation.navigation.AddHabitSharedKey
+import com.ricardocosteira.rite.presentation.navigation.AddHabitTransitionMs
+import com.ricardocosteira.rite.presentation.navigation.LocalSharedTransitionScope
+import com.ricardocosteira.rite.presentation.navigation.animatedAddHabitDestinationShape
+import com.ricardocosteira.rite.presentation.navigation.animatedAddHabitFormContentAlpha
 import com.ricardocosteira.rite.presentation.ui.BackHandler
 import com.ricardocosteira.rite.presentation.ui.components.DetailRow
 import com.ricardocosteira.rite.presentation.ui.components.RiteButton
@@ -151,11 +170,15 @@ import rite.composeapp.generated.resources.habit_form_tracking_subtitle
 import rite.composeapp.generated.resources.habit_form_tracking_title
 import rite.composeapp.generated.resources.habit_form_unit_label
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HabitFormScreen(
     habitIdToEdit: String?,
     onNavigateBack: () -> Unit,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    /** When true, this screen participates in the FAB→form container transform.
+     *  Only the Add-Habit flow should set this; editing reuses the default nav fade. */
+    useAddHabitTransition: Boolean = false,
 ) {
     val createViewModel = LocalAppComponent.current.createHabitFormViewModel
     val viewModel: HabitFormViewModel = viewModel {
@@ -269,16 +292,35 @@ fun HabitFormScreen(
 
                 HabitFormUiAction.NotificationSettingsClicked -> viewModel.openNotificationSettings()
             }
+        },
+        useAddHabitTransition = useAddHabitTransition,
+        modifier = if (useAddHabitTransition) {
+            with(LocalSharedTransitionScope.current) {
+                val animatedScope = LocalNavAnimatedContentScope.current
+                val destinationShape = animatedScope.animatedAddHabitDestinationShape()
+                Modifier.sharedBounds(
+                    sharedContentState = rememberSharedContentState(AddHabitSharedKey),
+                    animatedVisibilityScope = animatedScope,
+                    enter = AddHabitFormEnter,
+                    exit = AddHabitFormExit,
+                    boundsTransform = AddHabitBoundsTransform,
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
+                    clipInOverlayDuringTransition = OverlayClip(destinationShape),
+                )
+            }
+        } else {
+            Modifier
         }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun HabitFormScreen(
     state: HabitFormState,
     onAction: (HabitFormUiAction) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    useAddHabitTransition: Boolean = false,
 ) {
     var isNoteExpanded by rememberSaveable { mutableStateOf(false) }
     var isDeleteDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -364,10 +406,92 @@ internal fun HabitFormScreen(
                             containerColor = iconContainerColor
                         )
                     ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(Res.string.common_cd_back)
-                        )
+                        if (useAddHabitTransition) {
+                            with(LocalSharedTransitionScope.current) {
+                                val animatedScope = LocalNavAnimatedContentScope.current
+                                // Forward nav (PreEnter → Visible): rotate + colour
+                                // in the first 60% so form content fades in during the
+                                // last 40%. Back nav (Visible → PostExit): delay by
+                                // 40% so form content fades out first, then the icon
+                                // rotates back toward the FAB.
+                                val iconSpecDelayed: Boolean =
+                                    animatedScope.transition.targetState !=
+                                        EnterExitState.Visible
+                                val iconRotationSpec: FiniteAnimationSpec<Float> =
+                                    if (iconSpecDelayed) {
+                                        tween(
+                                            durationMillis =
+                                                AddHabitTransitionMs * 4 / 10,
+                                            delayMillis = AddHabitTransitionMs * 6 / 10,
+                                            easing = FastOutSlowInEasing,
+                                        )
+                                    } else {
+                                        tween(
+                                            durationMillis =
+                                                AddHabitTransitionMs * 4 / 10,
+                                            easing = FastOutSlowInEasing,
+                                        )
+                                    }
+                                val iconRotation: Float by
+                                    animatedScope.transition.animateFloat(
+                                        transitionSpec = { iconRotationSpec },
+                                        label = "close-icon-rotation",
+                                    ) { state ->
+                                        if (state == EnterExitState.Visible) 45f else 0f
+                                    }
+                                // Color only transitions during the container morph
+                                // phase — forward: 40–100% (expansion). Back: 0–60%
+                                // (contraction).
+                                val iconColorSpec: FiniteAnimationSpec<Color> =
+                                    if (iconSpecDelayed) {
+                                        // Back nav: color shifts during contraction.
+                                        tween(
+                                            durationMillis =
+                                                AddHabitTransitionMs * 6 / 10,
+                                            easing = FastOutSlowInEasing,
+                                        )
+                                    } else {
+                                        // Forward nav: color shifts during expansion.
+                                        tween(
+                                            durationMillis =
+                                                AddHabitTransitionMs * 6 / 10,
+                                            delayMillis = AddHabitTransitionMs * 4 / 10,
+                                            easing = FastOutSlowInEasing,
+                                        )
+                                    }
+                                val iconColor: Color by
+                                    animatedScope.transition.animateColor(
+                                        transitionSpec = { iconColorSpec },
+                                        label = "close-icon-color",
+                                    ) { state ->
+                                        if (state == EnterExitState.Visible) {
+                                            RiteAppTheme.colors.onSurface
+                                        } else {
+                                            RiteAppTheme.colors.surface
+                                        }
+                                    }
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = stringResource(Res.string.common_cd_back),
+                                    tint = iconColor,
+                                    modifier = Modifier
+                                        .sharedBounds(
+                                            sharedContentState = rememberSharedContentState(
+                                                AddHabitIconKey
+                                            ),
+                                            animatedVisibilityScope = animatedScope,
+                                            boundsTransform = AddHabitBoundsTransform,
+                                            zIndexInOverlay = 1f,
+                                        )
+                                        .graphicsLayer { rotationZ = iconRotation }
+                                )
+                            }
+                        } else {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(Res.string.common_cd_back)
+                            )
+                        }
                     }
                 },
                 actions = {
@@ -411,9 +535,15 @@ internal fun HabitFormScreen(
             )
         }
     ) { paddingValues ->
+        val formContentAlpha: Float = if (useAddHabitTransition) {
+            LocalNavAnimatedContentScope.current.animatedAddHabitFormContentAlpha()
+        } else {
+            1f
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .graphicsLayer { alpha = formContentAlpha }
                 .verticalScroll(scrollState)
                 .padding(paddingValues)
                 .padding(horizontal = 24.dp, vertical = 20.dp)

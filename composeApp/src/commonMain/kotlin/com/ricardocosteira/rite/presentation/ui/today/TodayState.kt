@@ -31,24 +31,28 @@ data class TodayState(
 )
 
 /**
- * Events from the Today screen.
+ * Nav events are processed synchronously so they never queue behind a
+ * long-running snackbar.
  */
-sealed interface TodayEvent {
-    data class NavigateToHabitDetail(val instanceId: String) : TodayEvent
+sealed interface TodayNavEvent {
+    data class ToHabitDetail(val instanceId: String) : TodayNavEvent
 
-    data object NavigateToCreateHabit : TodayEvent
+    data object ToCreateHabit : TodayNavEvent
+}
 
-    data class ShowSnackbar(val visuals: RiteSnackbarVisuals) : TodayEvent
+/**
+ * Feedback events are snackbar-bound. The Today screen collects these on a
+ * separate coroutine and preempts the current snackbar so only the latest
+ * feedback is visible.
+ */
+sealed interface TodayFeedbackEvent {
+    data class ShowSnackbar(val visuals: RiteSnackbarVisuals) : TodayFeedbackEvent
 
-    data class HabitCompleted(val habitName: String, val newStreak: Int?) : TodayEvent
+    data class HabitDeleted(val habitName: String) : TodayFeedbackEvent
 
-    data class HabitSkipped(val habitName: String, val skipsRemaining: Int?) : TodayEvent
+    data class SkipLimitReached(val habitName: String) : TodayFeedbackEvent
 
-    data class HabitDeleted(val habitName: String) : TodayEvent
+    data class ShowError(val message: String?) : TodayFeedbackEvent
 
-    data class SkipLimitReached(val habitName: String) : TodayEvent
-
-    data class ShowError(val message: String?) : TodayEvent
-
-    data object UndoCompleted : TodayEvent
+    data object UndoCompleted : TodayFeedbackEvent
 }
