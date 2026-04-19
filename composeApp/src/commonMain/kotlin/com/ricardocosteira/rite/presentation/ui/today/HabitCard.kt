@@ -18,11 +18,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -171,6 +175,7 @@ private fun HabitCardBody(
             }
         )
     val strikeColor = animatedNameColor.copy(alpha = 0.5f)
+    var nameLayout: TextLayoutResult? by remember { mutableStateOf(null) }
 
     Column(
         modifier = modifier,
@@ -186,10 +191,19 @@ private fun HabitCardBody(
             color = animatedNameColor,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            onTextLayout = { nameLayout = it },
             modifier = Modifier.drawWithContent {
                 drawContent()
                 if (strikethroughProgress > 0f) {
-                    val y = size.height / 2f
+                    val layout = nameLayout
+                    val y = if (layout != null) {
+                        // Center on the x-height of lowercase letters (~24% of font
+                        // size above the baseline for Fraunces), so the line doesn't
+                        // ride high over the body of the word.
+                        layout.firstBaseline - nameStyle.fontSize.toPx() * 0.24f
+                    } else {
+                        size.height / 2f
+                    }
                     drawLine(
                         color = strikeColor,
                         start = Offset(0f, y),
