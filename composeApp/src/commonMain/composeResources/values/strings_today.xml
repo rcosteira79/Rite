@@ -84,7 +84,7 @@
     <string name="nav_cd_add_habit">Add habit</string>
 
     <!-- Snackbar copy -->
-    <string name="snackbar_failed_prefix">Couldn\'t skip </string>
+    <string name="snackbar_failed_prefix">Couldn't skip </string>
     <string name="snackbar_failed_suffix">.</string>
     <string name="snackbar_failed_subtext_limit">Limit reached for this week.</string>
     <string name="snackbar_deleted_prefix">Deleted </string>
