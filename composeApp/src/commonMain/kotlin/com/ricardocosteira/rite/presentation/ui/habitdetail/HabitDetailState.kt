@@ -2,6 +2,8 @@ package com.ricardocosteira.rite.presentation.ui.habitdetail
 
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
+import com.ricardocosteira.rite.domain.models.StrictnessPreset
+import com.ricardocosteira.rite.domain.models.UndoPolicy
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -31,6 +33,11 @@ data class HabitDetailUiModel(
     val habitScore: Int,
     val maxConsecutiveSkips: Int?,
     val currentConsecutiveSkips: Int,
+    val strictnessPreset: StrictnessPreset?,
+    val undoPolicy: UndoPolicy,
+    val snoozesUsedToday: Int,
+    val maxSnoozesPerDay: Int?,
+    val skipsThisWeek: Int,
 ) {
     val skipsRemaining: Int? = maxConsecutiveSkips?.let { max ->
         (max - currentConsecutiveSkips).coerceAtLeast(0)
