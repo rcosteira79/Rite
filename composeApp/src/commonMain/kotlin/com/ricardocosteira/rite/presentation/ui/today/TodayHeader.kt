@@ -136,8 +136,7 @@ internal fun TodayHeaderExpanded(
             ProgressRing(
                 progress = dailyProgressFraction.coerceIn(0f, 1f),
                 size = 88.dp,
-                strokeWidth = 5.dp,
-                label = "${(dailyProgressFraction.coerceIn(0f, 1f) * 100).toInt()}%"
+                strokeWidth = 5.dp
             )
         }
     }
