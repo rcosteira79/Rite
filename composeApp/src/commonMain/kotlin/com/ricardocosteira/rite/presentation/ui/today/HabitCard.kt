@@ -1,8 +1,13 @@
 package com.ricardocosteira.rite.presentation.ui.today
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -214,9 +219,43 @@ private fun HabitCardBody(
             }
         )
         val sub: String? = habitCardSubText(habit, state)
-        if (sub != null) {
+        var lastSub by remember { mutableStateOf("") }
+        if (sub != null && sub != lastSub) {
+            lastSub = sub
+        }
+        val enterDelayMs = (motion.deliberate + motion.standard).inWholeMilliseconds.toInt()
+        val durationMs = motion.standard.inWholeMilliseconds.toInt()
+        AnimatedVisibility(
+            visible = sub != null,
+            enter = fadeIn(
+                animationSpec = tween(
+                    durationMillis = durationMs,
+                    delayMillis = enterDelayMs,
+                    easing = motion.easeQuiet
+                )
+            ) + expandVertically(
+                animationSpec = tween(
+                    durationMillis = durationMs,
+                    delayMillis = enterDelayMs,
+                    easing = motion.easeQuiet
+                ),
+                expandFrom = Alignment.Top
+            ),
+            exit = fadeOut(
+                animationSpec = tween(
+                    durationMillis = durationMs,
+                    easing = motion.easeQuiet
+                )
+            ) + shrinkVertically(
+                animationSpec = tween(
+                    durationMillis = durationMs,
+                    easing = motion.easeQuiet
+                ),
+                shrinkTowards = Alignment.Top
+            )
+        ) {
             Text(
-                text = sub,
+                text = lastSub,
                 style = RiteAppTheme.typography.mono,
                 color = colors.onSurfaceSubtle,
             )
