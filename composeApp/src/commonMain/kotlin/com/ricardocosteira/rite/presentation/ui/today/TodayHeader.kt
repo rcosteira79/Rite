@@ -198,12 +198,9 @@ internal fun TodayHeaderCollapsed(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
             .padding(
-                start = RiteAppTheme.spacing.gap6,
-                end = RiteAppTheme.spacing.gap6,
-                top = RiteAppTheme.spacing.gap5,
-                bottom = RiteAppTheme.spacing.gap3
+                horizontal = RiteAppTheme.spacing.gap6,
+                vertical = RiteAppTheme.spacing.gap4
             ),
         horizontalArrangement = Arrangement.spacedBy(RiteAppTheme.spacing.gap3),
         verticalAlignment = Alignment.CenterVertically

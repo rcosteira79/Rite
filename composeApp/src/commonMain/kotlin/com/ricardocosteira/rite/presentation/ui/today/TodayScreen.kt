@@ -230,7 +230,9 @@ internal fun TodayScreen(
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
-    val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec()
+    val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec(
+        collapsedToolbarHeight = 72.dp
+    )
     val hapticController = rememberHapticController()
 
     Scaffold(
