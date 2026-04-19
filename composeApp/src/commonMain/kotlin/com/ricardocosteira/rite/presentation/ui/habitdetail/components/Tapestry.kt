@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitStatus
-import com.ricardocosteira.rite.presentation.ui.habitdetail.HeatmapDay
+import com.ricardocosteira.rite.presentation.ui.habitdetail.models.HeatmapDay
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import com.ricardocosteira.rite.util.todayIn
 import kotlin.time.Clock

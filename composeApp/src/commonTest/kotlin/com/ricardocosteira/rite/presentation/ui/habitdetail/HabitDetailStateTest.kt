@@ -4,6 +4,7 @@ import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.StrictnessPreset
 import com.ricardocosteira.rite.domain.models.UndoPolicy
+import com.ricardocosteira.rite.presentation.ui.habitdetail.models.HabitDetailUiModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

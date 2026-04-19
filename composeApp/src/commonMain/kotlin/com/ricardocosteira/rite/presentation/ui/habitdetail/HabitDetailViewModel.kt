@@ -16,6 +16,8 @@ import com.ricardocosteira.rite.domain.usecases.CompleteHabit
 import com.ricardocosteira.rite.domain.usecases.SkipHabit
 import com.ricardocosteira.rite.domain.usecases.UndoHabit
 import com.ricardocosteira.rite.domain.usecases.UndoLastIncrement
+import com.ricardocosteira.rite.presentation.ui.habitdetail.models.HabitDetailUiModel
+import com.ricardocosteira.rite.presentation.ui.habitdetail.models.HeatmapDay
 import kotlin.time.Clock
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableSharedFlow

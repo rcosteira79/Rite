@@ -1,6 +1,7 @@
 package com.ricardocosteira.rite.presentation.ui.habitdetail
 
 import com.ricardocosteira.rite.domain.models.HabitStatus
+import com.ricardocosteira.rite.presentation.ui.habitdetail.models.HeatmapDay
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
