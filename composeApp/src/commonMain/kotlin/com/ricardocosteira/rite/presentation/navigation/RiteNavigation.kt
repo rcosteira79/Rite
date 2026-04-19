@@ -90,7 +90,13 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
             }
         },
         snackbarHost = {
-            SnackbarHost(snackbarHostState) { data ->
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.padding(
+                    horizontal = RiteAppTheme.spacing.gap4,
+                    vertical = RiteAppTheme.spacing.gap3
+                )
+            ) { data ->
                 val visuals = data.visuals
                 if (visuals is RiteSnackbarVisuals) {
                     RiteSnackbar(
