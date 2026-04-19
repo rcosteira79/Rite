@@ -1,20 +1,25 @@
 package com.ricardocosteira.rite.presentation.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.PauseCircleOutline
+import androidx.compose.material.icons.outlined.SkipNext
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -83,19 +88,12 @@ fun RiteSnackbar(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)
         ) {
-            Box(
-                modifier = Modifier.size(22.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                // Glyph square placeholder — concrete icon chosen by the caller via content.action slot is
-                // intentionally flat for now; full icon wiring arrives in Slice 2 when the Today screen uses it.
-                Surface(
-                    modifier = Modifier.size(22.dp),
-                    shape = RiteAppTheme.shapes.xs,
-                    color = fg.copy(alpha = 0.14f),
-                    border = BorderStroke(1.dp, fg.copy(alpha = 0.2f))
-                ) {}
-            }
+            Icon(
+                imageVector = variant.icon(),
+                contentDescription = null,
+                tint = accent,
+                modifier = Modifier.size(22.dp)
+            )
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -125,4 +123,11 @@ fun RiteSnackbar(
             content.action?.invoke()
         }
     }
+}
+
+private fun RiteSnackbarVariant.icon(): ImageVector = when (this) {
+    RiteSnackbarVariant.Completed -> Icons.Outlined.CheckCircle
+    RiteSnackbarVariant.Skipped -> Icons.Outlined.SkipNext
+    RiteSnackbarVariant.Failed -> Icons.Outlined.ErrorOutline
+    RiteSnackbarVariant.Suspended -> Icons.Outlined.PauseCircleOutline
 }
