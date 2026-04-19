@@ -29,6 +29,8 @@ import com.ricardocosteira.rite.notifications.TrackedHabitInfo
 import com.ricardocosteira.rite.presentation.mappers.motivationalTitleResource
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.rite.presentation.models.mapToTodayHabitUiModel
+import com.ricardocosteira.rite.presentation.ui.today.models.TodayCounts
+import com.ricardocosteira.rite.presentation.ui.today.models.computeCounts
 import com.ricardocosteira.rite.util.toLocalDate
 import kotlin.time.Clock
 import kotlinx.collections.immutable.ImmutableList
