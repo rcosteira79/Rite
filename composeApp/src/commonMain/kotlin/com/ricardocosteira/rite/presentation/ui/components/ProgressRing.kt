@@ -86,7 +86,9 @@ fun ProgressRing(
                 )
             }
             if (!small) {
-                val dashRadius = (side - 20.dp.toPx()) / 2f
+                val dashGap = 5.dp.toPx()
+                val arcInnerEdge = arcRadius - strokePx / 2f
+                val dashRadius = arcInnerEdge - dashGap
                 drawCircle(
                     color = dash,
                     center = center,
