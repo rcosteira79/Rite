@@ -1,9 +1,5 @@
 package com.ricardocosteira.rite.presentation.ui.today
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +17,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.StrictnessPreset as DomainStrictnessPreset
 import com.ricardocosteira.rite.presentation.ui.components.ProgressRing
 import com.ricardocosteira.rite.presentation.ui.components.StrictnessPill
@@ -36,44 +31,6 @@ import rite.composeapp.generated.resources.today_header_subtitle_all_done
 import rite.composeapp.generated.resources.today_header_subtitle_mixed_many
 import rite.composeapp.generated.resources.today_header_subtitle_mixed_one
 import rite.composeapp.generated.resources.today_header_subtitle_no_habits
-
-@Composable
-fun TodayHeader(
-    saluteKey: StringResource?,
-    pendingCount: Int,
-    dailyTotal: Int,
-    hasHabits: Boolean,
-    dailyProgressFraction: Float,
-    strictnessPreset: DomainStrictnessPreset?,
-    isCollapsed: Boolean,
-    modifier: Modifier = Modifier
-) {
-    AnimatedContent(
-        targetState = isCollapsed,
-        transitionSpec = { fadeIn() togetherWith fadeOut() },
-        modifier = modifier.fillMaxWidth(),
-        label = "TodayHeaderCollapse"
-    ) { collapsed ->
-        if (collapsed) {
-            TodayHeaderCollapsed(
-                saluteKey = saluteKey,
-                pendingCount = pendingCount,
-                dailyTotal = dailyTotal,
-                dailyProgressFraction = dailyProgressFraction,
-                strictnessPreset = strictnessPreset
-            )
-        } else {
-            TodayHeaderExpanded(
-                saluteKey = saluteKey,
-                pendingCount = pendingCount,
-                dailyTotal = dailyTotal,
-                hasHabits = hasHabits,
-                dailyProgressFraction = dailyProgressFraction,
-                strictnessPreset = strictnessPreset
-            )
-        }
-    }
-}
 
 @Composable
 internal fun TodayHeaderExpanded(
