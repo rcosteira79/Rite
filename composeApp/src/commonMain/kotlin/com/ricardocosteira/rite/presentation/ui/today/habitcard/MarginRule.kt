@@ -1,5 +1,6 @@
 package com.ricardocosteira.rite.presentation.ui.today.habitcard
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -22,74 +23,99 @@ private const val DASH_ON = 3f
 private const val DASH_OFF = 3f
 
 @Composable
-fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = Modifier,) {
+fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = Modifier) {
     val colors = RiteAppTheme.colors
-    val dashed = state == HabitCardState.Skipped || state == HabitCardState.Suspended
-
-    val trackColor: Color = when (state) {
-        HabitCardState.Pending,
-        HabitCardState.PendingInProgress,
-        HabitCardState.Completed,
-        HabitCardState.Failed -> colors.outline
-
-        HabitCardState.Skipped, HabitCardState.Suspended -> Color.Transparent
-    }
-
-    val fillColor: Color =
-        when (state) {
-            HabitCardState.Pending -> colors.onSurface
-            HabitCardState.PendingInProgress -> colors.primary
-            HabitCardState.Completed -> colors.primary
-            HabitCardState.Failed -> colors.error
-            HabitCardState.Skipped, HabitCardState.Suspended -> Color.Transparent
-        }
-
-    val dashColor: Color =
-        when (state) {
-            HabitCardState.Skipped -> colors.onSurfaceSubtle
-            HabitCardState.Suspended -> colors.suspend
-            else -> Color.Transparent
-        }
-
-    val target = if (state == HabitCardState.Failed) 1f else fillFraction.coerceIn(0f, 1f)
     val motion = RiteAppTheme.motion
-    val animatedFill by animateFloatAsState(
-        targetValue = target,
-        animationSpec = tween(
-            durationMillis = motion.deliberate.inWholeMilliseconds.toInt(),
-            easing = motion.easeQuiet
-        ),
-        label = "margin-rule-fill"
+    val animSpec = tween<Float>(
+        durationMillis = motion.deliberate.inWholeMilliseconds.toInt(),
+        easing = motion.easeQuiet,
     )
 
-    Canvas(modifier = modifier.fillMaxHeight()) {
-        val widthPx = (if (dashed) DASHED_WIDTH else RULE_WIDTH).toPx()
-        val h = size.height
+    val dashedTarget = if (state == HabitCardState.Skipped || state == HabitCardState.Suspended) {
+        1f
+    } else {
+        0f
+    }
+    val dashedT by animateFloatAsState(
+        targetValue = dashedTarget,
+        animationSpec = animSpec,
+        label = "margin-rule-dashed",
+    )
 
-        if (dashed) {
-            drawLine(
-                color = dashColor,
-                start = Offset(widthPx / 2f, 0f),
-                end = Offset(widthPx / 2f, h),
-                strokeWidth = widthPx,
-                pathEffect = PathEffect.dashPathEffect(floatArrayOf(DASH_ON, DASH_OFF), 0f),
-            )
-        } else {
+    val fillColorTarget: Color = when (state) {
+        HabitCardState.Pending -> colors.onSurface
+
+        HabitCardState.PendingInProgress, HabitCardState.Completed -> colors.primary
+
+        HabitCardState.Failed -> colors.error
+
+        // Solid is hidden via alpha in dashed states, so keep the target stable
+        // to avoid a meaningless color interpolation.
+        HabitCardState.Skipped, HabitCardState.Suspended -> colors.primary
+    }
+    val fillColor by animateColorAsState(
+        targetValue = fillColorTarget,
+        animationSpec = tween(
+            durationMillis = motion.deliberate.inWholeMilliseconds.toInt(),
+            easing = motion.easeQuiet,
+        ),
+        label = "margin-rule-fill-color",
+    )
+
+    val dashColorTarget: Color = when (state) {
+        HabitCardState.Suspended -> colors.suspend
+        else -> colors.onSurfaceSubtle
+    }
+    val dashColor by animateColorAsState(
+        targetValue = dashColorTarget,
+        animationSpec = tween(
+            durationMillis = motion.deliberate.inWholeMilliseconds.toInt(),
+            easing = motion.easeQuiet,
+        ),
+        label = "margin-rule-dash-color",
+    )
+
+    val fillTarget = if (state == HabitCardState.Failed) 1f else fillFraction.coerceIn(0f, 1f)
+    val animatedFill by animateFloatAsState(
+        targetValue = fillTarget,
+        animationSpec = animSpec,
+        label = "margin-rule-fill",
+    )
+
+    val trackColor = colors.outline
+
+    Canvas(modifier = modifier.fillMaxHeight()) {
+        val ruleWidthPx = RULE_WIDTH.toPx()
+        val dashedWidthPx = DASHED_WIDTH.toPx()
+        val h = size.height
+        val solidAlpha = 1f - dashedT
+
+        if (solidAlpha > 0f) {
             drawRoundRect(
-                color = trackColor,
+                color = trackColor.copy(alpha = solidAlpha),
                 topLeft = Offset(0f, 0f),
-                size = Size(widthPx, h),
+                size = Size(ruleWidthPx, h),
                 cornerRadius = CornerRadius(CORNER_RADIUS_PX, CORNER_RADIUS_PX),
             )
             if (animatedFill > 0f) {
                 val fillHeight = h * animatedFill
                 drawRoundRect(
-                    color = fillColor,
+                    color = fillColor.copy(alpha = solidAlpha),
                     topLeft = Offset(0f, h - fillHeight),
-                    size = Size(widthPx, fillHeight),
+                    size = Size(ruleWidthPx, fillHeight),
                     cornerRadius = CornerRadius(CORNER_RADIUS_PX, CORNER_RADIUS_PX),
                 )
             }
+        }
+
+        if (dashedT > 0f) {
+            drawLine(
+                color = dashColor.copy(alpha = dashedT),
+                start = Offset(dashedWidthPx / 2f, 0f),
+                end = Offset(dashedWidthPx / 2f, h),
+                strokeWidth = dashedWidthPx,
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(DASH_ON, DASH_OFF), 0f),
+            )
         }
     }
 }
