@@ -9,11 +9,6 @@ import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.domain.models.StrictnessPreset
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
-import rite.composeapp.generated.resources.Res
-import rite.composeapp.generated.resources.motivational_title_0
-import rite.composeapp.generated.resources.motivational_title_1
-import rite.composeapp.generated.resources.motivational_title_2
-import rite.composeapp.generated.resources.motivational_title_7
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import org.junit.Rule
@@ -22,6 +17,11 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.motivational_title_0
+import rite.composeapp.generated.resources.motivational_title_1
+import rite.composeapp.generated.resources.motivational_title_2
+import rite.composeapp.generated.resources.motivational_title_7
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -355,7 +355,7 @@ class TodayScreenScreenshotTest {
         return TodayState(
             isLoading = false,
             habits = allHabits,
-            pendingDaily = allHabits,
+            daily = allHabits,
             motivationalTitleRes = Res.string.motivational_title_1,
             strictnessPreset = StrictnessPreset.BALANCED,
             pendingCount = 3,
@@ -423,10 +423,8 @@ class TodayScreenScreenshotTest {
                 deepWorkPending,
                 gymCompleted
             ),
-            pendingDaily = persistentListOf(readingPending, walkPending),
-            resolvedDaily = persistentListOf(meditationCompleted),
-            pendingWeekly = persistentListOf(deepWorkPending),
-            resolvedWeekly = persistentListOf(gymCompleted),
+            daily = persistentListOf(readingPending, walkPending, meditationCompleted),
+            weekly = persistentListOf(deepWorkPending, gymCompleted),
             motivationalTitleRes = Res.string.motivational_title_0,
             strictnessPreset = StrictnessPreset.BALANCED,
             pendingCount = 2,
@@ -470,7 +468,7 @@ class TodayScreenScreenshotTest {
         return TodayState(
             isLoading = false,
             habits = allHabits,
-            resolvedDaily = allHabits,
+            daily = allHabits,
             motivationalTitleRes = Res.string.motivational_title_2,
             strictnessPreset = StrictnessPreset.BALANCED,
             pendingCount = 0,
@@ -509,7 +507,7 @@ class TodayScreenScreenshotTest {
         return TodayState(
             isLoading = false,
             habits = allHabits,
-            pendingDaily = allHabits,
+            daily = allHabits,
             motivationalTitleRes = Res.string.motivational_title_7,
             strictnessPreset = StrictnessPreset.FLEXIBLE,
             pendingCount = 2,

@@ -14,10 +14,8 @@ data class PendingDelete(val habitId: String, val habitName: String)
  */
 data class TodayState(
     val habits: ImmutableList<TodayHabitUiModel> = persistentListOf(),
-    val pendingDaily: ImmutableList<TodayHabitUiModel> = persistentListOf(),
-    val resolvedDaily: ImmutableList<TodayHabitUiModel> = persistentListOf(),
-    val pendingWeekly: ImmutableList<TodayHabitUiModel> = persistentListOf(),
-    val resolvedWeekly: ImmutableList<TodayHabitUiModel> = persistentListOf(),
+    val daily: ImmutableList<TodayHabitUiModel> = persistentListOf(),
+    val weekly: ImmutableList<TodayHabitUiModel> = persistentListOf(),
     val isLoading: Boolean = true,
     val showTimezoneWarning: Boolean = false,
     val previousTimezone: String? = null,

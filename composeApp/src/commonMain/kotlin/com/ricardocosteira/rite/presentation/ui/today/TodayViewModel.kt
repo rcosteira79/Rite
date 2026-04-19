@@ -173,14 +173,10 @@ class TodayViewModel(
 
                 val counts: TodayCounts = habits.computeCounts()
 
-                val resolvedStatuses: Set<HabitStatus> = setOf(
-                    HabitStatus.COMPLETED,
-                    HabitStatus.SKIPPED,
-                    HabitStatus.FAILED
-                )
-
                 // Fixed weekly habits go into "Today's Focus" alongside daily habits.
                 // Only flexible weekly habits go into "Weekly Goals".
+                // Keep the original order — completed/skipped cards stay in place
+                // to avoid list reordering when a habit flips state.
                 val dailyHabits: List<TodayHabitUiModel> = habits.filter {
                     (it.isDaily || it.isFixedWeekly) && !it.isSuspended
                 }
@@ -188,18 +184,11 @@ class TodayViewModel(
                     it.isFlexibleWeekly && !it.isSuspended
                 }
 
-                val (pendingDaily: List<TodayHabitUiModel>, resolvedDaily: List<TodayHabitUiModel>) =
-                    dailyHabits.partition { it.status !in resolvedStatuses }
-                val (pendingWeekly: List<TodayHabitUiModel>, resolvedWeekly: List<TodayHabitUiModel>) =
-                    weeklyHabits.partition { it.status !in resolvedStatuses }
-
                 _state.update {
                     it.copy(
                         habits = habits,
-                        pendingDaily = pendingDaily.toImmutableList(),
-                        resolvedDaily = resolvedDaily.toImmutableList(),
-                        pendingWeekly = pendingWeekly.toImmutableList(),
-                        resolvedWeekly = resolvedWeekly.toImmutableList(),
+                        daily = dailyHabits.toImmutableList(),
+                        weekly = weeklyHabits.toImmutableList(),
                         isLoading = false,
                         pendingCount = counts.pendingCount,
                         dailyProgressDisplay = counts.dailyProgressDisplay,
@@ -406,18 +395,8 @@ class TodayViewModel(
         _state.update { state ->
             state.copy(
                 habits = state.habits.filter { it.habitId != habitId }.toImmutableList(),
-                pendingDaily = state.pendingDaily.filter {
-                    it.habitId != habitId
-                }.toImmutableList(),
-                resolvedDaily = state.resolvedDaily.filter {
-                    it.habitId != habitId
-                }.toImmutableList(),
-                pendingWeekly = state.pendingWeekly.filter {
-                    it.habitId != habitId
-                }.toImmutableList(),
-                resolvedWeekly = state.resolvedWeekly.filter {
-                    it.habitId != habitId
-                }.toImmutableList()
+                daily = state.daily.filter { it.habitId != habitId }.toImmutableList(),
+                weekly = state.weekly.filter { it.habitId != habitId }.toImmutableList()
             )
         }
     }
