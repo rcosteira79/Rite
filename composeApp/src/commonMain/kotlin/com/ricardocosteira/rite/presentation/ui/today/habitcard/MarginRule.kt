@@ -26,28 +26,14 @@ fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = 
     val colors = RiteAppTheme.colors
     val dashed = state == HabitCardState.Skipped || state == HabitCardState.Suspended
 
-    val trackColor: Color =
-        when (state) {
-            HabitCardState.Pending, HabitCardState.PendingInProgress -> colors.outline
+    val trackColor: Color = when (state) {
+        HabitCardState.Pending,
+        HabitCardState.PendingInProgress,
+        HabitCardState.Completed,
+        HabitCardState.Failed -> colors.outline
 
-            HabitCardState.Completed ->
-                Color(
-                    red = lerpChannel(colors.surfaceVariant.red, colors.primary.red, 0.15f),
-                    green = lerpChannel(colors.surfaceVariant.green, colors.primary.green, 0.15f),
-                    blue = lerpChannel(colors.surfaceVariant.blue, colors.primary.blue, 0.15f),
-                    alpha = 1f,
-                )
-
-            HabitCardState.Failed ->
-                Color(
-                    red = lerpChannel(colors.surfaceVariant.red, colors.error.red, 0.12f),
-                    green = lerpChannel(colors.surfaceVariant.green, colors.error.green, 0.12f),
-                    blue = lerpChannel(colors.surfaceVariant.blue, colors.error.blue, 0.12f),
-                    alpha = 1f,
-                )
-
-            HabitCardState.Skipped, HabitCardState.Suspended -> Color.Transparent
-        }
+        HabitCardState.Skipped, HabitCardState.Suspended -> Color.Transparent
+    }
 
     val fillColor: Color =
         when (state) {
@@ -107,5 +93,3 @@ fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = 
         }
     }
 }
-
-private fun lerpChannel(a: Float, b: Float, t: Float): Float = a + (b - a) * t

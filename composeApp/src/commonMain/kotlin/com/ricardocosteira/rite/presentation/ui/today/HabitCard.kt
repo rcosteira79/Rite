@@ -94,33 +94,41 @@ fun HabitCard(
         modifier = modifier.fillMaxWidth(),
     ) {
         Box(modifier = Modifier.heightIn(min = CARD_MIN_HEIGHT)) {
-            Row(
+            Column(
                 modifier = Modifier.padding(
                     start = CARD_LEFT_PADDING + RULE_WIDTH + RULE_RIGHT_GAP,
                     end = CARD_RIGHT_PADDING,
                     top = CARD_VERTICAL_PADDING,
                     bottom = CARD_VERTICAL_PADDING,
-                ),
-                verticalAlignment = Alignment.CenterVertically,
+                )
             ) {
-                HabitCardBody(
-                    habit = habit,
-                    state = visuals.state,
-                    modifier = Modifier.weight(1f),
-                )
-                HabitCardAction(
-                    state = visuals.state,
-                    type = habit.type,
-                    defaultIncrement = habit.defaultIncrement,
-                    skipLocked = habit.isSkipLocked,
-                    onComplete = {
-                        if (habit.type == HabitType.BINARY) onComplete() else onIncrementProgress()
-                    },
-                    onIncrement = onIncrementProgress,
-                    onSkip = onSkip,
-                    onUndo = onUndo,
-                    modifier = Modifier,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    HabitCardBody(
+                        habit = habit,
+                        state = visuals.state,
+                        modifier = Modifier.weight(1f),
+                    )
+                    HabitCardAction(
+                        state = visuals.state,
+                        type = habit.type,
+                        defaultIncrement = habit.defaultIncrement,
+                        skipLocked = habit.isSkipLocked,
+                        onComplete = {
+                            if (habit.type ==
+                                HabitType.BINARY
+                            ) {
+                                onComplete()
+                            } else {
+                                onIncrementProgress()
+                            }
+                        },
+                        onIncrement = onIncrementProgress,
+                        onSkip = onSkip,
+                        onUndo = onUndo,
+                        modifier = Modifier,
+                    )
+                }
+                HabitCardResolvedSubtext(habit = habit, state = visuals.state)
             }
             MarginRule(
                 state = visuals.state,
@@ -134,6 +142,54 @@ fun HabitCard(
                     ),
             )
         }
+    }
+}
+
+@Composable
+private fun HabitCardResolvedSubtext(habit: TodayHabitUiModel, state: HabitCardState,) {
+    val motion = RiteAppTheme.motion
+    val sub: String? = habitCardSubText(habit, state)
+    var lastSub by remember { mutableStateOf("") }
+    if (sub != null && sub != lastSub) {
+        lastSub = sub
+    }
+    val enterDelayMs = (motion.deliberate + motion.standard).inWholeMilliseconds.toInt()
+    val durationMs = motion.standard.inWholeMilliseconds.toInt()
+    AnimatedVisibility(
+        visible = sub != null,
+        enter = fadeIn(
+            animationSpec = tween(
+                durationMillis = durationMs,
+                delayMillis = enterDelayMs,
+                easing = motion.easeQuiet
+            )
+        ) + expandVertically(
+            animationSpec = tween(
+                durationMillis = durationMs,
+                delayMillis = enterDelayMs,
+                easing = motion.easeQuiet
+            ),
+            expandFrom = Alignment.Top
+        ),
+        exit = fadeOut(
+            animationSpec = tween(
+                durationMillis = durationMs,
+                easing = motion.easeQuiet
+            )
+        ) + shrinkVertically(
+            animationSpec = tween(
+                durationMillis = durationMs,
+                easing = motion.easeQuiet
+            ),
+            shrinkTowards = Alignment.Top
+        )
+    ) {
+        Text(
+            text = lastSub,
+            style = RiteAppTheme.typography.mono,
+            color = RiteAppTheme.colors.onSurfaceSubtle,
+            modifier = Modifier.padding(top = BODY_COLUMN_GAP),
+        )
     }
 }
 
@@ -219,48 +275,6 @@ private fun HabitCardBody(
                 }
             }
         )
-        val sub: String? = habitCardSubText(habit, state)
-        var lastSub by remember { mutableStateOf("") }
-        if (sub != null && sub != lastSub) {
-            lastSub = sub
-        }
-        val enterDelayMs = (motion.deliberate + motion.standard).inWholeMilliseconds.toInt()
-        val durationMs = motion.standard.inWholeMilliseconds.toInt()
-        AnimatedVisibility(
-            visible = sub != null,
-            enter = fadeIn(
-                animationSpec = tween(
-                    durationMillis = durationMs,
-                    delayMillis = enterDelayMs,
-                    easing = motion.easeQuiet
-                )
-            ) + expandVertically(
-                animationSpec = tween(
-                    durationMillis = durationMs,
-                    delayMillis = enterDelayMs,
-                    easing = motion.easeQuiet
-                ),
-                expandFrom = Alignment.Top
-            ),
-            exit = fadeOut(
-                animationSpec = tween(
-                    durationMillis = durationMs,
-                    easing = motion.easeQuiet
-                )
-            ) + shrinkVertically(
-                animationSpec = tween(
-                    durationMillis = durationMs,
-                    easing = motion.easeQuiet
-                ),
-                shrinkTowards = Alignment.Top
-            )
-        ) {
-            Text(
-                text = lastSub,
-                style = RiteAppTheme.typography.mono,
-                color = colors.onSurfaceSubtle,
-            )
-        }
     }
 }
 
