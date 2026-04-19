@@ -5,6 +5,8 @@ import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
+import com.ricardocosteira.rite.domain.models.StrictnessPreset
+import com.ricardocosteira.rite.domain.models.UndoPolicy
 import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DatePeriod
@@ -46,7 +48,12 @@ class HabitDetailScreenScreenshotTest {
         longestStreak = 42,
         habitScore = 89,
         maxConsecutiveSkips = 2,
-        currentConsecutiveSkips = 0
+        currentConsecutiveSkips = 0,
+        strictnessPreset = StrictnessPreset.BALANCED,
+        undoPolicy = UndoPolicy.TODAY_ONLY,
+        snoozesUsedToday = 0,
+        maxSnoozesPerDay = 3,
+        skipsThisWeek = 0,
     )
 
     private val quantitativeHabitUi = binaryHabitUi.copy(
