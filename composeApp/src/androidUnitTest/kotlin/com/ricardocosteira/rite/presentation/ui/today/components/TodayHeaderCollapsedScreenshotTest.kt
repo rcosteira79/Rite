@@ -61,8 +61,7 @@ class TodayHeaderCollapsedScreenshotTest {
                         pendingCount = pendingCount,
                         dailyTotal = totalDaily,
                         dailyProgressFraction = progress,
-                        strictnessPreset = StrictnessPreset.BALANCED,
-                        onAddHabit = {}
+                        strictnessPreset = StrictnessPreset.BALANCED
                     )
                 }
             }
