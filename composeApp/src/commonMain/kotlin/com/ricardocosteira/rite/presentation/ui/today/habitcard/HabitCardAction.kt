@@ -5,6 +5,8 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -71,8 +73,15 @@ fun HabitCardAction(
             ) {
                 when (currentState) {
                     HabitCardState.Pending, HabitCardState.PendingInProgress -> {
+                        val primaryScaleModifier = Modifier.animateEnterExit(
+                            enter = scaleIn() + fadeIn(),
+                            exit = scaleOut() + fadeOut(),
+                        )
                         when (type) {
-                            HabitType.BINARY -> CheckCircle(onClick = onComplete)
+                            HabitType.BINARY -> CheckCircle(
+                                onClick = onComplete,
+                                modifier = primaryScaleModifier,
+                            )
 
                             HabitType.QUANTITATIVE -> PlusChip(
                                 label = stringResource(
@@ -80,6 +89,7 @@ fun HabitCardAction(
                                     defaultIncrement,
                                 ),
                                 onClick = onIncrement,
+                                modifier = primaryScaleModifier,
                             )
                         }
                         if (!skipLocked) {
@@ -88,6 +98,8 @@ fun HabitCardAction(
                                 modifier = Modifier.sharedBounds(
                                     sharedContentState = rememberSharedContentState(TAIL_PILL_KEY),
                                     animatedVisibilityScope = this@AnimatedContent,
+                                    enter = scaleIn(),
+                                    exit = scaleOut(),
                                 ),
                             )
                         }
@@ -98,6 +110,8 @@ fun HabitCardAction(
                         modifier = Modifier.sharedBounds(
                             sharedContentState = rememberSharedContentState(TAIL_PILL_KEY),
                             animatedVisibilityScope = this@AnimatedContent,
+                            enter = scaleIn(),
+                            exit = scaleOut(),
                         ),
                     )
 
@@ -112,6 +126,8 @@ fun HabitCardAction(
                             modifier = Modifier.sharedBounds(
                                 sharedContentState = rememberSharedContentState(TAIL_PILL_KEY),
                                 animatedVisibilityScope = this@AnimatedContent,
+                                enter = scaleIn(),
+                                exit = scaleOut(),
                             ),
                         )
                     }
