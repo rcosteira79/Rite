@@ -86,7 +86,7 @@ fun ProgressRing(
                 )
             }
             if (!small) {
-                val dashGap = 5.dp.toPx()
+                val dashGap = 3.dp.toPx()
                 val arcInnerEdge = arcRadius - strokePx / 2f
                 val dashRadius = arcInnerEdge - dashGap
                 drawCircle(
@@ -95,7 +95,7 @@ fun ProgressRing(
                     radius = dashRadius,
                     style = Stroke(
                         width = 1.dp.toPx(),
-                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(3f, 3f), 0f)
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(7f, 5f), 0f)
                     )
                 )
             }
