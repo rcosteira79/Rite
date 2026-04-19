@@ -260,8 +260,7 @@ internal fun TodayScreen(
                                 0f
                             },
                             strictnessPreset = state.strictnessPreset,
-                            isCollapsed = scrollProgress > 0.5f,
-                            onAddHabit = onAddFirstHabit
+                            isCollapsed = scrollProgress > 0.5f
                         )
                     }
                 }
@@ -275,8 +274,8 @@ internal fun TodayScreen(
                     containerColor = RiteAppTheme.colors.onSurface,
                     contentColor = RiteAppTheme.colors.surface,
                     elevation = FloatingActionButtonDefaults.elevation(
-                        defaultElevation = 0.dp,
-                        pressedElevation = 0.dp
+                        defaultElevation = 1.dp,
+                        pressedElevation = 2.dp
                     )
                 ) {
                     Icon(
