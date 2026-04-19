@@ -1,5 +1,9 @@
 # Follow-up Work
 
+## Design system
+
+- [ ] HabitDetailAction stepper visual fidelity — match /tmp/rite-design/rite/project/styles/rite.css:994-1027 (64dp buttons, 8dp corner, 6dp outer padding, 30sp value, 0.18em unit letter-spacing). Currently ported as-is from pre-v2 inline helpers.
+
 ## Post-MVP Polish
 
 - [ ] Flexible weekly habits — complete N times per week on any day, no specific days assigned
