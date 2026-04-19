@@ -36,7 +36,8 @@ private const val HALO_PEAK_ALPHA = 0.6f
 fun StrictnessPill(
     preset: StrictnessPreset,
     modifier: Modifier = Modifier,
-    animated: Boolean = true
+    animated: Boolean = true,
+    showCap: Boolean = true
 ) {
     val colors = RiteAppTheme.colors
     val typography = RiteAppTheme.typography
@@ -82,14 +83,16 @@ fun StrictnessPill(
                 dotColor = colors.primary,
                 pulseT = pulseT
             )
-            Text(
-                text = "Strictness".uppercase(),
-                style = typography.mono.copy(
-                    fontSize = 10.sp,
-                    letterSpacing = 1.4.sp,
-                    color = colors.onSurfaceSubtle
+            if (showCap) {
+                Text(
+                    text = "Strictness".uppercase(),
+                    style = typography.mono.copy(
+                        fontSize = 10.sp,
+                        letterSpacing = 1.4.sp,
+                        color = colors.onSurfaceSubtle
+                    )
                 )
-            )
+            }
             Text(
                 text = preset.name,
                 style = typography.labelSmall.copy(

@@ -11,18 +11,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
@@ -36,7 +30,6 @@ import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
-import rite.composeapp.generated.resources.today_cd_add_habit
 import rite.composeapp.generated.resources.today_header_salute_all_done
 import rite.composeapp.generated.resources.today_header_salute_empty
 import rite.composeapp.generated.resources.today_header_subtitle_all_done
@@ -53,7 +46,6 @@ fun TodayHeader(
     dailyProgressFraction: Float,
     strictnessPreset: DomainStrictnessPreset?,
     isCollapsed: Boolean,
-    onAddHabit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedContent(
@@ -68,8 +60,7 @@ fun TodayHeader(
                 pendingCount = pendingCount,
                 dailyTotal = dailyTotal,
                 dailyProgressFraction = dailyProgressFraction,
-                strictnessPreset = strictnessPreset,
-                onAddHabit = onAddHabit
+                strictnessPreset = strictnessPreset
             )
         } else {
             TodayHeaderExpanded(
@@ -197,8 +188,7 @@ internal fun TodayHeaderCollapsed(
     pendingCount: Int,
     dailyTotal: Int,
     dailyProgressFraction: Float,
-    strictnessPreset: DomainStrictnessPreset?,
-    onAddHabit: () -> Unit
+    strictnessPreset: DomainStrictnessPreset?
 ) {
     val colors = RiteAppTheme.colors
     val typo = RiteAppTheme.typography
@@ -210,8 +200,10 @@ internal fun TodayHeaderCollapsed(
             .fillMaxWidth()
             .statusBarsPadding()
             .padding(
-                horizontal = RiteAppTheme.spacing.gap6,
-                vertical = RiteAppTheme.spacing.gap3
+                start = RiteAppTheme.spacing.gap6,
+                end = RiteAppTheme.spacing.gap6,
+                top = RiteAppTheme.spacing.gap5,
+                bottom = RiteAppTheme.spacing.gap3
             ),
         horizontalArrangement = Arrangement.spacedBy(RiteAppTheme.spacing.gap3),
         verticalAlignment = Alignment.CenterVertically
@@ -231,26 +223,11 @@ internal fun TodayHeaderCollapsed(
             )
         }
         if (strictnessPreset != null) {
-            StrictnessPill(preset = strictnessPreset.toPillPreset(), animated = false)
-        }
-        Surface(
-            onClick = onAddHabit,
-            shape = RiteAppTheme.shapes.pill,
-            color = Color.Transparent,
-            contentColor = colors.onSurface,
-            modifier = Modifier.size(36.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(Res.string.today_cd_add_habit),
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+            StrictnessPill(
+                preset = strictnessPreset.toPillPreset(),
+                animated = false,
+                showCap = false
+            )
         }
     }
 }
