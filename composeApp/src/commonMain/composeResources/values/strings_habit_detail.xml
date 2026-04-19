@@ -9,7 +9,7 @@
     <string name="habit_detail_skips_remaining">%1$d skips remaining</string>
     <string name="habit_detail_skips_unlimited">Unlimited skips</string>
     <string name="habit_detail_skips_none">No skips remaining</string>
-    <string name="habit_detail_heatmap_title">Last 3 months</string>
+    <string name="habit_detail_heatmap_title">Last 3 months · Tapestry</string>
     <string name="habit_detail_action_complete">Complete</string>
     <string name="habit_detail_action_completed">Completed</string>
     <string name="habit_detail_action_skip">Skip</string>

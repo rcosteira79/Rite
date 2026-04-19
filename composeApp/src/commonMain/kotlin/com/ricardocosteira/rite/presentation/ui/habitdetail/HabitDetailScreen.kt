@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.components.RiteButton
+import com.ricardocosteira.rite.presentation.ui.habitdetail.components.Tapestry
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
@@ -64,7 +65,6 @@ import rite.composeapp.generated.resources.habit_detail_category_binary
 import rite.composeapp.generated.resources.habit_detail_category_quantitative
 import rite.composeapp.generated.resources.habit_detail_cd_edit
 import rite.composeapp.generated.resources.habit_detail_enforcement_limits
-import rite.composeapp.generated.resources.habit_detail_heatmap_title
 import rite.composeapp.generated.resources.habit_detail_progress
 import rite.composeapp.generated.resources.habit_detail_skips_none
 import rite.composeapp.generated.resources.habit_detail_skips_remaining
@@ -250,16 +250,9 @@ fun HabitDetailScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Heatmap
-                Text(
-                    text = stringResource(Res.string.habit_detail_heatmap_title),
-                    style = RiteAppTheme.typography.titleMedium,
-                    color = RiteAppTheme.colors.primary
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                HeatmapGrid(
+                Tapestry(
                     heatmapData = state.heatmapData,
+                    weekRangeLabel = "", // filled in properly in task 8
                     modifier = Modifier.fillMaxWidth()
                 )
 
