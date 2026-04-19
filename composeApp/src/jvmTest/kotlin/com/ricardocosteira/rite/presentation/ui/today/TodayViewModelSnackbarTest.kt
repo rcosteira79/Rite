@@ -37,66 +37,8 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-/**
- * Verifies TodayViewModel emits typed TodayEvents carrying the habit name
- * so the TodayScreen snackbar layer can render RiteSnackbar with italic accents.
- */
 @OptIn(ExperimentalCoroutinesApi::class)
 class TodayViewModelSnackbarTest {
-
-    @Test
-    fun `completeHabit binary emits HabitCompleted with habit name`() = runTest {
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        Dispatchers.setMain(testDispatcher)
-        try {
-            val deps = TestDependencies(testDispatcher)
-            val habitId = "habit-1"
-            val habitName = "Morning sit"
-            val instanceId = "instance-1"
-            deps.seedBinaryPending(habitId, habitName, instanceId)
-
-            val vm = buildViewModel(deps, testDispatcher)
-            advanceUntilIdle()
-
-            vm.events.test {
-                vm.completeHabit(instanceId)
-                advanceUntilIdle()
-                val event = awaitItem()
-                assertTrue(event is TodayEvent.HabitCompleted)
-                assertEquals(habitName, (event as TodayEvent.HabitCompleted).habitName)
-                cancelAndIgnoreRemainingEvents()
-            }
-        } finally {
-            Dispatchers.resetMain()
-        }
-    }
-
-    @Test
-    fun `skipHabit success emits HabitSkipped with habit name`() = runTest {
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        Dispatchers.setMain(testDispatcher)
-        try {
-            val deps = TestDependencies(testDispatcher)
-            val habitId = "habit-2"
-            val habitName = "Read before sleep"
-            val instanceId = "instance-2"
-            deps.seedBinaryPending(habitId, habitName, instanceId)
-
-            val vm = buildViewModel(deps, testDispatcher)
-            advanceUntilIdle()
-
-            vm.events.test {
-                vm.skipHabit(instanceId)
-                advanceUntilIdle()
-                val event = awaitItem()
-                assertTrue(event is TodayEvent.HabitSkipped)
-                assertEquals(habitName, (event as TodayEvent.HabitSkipped).habitName)
-                cancelAndIgnoreRemainingEvents()
-            }
-        } finally {
-            Dispatchers.resetMain()
-        }
-    }
 
     @Test
     fun `deleteHabit emits HabitDeleted with habit name`() = runTest {
@@ -111,11 +53,11 @@ class TodayViewModelSnackbarTest {
             val vm = buildViewModel(deps, testDispatcher)
             advanceUntilIdle()
 
-            vm.events.test {
+            vm.feedbackEvents.test {
                 vm.deleteHabit(habitId)
                 val event = awaitItem()
-                assertTrue(event is TodayEvent.HabitDeleted)
-                assertEquals(habitName, (event as TodayEvent.HabitDeleted).habitName)
+                assertTrue(event is TodayFeedbackEvent.HabitDeleted)
+                assertEquals(habitName, (event as TodayFeedbackEvent.HabitDeleted).habitName)
                 cancelAndIgnoreRemainingEvents()
             }
         } finally {

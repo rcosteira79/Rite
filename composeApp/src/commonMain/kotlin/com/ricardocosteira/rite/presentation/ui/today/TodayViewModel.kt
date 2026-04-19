@@ -78,8 +78,11 @@ class TodayViewModel(
     private val _state = MutableStateFlow(TodayState())
     val state: StateFlow<TodayState> = _state.asStateFlow()
 
-    private val _events = MutableSharedFlow<TodayEvent>()
-    val events: SharedFlow<TodayEvent> = _events.asSharedFlow()
+    private val _navEvents = MutableSharedFlow<TodayNavEvent>()
+    val navEvents: SharedFlow<TodayNavEvent> = _navEvents.asSharedFlow()
+
+    private val _feedbackEvents = MutableSharedFlow<TodayFeedbackEvent>()
+    val feedbackEvents: SharedFlow<TodayFeedbackEvent> = _feedbackEvents.asSharedFlow()
 
     private var undoJob: Job? = null
 
@@ -235,9 +238,8 @@ class TodayViewModel(
             result.onSuccess {
                 cancelReminderForHabit(instanceId, habit.habitId)
                 loadTodayHabits()
-                _events.emit(TodayEvent.HabitCompleted(habit.name, newStreak = null))
             }.onFailure { error ->
-                _events.emit(TodayEvent.ShowError(error.message))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(error.message))
             }
         }
     }
@@ -256,11 +258,10 @@ class TodayViewModel(
             result.onSuccess { updatedInstance ->
                 if (updatedInstance.isQuantitativeComplete() && habit != null) {
                     cancelReminderForHabit(instanceId, habit.habitId)
-                    _events.emit(TodayEvent.HabitCompleted(habit.name, newStreak = null))
                 }
                 loadTodayHabits()
             }.onFailure { error ->
-                _events.emit(TodayEvent.ShowError(error.message))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(error.message))
             }
         }
     }
@@ -279,11 +280,10 @@ class TodayViewModel(
             result.onSuccess { updatedInstance: HabitInstance ->
                 if (updatedInstance.isQuantitativeComplete()) {
                     cancelReminderForHabit(instanceId, habit.habitId)
-                    _events.emit(TodayEvent.HabitCompleted(habit.name, newStreak = null))
                 }
                 loadTodayHabits()
             }.onFailure { error: Throwable ->
-                _events.emit(TodayEvent.ShowError(error.message))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(error.message))
             }
         }
     }
@@ -304,14 +304,15 @@ class TodayViewModel(
             result.onSuccess {
                 if (habit != null) cancelReminderForHabit(instanceId, habit.habitId)
                 loadTodayHabits()
-                _events.emit(TodayEvent.HabitSkipped(habit?.name ?: "", skipsRemaining = null))
             }.onFailure { error ->
                 when (error) {
                     is SkipLockedException ->
-                        _events.emit(TodayEvent.SkipLimitReached(habit?.name ?: ""))
+                        _feedbackEvents.emit(
+                            TodayFeedbackEvent.SkipLimitReached(habit?.name ?: "")
+                        )
 
                     else ->
-                        _events.emit(TodayEvent.ShowError(error.message))
+                        _feedbackEvents.emit(TodayFeedbackEvent.ShowError(error.message))
                 }
             }
         }
@@ -325,7 +326,7 @@ class TodayViewModel(
                 loadTodayHabits()
                 // No snackbar — card state revert is the feedback
             }.onFailure { error ->
-                _events.emit(TodayEvent.ShowError(error.message))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(error.message))
             }
         }
     }
@@ -337,7 +338,7 @@ class TodayViewModel(
             result.onSuccess {
                 loadTodayHabits()
             }.onFailure { error ->
-                _events.emit(TodayEvent.ShowError(error.message))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(error.message))
             }
         }
     }
@@ -352,7 +353,9 @@ class TodayViewModel(
 
         _state.update { it.copy(pendingDelete = PendingDelete(habitId, habit.name)) }
 
-        viewModelScope.launch { _events.emit(TodayEvent.HabitDeleted(habit.name)) }
+        viewModelScope.launch {
+            _feedbackEvents.emit(TodayFeedbackEvent.HabitDeleted(habit.name))
+        }
 
         undoJob = viewModelScope.launch {
             delay(UNDO_TIMEOUT_MS)
@@ -360,7 +363,7 @@ class TodayViewModel(
                 habitRepository.deleteHabit(habitId)
                 _state.update { it.copy(pendingDelete = null) }
             } catch (e: Exception) {
-                _events.emit(TodayEvent.ShowError(e.message))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(e.message))
                 loadTodayHabits()
             }
         }
@@ -370,7 +373,7 @@ class TodayViewModel(
         undoJob?.cancel()
         undoJob = null
         _state.update { it.copy(pendingDelete = null) }
-        viewModelScope.launch { _events.emit(TodayEvent.UndoCompleted) }
+        viewModelScope.launch { _feedbackEvents.emit(TodayFeedbackEvent.UndoCompleted) }
         loadTodayHabits()
     }
 
@@ -386,7 +389,7 @@ class TodayViewModel(
             try {
                 habitRepository.deleteHabit(previousDelete.habitId)
             } catch (e: Exception) {
-                _events.emit(TodayEvent.ShowError(e.message))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(e.message))
             }
         }
     }
@@ -415,7 +418,7 @@ class TodayViewModel(
                 habitRepository.archiveHabit(habitId)
                 loadTodayHabits()
             } catch (e: Exception) {
-                _events.emit(TodayEvent.ShowError(e.message))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(e.message))
             }
         }
     }
@@ -426,13 +429,13 @@ class TodayViewModel(
 
     fun navigateToHabitDetail(instanceId: String) {
         viewModelScope.launch {
-            _events.emit(TodayEvent.NavigateToHabitDetail(instanceId))
+            _navEvents.emit(TodayNavEvent.ToHabitDetail(instanceId))
         }
     }
 
     fun navigateToCreateHabit() {
         viewModelScope.launch {
-            _events.emit(TodayEvent.NavigateToCreateHabit)
+            _navEvents.emit(TodayNavEvent.ToCreateHabit)
         }
     }
 
