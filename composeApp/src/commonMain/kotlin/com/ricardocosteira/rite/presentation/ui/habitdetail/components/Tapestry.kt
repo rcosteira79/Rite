@@ -1,4 +1,4 @@
-package com.ricardocosteira.rite.presentation.ui.habitdetail
+package com.ricardocosteira.rite.presentation.ui.habitdetail.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,10 +16,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitStatus
+import com.ricardocosteira.rite.presentation.ui.habitdetail.HeatmapDay
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import com.ricardocosteira.rite.util.todayIn
 import kotlin.time.Clock
@@ -34,8 +36,9 @@ import rite.composeapp.generated.resources.habit_detail_heatmap_failed
 import rite.composeapp.generated.resources.habit_detail_heatmap_partial
 import rite.composeapp.generated.resources.habit_detail_heatmap_perfect
 import rite.composeapp.generated.resources.habit_detail_heatmap_skipped
+import rite.composeapp.generated.resources.habit_detail_heatmap_title
 
-private val CELL_GAP = 2.dp
+private val CELL_GAP = 3.dp
 private val CELL_CORNER = 2.dp
 private val DAY_LABEL_WIDTH = 16.dp
 private val DAY_LABEL_SPACING = 4.dp
@@ -48,11 +51,15 @@ private val DAY_LABELS: List<Pair<DayOfWeek, String>> = listOf(
     DayOfWeek.THURSDAY to "",
     DayOfWeek.FRIDAY to "F",
     DayOfWeek.SATURDAY to "",
-    DayOfWeek.SUNDAY to "S"
+    DayOfWeek.SUNDAY to "S",
 )
 
 @Composable
-fun HeatmapGrid(heatmapData: List<HeatmapDay>, modifier: Modifier = Modifier) {
+fun Tapestry(
+    heatmapData: List<HeatmapDay>,
+    weekRangeLabel: String,
+    modifier: Modifier = Modifier,
+) {
     val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
     val startDate: LocalDate = today.minus(DatePeriod(days = 90))
 
@@ -68,19 +75,39 @@ fun HeatmapGrid(heatmapData: List<HeatmapDay>, modifier: Modifier = Modifier) {
         val cellSize: Dp = (availableWidth - labelSpace - totalGaps) / weekCount
 
         Column {
+            // Compound mono header: left = title, right = week range
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom,
+            ) {
+                Text(
+                    text = stringResource(Res.string.habit_detail_heatmap_title),
+                    style = RiteAppTheme.typography.eyebrow,
+                    color = RiteAppTheme.colors.onSurfaceMuted,
+                )
+                Text(
+                    text = weekRangeLabel,
+                    style = RiteAppTheme.typography.eyebrow,
+                    color = RiteAppTheme.colors.onSurfaceSubtle,
+                )
+            }
+
+            Spacer(Modifier.height(12.dp))
+
             Row {
                 // Day labels column
                 Column(verticalArrangement = Arrangement.spacedBy(CELL_GAP)) {
                     DAY_LABELS.forEach { (_, label) ->
                         Box(
                             modifier = Modifier.size(width = DAY_LABEL_WIDTH, height = cellSize),
-                            contentAlignment = Alignment.CenterStart
+                            contentAlignment = Alignment.CenterStart,
                         ) {
                             if (label.isNotEmpty()) {
                                 Text(
                                     text = label,
                                     style = RiteAppTheme.typography.labelSmall,
-                                    color = RiteAppTheme.colors.onSurfaceVariant
+                                    color = RiteAppTheme.colors.onSurfaceVariant,
                                 )
                             }
                         }
@@ -97,9 +124,9 @@ fun HeatmapGrid(heatmapData: List<HeatmapDay>, modifier: Modifier = Modifier) {
                                 if (date == null) {
                                     Box(modifier = Modifier.size(cellSize))
                                 } else {
-                                    HeatmapCell(
+                                    TapestryCell(
                                         day = dataByDate[date.toString()],
-                                        size = cellSize
+                                        size = cellSize,
                                     )
                                 }
                             }
@@ -110,13 +137,13 @@ fun HeatmapGrid(heatmapData: List<HeatmapDay>, modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.size(12.dp))
 
-            HeatmapLegend(cellSize = LEGEND_CELL_SIZE)
+            TapestryLegend(cellSize = LEGEND_CELL_SIZE)
         }
     }
 }
 
 @Composable
-private fun HeatmapCell(day: HeatmapDay?, size: Dp, modifier: Modifier = Modifier) {
+private fun TapestryCell(day: HeatmapDay?, size: Dp, modifier: Modifier = Modifier) {
     val colorScheme = RiteAppTheme.colors
     val color = when {
         day == null -> colorScheme.dayNone
@@ -132,67 +159,67 @@ private fun HeatmapCell(day: HeatmapDay?, size: Dp, modifier: Modifier = Modifie
     Box(
         modifier = modifier
             .size(size)
-            .background(color = color, shape = RoundedCornerShape(CELL_CORNER))
+            .background(color = color, shape = RoundedCornerShape(CELL_CORNER)),
     )
 }
 
 @Composable
-private fun HeatmapLegend(cellSize: Dp, modifier: Modifier = Modifier) {
+private fun TapestryLegend(cellSize: Dp, modifier: Modifier = Modifier) {
     val colorScheme = RiteAppTheme.colors
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        LegendItem(
+        TapestryLegendItem(
             color = colorScheme.dayPerfect,
             label = stringResource(Res.string.habit_detail_heatmap_perfect),
-            size = cellSize
+            size = cellSize,
         )
-        LegendItem(
+        TapestryLegendItem(
             color = colorScheme.dayBestEffort,
             label = stringResource(Res.string.habit_detail_heatmap_best_effort),
-            size = cellSize
+            size = cellSize,
         )
-        LegendItem(
+        TapestryLegendItem(
             color = colorScheme.dayPartial,
             label = stringResource(Res.string.habit_detail_heatmap_partial),
-            size = cellSize
+            size = cellSize,
         )
-        LegendItem(
+        TapestryLegendItem(
             color = colorScheme.dayFailed,
             label = stringResource(Res.string.habit_detail_heatmap_failed),
-            size = cellSize
+            size = cellSize,
         )
-        LegendItem(
+        TapestryLegendItem(
             color = colorScheme.daySkipped,
             label = stringResource(Res.string.habit_detail_heatmap_skipped),
-            size = cellSize
+            size = cellSize,
         )
     }
 }
 
 @Composable
-private fun LegendItem(
+private fun TapestryLegendItem(
     color: androidx.compose.ui.graphics.Color,
     label: String,
     size: Dp,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Box(
             modifier = Modifier
                 .size(size)
-                .background(color = color, shape = RoundedCornerShape(CELL_CORNER))
+                .background(color = color, shape = RoundedCornerShape(CELL_CORNER)),
         )
         Text(
             text = label,
             style = RiteAppTheme.typography.labelSmall,
-            color = RiteAppTheme.colors.onSurfaceVariant
+            color = RiteAppTheme.colors.onSurfaceVariant,
         )
     }
 }
