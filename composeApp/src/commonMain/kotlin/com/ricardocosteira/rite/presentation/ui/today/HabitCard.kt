@@ -10,15 +10,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,8 +45,10 @@ import com.ricardocosteira.rite.presentation.ui.today.habitcard.visualsFor
 private val CARD_VERTICAL_PADDING = 14.dp
 private val CARD_LEFT_PADDING = 6.dp
 private val CARD_RIGHT_PADDING = 16.dp
+private val CARD_MIN_HEIGHT = 76.dp
 private val BODY_COLUMN_GAP = 4.dp
 private val RULE_RIGHT_GAP = 11.dp
+private val RULE_WIDTH = 5.dp
 
 @Composable
 fun HabitCard(
@@ -94,43 +93,45 @@ fun HabitCard(
         border = BorderStroke(1.dp, colors.outlineVariant),
         modifier = modifier.fillMaxWidth(),
     ) {
-        Row(
-            modifier =
-                Modifier
-                    .height(IntrinsicSize.Min)
-                    .padding(
-                        start = CARD_LEFT_PADDING,
-                        end = CARD_RIGHT_PADDING,
-                        top = CARD_VERTICAL_PADDING,
-                        bottom = CARD_VERTICAL_PADDING,
-                    ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        Box(modifier = Modifier.heightIn(min = CARD_MIN_HEIGHT)) {
+            Row(
+                modifier = Modifier.padding(
+                    start = CARD_LEFT_PADDING + RULE_WIDTH + RULE_RIGHT_GAP,
+                    end = CARD_RIGHT_PADDING,
+                    top = CARD_VERTICAL_PADDING,
+                    bottom = CARD_VERTICAL_PADDING,
+                ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                HabitCardBody(
+                    habit = habit,
+                    state = visuals.state,
+                    modifier = Modifier.weight(1f),
+                )
+                HabitCardAction(
+                    state = visuals.state,
+                    type = habit.type,
+                    defaultIncrement = habit.defaultIncrement,
+                    skipLocked = habit.isSkipLocked,
+                    onComplete = {
+                        if (habit.type == HabitType.BINARY) onComplete() else onIncrementProgress()
+                    },
+                    onIncrement = onIncrementProgress,
+                    onSkip = onSkip,
+                    onUndo = onUndo,
+                    modifier = Modifier,
+                )
+            }
             MarginRule(
                 state = visuals.state,
                 fillFraction = visuals.fillFraction,
                 modifier = Modifier
-                    .width(5.dp)
-                    .heightIn(min = 48.dp),
-            )
-            Spacer(modifier = Modifier.width(RULE_RIGHT_GAP))
-            HabitCardBody(
-                habit = habit,
-                state = visuals.state,
-                modifier = Modifier.weight(1f),
-            )
-            HabitCardAction(
-                state = visuals.state,
-                type = habit.type,
-                defaultIncrement = habit.defaultIncrement,
-                skipLocked = habit.isSkipLocked,
-                onComplete = {
-                    if (habit.type == HabitType.BINARY) onComplete() else onIncrementProgress()
-                },
-                onIncrement = onIncrementProgress,
-                onSkip = onSkip,
-                onUndo = onUndo,
-                modifier = Modifier,
+                    .matchParentSize()
+                    .padding(
+                        start = CARD_LEFT_PADDING,
+                        top = CARD_VERTICAL_PADDING,
+                        bottom = CARD_VERTICAL_PADDING,
+                    ),
             )
         }
     }
