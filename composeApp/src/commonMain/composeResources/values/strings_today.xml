@@ -36,9 +36,8 @@
     <string name="motivational_title_9">Stay the course</string>
     <string name="motivational_title_10">Begin again, always</string>
     <string name="motivational_title_11">Discipline is freedom</string>
-    <string name="motivational_title_12">Earn your rest</string>
-    <string name="motivational_title_13">Action over intention</string>
-    <string name="motivational_title_14">Make it count</string>
+    <string name="motivational_title_12">Action over intention</string>
+    <string name="motivational_title_13">Make it count</string>
 
     <!-- Header -->
     <string name="today_header_remaining">%1$d habits remaining today</string>
