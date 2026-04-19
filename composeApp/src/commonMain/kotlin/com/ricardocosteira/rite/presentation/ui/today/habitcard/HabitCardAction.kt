@@ -1,5 +1,11 @@
 package com.ricardocosteira.rite.presentation.ui.today.habitcard
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +41,11 @@ import rite.composeapp.generated.resources.today_stamp_missed
 import rite.composeapp.generated.resources.today_stamp_paused
 import rite.composeapp.generated.resources.today_stamp_skipped
 
+// Shared key for the trailing pill: Skip (pending) morphs into Undo (completed/skipped),
+// staying in place on the right while the primary action fades out separately.
+private const val TAIL_PILL_KEY = "habit-card-action-tail-pill"
+
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HabitCardAction(
     state: HabitCardState,
@@ -47,58 +58,81 @@ fun HabitCardAction(
     onUndo: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        when (state) {
-            HabitCardState.Pending, HabitCardState.PendingInProgress -> {
-                when (type) {
-                    HabitType.BINARY -> CheckCircle(onClick = onComplete)
+    SharedTransitionLayout(modifier = modifier) {
+        AnimatedContent(
+            targetState = state,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            contentKey = { it },
+            label = "habit-card-action"
+        ) { currentState ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                when (currentState) {
+                    HabitCardState.Pending, HabitCardState.PendingInProgress -> {
+                        when (type) {
+                            HabitType.BINARY -> CheckCircle(onClick = onComplete)
 
-                    HabitType.QUANTITATIVE ->
-                        PlusChip(
-                            label =
-                                stringResource(
+                            HabitType.QUANTITATIVE -> PlusChip(
+                                label = stringResource(
                                     Res.string.today_action_increment_short,
                                     defaultIncrement,
                                 ),
-                            onClick = onIncrement,
+                                onClick = onIncrement,
+                            )
+                        }
+                        if (!skipLocked) {
+                            SkipChip(
+                                onClick = onSkip,
+                                modifier = Modifier.sharedBounds(
+                                    sharedContentState = rememberSharedContentState(TAIL_PILL_KEY),
+                                    animatedVisibilityScope = this@AnimatedContent,
+                                ),
+                            )
+                        }
+                    }
+
+                    HabitCardState.Completed -> UndoPill(
+                        onClick = onUndo,
+                        modifier = Modifier.sharedBounds(
+                            sharedContentState = rememberSharedContentState(TAIL_PILL_KEY),
+                            animatedVisibilityScope = this@AnimatedContent,
+                        ),
+                    )
+
+                    HabitCardState.Skipped -> {
+                        Stamp(
+                            label = stringResource(Res.string.today_stamp_skipped),
+                            stateColor = RiteAppTheme.colors.onSurfaceMuted,
                         )
-                }
-                if (!skipLocked) {
-                    SkipChip(onClick = onSkip)
+                        UndoPill(
+                            onClick = onUndo,
+                            variant = UndoVariant.Skip,
+                            modifier = Modifier.sharedBounds(
+                                sharedContentState = rememberSharedContentState(TAIL_PILL_KEY),
+                                animatedVisibilityScope = this@AnimatedContent,
+                            ),
+                        )
+                    }
+
+                    HabitCardState.Failed -> Stamp(
+                        label = stringResource(Res.string.today_stamp_missed),
+                        stateColor = RiteAppTheme.colors.error,
+                    )
+
+                    HabitCardState.Suspended -> Stamp(
+                        label = stringResource(Res.string.today_stamp_paused),
+                        stateColor = RiteAppTheme.colors.suspend,
+                    )
                 }
             }
-
-            HabitCardState.Completed -> UndoPill(onClick = onUndo)
-
-            HabitCardState.Skipped -> {
-                Stamp(
-                    label = stringResource(Res.string.today_stamp_skipped),
-                    stateColor = RiteAppTheme.colors.onSurfaceMuted,
-                )
-                UndoPill(onClick = onUndo, variant = UndoVariant.Skip)
-            }
-
-            HabitCardState.Failed ->
-                Stamp(
-                    label = stringResource(Res.string.today_stamp_missed),
-                    stateColor = RiteAppTheme.colors.error,
-                )
-
-            HabitCardState.Suspended ->
-                Stamp(
-                    label = stringResource(Res.string.today_stamp_paused),
-                    stateColor = RiteAppTheme.colors.suspend,
-                )
         }
     }
 }
 
 @Composable
-private fun CheckCircle(onClick: () -> Unit) {
+private fun CheckCircle(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = RiteAppTheme.colors
     Surface(
         onClick = onClick,
@@ -106,7 +140,7 @@ private fun CheckCircle(onClick: () -> Unit) {
         color = Color.Transparent,
         contentColor = colors.onSurface,
         border = BorderStroke(1.5.dp, colors.onSurface),
-        modifier = Modifier.size(40.dp),
+        modifier = modifier.size(40.dp),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(
@@ -119,7 +153,7 @@ private fun CheckCircle(onClick: () -> Unit) {
 }
 
 @Composable
-private fun PlusChip(label: String, onClick: () -> Unit,) {
+private fun PlusChip(label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = RiteAppTheme.colors
     Surface(
         onClick = onClick,
@@ -127,6 +161,7 @@ private fun PlusChip(label: String, onClick: () -> Unit,) {
         color = Color.Transparent,
         contentColor = colors.onSurface,
         border = BorderStroke(1.dp, colors.onSurface),
+        modifier = modifier,
     ) {
         Text(
             text = label,
@@ -137,7 +172,7 @@ private fun PlusChip(label: String, onClick: () -> Unit,) {
 }
 
 @Composable
-private fun SkipChip(onClick: () -> Unit) {
+private fun SkipChip(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val colors = RiteAppTheme.colors
     Surface(
         onClick = onClick,
@@ -145,6 +180,7 @@ private fun SkipChip(onClick: () -> Unit) {
         color = Color.Transparent,
         contentColor = colors.onSurfaceMuted,
         border = BorderStroke(1.dp, colors.outline),
+        modifier = modifier,
     ) {
         Text(
             text = stringResource(Res.string.common_skip).uppercase(),
@@ -160,7 +196,11 @@ internal enum class UndoVariant {
 }
 
 @Composable
-private fun UndoPill(onClick: () -> Unit, variant: UndoVariant = UndoVariant.Primary,) {
+private fun UndoPill(
+    onClick: () -> Unit,
+    variant: UndoVariant = UndoVariant.Primary,
+    modifier: Modifier = Modifier,
+) {
     val colors = RiteAppTheme.colors
     val fg: Color =
         when (variant) {
@@ -178,6 +218,7 @@ private fun UndoPill(onClick: () -> Unit, variant: UndoVariant = UndoVariant.Pri
         color = Color.Transparent,
         contentColor = fg,
         border = BorderStroke(1.dp, border),
+        modifier = modifier,
     ) {
         Text(
             text = stringResource(Res.string.today_action_undo).uppercase(),
