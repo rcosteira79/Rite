@@ -35,9 +35,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ricardocosteira.rite.di.LocalAppComponent
+import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
-import com.ricardocosteira.rite.presentation.ui.components.RiteDivider
 import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarContent
 import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVariant
 import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVisuals
@@ -72,10 +72,11 @@ private val BOTTOM_CLEARANCE = 80.dp
 private val TOP_BREATHING_ROOM = 8.dp
 private val SECTION_GAP = 16.dp
 
-private sealed interface HabitFeedItem {
-    data class Card(val model: TodayHabitUiModel) : HabitFeedItem
-    data class Divider(val id: String) : HabitFeedItem
-}
+private val resolvedStatuses = setOf(
+    HabitStatus.COMPLETED,
+    HabitStatus.SKIPPED,
+    HabitStatus.FAILED
+)
 
 @Composable
 fun TodayScreen(
@@ -307,15 +308,15 @@ internal fun TodayScreen(
             }
 
             else -> {
-                val dailyTotal = state.pendingDaily.size + state.resolvedDaily.size
-                val dailyKept = state.resolvedDaily.size
+                val dailyTotal = state.daily.size
+                val dailyKept = state.daily.count { it.status in resolvedStatuses }
                 val dailyTrailing = stringResource(
                     Res.string.today_section_kept_count,
                     dailyKept,
                     dailyTotal
                 )
-                val weeklyTotal = state.pendingWeekly.size + state.resolvedWeekly.size
-                val weeklyMet = state.resolvedWeekly.size
+                val weeklyTotal = state.weekly.size
+                val weeklyMet = state.weekly.count { it.status in resolvedStatuses }
                 val weeklyTrailing = stringResource(
                     Res.string.today_section_met_count,
                     weeklyMet,
@@ -344,9 +345,7 @@ internal fun TodayScreen(
                     }
 
                     habitFeed(
-                        pending = state.pendingDaily,
-                        resolved = state.resolvedDaily,
-                        dividerKey = "daily_divider",
+                        habits = state.daily,
                         hapticController = hapticController,
                         onEdit = onEdit,
                         onDelete = onDelete,
@@ -360,7 +359,7 @@ internal fun TodayScreen(
                     )
 
                     // WEEKLY GOALS section
-                    if (state.pendingWeekly.isNotEmpty() || state.resolvedWeekly.isNotEmpty()) {
+                    if (state.weekly.isNotEmpty()) {
                         item(key = "weekly_spacer") {
                             Spacer(modifier = Modifier.height(SECTION_GAP))
                         }
@@ -373,9 +372,7 @@ internal fun TodayScreen(
                         }
 
                         habitFeed(
-                            pending = state.pendingWeekly,
-                            resolved = state.resolvedWeekly,
-                            dividerKey = "weekly_divider",
+                            habits = state.weekly,
                             hapticController = hapticController,
                             onEdit = onEdit,
                             onDelete = onDelete,
@@ -395,9 +392,7 @@ internal fun TodayScreen(
 }
 
 private fun LazyListScope.habitFeed(
-    pending: List<TodayHabitUiModel>,
-    resolved: List<TodayHabitUiModel>,
-    dividerKey: String,
+    habits: List<TodayHabitUiModel>,
     hapticController: HapticController,
     onEdit: (String) -> Unit,
     onDelete: (String) -> Unit,
@@ -409,68 +404,38 @@ private fun LazyListScope.habitFeed(
     onIncrementProgress: (String) -> Unit,
     onCustomProgress: (String) -> Unit,
 ) {
-    val feed: List<HabitFeedItem> = buildList {
-        pending.forEach { add(HabitFeedItem.Card(it)) }
-        if (pending.isNotEmpty() && resolved.isNotEmpty()) {
-            add(HabitFeedItem.Divider(dividerKey))
-        }
-        resolved.forEach { add(HabitFeedItem.Card(it)) }
-    }
     items(
-        items = feed,
-        key = { item ->
-            when (item) {
-                is HabitFeedItem.Card -> item.model.instanceId
-                is HabitFeedItem.Divider -> item.id
-            }
-        },
-        contentType = { item ->
-            when (item) {
-                is HabitFeedItem.Card -> "habit-card"
-                is HabitFeedItem.Divider -> "divider"
-            }
-        }
-    ) { item ->
-        when (item) {
-            is HabitFeedItem.Card -> {
-                val habit: TodayHabitUiModel = item.model
-                SwipeableHabitCard(
-                    onEdit = { onEdit(habit.habitId) },
-                    onDelete = { onDelete(habit.habitId) },
-                    hapticController = hapticController,
-                    modifier = Modifier.animateItem()
-                ) {
-                    HabitCard(
-                        habit = habit,
-                        onClick = { onNavigateToDetail(habit.instanceId) },
-                        onComplete = {
-                            if (habit.type == HabitType.BINARY) {
-                                onComplete(habit.instanceId)
-                            } else {
-                                onIncrementProgress(habit.instanceId)
-                            }
-                        },
-                        onSkip = { onSkip(habit.instanceId) },
-                        onUndo = {
-                            if (habit.type == HabitType.QUANTITATIVE && habit.isCompleted) {
-                                onUndoLastIncrement(habit.instanceId)
-                            } else {
-                                onUndo(habit.instanceId)
-                            }
-                        },
-                        onIncrementProgress = { onIncrementProgress(habit.instanceId) },
-                        onCustomProgress = { onCustomProgress(habit.instanceId) }
-                    )
-                }
-            }
-
-            is HabitFeedItem.Divider -> {
-                RiteDivider(
-                    modifier = Modifier
-                        .animateItem()
-                        .padding(horizontal = RiteAppTheme.spacing.gap4)
-                )
-            }
+        items = habits,
+        key = { it.instanceId },
+        contentType = { "habit-card" }
+    ) { habit ->
+        SwipeableHabitCard(
+            onEdit = { onEdit(habit.habitId) },
+            onDelete = { onDelete(habit.habitId) },
+            hapticController = hapticController,
+            modifier = Modifier.animateItem()
+        ) {
+            HabitCard(
+                habit = habit,
+                onClick = { onNavigateToDetail(habit.instanceId) },
+                onComplete = {
+                    if (habit.type == HabitType.BINARY) {
+                        onComplete(habit.instanceId)
+                    } else {
+                        onIncrementProgress(habit.instanceId)
+                    }
+                },
+                onSkip = { onSkip(habit.instanceId) },
+                onUndo = {
+                    if (habit.type == HabitType.QUANTITATIVE && habit.isCompleted) {
+                        onUndoLastIncrement(habit.instanceId)
+                    } else {
+                        onUndo(habit.instanceId)
+                    }
+                },
+                onIncrementProgress = { onIncrementProgress(habit.instanceId) },
+                onCustomProgress = { onCustomProgress(habit.instanceId) }
+            )
         }
     }
 }
