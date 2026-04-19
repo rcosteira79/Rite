@@ -52,7 +52,7 @@ import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarContent
 import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVariant
 import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVisuals
 import com.ricardocosteira.rite.presentation.ui.habit.HabitFormScreen
-import com.ricardocosteira.rite.presentation.ui.habitdetail.HabitDetailRoute
+import com.ricardocosteira.rite.presentation.ui.habitdetail.HabitDetailScreen
 import com.ricardocosteira.rite.presentation.ui.onboarding.OnboardingRoute
 import com.ricardocosteira.rite.presentation.ui.settings.SettingsScreen
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
@@ -531,7 +531,7 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
 
                         entry<HabitDetail> { route ->
                             val todayViewModel = LocalAppComponent.current.todayViewModel
-                            HabitDetailRoute(
+                            HabitDetailScreen(
                                 instanceId = route.instanceId,
                                 onNavigateBack = dropUnlessResumed {
                                     backStack.removeLastOrNull()

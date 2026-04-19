@@ -7,7 +7,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.ricardocosteira.rite.domain.models.HabitStatus
-import com.ricardocosteira.rite.presentation.ui.habitdetail.HeatmapDay
+import com.ricardocosteira.rite.presentation.ui.habitdetail.models.HeatmapDay
 import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate

@@ -25,6 +25,8 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.SkipNext
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,12 +35,16 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -49,10 +55,14 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.components.RiteButton
 import com.ricardocosteira.rite.presentation.ui.habitdetail.components.Tapestry
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
+import com.ricardocosteira.rite.presentation.ui.today.QuantitativeInputBottomSheet
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.common_cd_back
@@ -75,6 +85,10 @@ import rite.composeapp.generated.resources.habit_detail_stat_habit_score
 import rite.composeapp.generated.resources.habit_detail_stat_longest_streak
 import rite.composeapp.generated.resources.habit_form_cd_archive
 import rite.composeapp.generated.resources.habit_form_cd_delete
+import rite.composeapp.generated.resources.habit_form_delete_dialog_body
+import rite.composeapp.generated.resources.habit_form_delete_dialog_cancel
+import rite.composeapp.generated.resources.habit_form_delete_dialog_confirm
+import rite.composeapp.generated.resources.habit_form_delete_dialog_title
 
 private val RING_SIZE = 120.dp
 private val RING_STROKE_WIDTH = 6.dp
@@ -85,9 +99,85 @@ private const val PERCENTAGE_MULTIPLIER = 100
 private val CARD_CORNER = 16.dp
 private val STEPPER_BUTTON_SIZE = 48.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HabitDetailScreen(
+    instanceId: String,
+    onNavigateBack: () -> Unit,
+    onEditHabit: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val createViewModel = LocalAppComponent.current.createHabitDetailViewModel
+    val viewModel: HabitDetailViewModel = viewModel { createViewModel(instanceId) }
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    var isDeleteDialogVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                HabitDetailEvent.NavigateBack -> onNavigateBack()
+            }
+        }
+    }
+
+    HabitDetailScreen(
+        state = state,
+        onBackClick = onNavigateBack,
+        onComplete = viewModel::completeBinary,
+        onIncrementProgress = viewModel::incrementProgress,
+        onCustomProgress = viewModel::showCustomInput,
+        onSkip = viewModel::skip,
+        onUndo = viewModel::undo,
+        onUndoIncrement = viewModel::undoIncrement,
+        onEditHabit = { state.habit?.habitId?.let(onEditHabit) },
+        onArchiveHabit = viewModel::archiveHabit,
+        onDeleteHabit = { isDeleteDialogVisible = true },
+        modifier = modifier,
+    )
+
+    if (isDeleteDialogVisible) {
+        AlertDialog(
+            onDismissRequest = { isDeleteDialogVisible = false },
+            title = { Text(stringResource(Res.string.habit_form_delete_dialog_title)) },
+            text = { Text(stringResource(Res.string.habit_form_delete_dialog_body)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        isDeleteDialogVisible = false
+                        viewModel.deleteHabit()
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = RiteAppTheme.colors.error
+                    ),
+                ) { Text(stringResource(Res.string.habit_form_delete_dialog_confirm)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { isDeleteDialogVisible = false }) {
+                    Text(stringResource(Res.string.habit_form_delete_dialog_cancel))
+                }
+            },
+        )
+    }
+
+    val customInputHabit = state.habit
+    if (state.showCustomInput && customInputHabit != null) {
+        QuantitativeInputBottomSheet(
+            name = customInputHabit.name,
+            completedValue = customInputHabit.completedValue,
+            targetValue = customInputHabit.targetValue,
+            unit = customInputHabit.unit,
+            defaultIncrement = customInputHabit.defaultIncrement,
+            onConfirm = { value ->
+                viewModel.addCustomProgress(value)
+                viewModel.dismissCustomInput()
+            },
+            onDismiss = viewModel::dismissCustomInput,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun HabitDetailScreen(
     state: HabitDetailState,
     onBackClick: () -> Unit,
     onComplete: () -> Unit,

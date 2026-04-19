@@ -7,6 +7,8 @@ import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.StrictnessPreset
 import com.ricardocosteira.rite.domain.models.UndoPolicy
+import com.ricardocosteira.rite.presentation.ui.habitdetail.models.HabitDetailUiModel
+import com.ricardocosteira.rite.presentation.ui.habitdetail.models.HeatmapDay
 import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DatePeriod
