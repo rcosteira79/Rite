@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
-import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
+import com.ricardocosteira.rite.presentation.ui.components.RiteButton
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
@@ -126,11 +126,11 @@ private fun BinaryBlock(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         if (isResolved && isCompletedOrSkipped) {
-            PrimaryButton(onClick = onUndo) {
+            RiteButton(onClick = onUndo) {
                 Text(stringResource(Res.string.habit_detail_action_undo))
             }
         } else {
-            PrimaryButton(onClick = onComplete, enabled = !isResolved) {
+            RiteButton(onClick = onComplete, enabled = !isResolved) {
                 Text(stringResource(Res.string.habit_detail_action_complete))
             }
         }
@@ -160,7 +160,7 @@ private fun QuantitativeBlock(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         if (isResolved && isCompletedOrSkipped) {
-            PrimaryButton(onClick = onUndo) {
+            RiteButton(onClick = onUndo) {
                 Text(stringResource(Res.string.habit_detail_action_undo))
             }
         } else {
