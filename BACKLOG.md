@@ -3,6 +3,7 @@
 ## Design system
 
 - [ ] HabitDetailAction stepper visual fidelity — match /tmp/rite-design/rite/project/styles/rite.css:994-1027 (64dp buttons, 8dp corner, 6dp outer padding, 30sp value, 0.18em unit letter-spacing). Currently ported as-is from pre-v2 inline helpers.
+- [ ] HabitDetail timezone consistency — screen uses `TimeZone.currentSystemDefault()` for the week-range label; VM uses `user.timezone` for heatmap data. They can disagree at ISO-week boundaries for users in non-local timezones. Cleanest fix: expose `today: LocalDate` on `HabitDetailUiModel`, computed in the VM with `user.timezone`, and drive the screen off it (also removes the `remember { today = ... }` staleness risk when the app is open past midnight).
 
 ## Post-MVP Polish
 
