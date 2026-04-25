@@ -28,7 +28,7 @@ fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = 
     val motion = RiteAppTheme.motion
     val animSpec = tween<Float>(
         durationMillis = motion.deliberate.inWholeMilliseconds.toInt(),
-        easing = motion.easeQuiet,
+        easing = motion.easeQuiet
     )
 
     val dashedTarget = if (state == HabitCardState.Skipped || state == HabitCardState.Suspended) {
@@ -39,7 +39,7 @@ fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = 
     val dashedT by animateFloatAsState(
         targetValue = dashedTarget,
         animationSpec = animSpec,
-        label = "margin-rule-dashed",
+        label = "margin-rule-dashed"
     )
 
     val fillColorTarget: Color = when (state) {
@@ -57,9 +57,9 @@ fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = 
         targetValue = fillColorTarget,
         animationSpec = tween(
             durationMillis = motion.deliberate.inWholeMilliseconds.toInt(),
-            easing = motion.easeQuiet,
+            easing = motion.easeQuiet
         ),
-        label = "margin-rule-fill-color",
+        label = "margin-rule-fill-color"
     )
 
     val dashColorTarget: Color = when (state) {
@@ -70,16 +70,16 @@ fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = 
         targetValue = dashColorTarget,
         animationSpec = tween(
             durationMillis = motion.deliberate.inWholeMilliseconds.toInt(),
-            easing = motion.easeQuiet,
+            easing = motion.easeQuiet
         ),
-        label = "margin-rule-dash-color",
+        label = "margin-rule-dash-color"
     )
 
     val fillTarget = if (state == HabitCardState.Failed) 1f else fillFraction.coerceIn(0f, 1f)
     val animatedFill by animateFloatAsState(
         targetValue = fillTarget,
         animationSpec = animSpec,
-        label = "margin-rule-fill",
+        label = "margin-rule-fill"
     )
 
     val trackColor = colors.outline
@@ -95,7 +95,7 @@ fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = 
                 color = trackColor.copy(alpha = solidAlpha),
                 topLeft = Offset(0f, 0f),
                 size = Size(ruleWidthPx, h),
-                cornerRadius = CornerRadius(CORNER_RADIUS_PX, CORNER_RADIUS_PX),
+                cornerRadius = CornerRadius(CORNER_RADIUS_PX, CORNER_RADIUS_PX)
             )
             if (animatedFill > 0f) {
                 val fillHeight = h * animatedFill
@@ -103,7 +103,7 @@ fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = 
                     color = fillColor.copy(alpha = solidAlpha),
                     topLeft = Offset(0f, h - fillHeight),
                     size = Size(ruleWidthPx, fillHeight),
-                    cornerRadius = CornerRadius(CORNER_RADIUS_PX, CORNER_RADIUS_PX),
+                    cornerRadius = CornerRadius(CORNER_RADIUS_PX, CORNER_RADIUS_PX)
                 )
             }
         }
@@ -114,7 +114,7 @@ fun MarginRule(state: HabitCardState, fillFraction: Float, modifier: Modifier = 
                 start = Offset(dashedWidthPx / 2f, 0f),
                 end = Offset(dashedWidthPx / 2f, h),
                 strokeWidth = dashedWidthPx,
-                pathEffect = PathEffect.dashPathEffect(floatArrayOf(DASH_ON, DASH_OFF), 0f),
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(DASH_ON, DASH_OFF), 0f)
             )
         }
     }

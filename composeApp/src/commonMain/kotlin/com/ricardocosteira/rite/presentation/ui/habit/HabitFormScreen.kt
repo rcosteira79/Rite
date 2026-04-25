@@ -179,7 +179,7 @@ fun HabitFormScreen(
     snackbarHostState: SnackbarHostState,
     /** When true, this screen participates in the FAB→form container transform.
      *  Only the Add-Habit flow should set this; editing reuses the default nav fade. */
-    useAddHabitTransition: Boolean = false,
+    useAddHabitTransition: Boolean = false
 ) {
     val createViewModel = LocalAppComponent.current.createHabitFormViewModel
     val viewModel: HabitFormViewModel = viewModel {
@@ -306,7 +306,7 @@ fun HabitFormScreen(
                     exit = AddHabitFormExit,
                     boundsTransform = AddHabitBoundsTransform,
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
-                    clipInOverlayDuringTransition = OverlayClip(destinationShape),
+                    clipInOverlayDuringTransition = OverlayClip(destinationShape)
                 )
             }
         } else {
@@ -321,7 +321,7 @@ internal fun HabitFormScreen(
     state: HabitFormState,
     onAction: (HabitFormUiAction) -> Unit,
     modifier: Modifier = Modifier,
-    useAddHabitTransition: Boolean = false,
+    useAddHabitTransition: Boolean = false
 ) {
     var isNoteExpanded by rememberSaveable { mutableStateOf(false) }
     var isDeleteDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -424,19 +424,19 @@ internal fun HabitFormScreen(
                                             durationMillis =
                                             AddHabitRotationMs,
                                             delayMillis = AddHabitContainerMs,
-                                            easing = FastOutSlowInEasing,
+                                            easing = FastOutSlowInEasing
                                         )
                                     } else {
                                         tween(
                                             durationMillis =
                                             AddHabitRotationMs,
-                                            easing = FastOutSlowInEasing,
+                                            easing = FastOutSlowInEasing
                                         )
                                     }
                                 val iconRotation: Float by
                                     animatedScope.transition.animateFloat(
                                         transitionSpec = { iconRotationSpec },
-                                        label = "close-icon-rotation",
+                                        label = "close-icon-rotation"
                                     ) { state ->
                                         if (state == EnterExitState.Visible) 45f else 0f
                                     }
@@ -449,7 +449,7 @@ internal fun HabitFormScreen(
                                         tween(
                                             durationMillis =
                                             AddHabitContainerMs,
-                                            easing = FastOutSlowInEasing,
+                                            easing = FastOutSlowInEasing
                                         )
                                     } else {
                                         // Forward nav: color shifts during expansion.
@@ -457,13 +457,13 @@ internal fun HabitFormScreen(
                                             durationMillis =
                                             AddHabitContainerMs,
                                             delayMillis = AddHabitRotationMs,
-                                            easing = FastOutSlowInEasing,
+                                            easing = FastOutSlowInEasing
                                         )
                                     }
                                 val iconColor: Color by
                                     animatedScope.transition.animateColor(
                                         transitionSpec = { iconColorSpec },
-                                        label = "close-icon-color",
+                                        label = "close-icon-color"
                                     ) { state ->
                                         if (state == EnterExitState.Visible) {
                                             RiteAppTheme.colors.onSurface
@@ -482,7 +482,7 @@ internal fun HabitFormScreen(
                                             ),
                                             animatedVisibilityScope = animatedScope,
                                             boundsTransform = AddHabitBoundsTransform,
-                                            zIndexInOverlay = 1f,
+                                            zIndexInOverlay = 1f
                                         )
                                         .graphicsLayer { rotationZ = iconRotation }
                                 )

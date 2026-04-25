@@ -34,7 +34,7 @@ fun ProgressRing(
     size: Dp = 100.dp,
     strokeWidth: Dp = 6.dp,
     small: Boolean = false,
-    capLabel: String? = "Day",
+    capLabel: String? = "Day"
 ) {
     val clamped = progress.coerceIn(0f, 1f)
     val motion = RiteAppTheme.motion
@@ -113,7 +113,7 @@ fun ProgressRing(
         } else {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.Center
             ) {
                 val numberText = buildAnnotatedString {
                     append("${(clamped * 100).toInt()}")

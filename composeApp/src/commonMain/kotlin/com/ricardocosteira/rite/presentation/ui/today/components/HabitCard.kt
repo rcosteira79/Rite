@@ -59,13 +59,13 @@ fun HabitCard(
     onUndo: () -> Unit,
     onIncrementProgress: () -> Unit,
     onCustomProgress: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val visuals =
         visualsFor(
             status = habit.status,
             type = habit.type,
-            progressPercentage = habit.progressPercentage,
+            progressPercentage = habit.progressPercentage
         )
     val colors = RiteAppTheme.colors
     val motion = RiteAppTheme.motion
@@ -91,7 +91,7 @@ fun HabitCard(
         color = animatedBackground,
         contentColor = colors.onSurface,
         border = BorderStroke(1.dp, colors.outlineVariant),
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth()
     ) {
         Box(modifier = Modifier.heightIn(min = CARD_MIN_HEIGHT)) {
             Column(
@@ -99,14 +99,14 @@ fun HabitCard(
                     start = CARD_LEFT_PADDING + RULE_WIDTH + RULE_RIGHT_GAP,
                     end = CARD_RIGHT_PADDING,
                     top = CARD_VERTICAL_PADDING,
-                    bottom = CARD_VERTICAL_PADDING,
+                    bottom = CARD_VERTICAL_PADDING
                 )
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     HabitCardBody(
                         habit = habit,
                         state = visuals.state,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f)
                     )
                     HabitCardAction(
                         state = visuals.state,
@@ -125,7 +125,7 @@ fun HabitCard(
                         onIncrement = onIncrementProgress,
                         onSkip = onSkip,
                         onUndo = onUndo,
-                        modifier = Modifier,
+                        modifier = Modifier
                     )
                 }
                 HabitCardResolvedSubtext(habit = habit, state = visuals.state)
@@ -138,15 +138,15 @@ fun HabitCard(
                     .padding(
                         start = CARD_LEFT_PADDING,
                         top = CARD_VERTICAL_PADDING,
-                        bottom = CARD_VERTICAL_PADDING,
-                    ),
+                        bottom = CARD_VERTICAL_PADDING
+                    )
             )
         }
     }
 }
 
 @Composable
-private fun HabitCardResolvedSubtext(habit: TodayHabitUiModel, state: HabitCardState,) {
+private fun HabitCardResolvedSubtext(habit: TodayHabitUiModel, state: HabitCardState) {
     val motion = RiteAppTheme.motion
     val sub: String? = habitCardSubText(habit, state)
     var lastSub by remember { mutableStateOf("") }
@@ -188,7 +188,7 @@ private fun HabitCardResolvedSubtext(habit: TodayHabitUiModel, state: HabitCardS
             text = lastSub,
             style = RiteAppTheme.typography.mono,
             color = RiteAppTheme.colors.onSurfaceSubtle,
-            modifier = Modifier.padding(top = BODY_COLUMN_GAP),
+            modifier = Modifier.padding(top = BODY_COLUMN_GAP)
         )
     }
 }
@@ -197,7 +197,7 @@ private fun HabitCardResolvedSubtext(habit: TodayHabitUiModel, state: HabitCardS
 private fun HabitCardBody(
     habit: TodayHabitUiModel,
     state: HabitCardState,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val colors = RiteAppTheme.colors
     val motion = RiteAppTheme.motion
@@ -241,11 +241,11 @@ private fun HabitCardBody(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(BODY_COLUMN_GAP),
+        verticalArrangement = Arrangement.spacedBy(BODY_COLUMN_GAP)
     ) {
         HabitCardKickerRow(
             state = state,
-            kicker = todayHabitKicker(habit, state),
+            kicker = todayHabitKicker(habit, state)
         )
         Text(
             text = habit.name,

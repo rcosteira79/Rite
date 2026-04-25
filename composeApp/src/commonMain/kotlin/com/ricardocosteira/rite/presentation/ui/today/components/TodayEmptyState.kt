@@ -23,7 +23,7 @@ import rite.composeapp.generated.resources.today_empty_state_heading
 import rite.composeapp.generated.resources.today_empty_state_subtext
 
 @Composable
-fun TodayEmptyState(onAddFirstHabit: () -> Unit, modifier: Modifier = Modifier,) {
+fun TodayEmptyState(onAddFirstHabit: () -> Unit, modifier: Modifier = Modifier) {
     val colors = RiteAppTheme.colors
     val typo = RiteAppTheme.typography
 
@@ -32,19 +32,19 @@ fun TodayEmptyState(onAddFirstHabit: () -> Unit, modifier: Modifier = Modifier,)
             .fillMaxSize()
             .padding(horizontal = RiteAppTheme.spacing.gap6),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = "\u25C6", // BLACK DIAMOND
             style = typo.displayMedium,
-            color = colors.onSurfaceSubtle,
+            color = colors.onSurfaceSubtle
         )
         Text(
             text = heading(),
             style = typo.displaySmall,
             color = colors.onSurface,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = RiteAppTheme.spacing.gap4),
+            modifier = Modifier.padding(top = RiteAppTheme.spacing.gap4)
         )
         Text(
             text = stringResource(Res.string.today_empty_state_subtext),
@@ -53,13 +53,13 @@ fun TodayEmptyState(onAddFirstHabit: () -> Unit, modifier: Modifier = Modifier,)
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .padding(top = RiteAppTheme.spacing.gap2)
-                .widthIn(max = 320.dp),
+                .widthIn(max = 320.dp)
         )
         RiteButton(
             onClick = onAddFirstHabit,
             modifier = Modifier
                 .padding(top = RiteAppTheme.spacing.gap6)
-                .widthIn(max = 280.dp),
+                .widthIn(max = 280.dp)
         ) {
             Text(stringResource(Res.string.today_empty_state_cta))
         }
@@ -81,8 +81,8 @@ private fun heading() = buildAnnotatedString {
         SpanStyle(
             fontFamily = RiteAppTheme.typography.displayItalic.fontFamily,
             fontStyle = RiteAppTheme.typography.displayItalic.fontStyle,
-            fontWeight = RiteAppTheme.typography.displayItalic.fontWeight,
-        ),
+            fontWeight = RiteAppTheme.typography.displayItalic.fontWeight
+        )
     ) {
         append(accent)
     }

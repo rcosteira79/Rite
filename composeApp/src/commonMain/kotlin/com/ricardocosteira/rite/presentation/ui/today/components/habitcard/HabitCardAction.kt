@@ -58,7 +58,7 @@ fun HabitCardAction(
     onIncrement: () -> Unit,
     onSkip: () -> Unit,
     onUndo: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     SharedTransitionLayout(modifier = modifier) {
         AnimatedContent(
@@ -69,27 +69,27 @@ fun HabitCardAction(
         ) { currentState ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 when (currentState) {
                     HabitCardState.Pending, HabitCardState.PendingInProgress -> {
                         val primaryScaleModifier = Modifier.animateEnterExit(
                             enter = scaleIn() + fadeIn(),
-                            exit = scaleOut() + fadeOut(),
+                            exit = scaleOut() + fadeOut()
                         )
                         when (type) {
                             HabitType.BINARY -> CheckCircle(
                                 onClick = onComplete,
-                                modifier = primaryScaleModifier,
+                                modifier = primaryScaleModifier
                             )
 
                             HabitType.QUANTITATIVE -> PlusChip(
                                 label = stringResource(
                                     Res.string.today_action_increment_short,
-                                    defaultIncrement,
+                                    defaultIncrement
                                 ),
                                 onClick = onIncrement,
-                                modifier = primaryScaleModifier,
+                                modifier = primaryScaleModifier
                             )
                         }
                         if (!skipLocked) {
@@ -99,8 +99,8 @@ fun HabitCardAction(
                                     sharedContentState = rememberSharedContentState(TAIL_PILL_KEY),
                                     animatedVisibilityScope = this@AnimatedContent,
                                     enter = scaleIn(),
-                                    exit = scaleOut(),
-                                ),
+                                    exit = scaleOut()
+                                )
                             )
                         }
                     }
@@ -111,14 +111,14 @@ fun HabitCardAction(
                             sharedContentState = rememberSharedContentState(TAIL_PILL_KEY),
                             animatedVisibilityScope = this@AnimatedContent,
                             enter = scaleIn(),
-                            exit = scaleOut(),
-                        ),
+                            exit = scaleOut()
+                        )
                     )
 
                     HabitCardState.Skipped -> {
                         Stamp(
                             label = stringResource(Res.string.today_stamp_skipped),
-                            stateColor = RiteAppTheme.colors.onSurfaceMuted,
+                            stateColor = RiteAppTheme.colors.onSurfaceMuted
                         )
                         UndoPill(
                             onClick = onUndo,
@@ -127,19 +127,19 @@ fun HabitCardAction(
                                 sharedContentState = rememberSharedContentState(TAIL_PILL_KEY),
                                 animatedVisibilityScope = this@AnimatedContent,
                                 enter = scaleIn(),
-                                exit = scaleOut(),
-                            ),
+                                exit = scaleOut()
+                            )
                         )
                     }
 
                     HabitCardState.Failed -> Stamp(
                         label = stringResource(Res.string.today_stamp_missed),
-                        stateColor = RiteAppTheme.colors.error,
+                        stateColor = RiteAppTheme.colors.error
                     )
 
                     HabitCardState.Suspended -> Stamp(
                         label = stringResource(Res.string.today_stamp_paused),
-                        stateColor = RiteAppTheme.colors.suspend,
+                        stateColor = RiteAppTheme.colors.suspend
                     )
                 }
             }
@@ -156,13 +156,13 @@ private fun CheckCircle(onClick: () -> Unit, modifier: Modifier = Modifier) {
         color = Color.Transparent,
         contentColor = colors.onSurface,
         border = BorderStroke(1.5.dp, colors.onSurface),
-        modifier = modifier.size(40.dp),
+        modifier = modifier.size(40.dp)
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(
                 imageVector = Icons.Default.Check,
                 contentDescription = stringResource(Res.string.today_action_complete),
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(18.dp)
             )
         }
     }
@@ -177,12 +177,12 @@ private fun PlusChip(label: String, onClick: () -> Unit, modifier: Modifier = Mo
         color = Color.Transparent,
         contentColor = colors.onSurface,
         border = BorderStroke(1.dp, colors.onSurface),
-        modifier = modifier,
+        modifier = modifier
     ) {
         Text(
             text = label,
             style = RiteAppTheme.typography.mono,
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp)
         )
     }
 }
@@ -196,26 +196,26 @@ private fun SkipChip(onClick: () -> Unit, modifier: Modifier = Modifier) {
         color = Color.Transparent,
         contentColor = colors.onSurfaceMuted,
         border = BorderStroke(1.dp, colors.outline),
-        modifier = modifier,
+        modifier = modifier
     ) {
         Text(
             text = stringResource(Res.string.common_skip).uppercase(),
             style = RiteAppTheme.typography.eyebrow,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
         )
     }
 }
 
 internal enum class UndoVariant {
     Primary,
-    Skip,
+    Skip
 }
 
 @Composable
 private fun UndoPill(
     onClick: () -> Unit,
     variant: UndoVariant = UndoVariant.Primary,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val colors = RiteAppTheme.colors
     val fg: Color =
@@ -234,12 +234,12 @@ private fun UndoPill(
         color = Color.Transparent,
         contentColor = fg,
         border = BorderStroke(1.dp, border),
-        modifier = modifier,
+        modifier = modifier
     ) {
         Text(
             text = stringResource(Res.string.today_action_undo).uppercase(),
             style = RiteAppTheme.typography.eyebrow,
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
         )
     }
 }

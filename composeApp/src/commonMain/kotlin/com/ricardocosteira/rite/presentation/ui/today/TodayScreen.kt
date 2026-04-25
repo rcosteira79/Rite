@@ -91,7 +91,7 @@ private val resolvedStatuses = setOf(
 fun TodayScreen(
     onNavigateToHabitDetail: (String) -> Unit,
     onNavigateToCreateHabit: () -> Unit,
-    onEditHabit: (String) -> Unit,
+    onEditHabit: (String) -> Unit
 ) {
     val viewModel = LocalAppComponent.current.todayViewModel
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -237,7 +237,7 @@ internal fun TodayScreen(
                             exit = AddHabitFabExit,
                             boundsTransform = AddHabitBoundsTransform,
                             resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
-                            clipInOverlayDuringTransition = OverlayClip(sourceShape),
+                            clipInOverlayDuringTransition = OverlayClip(sourceShape)
                         )
                     ) {
                         // Forward nav (Visible → PostExit): rotate + colour-shift
@@ -252,17 +252,17 @@ internal fun TodayScreen(
                                 tween(
                                     durationMillis = AddHabitRotationMs,
                                     delayMillis = AddHabitContainerMs,
-                                    easing = FastOutSlowInEasing,
+                                    easing = FastOutSlowInEasing
                                 )
                             } else {
                                 tween(
                                     durationMillis = AddHabitRotationMs,
-                                    easing = FastOutSlowInEasing,
+                                    easing = FastOutSlowInEasing
                                 )
                             }
                         val iconRotation: Float by animatedScope.transition.animateFloat(
                             transitionSpec = { iconRotationSpec },
-                            label = "fab-icon-rotation",
+                            label = "fab-icon-rotation"
                         ) { state ->
                             if (state == EnterExitState.Visible) 0f else 45f
                         }
@@ -275,19 +275,19 @@ internal fun TodayScreen(
                                 // Back nav: color shifts with contraction (0–60%).
                                 tween(
                                     durationMillis = AddHabitContainerMs,
-                                    easing = FastOutSlowInEasing,
+                                    easing = FastOutSlowInEasing
                                 )
                             } else {
                                 // Forward nav: color shifts with expansion (40–100%).
                                 tween(
                                     durationMillis = AddHabitContainerMs,
                                     delayMillis = AddHabitRotationMs,
-                                    easing = FastOutSlowInEasing,
+                                    easing = FastOutSlowInEasing
                                 )
                             }
                         val iconColor: Color by animatedScope.transition.animateColor(
                             transitionSpec = { iconColorSpec },
-                            label = "fab-icon-color",
+                            label = "fab-icon-color"
                         ) { state ->
                             if (state == EnterExitState.Visible) {
                                 RiteAppTheme.colors.surface
@@ -311,7 +311,7 @@ internal fun TodayScreen(
                                     ),
                                     animatedVisibilityScope = animatedScope,
                                     boundsTransform = AddHabitBoundsTransform,
-                                    zIndexInOverlay = 1f,
+                                    zIndexInOverlay = 1f
                                 )
                                 .size(22.dp)
                                 .graphicsLayer { rotationZ = iconRotation }
@@ -433,7 +433,7 @@ private fun LazyListScope.habitFeed(
     onUndo: (String) -> Unit,
     onUndoLastIncrement: (String) -> Unit,
     onIncrementProgress: (String) -> Unit,
-    onCustomProgress: (String) -> Unit,
+    onCustomProgress: (String) -> Unit
 ) {
     items(
         items = habits,
