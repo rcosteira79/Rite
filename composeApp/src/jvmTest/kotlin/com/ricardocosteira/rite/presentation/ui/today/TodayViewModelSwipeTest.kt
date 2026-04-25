@@ -66,8 +66,8 @@ class TodayViewModelSwipeTest {
             advanceUntilIdle()
 
             assertTrue(
-                viewModel.state.value.pendingDaily.any { it.habitId == inputHabitId },
-                "Expected habit to be in pendingDaily before delete"
+                viewModel.state.value.daily.any { it.habitId == inputHabitId },
+                "Expected habit to be in daily before delete"
             )
 
             // When — deleteHabit is synchronous: state updates happen immediately before returning
@@ -78,8 +78,8 @@ class TodayViewModelSwipeTest {
             // Then
             val actualState = viewModel.state.value
             assertTrue(
-                actualState.pendingDaily.none { it.habitId == inputHabitId },
-                "Expected habit to be removed from pendingDaily after delete"
+                actualState.daily.none { it.habitId == inputHabitId },
+                "Expected habit to be removed from daily after delete"
             )
             assertNotNull(
                 actualState.pendingDelete,
@@ -172,7 +172,7 @@ class TodayViewModelSwipeTest {
             viewModel.deleteHabit(inputHabitId)
             // Verify habit was removed from state synchronously
             assertTrue(
-                viewModel.state.value.pendingDaily.none { it.habitId == inputHabitId },
+                viewModel.state.value.daily.none { it.habitId == inputHabitId },
                 "Expected habit to be removed from state after deleteHabit"
             )
 
@@ -186,8 +186,8 @@ class TodayViewModelSwipeTest {
                 "Expected pendingDelete to be null after undoDelete"
             )
             assertTrue(
-                viewModel.state.value.pendingDaily.any { it.habitId == inputHabitId },
-                "Expected habit to be restored to pendingDaily after undoDelete"
+                viewModel.state.value.daily.any { it.habitId == inputHabitId },
+                "Expected habit to be restored to daily after undoDelete"
             )
             // Habit still exists in repository (delete was cancelled)
             val actualHabit: Habit? = deps.habitRepository.getHabitById(inputHabitId)
@@ -254,9 +254,9 @@ class TodayViewModelSwipeTest {
                 advanceUntilIdle()
 
                 assertTrue(
-                    viewModel.state.value.pendingDaily.any { it.habitId == inputFirstHabitId } &&
-                        viewModel.state.value.pendingDaily.any { it.habitId == inputSecondHabitId },
-                    "Expected both habits to be loaded into pendingDaily"
+                    viewModel.state.value.daily.any { it.habitId == inputFirstHabitId } &&
+                        viewModel.state.value.daily.any { it.habitId == inputSecondHabitId },
+                    "Expected both habits to be loaded into daily"
                 )
 
                 // When — delete first, then delete second (cancels first undo job)
@@ -267,7 +267,7 @@ class TodayViewModelSwipeTest {
                 // Then — second habit is in pending delete state
                 val actualState = viewModel.state.value
                 assertTrue(
-                    actualState.pendingDaily.none { it.habitId == inputSecondHabitId },
+                    actualState.daily.none { it.habitId == inputSecondHabitId },
                     "Expected second habit to be removed from state"
                 )
                 val actualPendingDelete: PendingDelete? = actualState.pendingDelete

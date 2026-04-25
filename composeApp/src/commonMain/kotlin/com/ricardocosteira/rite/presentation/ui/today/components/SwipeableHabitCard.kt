@@ -1,4 +1,4 @@
-package com.ricardocosteira.rite.presentation.ui.today
+package com.ricardocosteira.rite.presentation.ui.today.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +28,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.presentation.ui.haptics.HapticController
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
@@ -39,7 +39,6 @@ private const val UNARMED_FULL_OPACITY_FRACTION = 0.15f
 private const val UNARMED_MAX_ALPHA = 0.5f
 private const val ARMED_ALPHA = 1.0f
 private const val SNAP_BACK_DURATION_MS = 250
-internal val CORNER_RADIUS = 16.dp
 
 @Composable
 internal fun SwipeBackground(
@@ -58,7 +57,7 @@ internal fun SwipeBackground(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(CORNER_RADIUS))
+            .clip(RiteAppTheme.shapes.sm)
             .background(backgroundColor.copy(alpha = alpha))
     ) {
         if (icon != null) {
@@ -68,7 +67,7 @@ internal fun SwipeBackground(
                 tint = iconTint.copy(alpha = alpha),
                 modifier = Modifier
                     .align(zone.alignment)
-                    .padding(horizontal = 24.dp)
+                    .padding(horizontal = RiteAppTheme.spacing.gap6)
             )
         }
     }

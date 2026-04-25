@@ -1,130 +1,104 @@
 package com.ricardocosteira.rite.presentation.ui.today
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
+import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
+import com.ricardocosteira.rite.presentation.navigation.AddHabitBoundsTransform
+import com.ricardocosteira.rite.presentation.navigation.AddHabitContainerMs
+import com.ricardocosteira.rite.presentation.navigation.AddHabitFabEnter
+import com.ricardocosteira.rite.presentation.navigation.AddHabitFabExit
+import com.ricardocosteira.rite.presentation.navigation.AddHabitIconKey
+import com.ricardocosteira.rite.presentation.navigation.AddHabitRotationMs
+import com.ricardocosteira.rite.presentation.navigation.AddHabitSharedKey
+import com.ricardocosteira.rite.presentation.navigation.LocalSharedTransitionScope
+import com.ricardocosteira.rite.presentation.navigation.animatedAddHabitSourceShape
 import com.ricardocosteira.rite.presentation.ui.components.toolbar.DynamicCollapsingToolbar
 import com.ricardocosteira.rite.presentation.ui.components.toolbar.pinnedExitUntilCollapsedToolbarSpec
 import com.ricardocosteira.rite.presentation.ui.haptics.HapticController
 import com.ricardocosteira.rite.presentation.ui.haptics.rememberHapticController
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
-import com.ricardocosteira.rite.util.formatMonthAbbreviation
-import kotlin.time.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.painterResource
+import com.ricardocosteira.rite.presentation.ui.today.components.HabitCard
+import com.ricardocosteira.rite.presentation.ui.today.components.QuantitativeInputBottomSheet
+import com.ricardocosteira.rite.presentation.ui.today.components.SectionHeader
+import com.ricardocosteira.rite.presentation.ui.today.components.SwipeableHabitCard
+import com.ricardocosteira.rite.presentation.ui.today.components.TimezoneBanner
+import com.ricardocosteira.rite.presentation.ui.today.components.TodayEmptyState
+import com.ricardocosteira.rite.presentation.ui.today.components.TodayHeaderCollapsed
+import com.ricardocosteira.rite.presentation.ui.today.components.TodayHeaderExpanded
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
-import rite.composeapp.generated.resources.habit_lock_logo
-import rite.composeapp.generated.resources.swipe_habit_deleted
-import rite.composeapp.generated.resources.swipe_undo
 import rite.composeapp.generated.resources.today_cd_add_habit
-import rite.composeapp.generated.resources.today_empty_state_cta
-import rite.composeapp.generated.resources.today_empty_state_heading
-import rite.composeapp.generated.resources.today_empty_state_subtext
 import rite.composeapp.generated.resources.today_section_focus
-import rite.composeapp.generated.resources.today_section_this_week
+import rite.composeapp.generated.resources.today_section_kept_count
+import rite.composeapp.generated.resources.today_section_met_count
 import rite.composeapp.generated.resources.today_section_weekly
-import rite.composeapp.generated.resources.today_timezone_changed_dismiss
-import rite.composeapp.generated.resources.today_timezone_changed_message
-import rite.composeapp.generated.resources.today_timezone_changed_title
 
-private val DIVIDER_ALPHA = 0.3f
-private val DIVIDER_HORIZONTAL_PADDING = 16.dp
 private val BOTTOM_CLEARANCE = 80.dp
-private val TOP_BREATHING_ROOM = 8.dp
-private val SECTION_GAP = 16.dp
+
+private val resolvedStatuses = setOf(
+    HabitStatus.COMPLETED,
+    HabitStatus.SKIPPED,
+    HabitStatus.FAILED
+)
 
 @Composable
 fun TodayScreen(
     onNavigateToHabitDetail: (String) -> Unit,
     onNavigateToCreateHabit: () -> Unit,
-    onEditHabit: (String) -> Unit,
-    snackbarHostState: SnackbarHostState
+    onEditHabit: (String) -> Unit
 ) {
     val viewModel = LocalAppComponent.current.todayViewModel
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
-        viewModel.events.collect { event: TodayEvent ->
+        viewModel.navEvents.collect { event ->
             when (event) {
-                is TodayEvent.NavigateToHabitDetail -> onNavigateToHabitDetail(event.instanceId)
-
-                TodayEvent.NavigateToCreateHabit -> onNavigateToCreateHabit()
-
-                is TodayEvent.ShowSnackbar ->
-                    snackbarHostState.showSnackbar(
-                        getString(event.messageRes)
-                    )
-
-                is TodayEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
-
-                is TodayEvent.HabitDeleted -> {
-                    val result = snackbarHostState.showSnackbar(
-                        message = getString(Res.string.swipe_habit_deleted),
-                        actionLabel = getString(Res.string.swipe_undo),
-                        duration = SnackbarDuration.Long
-                    )
-                    if (result == SnackbarResult.ActionPerformed) {
-                        viewModel.undoDelete()
-                    }
-                }
-
-                TodayEvent.UndoCompleted -> {
-                    snackbarHostState.currentSnackbarData?.dismiss()
-                }
+                is TodayNavEvent.ToHabitDetail -> onNavigateToHabitDetail(event.instanceId)
+                TodayNavEvent.ToCreateHabit -> onNavigateToCreateHabit()
             }
         }
     }
@@ -152,6 +126,7 @@ fun TodayScreen(
                 completedValue = habit.completedValue,
                 targetValue = habit.targetValue,
                 unit = habit.unit,
+                defaultIncrement = habit.defaultIncrement,
                 onConfirm = { value -> viewModel.completeQuantitativeHabit(instanceId, value) },
                 onDismiss = viewModel::dismissQuantitativeInput
             )
@@ -159,7 +134,7 @@ fun TodayScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun TodayScreen(
     state: TodayState,
@@ -177,48 +152,169 @@ internal fun TodayScreen(
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
-    val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec()
+    val toolbarSpec = pinnedExitUntilCollapsedToolbarSpec(
+        collapsedToolbarHeight = 72.dp
+    )
     val hapticController = rememberHapticController()
 
     Scaffold(
         topBar = {
             Column {
                 if (state.showTimezoneWarning) {
-                    TimezoneWarningBanner(
+                    TimezoneBanner(
                         previousTimezone = state.previousTimezone,
                         onDismiss = onDismissTimezoneWarning
                     )
                 }
                 if (!state.isLoading) {
-                    DynamicCollapsingToolbar(
-                        toolbarSpec = toolbarSpec,
-                        backgroundColor = RiteAppTheme.colors.background,
-                        centerContent = false,
-                        collapsedElevation = 0.dp
-                    ) { scrollProgress ->
-                        TodayHeader(
-                            motivationalTitle = state.motivationalTitleRes?.let {
-                                stringResource(it)
-                            } ?: "",
-                            pendingCount = state.pendingCount,
-                            hasHabits = state.habits.isNotEmpty(),
-                            strictnessPreset = state.strictnessPreset,
-                            dailyProgressDisplay = state.dailyProgressDisplay,
-                            dailyProgressExact = state.dailyProgressExact,
-                            dailyTotal = state.dailyTotal,
-                            isCollapsed = scrollProgress > 0.5f
-                        )
+                    val dailyProgressFraction = if (state.dailyTotal > 0) {
+                        state.dailyProgressExact / state.dailyTotal.toFloat()
+                    } else {
+                        0f
+                    }
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        DynamicCollapsingToolbar(
+                            toolbarSpec = toolbarSpec,
+                            backgroundColor = RiteAppTheme.colors.background,
+                            centerContent = false,
+                            collapsedElevation = 0.dp
+                        ) { scrollProgress ->
+                            TodayHeaderExpanded(
+                                saluteKey = state.motivationalTitleRes,
+                                pendingCount = state.pendingCount,
+                                dailyTotal = state.dailyTotal,
+                                hasHabits = state.habits.isNotEmpty(),
+                                dailyProgressFraction = dailyProgressFraction,
+                                strictnessPreset = state.strictnessPreset,
+                                modifier = Modifier.graphicsLayer {
+                                    alpha = (1f - scrollProgress).coerceIn(0f, 1f)
+                                }
+                            )
+                        }
+                        val collapseFraction = toolbarSpec.state.collapsedFraction
+                        if (collapseFraction > 0f) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .fillMaxWidth()
+                                    .statusBarsPadding()
+                                    .graphicsLayer { alpha = collapseFraction }
+                            ) {
+                                TodayHeaderCollapsed(
+                                    saluteKey = state.motivationalTitleRes,
+                                    pendingCount = state.pendingCount,
+                                    dailyTotal = state.dailyTotal,
+                                    dailyProgressFraction = dailyProgressFraction,
+                                    strictnessPreset = state.strictnessPreset
+                                )
+                            }
+                        }
                     }
                 }
             }
         },
         floatingActionButton = {
             if (state.habits.isNotEmpty()) {
-                FloatingActionButton(onClick = onAddFirstHabit) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(Res.string.today_cd_add_habit)
-                    )
+                val sharedScope = LocalSharedTransitionScope.current
+                val animatedScope = LocalNavAnimatedContentScope.current
+                with(sharedScope) {
+                    val sourceShape = animatedScope.animatedAddHabitSourceShape()
+                    FloatingActionButton(
+                        onClick = onAddFirstHabit,
+                        shape = sourceShape,
+                        containerColor = RiteAppTheme.colors.onSurface,
+                        contentColor = RiteAppTheme.colors.surface,
+                        elevation = FloatingActionButtonDefaults.elevation(
+                            defaultElevation = 6.dp,
+                            pressedElevation = 8.dp
+                        ),
+                        modifier = Modifier.sharedBounds(
+                            sharedContentState = rememberSharedContentState(AddHabitSharedKey),
+                            animatedVisibilityScope = animatedScope,
+                            enter = AddHabitFabEnter,
+                            exit = AddHabitFabExit,
+                            boundsTransform = AddHabitBoundsTransform,
+                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
+                            clipInOverlayDuringTransition = OverlayClip(sourceShape)
+                        )
+                    ) {
+                        // Forward nav (Visible → PostExit): rotate + colour-shift
+                        // during the first 60% so the form content can fade in during
+                        // the last 40%. Back nav (PreEnter → Visible): delay by 40%
+                        // so the form content fades out first, then the icon rotates
+                        // back.
+                        val iconRotationSpec: FiniteAnimationSpec<Float> =
+                            if (animatedScope.transition.targetState ==
+                                EnterExitState.Visible
+                            ) {
+                                tween(
+                                    durationMillis = AddHabitRotationMs,
+                                    delayMillis = AddHabitContainerMs,
+                                    easing = FastOutSlowInEasing
+                                )
+                            } else {
+                                tween(
+                                    durationMillis = AddHabitRotationMs,
+                                    easing = FastOutSlowInEasing
+                                )
+                            }
+                        val iconRotation: Float by animatedScope.transition.animateFloat(
+                            transitionSpec = { iconRotationSpec },
+                            label = "fab-icon-rotation"
+                        ) { state ->
+                            if (state == EnterExitState.Visible) 0f else 45f
+                        }
+                        // Color only transitions during the container morph phase
+                        // — forward: 40–100% (expansion). Back: 0–60% (contraction).
+                        val iconColorSpec: FiniteAnimationSpec<Color> =
+                            if (animatedScope.transition.targetState ==
+                                EnterExitState.Visible
+                            ) {
+                                // Back nav: color shifts with contraction (0–60%).
+                                tween(
+                                    durationMillis = AddHabitContainerMs,
+                                    easing = FastOutSlowInEasing
+                                )
+                            } else {
+                                // Forward nav: color shifts with expansion (40–100%).
+                                tween(
+                                    durationMillis = AddHabitContainerMs,
+                                    delayMillis = AddHabitRotationMs,
+                                    easing = FastOutSlowInEasing
+                                )
+                            }
+                        val iconColor: Color by animatedScope.transition.animateColor(
+                            transitionSpec = { iconColorSpec },
+                            label = "fab-icon-color"
+                        ) { state ->
+                            if (state == EnterExitState.Visible) {
+                                RiteAppTheme.colors.surface
+                            } else {
+                                RiteAppTheme.colors.onSurface
+                            }
+                        }
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(Res.string.today_cd_add_habit),
+                            tint = iconColor,
+                            modifier = Modifier
+                                // sharedBounds must be *outside* (earlier in chain) so the
+                                // overlay captures the graphicsLayer rotation applied to
+                                // the inner content. With graphicsLayer outside, the
+                                // overlay renders the untransformed Icon and only the
+                                // in-place render shows the rotation.
+                                .sharedBounds(
+                                    sharedContentState = rememberSharedContentState(
+                                        AddHabitIconKey
+                                    ),
+                                    animatedVisibilityScope = animatedScope,
+                                    boundsTransform = AddHabitBoundsTransform,
+                                    zIndexInOverlay = 1f
+                                )
+                                .size(22.dp)
+                                .graphicsLayer { rotationZ = iconRotation }
+                        )
+                    }
                 }
             }
         },
@@ -237,11 +333,24 @@ internal fun TodayScreen(
             }
 
             state.habits.isEmpty() -> {
-                EmptyHabitsMessage(onAddFirstHabit = onAddFirstHabit)
+                TodayEmptyState(onAddFirstHabit = onAddFirstHabit)
             }
 
             else -> {
-                val formattedDate: String = rememberFormattedDate()
+                val dailyTotal = state.daily.size
+                val dailyKept = state.daily.count { it.status in resolvedStatuses }
+                val dailyTrailing = stringResource(
+                    Res.string.today_section_kept_count,
+                    dailyKept,
+                    dailyTotal
+                )
+                val weeklyTotal = state.weekly.size
+                val weeklyMet = state.weekly.count { it.status in resolvedStatuses }
+                val weeklyTrailing = stringResource(
+                    Res.string.today_section_met_count,
+                    weeklyMet,
+                    weeklyTotal
+                )
 
                 LazyColumn(
                     state = lazyListState,
@@ -249,188 +358,61 @@ internal fun TodayScreen(
                         .fillMaxSize()
                         .nestedScroll(toolbarSpec.nestedScrollConnection),
                     contentPadding = PaddingValues(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = scaffoldPadding.calculateTopPadding() + TOP_BREATHING_ROOM,
+                        start = RiteAppTheme.spacing.gap4,
+                        end = RiteAppTheme.spacing.gap4,
+                        top = scaffoldPadding.calculateTopPadding() + RiteAppTheme.spacing.gap2,
                         bottom = scaffoldPadding.calculateBottomPadding() + BOTTOM_CLEARANCE
                     ),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(RiteAppTheme.spacing.gap3)
                 ) {
                     // TODAY'S FOCUS section
                     item(key = "daily_header") {
                         SectionHeader(
                             title = stringResource(Res.string.today_section_focus),
-                            trailingLabel = formattedDate
+                            trailingLabel = dailyTrailing
                         )
                     }
 
-                    items(
-                        items = state.pendingDaily,
-                        key = { it.instanceId }
-                    ) { habit ->
-                        SwipeableHabitCard(
-                            onEdit = { onEdit(habit.habitId) },
-                            onDelete = { onDelete(habit.habitId) },
-                            hapticController = hapticController,
-                            modifier = Modifier.animateItem()
-                        ) {
-                            HabitCard(
-                                habit = habit,
-                                onClick = {
-                                    onNavigateToDetail(habit.instanceId)
-                                },
-                                onComplete = {
-                                    if (habit.type == HabitType.BINARY) {
-                                        onComplete(habit.instanceId)
-                                    } else {
-                                        onIncrementProgress(habit.instanceId)
-                                    }
-                                },
-                                onSkip = { onSkip(habit.instanceId) },
-                                onUndo = {
-                                    if (habit.type == HabitType.QUANTITATIVE) {
-                                        onUndoLastIncrement(habit.instanceId)
-                                    } else {
-                                        onUndo(habit.instanceId)
-                                    }
-                                },
-                                onIncrementProgress = { onIncrementProgress(habit.instanceId) },
-                                onCustomProgress = { onCustomProgress(habit.instanceId) }
-                            )
-                        }
-                    }
-
-                    if (state.resolvedDaily.isNotEmpty()) {
-                        item(key = "daily_divider") {
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .alpha(DIVIDER_ALPHA)
-                                    .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
-                            )
-                        }
-
-                        items(
-                            items = state.resolvedDaily,
-                            key = { it.instanceId }
-                        ) { habit ->
-                            SwipeableHabitCard(
-                                onEdit = { onEdit(habit.habitId) },
-                                onDelete = { onDelete(habit.habitId) },
-                                hapticController = hapticController,
-                                modifier = Modifier.animateItem()
-                            ) {
-                                HabitCard(
-                                    habit = habit,
-
-                                    onClick = { onNavigateToDetail(habit.instanceId) },
-                                    onComplete = {},
-                                    onSkip = {},
-                                    onUndo = {
-                                        if (habit.type == HabitType.QUANTITATIVE &&
-                                            habit.isCompleted
-                                        ) {
-                                            onUndoLastIncrement(habit.instanceId)
-                                        } else {
-                                            onUndo(habit.instanceId)
-                                        }
-                                    },
-                                    onIncrementProgress = {},
-                                    onCustomProgress = {}
-                                )
-                            }
-                        }
-                    }
+                    habitFeed(
+                        habits = state.daily,
+                        hapticController = hapticController,
+                        onEdit = onEdit,
+                        onDelete = onDelete,
+                        onNavigateToDetail = onNavigateToDetail,
+                        onComplete = onComplete,
+                        onSkip = onSkip,
+                        onUndo = onUndo,
+                        onUndoLastIncrement = onUndoLastIncrement,
+                        onIncrementProgress = onIncrementProgress,
+                        onCustomProgress = onCustomProgress
+                    )
 
                     // WEEKLY GOALS section
-                    if ((state.pendingWeekly.isNotEmpty() || state.resolvedWeekly.isNotEmpty())) {
+                    if (state.weekly.isNotEmpty()) {
                         item(key = "weekly_spacer") {
-                            Spacer(modifier = Modifier.height(SECTION_GAP))
+                            Spacer(modifier = Modifier.height(RiteAppTheme.spacing.gap4))
                         }
 
                         item(key = "weekly_header") {
                             SectionHeader(
                                 title = stringResource(Res.string.today_section_weekly),
-                                trailingLabel = stringResource(Res.string.today_section_this_week)
+                                trailingLabel = weeklyTrailing
                             )
                         }
 
-                        items(
-                            items = state.pendingWeekly,
-                            key = { it.instanceId }
-                        ) { habit ->
-                            SwipeableHabitCard(
-                                onEdit = { onEdit(habit.habitId) },
-                                onDelete = { onDelete(habit.habitId) },
-                                hapticController = hapticController,
-                                modifier = Modifier.animateItem()
-                            ) {
-                                HabitCard(
-                                    habit = habit,
-
-                                    onClick = {
-                                        onNavigateToDetail(habit.instanceId)
-                                    },
-                                    onComplete = {
-                                        if (habit.type == HabitType.BINARY) {
-                                            onComplete(habit.instanceId)
-                                        } else {
-                                            onIncrementProgress(habit.instanceId)
-                                        }
-                                    },
-                                    onSkip = { onSkip(habit.instanceId) },
-                                    onUndo = {
-                                        if (habit.type == HabitType.QUANTITATIVE) {
-                                            onUndoLastIncrement(habit.instanceId)
-                                        } else {
-                                            onUndo(habit.instanceId)
-                                        }
-                                    },
-                                    onIncrementProgress = { onIncrementProgress(habit.instanceId) },
-                                    onCustomProgress = { onCustomProgress(habit.instanceId) }
-                                )
-                            }
-                        }
-
-                        if (state.resolvedWeekly.isNotEmpty()) {
-                            item(key = "weekly_divider") {
-                                HorizontalDivider(
-                                    modifier = Modifier
-                                        .alpha(DIVIDER_ALPHA)
-                                        .padding(horizontal = DIVIDER_HORIZONTAL_PADDING)
-                                )
-                            }
-
-                            items(
-                                items = state.resolvedWeekly,
-                                key = { it.instanceId }
-                            ) { habit ->
-                                SwipeableHabitCard(
-                                    onEdit = { onEdit(habit.habitId) },
-                                    onDelete = { onDelete(habit.habitId) },
-                                    hapticController = hapticController,
-                                    modifier = Modifier.animateItem()
-                                ) {
-                                    HabitCard(
-                                        habit = habit,
-
-                                        onClick = { onNavigateToDetail(habit.instanceId) },
-                                        onComplete = {},
-                                        onSkip = {},
-                                        onUndo = {
-                                            if (habit.type == HabitType.QUANTITATIVE &&
-                                                habit.isCompleted
-                                            ) {
-                                                onUndoLastIncrement(habit.instanceId)
-                                            } else {
-                                                onUndo(habit.instanceId)
-                                            }
-                                        },
-                                        onIncrementProgress = {},
-                                        onCustomProgress = {}
-                                    )
-                                }
-                            }
-                        }
+                        habitFeed(
+                            habits = state.weekly,
+                            hapticController = hapticController,
+                            onEdit = onEdit,
+                            onDelete = onDelete,
+                            onNavigateToDetail = onNavigateToDetail,
+                            onComplete = onComplete,
+                            onSkip = onSkip,
+                            onUndo = onUndo,
+                            onUndoLastIncrement = onUndoLastIncrement,
+                            onIncrementProgress = onIncrementProgress,
+                            onCustomProgress = onCustomProgress
+                        )
                     }
                 }
             }
@@ -438,121 +420,50 @@ internal fun TodayScreen(
     }
 }
 
-@Composable
-private fun rememberFormattedDate(): String {
-    val now = remember { Clock.System.now() }
-    val localDate = remember(now) {
-        now.toLocalDateTime(TimeZone.currentSystemDefault()).date
-    }
-
-    val monthAbbreviation: String = remember(localDate) {
-        formatMonthAbbreviation(localDate.month)
-    }
-
-    return remember(localDate) { "$monthAbbreviation ${localDate.day}" }
-}
-
-@Composable
-private fun TimezoneWarningBanner(previousTimezone: String?, onDismiss: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = RiteAppTheme.colors.tertiaryContainer
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+private fun LazyListScope.habitFeed(
+    habits: List<TodayHabitUiModel>,
+    hapticController: HapticController,
+    onEdit: (String) -> Unit,
+    onDelete: (String) -> Unit,
+    onNavigateToDetail: (String) -> Unit,
+    onComplete: (String) -> Unit,
+    onSkip: (String) -> Unit,
+    onUndo: (String) -> Unit,
+    onUndoLastIncrement: (String) -> Unit,
+    onIncrementProgress: (String) -> Unit,
+    onCustomProgress: (String) -> Unit
+) {
+    items(
+        items = habits,
+        key = { it.instanceId },
+        contentType = { "habit-card" }
+    ) { habit ->
+        SwipeableHabitCard(
+            onEdit = { onEdit(habit.habitId) },
+            onDelete = { onDelete(habit.habitId) },
+            hapticController = hapticController,
+            modifier = Modifier.animateItem()
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(Res.string.today_timezone_changed_title),
-                    style = RiteAppTheme.typography.titleSmall,
-                    color = RiteAppTheme.colors.onTertiaryContainer
-                )
-                Text(
-                    text = stringResource(
-                        Res.string.today_timezone_changed_message,
-                        previousTimezone ?: ""
-                    ),
-                    style = RiteAppTheme.typography.bodySmall,
-                    color = RiteAppTheme.colors.onTertiaryContainer
-                )
-            }
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.today_timezone_changed_dismiss))
-            }
-        }
-    }
-}
-
-@Composable
-private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // App icon
-        Image(
-            painter = painterResource(Res.drawable.habit_lock_logo),
-            contentDescription = null,
-            modifier = Modifier
-                .size(160.dp)
-                .clip(RoundedCornerShape(32.dp))
-                .background(
-                    RiteAppTheme.colors.surfaceContainerHighest.copy(alpha = 0.5f)
-                )
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Heading
-        Text(
-            text = stringResource(Res.string.today_empty_state_heading),
-            style = RiteAppTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = RiteAppTheme.colors.onSurface
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Subtext
-        Text(
-            text = stringResource(Res.string.today_empty_state_subtext),
-            style = RiteAppTheme.typography.bodyMedium,
-            color = RiteAppTheme.colors.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 48.dp)
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // CTA button
-        Button(
-            onClick = onAddFirstHabit,
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = RiteAppTheme.colors.primaryContainer,
-                contentColor = RiteAppTheme.colors.onPrimaryContainer
-            ),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(Res.string.today_empty_state_cta),
-                style = RiteAppTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold
+            HabitCard(
+                habit = habit,
+                onClick = { onNavigateToDetail(habit.instanceId) },
+                onComplete = {
+                    if (habit.type == HabitType.BINARY) {
+                        onComplete(habit.instanceId)
+                    } else {
+                        onIncrementProgress(habit.instanceId)
+                    }
+                },
+                onSkip = { onSkip(habit.instanceId) },
+                onUndo = {
+                    if (habit.type == HabitType.QUANTITATIVE && habit.isCompleted) {
+                        onUndoLastIncrement(habit.instanceId)
+                    } else {
+                        onUndo(habit.instanceId)
+                    }
+                },
+                onIncrementProgress = { onIncrementProgress(habit.instanceId) },
+                onCustomProgress = { onCustomProgress(habit.instanceId) }
             )
         }
     }

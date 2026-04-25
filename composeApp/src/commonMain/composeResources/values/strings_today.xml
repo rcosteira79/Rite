@@ -2,11 +2,12 @@
 <resources>
     <string name="today_cd_add_habit">Add Habit</string>
     <string name="today_timezone_changed_title">Timezone changed</string>
-    <string name="today_timezone_changed_message">Your timezone has changed from %1$s. Past data remains unchanged.</string>
     <string name="today_timezone_changed_dismiss">Dismiss</string>
+    <string name="today_timezone_changed_body_with_previous">Past data stays in {from}. New entries use your current timezone.</string>
+    <string name="today_timezone_changed_body_without_previous">Past data stays in your previous timezone. New entries use your current one.</string>
     <string name="today_empty_state_heading">Structure your day.</string>
     <string name="today_empty_state_subtext">Commit to your first habit and begin the path of intentional discipline.</string>
-    <string name="today_empty_state_cta">Add Your First Habit</string>
+    <string name="today_empty_state_cta">Add your first habit</string>
     <string name="today_cd_complete">Complete</string>
     <string name="today_cd_undo">Undo</string>
     <string name="today_status_suspended">Suspended</string>
@@ -35,9 +36,8 @@
     <string name="motivational_title_9">Stay the course</string>
     <string name="motivational_title_10">Begin again, always</string>
     <string name="motivational_title_11">Discipline is freedom</string>
-    <string name="motivational_title_12">Earn your rest</string>
-    <string name="motivational_title_13">Action over intention</string>
-    <string name="motivational_title_14">Make it count</string>
+    <string name="motivational_title_12">Action over intention</string>
+    <string name="motivational_title_13">Make it count</string>
 
     <!-- Header -->
     <string name="today_header_remaining">%1$d habits remaining today</string>
@@ -45,11 +45,20 @@
     <string name="today_header_no_habits">No habits scheduled yet</string>
     <string name="today_header_day_label">Day</string>
     <string name="today_header_done_label">Done</string>
+    <!-- Header v2 (Task 12) -->
+    <string name="today_header_salute_empty">Structure your day.</string>
+    <string name="today_header_salute_all_done">Day held. Rest.</string>
+    <string name="today_header_subtitle_no_habits">Commit to your first habit and begin the path.</string>
+    <string name="today_header_subtitle_all_done">All %1$d rituals kept.</string>
+    <string name="today_header_subtitle_mixed_one">%1$d ritual pending · %2$d kept.</string>
+    <string name="today_header_subtitle_mixed_many">%1$d rituals pending · %2$d kept.</string>
+    <string name="today_header_ring_label">Day</string>
 
     <!-- Sections -->
     <string name="today_section_focus">Today's Focus</string>
     <string name="today_section_weekly">Weekly Goals</string>
-    <string name="today_section_this_week">This week</string>
+    <string name="today_section_kept_count">%1$d / %2$d kept</string>
+    <string name="today_section_met_count">%1$d / %2$d met</string>
 
     <!-- Card badges -->
     <string name="today_badge_pending">Pending</string>
@@ -60,6 +69,10 @@
     <string name="today_action_custom">Custom</string>
     <string name="today_action_increment">+%1$d %2$s</string>
     <string name="today_action_increment_short">+%1$d</string>
+    <string name="today_action_undo">Undo</string>
+    <string name="today_stamp_skipped">Skipped</string>
+    <string name="today_stamp_missed">✕ Missed</string>
+    <string name="today_stamp_paused">☾ Paused</string>
 
     <!-- Resolved row -->
     <string name="today_resolved_completed_at">Completed at %1$s</string>
@@ -69,4 +82,12 @@
 
     <!-- Bottom nav -->
     <string name="nav_cd_add_habit">Add habit</string>
+
+    <!-- Snackbar copy -->
+    <string name="snackbar_failed_prefix">Couldn't skip </string>
+    <string name="snackbar_failed_suffix">.</string>
+    <string name="snackbar_failed_subtext_limit">Limit reached for this week.</string>
+    <string name="snackbar_deleted_prefix">Deleted </string>
+    <string name="snackbar_deleted_suffix">.</string>
+    <string name="snackbar_generic_error">Something went wrong.</string>
 </resources>

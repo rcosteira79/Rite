@@ -15,7 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ricardocosteira.rite.di.LocalAppComponent
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
-import com.ricardocosteira.rite.presentation.ui.today.QuantitativeInputBottomSheet
+import com.ricardocosteira.rite.presentation.ui.today.components.QuantitativeInputBottomSheet
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.habit_form_delete_dialog_body
@@ -93,6 +93,7 @@ fun HabitDetailRoute(
             completedValue = customInputHabit.completedValue,
             targetValue = customInputHabit.targetValue,
             unit = customInputHabit.unit,
+            defaultIncrement = customInputHabit.defaultIncrement,
             onConfirm = { value ->
                 viewModel.addCustomProgress(value)
                 viewModel.dismissCustomInput()

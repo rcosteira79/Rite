@@ -29,6 +29,8 @@ import com.ricardocosteira.rite.notifications.TrackedHabitInfo
 import com.ricardocosteira.rite.presentation.mappers.motivationalTitleResource
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.rite.presentation.models.mapToTodayHabitUiModel
+import com.ricardocosteira.rite.presentation.ui.today.models.TodayCounts
+import com.ricardocosteira.rite.presentation.ui.today.models.computeCounts
 import com.ricardocosteira.rite.util.toLocalDate
 import kotlin.time.Clock
 import kotlinx.collections.immutable.ImmutableList
@@ -78,8 +80,11 @@ class TodayViewModel(
     private val _state = MutableStateFlow(TodayState())
     val state: StateFlow<TodayState> = _state.asStateFlow()
 
-    private val _events = MutableSharedFlow<TodayEvent>()
-    val events: SharedFlow<TodayEvent> = _events.asSharedFlow()
+    private val _navEvents = MutableSharedFlow<TodayNavEvent>()
+    val navEvents: SharedFlow<TodayNavEvent> = _navEvents.asSharedFlow()
+
+    private val _feedbackEvents = MutableSharedFlow<TodayFeedbackEvent>()
+    val feedbackEvents: SharedFlow<TodayFeedbackEvent> = _feedbackEvents.asSharedFlow()
 
     private var undoJob: Job? = null
 
@@ -173,14 +178,10 @@ class TodayViewModel(
 
                 val counts: TodayCounts = habits.computeCounts()
 
-                val resolvedStatuses: Set<HabitStatus> = setOf(
-                    HabitStatus.COMPLETED,
-                    HabitStatus.SKIPPED,
-                    HabitStatus.FAILED
-                )
-
                 // Fixed weekly habits go into "Today's Focus" alongside daily habits.
                 // Only flexible weekly habits go into "Weekly Goals".
+                // Keep the original order — completed/skipped cards stay in place
+                // to avoid list reordering when a habit flips state.
                 val dailyHabits: List<TodayHabitUiModel> = habits.filter {
                     (it.isDaily || it.isFixedWeekly) && !it.isSuspended
                 }
@@ -188,18 +189,11 @@ class TodayViewModel(
                     it.isFlexibleWeekly && !it.isSuspended
                 }
 
-                val (pendingDaily: List<TodayHabitUiModel>, resolvedDaily: List<TodayHabitUiModel>) =
-                    dailyHabits.partition { it.status !in resolvedStatuses }
-                val (pendingWeekly: List<TodayHabitUiModel>, resolvedWeekly: List<TodayHabitUiModel>) =
-                    weeklyHabits.partition { it.status !in resolvedStatuses }
-
                 _state.update {
                     it.copy(
                         habits = habits,
-                        pendingDaily = pendingDaily.toImmutableList(),
-                        resolvedDaily = resolvedDaily.toImmutableList(),
-                        pendingWeekly = pendingWeekly.toImmutableList(),
-                        resolvedWeekly = resolvedWeekly.toImmutableList(),
+                        daily = dailyHabits.toImmutableList(),
+                        weekly = weeklyHabits.toImmutableList(),
                         isLoading = false,
                         pendingCount = counts.pendingCount,
                         dailyProgressDisplay = counts.dailyProgressDisplay,
@@ -217,7 +211,7 @@ class TodayViewModel(
                 _state.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message,
+                        error = e.message ?: "Something went wrong",
                         motivationalTitleRes = motivationalTitleResource(
                             motivationalTitleIndexForDate(today)
                         )
@@ -246,9 +240,8 @@ class TodayViewModel(
             result.onSuccess {
                 cancelReminderForHabit(instanceId, habit.habitId)
                 loadTodayHabits()
-                // No snackbar — card state change is the feedback
             }.onFailure { error ->
-                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(error.message))
             }
         }
     }
@@ -270,7 +263,7 @@ class TodayViewModel(
                 }
                 loadTodayHabits()
             }.onFailure { error ->
-                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(error.message))
             }
         }
     }
@@ -292,7 +285,7 @@ class TodayViewModel(
                 }
                 loadTodayHabits()
             }.onFailure { error: Throwable ->
-                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(error.message))
             }
         }
     }
@@ -315,12 +308,13 @@ class TodayViewModel(
                 loadTodayHabits()
             }.onFailure { error ->
                 when (error) {
-                    is SkipLockedException -> _events.emit(TodayEvent.SkipLimitReached)
+                    is SkipLockedException ->
+                        _feedbackEvents.emit(
+                            TodayFeedbackEvent.SkipLimitReached(habit?.name ?: "")
+                        )
 
                     else ->
-                        _events.emit(
-                            TodayEvent.ShowError(error.message ?: "Something went wrong")
-                        )
+                        _feedbackEvents.emit(TodayFeedbackEvent.ShowError(error.message))
                 }
             }
         }
@@ -334,7 +328,7 @@ class TodayViewModel(
                 loadTodayHabits()
                 // No snackbar — card state revert is the feedback
             }.onFailure { error ->
-                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(error.message))
             }
         }
     }
@@ -346,7 +340,7 @@ class TodayViewModel(
             result.onSuccess {
                 loadTodayHabits()
             }.onFailure { error ->
-                _events.emit(TodayEvent.ShowError(error.message ?: "Something went wrong"))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(error.message))
             }
         }
     }
@@ -361,7 +355,9 @@ class TodayViewModel(
 
         _state.update { it.copy(pendingDelete = PendingDelete(habitId, habit.name)) }
 
-        viewModelScope.launch { _events.emit(TodayEvent.HabitDeleted(habit.name)) }
+        viewModelScope.launch {
+            _feedbackEvents.emit(TodayFeedbackEvent.HabitDeleted(habit.name))
+        }
 
         undoJob = viewModelScope.launch {
             delay(UNDO_TIMEOUT_MS)
@@ -369,7 +365,7 @@ class TodayViewModel(
                 habitRepository.deleteHabit(habitId)
                 _state.update { it.copy(pendingDelete = null) }
             } catch (e: Exception) {
-                _events.emit(TodayEvent.ShowError(e.message ?: "Failed to delete habit"))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(e.message))
                 loadTodayHabits()
             }
         }
@@ -379,7 +375,7 @@ class TodayViewModel(
         undoJob?.cancel()
         undoJob = null
         _state.update { it.copy(pendingDelete = null) }
-        viewModelScope.launch { _events.emit(TodayEvent.UndoCompleted) }
+        viewModelScope.launch { _feedbackEvents.emit(TodayFeedbackEvent.UndoCompleted) }
         loadTodayHabits()
     }
 
@@ -395,9 +391,7 @@ class TodayViewModel(
             try {
                 habitRepository.deleteHabit(previousDelete.habitId)
             } catch (e: Exception) {
-                _events.emit(
-                    TodayEvent.ShowError(e.message ?: "Failed to delete habit")
-                )
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(e.message))
             }
         }
     }
@@ -406,18 +400,8 @@ class TodayViewModel(
         _state.update { state ->
             state.copy(
                 habits = state.habits.filter { it.habitId != habitId }.toImmutableList(),
-                pendingDaily = state.pendingDaily.filter {
-                    it.habitId != habitId
-                }.toImmutableList(),
-                resolvedDaily = state.resolvedDaily.filter {
-                    it.habitId != habitId
-                }.toImmutableList(),
-                pendingWeekly = state.pendingWeekly.filter {
-                    it.habitId != habitId
-                }.toImmutableList(),
-                resolvedWeekly = state.resolvedWeekly.filter {
-                    it.habitId != habitId
-                }.toImmutableList()
+                daily = state.daily.filter { it.habitId != habitId }.toImmutableList(),
+                weekly = state.weekly.filter { it.habitId != habitId }.toImmutableList()
             )
         }
     }
@@ -436,7 +420,7 @@ class TodayViewModel(
                 habitRepository.archiveHabit(habitId)
                 loadTodayHabits()
             } catch (e: Exception) {
-                _events.emit(TodayEvent.ShowError(e.message ?: "Something went wrong"))
+                _feedbackEvents.emit(TodayFeedbackEvent.ShowError(e.message))
             }
         }
     }
@@ -447,13 +431,13 @@ class TodayViewModel(
 
     fun navigateToHabitDetail(instanceId: String) {
         viewModelScope.launch {
-            _events.emit(TodayEvent.NavigateToHabitDetail(instanceId))
+            _navEvents.emit(TodayNavEvent.ToHabitDetail(instanceId))
         }
     }
 
     fun navigateToCreateHabit() {
         viewModelScope.launch {
-            _events.emit(TodayEvent.NavigateToCreateHabit)
+            _navEvents.emit(TodayNavEvent.ToCreateHabit)
         }
     }
 

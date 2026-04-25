@@ -1,4 +1,4 @@
-package com.ricardocosteira.rite.presentation.ui.today
+package com.ricardocosteira.rite.presentation.ui.today.components
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.Modifier

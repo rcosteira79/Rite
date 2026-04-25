@@ -1,4 +1,4 @@
-package com.ricardocosteira.rite.presentation.ui.today
+package com.ricardocosteira.rite.presentation.ui.today.models
 
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
@@ -84,5 +84,16 @@ class TodayCountsTest {
         val inputHabits = emptyList<TodayHabitUiModel>()
         val actualCounts = inputHabits.computeCounts()
         assertEquals(TodayCounts(), actualCounts)
+    }
+
+    @Test
+    fun `given pending flexible weekly when computing counts then pending excluded from daily scope`() {
+        val inputHabits = listOf(
+            buildInputHabit(HabitStatus.PENDING, ScheduleType.DAILY),
+            buildInputHabit(HabitStatus.PENDING, ScheduleType.FLEXIBLE_WEEKLY)
+        )
+        val actualCounts = inputHabits.computeCounts()
+        assertEquals(1, actualCounts.pendingCount)
+        assertEquals(1, actualCounts.dailyTotal)
     }
 }

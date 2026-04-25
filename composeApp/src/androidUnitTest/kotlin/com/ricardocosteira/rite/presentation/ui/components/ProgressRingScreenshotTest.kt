@@ -27,18 +27,18 @@ class ProgressRingScreenshotTest {
     fun ring_zero_light() = render(0f, dark = false)
 
     @Test
-    fun ring_sixty_light() = render(0.62f, dark = false, label = "62")
+    fun ring_sixty_light() = render(0.62f, dark = false)
 
     @Test
-    fun ring_full_light() = render(1f, dark = false, label = "100")
+    fun ring_full_light() = render(1f, dark = false)
 
     @Test
-    fun ring_sixty_dark() = render(0.62f, dark = true, label = "62")
+    fun ring_sixty_dark() = render(0.62f, dark = true)
 
-    private fun render(progress: Float, dark: Boolean, label: String? = null) {
+    private fun render(progress: Float, dark: Boolean) {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = dark) {
-                ProgressRing(progress = progress, label = label)
+                ProgressRing(progress = progress)
             }
         }
         composeRule.onRoot().captureRoboImage()

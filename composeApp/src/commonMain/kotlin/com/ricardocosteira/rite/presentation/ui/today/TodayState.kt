@@ -2,8 +2,7 @@ package com.ricardocosteira.rite.presentation.ui.today
 
 import com.ricardocosteira.rite.domain.models.StrictnessPreset
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
-import rite.composeapp.generated.resources.Res
-import rite.composeapp.generated.resources.today_error_skip_limit_reached
+import com.ricardocosteira.rite.presentation.ui.components.RiteSnackbarVisuals
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.StringResource
@@ -15,10 +14,8 @@ data class PendingDelete(val habitId: String, val habitName: String)
  */
 data class TodayState(
     val habits: ImmutableList<TodayHabitUiModel> = persistentListOf(),
-    val pendingDaily: ImmutableList<TodayHabitUiModel> = persistentListOf(),
-    val resolvedDaily: ImmutableList<TodayHabitUiModel> = persistentListOf(),
-    val pendingWeekly: ImmutableList<TodayHabitUiModel> = persistentListOf(),
-    val resolvedWeekly: ImmutableList<TodayHabitUiModel> = persistentListOf(),
+    val daily: ImmutableList<TodayHabitUiModel> = persistentListOf(),
+    val weekly: ImmutableList<TodayHabitUiModel> = persistentListOf(),
     val isLoading: Boolean = true,
     val showTimezoneWarning: Boolean = false,
     val previousTimezone: String? = null,
@@ -34,24 +31,28 @@ data class TodayState(
 )
 
 /**
- * Events from the Today screen.
+ * Nav events are processed synchronously so they never queue behind a
+ * long-running snackbar.
  */
-sealed interface TodayEvent {
-    data class NavigateToHabitDetail(val instanceId: String) : TodayEvent
+sealed interface TodayNavEvent {
+    data class ToHabitDetail(val instanceId: String) : TodayNavEvent
 
-    data object NavigateToCreateHabit : TodayEvent
+    data object ToCreateHabit : TodayNavEvent
+}
 
-    sealed interface ShowSnackbar : TodayEvent {
-        val messageRes: StringResource
-    }
+/**
+ * Feedback events are snackbar-bound. The Today screen collects these on a
+ * separate coroutine and preempts the current snackbar so only the latest
+ * feedback is visible.
+ */
+sealed interface TodayFeedbackEvent {
+    data class ShowSnackbar(val visuals: RiteSnackbarVisuals) : TodayFeedbackEvent
 
-    data object SkipLimitReached : ShowSnackbar {
-        override val messageRes: StringResource = Res.string.today_error_skip_limit_reached
-    }
+    data class HabitDeleted(val habitName: String) : TodayFeedbackEvent
 
-    data class ShowError(val message: String) : TodayEvent
+    data class SkipLimitReached(val habitName: String) : TodayFeedbackEvent
 
-    data class HabitDeleted(val habitName: String) : TodayEvent
+    data class ShowError(val message: String?) : TodayFeedbackEvent
 
-    data object UndoCompleted : TodayEvent
+    data object UndoCompleted : TodayFeedbackEvent
 }

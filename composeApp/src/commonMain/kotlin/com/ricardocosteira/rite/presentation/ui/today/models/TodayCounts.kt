@@ -1,4 +1,4 @@
-package com.ricardocosteira.rite.presentation.ui.today
+package com.ricardocosteira.rite.presentation.ui.today.models
 
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
@@ -35,7 +35,7 @@ fun List<TodayHabitUiModel>.computeCounts(): TodayCounts {
     }
 
     return TodayCounts(
-        pendingCount = count { !it.isSuspended && it.isPending },
+        pendingCount = daily.count { it.isPending },
         dailyTotal = daily.size,
         dailyProgressDisplay = progress.toInt(),
         dailyProgressExact = progress.toFloat()
