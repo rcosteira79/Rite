@@ -27,7 +27,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 
-enum class RiteSnackbarVariant { Completed, Skipped, Failed, Suspended }
+enum class RiteSnackbarVariant(val icon: ImageVector) {
+    Completed(Icons.Outlined.CheckCircle),
+    Skipped(Icons.Outlined.SkipNext),
+    Failed(Icons.Outlined.ErrorOutline),
+    Suspended(Icons.Outlined.PauseCircleOutline)
+}
 
 data class RiteSnackbarContent(
     val prefix: String,
@@ -89,7 +94,7 @@ fun RiteSnackbar(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)
         ) {
             Icon(
-                imageVector = variant.icon(),
+                imageVector = variant.icon,
                 contentDescription = null,
                 tint = accent,
                 modifier = Modifier.size(22.dp)
@@ -123,11 +128,4 @@ fun RiteSnackbar(
             content.action?.invoke()
         }
     }
-}
-
-private fun RiteSnackbarVariant.icon(): ImageVector = when (this) {
-    RiteSnackbarVariant.Completed -> Icons.Outlined.CheckCircle
-    RiteSnackbarVariant.Skipped -> Icons.Outlined.SkipNext
-    RiteSnackbarVariant.Failed -> Icons.Outlined.ErrorOutline
-    RiteSnackbarVariant.Suspended -> Icons.Outlined.PauseCircleOutline
 }
