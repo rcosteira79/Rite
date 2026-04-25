@@ -147,7 +147,7 @@ private fun ExpandedHeader(
                     fontWeight = FontWeight.ExtraBold,
                     lineHeight = 32.sp
                 ),
-                color = RiteAppTheme.colorScheme.primary
+                color = RiteAppTheme.colors.primary
             )
 
             val subtitleText: String = if (!hasHabits) {
@@ -163,7 +163,7 @@ private fun ExpandedHeader(
                 style = RiteAppTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Medium
                 ),
-                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                color = RiteAppTheme.colors.onSurfaceVariant
             )
 
             if (strictnessPreset != null) {
@@ -213,7 +213,7 @@ private fun CollapsedHeader(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold
                 ),
-                color = RiteAppTheme.colorScheme.primary,
+                color = RiteAppTheme.colors.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -235,7 +235,7 @@ private fun CollapsedHeader(
                 Text(
                     text = subtitleText,
                     style = RiteAppTheme.typography.bodySmall,
-                    color = RiteAppTheme.colorScheme.onSurfaceVariant
+                    color = RiteAppTheme.colors.onSurfaceVariant
                 )
 
                 if (strictnessPreset != null) {
@@ -262,7 +262,7 @@ private fun CollapsedHeader(
                     style = RiteAppTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.ExtraBold
                     ),
-                    color = RiteAppTheme.colorScheme.primary
+                    color = RiteAppTheme.colors.primary
                 )
 
                 Text(
@@ -271,7 +271,7 @@ private fun CollapsedHeader(
                         letterSpacing = 1.5.sp,
                         fontWeight = FontWeight.Bold
                     ),
-                    color = RiteAppTheme.colorScheme.onSurfaceVariant
+                    color = RiteAppTheme.colors.onSurfaceVariant
                 )
             }
         }
@@ -284,10 +284,10 @@ private fun StrictnessPresetPill(preset: StrictnessPreset, isCompact: Boolean = 
 
     Surface(
         shape = RoundedCornerShape(PILL_CORNER_PERCENT),
-        color = RiteAppTheme.colorScheme.primaryContainer.copy(alpha = PILL_BACKGROUND_ALPHA),
+        color = RiteAppTheme.colors.primaryContainer.copy(alpha = PILL_BACKGROUND_ALPHA),
         modifier = Modifier.border(
             width = 1.dp,
-            color = RiteAppTheme.colorScheme.primaryContainer.copy(alpha = PILL_BORDER_ALPHA),
+            color = RiteAppTheme.colors.primaryContainer.copy(alpha = PILL_BORDER_ALPHA),
             shape = RoundedCornerShape(PILL_CORNER_PERCENT)
         )
     ) {
@@ -309,7 +309,7 @@ private fun StrictnessPresetPill(preset: StrictnessPreset, isCompact: Boolean = 
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.8.sp
                 ),
-                color = RiteAppTheme.colorScheme.primary
+                color = RiteAppTheme.colors.primary
             )
         }
     }
@@ -331,7 +331,7 @@ private fun PulsingDot(modifier: Modifier = Modifier) {
         label = "PulsingDotAlpha"
     )
 
-    val dotColor = RiteAppTheme.colorScheme.primary
+    val dotColor = RiteAppTheme.colors.primary
 
     Canvas(modifier = modifier) {
         drawCircle(
@@ -363,8 +363,8 @@ private fun DailyProgressRing(
         label = "progress-ring"
     )
 
-    val trackColor = RiteAppTheme.colorScheme.surfaceContainerHighest
-    val progressColor = RiteAppTheme.colorScheme.primary
+    val trackColor = RiteAppTheme.colors.surfaceContainerHighest
+    val progressColor = RiteAppTheme.colors.primary
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -411,7 +411,7 @@ private fun DailyProgressRing(
                     style = RiteAppTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.ExtraBold
                     ),
-                    color = RiteAppTheme.colorScheme.primary
+                    color = RiteAppTheme.colors.primary
                 )
 
                 Text(
@@ -420,7 +420,7 @@ private fun DailyProgressRing(
                         letterSpacing = 2.sp,
                         fontWeight = FontWeight.ExtraBold
                     ),
-                    color = RiteAppTheme.colorScheme.onSurfaceVariant
+                    color = RiteAppTheme.colors.onSurfaceVariant
                 )
             }
         }

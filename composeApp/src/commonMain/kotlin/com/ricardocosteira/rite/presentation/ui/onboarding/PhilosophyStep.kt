@@ -71,7 +71,7 @@ fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false)
                 .graphicsLayer { rotationZ = 12f }
                 .border(
                     width = 40.dp,
-                    color = RiteAppTheme.colorScheme.primary.copy(alpha = 0.12f),
+                    color = RiteAppTheme.colors.primary.copy(alpha = 0.12f),
                     shape = CircleShape
                 )
         )
@@ -84,7 +84,7 @@ fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false)
                 style = RiteAppTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.ExtraBold
                 ),
-                color = RiteAppTheme.colorScheme.onSurface,
+                color = RiteAppTheme.colors.onSurface,
                 modifier = Modifier
                     .alpha(headlineAlpha.value)
                     .graphicsLayer { translationY = headlineTranslateY.value.dp.toPx() }
@@ -99,7 +99,7 @@ fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false)
                     .width((36 * accentWidth.value).dp)
                     .height(3.dp)
                     .background(
-                        color = RiteAppTheme.colorScheme.primary,
+                        color = RiteAppTheme.colors.primary,
                         shape = RoundedCornerShape(2.dp)
                     )
             )
@@ -109,7 +109,7 @@ fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false)
             Text(
                 text = stringResource(Res.string.philosophy_body),
                 style = RiteAppTheme.typography.bodyLarge,
-                color = RiteAppTheme.colorScheme.onSurfaceVariant,
+                color = RiteAppTheme.colors.onSurfaceVariant,
                 modifier = Modifier.alpha(bodyAlpha.value)
             )
         }

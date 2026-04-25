@@ -260,7 +260,7 @@ private fun SettingsScreen(
                                         )
                                     },
                                     style = RiteAppTheme.typography.bodySmall,
-                                    color = RiteAppTheme.colorScheme.onSurfaceVariant
+                                    color = RiteAppTheme.colors.onSurfaceVariant
                                 )
                             }
                             Switch(
@@ -297,7 +297,7 @@ private fun SettingsScreen(
                                     )
                                 },
                                 style = RiteAppTheme.typography.bodySmall,
-                                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                                color = RiteAppTheme.colors.onSurfaceVariant
                             )
                         }
                         Switch(
@@ -321,7 +321,7 @@ private fun SettingsScreen(
                         Text(
                             text = state.currentTimezone,
                             style = RiteAppTheme.typography.bodySmall,
-                            color = RiteAppTheme.colorScheme.onSurfaceVariant
+                            color = RiteAppTheme.colors.onSurfaceVariant
                         )
                     }
                 }
@@ -344,7 +344,7 @@ private fun SettingsScreen(
                     Icon(
                         Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = RiteAppTheme.colorScheme.onSurfaceVariant
+                        tint = RiteAppTheme.colors.onSurfaceVariant
                     )
                 }
             }
@@ -358,7 +358,7 @@ private fun SettingsSection(title: String, content: @Composable () -> Unit) {
         Text(
             text = title,
             style = RiteAppTheme.typography.titleMedium,
-            color = RiteAppTheme.colorScheme.primary
+            color = RiteAppTheme.colors.primary
         )
         Spacer(modifier = Modifier.height(12.dp))
         content()
@@ -391,7 +391,7 @@ private fun UndoPolicyOption(
             Text(
                 text = description,
                 style = RiteAppTheme.typography.bodySmall,
-                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                color = RiteAppTheme.colors.onSurfaceVariant
             )
         }
     }

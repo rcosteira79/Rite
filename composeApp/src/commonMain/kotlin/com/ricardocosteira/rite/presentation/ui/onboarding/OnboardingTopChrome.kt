@@ -59,7 +59,7 @@ fun OnboardingTopChrome(
             Text(
                 text = stringResource(Res.string.common_skip),
                 style = RiteAppTheme.typography.labelLarge,
-                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                color = RiteAppTheme.colors.onSurfaceVariant
             )
         }
     }
@@ -108,9 +108,9 @@ private fun StepDot(state: DotState, modifier: Modifier = Modifier) {
     )
 
     val color = if (state == DotState.Inactive) {
-        RiteAppTheme.colorScheme.surfaceVariant
+        RiteAppTheme.colors.surfaceVariant
     } else {
-        RiteAppTheme.colorScheme.primary
+        RiteAppTheme.colors.primary
     }
 
     Box(

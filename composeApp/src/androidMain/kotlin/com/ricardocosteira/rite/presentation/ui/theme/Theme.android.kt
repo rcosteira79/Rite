@@ -10,7 +10,12 @@ import androidx.core.view.WindowCompat
 
 @Composable
 actual fun RiteTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
-    val riteColors = if (darkTheme) DarkRiteColorScheme else LightRiteColorScheme
+    val riteColors = if (darkTheme) DarkSageColors else LightSageColors
+    val riteTypography = riteTypography()
+    val riteShapes = RiteShapes()
+    val riteSpacing = RiteSpacing()
+    val riteMotion = RiteMotion()
+    val riteDimensions = RiteDimensions()
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -20,10 +25,17 @@ actual fun RiteTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
         }
     }
 
-    CompositionLocalProvider(LocalRiteColorScheme provides riteColors) {
+    CompositionLocalProvider(
+        LocalRiteColorScheme provides riteColors,
+        LocalRiteTypography provides riteTypography,
+        LocalRiteShapes provides riteShapes,
+        LocalRiteSpacing provides riteSpacing,
+        LocalRiteMotion provides riteMotion,
+        LocalRiteDimensions provides riteDimensions
+    ) {
         MaterialTheme(
             colorScheme = riteColors.toMaterialColorScheme(),
-            typography = habitLockTypography(),
+            typography = riteTypography.toMaterialTypography(),
             content = content
         )
     }

@@ -87,7 +87,7 @@ fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Bool
                 .graphicsLayer { rotationZ = 12f }
                 .border(
                     width = 40.dp,
-                    color = RiteAppTheme.colorScheme.primary.copy(alpha = 0.12f),
+                    color = RiteAppTheme.colors.primary.copy(alpha = 0.12f),
                     shape = CircleShape
                 )
         )
@@ -100,7 +100,7 @@ fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Bool
                 style = RiteAppTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.ExtraBold
                 ),
-                color = RiteAppTheme.colorScheme.onSurface,
+                color = RiteAppTheme.colors.onSurface,
                 modifier = Modifier
                     .alpha(headlineAlpha.value)
                     .graphicsLayer { translationY = headlineTranslateY.value.dp.toPx() }
@@ -114,7 +114,7 @@ fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Bool
                     .width((36 * accentWidth.value).dp)
                     .height(3.dp)
                     .background(
-                        color = RiteAppTheme.colorScheme.primary,
+                        color = RiteAppTheme.colors.primary,
                         shape = RoundedCornerShape(2.dp)
                     )
             )
@@ -124,7 +124,7 @@ fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Bool
             Text(
                 text = stringResource(Res.string.notifications_body),
                 style = RiteAppTheme.typography.bodyLarge,
-                color = RiteAppTheme.colorScheme.onSurfaceVariant,
+                color = RiteAppTheme.colors.onSurfaceVariant,
                 modifier = Modifier.alpha(bodyAlpha.value)
             )
 
@@ -166,7 +166,7 @@ private fun NotificationPreviewCard(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = RiteAppTheme.colorScheme.surfaceContainerLow,
+                color = RiteAppTheme.colors.surfaceContainerLow,
                 shape = RoundedCornerShape(16.dp)
             )
             .padding(16.dp),
@@ -176,7 +176,7 @@ private fun NotificationPreviewCard(
             modifier = Modifier
                 .size(40.dp)
                 .background(
-                    color = RiteAppTheme.colorScheme.surfaceContainerHigh,
+                    color = RiteAppTheme.colors.surfaceContainerHigh,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
@@ -185,7 +185,7 @@ private fun NotificationPreviewCard(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
-                tint = RiteAppTheme.colorScheme.primary
+                tint = RiteAppTheme.colors.primary
             )
         }
 
@@ -195,12 +195,12 @@ private fun NotificationPreviewCard(
             Text(
                 text = title,
                 style = RiteAppTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                color = RiteAppTheme.colorScheme.onSurface
+                color = RiteAppTheme.colors.onSurface
             )
             Text(
                 text = subtitle,
                 style = RiteAppTheme.typography.bodySmall,
-                color = RiteAppTheme.colorScheme.onSurfaceVariant
+                color = RiteAppTheme.colors.onSurfaceVariant
             )
         }
     }

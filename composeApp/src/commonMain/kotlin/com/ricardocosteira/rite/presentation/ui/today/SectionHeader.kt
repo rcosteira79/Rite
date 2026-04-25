@@ -28,7 +28,7 @@ fun SectionHeader(title: String, trailingLabel: String, modifier: Modifier = Mod
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             ),
-            color = RiteAppTheme.colorScheme.primary
+            color = RiteAppTheme.colors.primary
         )
         Text(
             text = trailingLabel.uppercase(),
@@ -36,7 +36,7 @@ fun SectionHeader(title: String, trailingLabel: String, modifier: Modifier = Mod
                 fontWeight = FontWeight.Medium,
                 letterSpacing = 2.sp
             ),
-            color = RiteAppTheme.colorScheme.onSurfaceVariant
+            color = RiteAppTheme.colors.onSurfaceVariant
         )
     }
 }

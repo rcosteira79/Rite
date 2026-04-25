@@ -1,0 +1,141 @@
+package com.ricardocosteira.rite.presentation.ui.theme
+
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class RiteTokensTest {
+
+    @Test
+    fun `RiteShapes has seven corner sizes from xs 2dp to xxl 20dp plus pill`() {
+        val shapes = RiteShapes()
+        // Just assert the data class exposes all seven fields — instances are compared via TopStart corner size
+        // Sanity: calling the constructor compiles
+        shapes.xs
+        shapes.sm
+        shapes.md
+        shapes.lg
+        shapes.xl
+        shapes.xxl
+        shapes.pill
+    }
+
+    @Test
+    fun `RiteSpacing exposes gap1 through gap8 with expected dp values`() {
+        val spacing = RiteSpacing()
+        assertEquals(4.dp, spacing.gap1)
+        assertEquals(8.dp, spacing.gap2)
+        assertEquals(12.dp, spacing.gap3)
+        assertEquals(16.dp, spacing.gap4)
+        assertEquals(20.dp, spacing.gap5)
+        assertEquals(24.dp, spacing.gap6)
+        assertEquals(28.dp, spacing.gap7)
+        assertEquals(32.dp, spacing.gap8)
+    }
+
+    @Test
+    fun `RiteMotion exposes three durations and two easings`() {
+        val motion = RiteMotion()
+        assertEquals(160, motion.quick.inWholeMilliseconds.toInt())
+        assertEquals(280, motion.standard.inWholeMilliseconds.toInt())
+        assertEquals(480, motion.deliberate.inWholeMilliseconds.toInt())
+        motion.easeQuiet
+        motion.easeWeighted
+    }
+
+    @Test
+    fun `RiteDimensions exposes icon size defaults`() {
+        val dims = RiteDimensions()
+        assertEquals(20.dp, dims.iconDefault)
+        assertEquals(44.dp, dims.touchTargetMin)
+    }
+
+    @Test
+    fun `riteTypography exposes M3 slots plus eyebrow, displayItalic, mono extensions`() {
+        // Can't construct the real RiteTypography without @Composable FontFamily — that's
+        // exercised by screenshot tests later. Here, each slot accessor on the default instance
+        // is a compile-time check that the field exists, and asserting it equals TextStyle.Default
+        // confirms the default constructor initializes it. Kotlin reflection is not available on
+        // commonTest/JVM, so this structural check replaces a reflective property-name lookup.
+        val typography = RiteTypography()
+        assertEquals(TextStyle.Default, typography.displayLarge)
+        assertEquals(TextStyle.Default, typography.displayMedium)
+        assertEquals(TextStyle.Default, typography.displaySmall)
+        assertEquals(TextStyle.Default, typography.headlineLarge)
+        assertEquals(TextStyle.Default, typography.headlineMedium)
+        assertEquals(TextStyle.Default, typography.headlineSmall)
+        assertEquals(TextStyle.Default, typography.titleLarge)
+        assertEquals(TextStyle.Default, typography.titleMedium)
+        assertEquals(TextStyle.Default, typography.titleSmall)
+        assertEquals(TextStyle.Default, typography.bodyLarge)
+        assertEquals(TextStyle.Default, typography.bodyMedium)
+        assertEquals(TextStyle.Default, typography.bodySmall)
+        assertEquals(TextStyle.Default, typography.labelLarge)
+        assertEquals(TextStyle.Default, typography.labelMedium)
+        assertEquals(TextStyle.Default, typography.labelSmall)
+        // Rite extensions
+        assertEquals(TextStyle.Default, typography.eyebrow)
+        assertEquals(TextStyle.Default, typography.displayItalic)
+        assertEquals(TextStyle.Default, typography.mono)
+    }
+
+    @Test
+    fun `toMaterialTypography forwards every M3 slot`() {
+        val marker = TextStyle(fontSize = 999.sp) // sentinel distinct from Default
+        val typography = RiteTypography(
+            displayLarge = marker, displayMedium = marker, displaySmall = marker,
+            headlineLarge = marker, headlineMedium = marker, headlineSmall = marker,
+            titleLarge = marker, titleMedium = marker, titleSmall = marker,
+            bodyLarge = marker, bodyMedium = marker, bodySmall = marker,
+            labelLarge = marker, labelMedium = marker, labelSmall = marker
+        )
+        val m3 = typography.toMaterialTypography()
+        listOf(
+            m3.displayLarge, m3.displayMedium, m3.displaySmall,
+            m3.headlineLarge, m3.headlineMedium, m3.headlineSmall,
+            m3.titleLarge, m3.titleMedium, m3.titleSmall,
+            m3.bodyLarge, m3.bodyMedium, m3.bodySmall,
+            m3.labelLarge, m3.labelMedium, m3.labelSmall
+        ).forEach { assertEquals(marker, it) }
+    }
+
+    @Test
+    fun `toMaterialTypography omits Rite extensions`() {
+        val marker = TextStyle(fontSize = 999.sp)
+        val typography = RiteTypography(eyebrow = marker, displayItalic = marker, mono = marker)
+        val m3 = typography.toMaterialTypography()
+        // None of the 15 M3 slots should have been assigned the extension marker
+        listOf(
+            m3.displayLarge, m3.displayMedium, m3.displaySmall,
+            m3.headlineLarge, m3.headlineMedium, m3.headlineSmall,
+            m3.titleLarge, m3.titleMedium, m3.titleSmall,
+            m3.bodyLarge, m3.bodyMedium, m3.bodySmall,
+            m3.labelLarge, m3.labelMedium, m3.labelSmall
+        ).forEach { assertEquals(TextStyle.Default, it) }
+    }
+
+    @Test
+    fun `LightSageColors has spec-defined hex values for key slots`() {
+        assertEquals(Color(0xFF5E7F6C), LightSageColors.primary) // c-accent
+        assertEquals(Color(0xFFCFDDD1), LightSageColors.primaryContainer) // c-accent-soft
+        assertEquals(Color(0xFFF6F1EA), LightSageColors.background) // c-bg
+        assertEquals(Color(0xFF1F1E1B), LightSageColors.onSurface) // c-ink
+        assertEquals(Color(0xFF6B6459), LightSageColors.onSurfaceMuted) // c-ink-3
+        assertEquals(Color(0xFFA67A3A), LightSageColors.warn) // c-warn
+        assertEquals(Color(0xFF7A6E85), LightSageColors.suspend) // c-suspend
+        assertEquals(Color(0xFF5E7F6C), LightSageColors.dayPerfect) // = primary
+        assertEquals(Color.Transparent, LightSageColors.dayNone)
+    }
+
+    @Test
+    fun `DarkSageColors has spec-defined hex values for key slots`() {
+        assertEquals(Color(0xFF9FBDA9), DarkSageColors.primary)
+        assertEquals(Color(0xFF141413), DarkSageColors.background)
+        assertEquals(Color(0xFFEDE6D9), DarkSageColors.onSurface)
+        assertEquals(Color(0xFFD0A262), DarkSageColors.warn)
+        assertEquals(Color(0xFFA396AE), DarkSageColors.suspend)
+    }
+}

@@ -72,7 +72,7 @@ fun HabitDetailRoute(
                         viewModel.deleteHabit()
                     },
                     colors = ButtonDefaults.textButtonColors(
-                        contentColor = RiteAppTheme.colorScheme.error
+                        contentColor = RiteAppTheme.colors.error
                     )
                 ) {
                     Text(stringResource(Res.string.habit_form_delete_dialog_confirm))

@@ -55,7 +55,7 @@ fun QuantityStepper(
 
     Surface(
         shape = RoundedCornerShape(CardCorner),
-        color = RiteAppTheme.colorScheme.surfaceContainerLow,
+        color = RiteAppTheme.colors.surfaceContainerLow,
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
@@ -96,12 +96,12 @@ fun QuantityStepper(
                     style = RiteAppTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.ExtraBold
                     ),
-                    color = RiteAppTheme.colorScheme.onSurface
+                    color = RiteAppTheme.colors.onSurface
                 )
                 Text(
                     text = label,
                     style = RiteAppTheme.typography.labelSmall,
-                    color = RiteAppTheme.colorScheme.onSurfaceVariant
+                    color = RiteAppTheme.colors.onSurfaceVariant
                 )
             }
 
@@ -146,7 +146,7 @@ private fun StepperButton(
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(MainButtonCorner),
-        color = RiteAppTheme.colorScheme.surface,
+        color = RiteAppTheme.colors.surface,
         shadowElevation = elevation,
         enabled = enabled,
         interactionSource = interactionSource,
@@ -157,9 +157,9 @@ private fun StepperButton(
                 text = text,
                 style = RiteAppTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                 color = if (enabled) {
-                    RiteAppTheme.colorScheme.onSurface
+                    RiteAppTheme.colors.onSurface
                 } else {
-                    RiteAppTheme.colorScheme.onSurface.copy(alpha = DISABLED_CONTENT_ALPHA)
+                    RiteAppTheme.colors.onSurface.copy(alpha = DISABLED_CONTENT_ALPHA)
                 }
             )
         }
@@ -183,7 +183,7 @@ private fun FineStepperButton(
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(FineButtonCorner),
-        color = RiteAppTheme.colorScheme.surfaceContainer,
+        color = RiteAppTheme.colors.surfaceContainer,
         shadowElevation = elevation,
         enabled = enabled,
         interactionSource = interactionSource,
@@ -194,9 +194,9 @@ private fun FineStepperButton(
                 text = text,
                 style = RiteAppTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
                 color = if (enabled) {
-                    RiteAppTheme.colorScheme.onSurfaceVariant
+                    RiteAppTheme.colors.onSurfaceVariant
                 } else {
-                    RiteAppTheme.colorScheme.onSurface.copy(alpha = DISABLED_CONTENT_ALPHA)
+                    RiteAppTheme.colors.onSurface.copy(alpha = DISABLED_CONTENT_ALPHA)
                 }
             )
         }

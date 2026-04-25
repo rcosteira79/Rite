@@ -124,14 +124,14 @@ private fun PresetPill(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor = if (isSelected) {
-        RiteAppTheme.colorScheme.primaryContainer
+        RiteAppTheme.colors.primaryContainer
     } else {
-        RiteAppTheme.colorScheme.surfaceContainerHighest
+        RiteAppTheme.colors.surfaceContainerHighest
     }
     val contentColor = if (isSelected) {
-        RiteAppTheme.colorScheme.onPrimaryContainer
+        RiteAppTheme.colors.onPrimaryContainer
     } else {
-        RiteAppTheme.colorScheme.onSurfaceVariant
+        RiteAppTheme.colors.onSurfaceVariant
     }
 
     Box(
@@ -162,14 +162,14 @@ private fun DayChip(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor = if (isSelected) {
-        RiteAppTheme.colorScheme.primaryContainer
+        RiteAppTheme.colors.primaryContainer
     } else {
-        RiteAppTheme.colorScheme.surfaceContainerHighest
+        RiteAppTheme.colors.surfaceContainerHighest
     }
     val contentColor = if (isSelected) {
-        RiteAppTheme.colorScheme.onPrimaryContainer
+        RiteAppTheme.colors.onPrimaryContainer
     } else {
-        RiteAppTheme.colorScheme.onSurfaceVariant
+        RiteAppTheme.colors.onSurfaceVariant
     }
 
     Box(

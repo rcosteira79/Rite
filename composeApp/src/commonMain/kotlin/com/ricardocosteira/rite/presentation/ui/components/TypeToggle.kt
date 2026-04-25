@@ -52,17 +52,17 @@ fun TypeToggle(
         label = "indicatorFraction"
     )
 
-    val indicatorColor = RiteAppTheme.colorScheme.primaryContainer
+    val indicatorColor = RiteAppTheme.colors.primaryContainer
     val paddingPx = 4.dp
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(ContainerShape)
-            .background(RiteAppTheme.colorScheme.surfaceContainerLow)
+            .background(RiteAppTheme.colors.surfaceContainerLow)
             .then(
                 if (isDarkTheme) {
-                    Modifier.border(1.dp, RiteAppTheme.colorScheme.outlineVariant, ContainerShape)
+                    Modifier.border(1.dp, RiteAppTheme.colors.outlineVariant, ContainerShape)
                 } else {
                     Modifier
                 }
@@ -91,9 +91,9 @@ fun TypeToggle(
             HabitType.entries.forEach { type ->
                 val isSelected: Boolean = selected == type
                 val contentColor = if (isSelected) {
-                    RiteAppTheme.colorScheme.onPrimaryContainer
+                    RiteAppTheme.colors.onPrimaryContainer
                 } else {
-                    RiteAppTheme.colorScheme.onSurfaceVariant
+                    RiteAppTheme.colors.onSurfaceVariant
                 }
                 val label: String = stringResource(type.labelRes)
 

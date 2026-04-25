@@ -192,7 +192,7 @@ internal fun TodayScreen(
                 if (!state.isLoading) {
                     DynamicCollapsingToolbar(
                         toolbarSpec = toolbarSpec,
-                        backgroundColor = RiteAppTheme.colorScheme.background,
+                        backgroundColor = RiteAppTheme.colors.background,
                         centerContent = false,
                         collapsedElevation = 0.dp
                     ) { scrollProgress ->
@@ -459,7 +459,7 @@ private fun TimezoneWarningBanner(previousTimezone: String?, onDismiss: () -> Un
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = RiteAppTheme.colorScheme.tertiaryContainer
+            containerColor = RiteAppTheme.colors.tertiaryContainer
         )
     ) {
         Row(
@@ -473,7 +473,7 @@ private fun TimezoneWarningBanner(previousTimezone: String?, onDismiss: () -> Un
                 Text(
                     text = stringResource(Res.string.today_timezone_changed_title),
                     style = RiteAppTheme.typography.titleSmall,
-                    color = RiteAppTheme.colorScheme.onTertiaryContainer
+                    color = RiteAppTheme.colors.onTertiaryContainer
                 )
                 Text(
                     text = stringResource(
@@ -481,7 +481,7 @@ private fun TimezoneWarningBanner(previousTimezone: String?, onDismiss: () -> Un
                         previousTimezone ?: ""
                     ),
                     style = RiteAppTheme.typography.bodySmall,
-                    color = RiteAppTheme.colorScheme.onTertiaryContainer
+                    color = RiteAppTheme.colors.onTertiaryContainer
                 )
             }
             TextButton(onClick = onDismiss) {
@@ -506,7 +506,7 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
                 .size(160.dp)
                 .clip(RoundedCornerShape(32.dp))
                 .background(
-                    RiteAppTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)
+                    RiteAppTheme.colors.surfaceContainerHighest.copy(alpha = 0.5f)
                 )
         )
 
@@ -517,7 +517,7 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
             text = stringResource(Res.string.today_empty_state_heading),
             style = RiteAppTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = RiteAppTheme.colorScheme.onSurface
+            color = RiteAppTheme.colors.onSurface
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -526,7 +526,7 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
         Text(
             text = stringResource(Res.string.today_empty_state_subtext),
             style = RiteAppTheme.typography.bodyMedium,
-            color = RiteAppTheme.colorScheme.onSurfaceVariant,
+            color = RiteAppTheme.colors.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 48.dp)
         )
@@ -538,8 +538,8 @@ private fun EmptyHabitsMessage(onAddFirstHabit: () -> Unit) {
             onClick = onAddFirstHabit,
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = RiteAppTheme.colorScheme.primaryContainer,
-                contentColor = RiteAppTheme.colorScheme.onPrimaryContainer
+                containerColor = RiteAppTheme.colors.primaryContainer,
+                contentColor = RiteAppTheme.colors.onPrimaryContainer
             ),
             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
         ) {
