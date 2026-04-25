@@ -34,6 +34,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -98,6 +101,21 @@ val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope> {
     error("LocalSharedTransitionScope not provided")
 }
 
+/**
+ * One-arg variant of `androidx.lifecycle.compose.dropUnlessResumed`. The
+ * AndroidX helper only handles `() -> Unit`; navigation lambdas like
+ * `(instanceId) -> Unit` need to drop the call too when a destination has
+ * already started transitioning away (otherwise a fast double-tap pushes the
+ * same destination twice onto the back stack).
+ */
+@Composable
+private fun <T> dropUnlessResumed(block: (T) -> Unit): (T) -> Unit {
+    val owner = LocalLifecycleOwner.current
+    return { arg ->
+        if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) block(arg)
+    }
+}
+
 /** Shared key used by the Today FAB and HabitFormScreen root for the container transform. */
 const val AddHabitSharedKey: String = "add-habit-container"
 
@@ -111,6 +129,14 @@ const val AddHabitIconKey: String = "add-habit-icon"
 const val AddHabitTransitionMs: Int = 500
 
 /**
+ * The transition is split 40/60 between an in-place icon rotation phase and a
+ * container morph phase. Forward nav: rotate first (0–40%), then expand
+ * (40–100%). Back nav: contract first (0–60%), then rotate (60–100%).
+ */
+const val AddHabitRotationMs: Int = AddHabitTransitionMs * 4 / 10
+const val AddHabitContainerMs: Int = AddHabitTransitionMs * 6 / 10
+
+/**
  * Bounds animation for the container morph. Direction-aware: on forward nav
  * (expansion) the bounds are delayed until the icon rotation completes; on
  * back nav (contraction) the bounds animate first and rotation finishes last.
@@ -121,15 +147,15 @@ val AddHabitBoundsTransform: BoundsTransform = BoundsTransform { initial, target
     if (isExpanding) {
         // Forward: hold at FAB bounds while the icon rotates, then expand.
         tween(
-            durationMillis = AddHabitTransitionMs * 6 / 10,
-            delayMillis = AddHabitTransitionMs * 4 / 10,
-            easing = FastOutSlowInEasing,
+            durationMillis = AddHabitContainerMs,
+            delayMillis = AddHabitRotationMs,
+            easing = FastOutSlowInEasing
         )
     } else {
         // Back: contract first, then let the icon rotate in the remaining window.
         tween(
-            durationMillis = AddHabitTransitionMs * 6 / 10,
-            easing = FastOutSlowInEasing,
+            durationMillis = AddHabitContainerMs,
+            easing = FastOutSlowInEasing
         )
     }
 }
@@ -150,26 +176,26 @@ val AddHabitBoundsTransform: BoundsTransform = BoundsTransform { initial, target
  *     the rotation phase.
  */
 val AddHabitFabEnter: EnterTransition =
-    fadeIn(animationSpec = tween(durationMillis = AddHabitTransitionMs * 6 / 10))
+    fadeIn(animationSpec = tween(durationMillis = AddHabitContainerMs))
 
 val AddHabitFabExit: ExitTransition =
     fadeOut(
         animationSpec = tween(
-            durationMillis = AddHabitTransitionMs * 6 / 10,
-            delayMillis = AddHabitTransitionMs * 4 / 10,
+            durationMillis = AddHabitContainerMs,
+            delayMillis = AddHabitRotationMs
         )
     )
 
 val AddHabitFormEnter: EnterTransition =
     fadeIn(
         animationSpec = tween(
-            durationMillis = AddHabitTransitionMs * 6 / 10,
-            delayMillis = AddHabitTransitionMs * 4 / 10,
+            durationMillis = AddHabitContainerMs,
+            delayMillis = AddHabitRotationMs
         )
     )
 
 val AddHabitFormExit: ExitTransition =
-    fadeOut(animationSpec = tween(durationMillis = AddHabitTransitionMs * 6 / 10))
+    fadeOut(animationSpec = tween(durationMillis = AddHabitContainerMs))
 
 /**
  * Shape used by the source side of the Add-Habit container transform (the FAB).
@@ -184,20 +210,17 @@ fun AnimatedVisibilityScope.animatedAddHabitSourceShape(): Shape {
         transitionSpec = {
             if (targetState == EnterExitState.Visible) {
                 // Back nav: corner rounds back up during contraction (0–60%).
-                tween(
-                    durationMillis = AddHabitTransitionMs * 6 / 10,
-                    easing = FastOutSlowInEasing,
-                )
+                tween(durationMillis = AddHabitContainerMs, easing = FastOutSlowInEasing)
             } else {
                 // Forward nav: corner straightens during expansion (40–100%).
                 tween(
-                    durationMillis = AddHabitTransitionMs * 6 / 10,
-                    delayMillis = AddHabitTransitionMs * 4 / 10,
-                    easing = FastOutSlowInEasing,
+                    durationMillis = AddHabitContainerMs,
+                    delayMillis = AddHabitRotationMs,
+                    easing = FastOutSlowInEasing
                 )
             }
         },
-        label = "add-habit-source-corner",
+        label = "add-habit-source-corner"
     ) { state ->
         if (state == EnterExitState.Visible) 50 else 0
     }
@@ -219,17 +242,14 @@ fun AnimatedVisibilityScope.animatedAddHabitFormContentAlpha(): Float {
             if (targetState == EnterExitState.Visible) {
                 // Enter: hold until icon rotation finishes (0–60% of transition),
                 // then fade in during the last 40%.
-                tween(
-                    durationMillis = AddHabitTransitionMs * 4 / 10,
-                    delayMillis = AddHabitTransitionMs * 6 / 10,
-                )
+                tween(durationMillis = AddHabitRotationMs, delayMillis = AddHabitContainerMs)
             } else {
                 // Exit: fade out during the first 40% so the shrinking container
                 // isn't crowded with form fields while the icon rotates back.
-                tween(durationMillis = AddHabitTransitionMs * 4 / 10)
+                tween(durationMillis = AddHabitRotationMs)
             }
         },
-        label = "add-habit-form-content-alpha",
+        label = "add-habit-form-content-alpha"
     ) { state ->
         if (state == EnterExitState.Visible) 1f else 0f
     }
@@ -244,19 +264,16 @@ fun AnimatedVisibilityScope.animatedAddHabitDestinationShape(): Shape {
             if (targetState == EnterExitState.Visible) {
                 // Forward nav: corner straightens during expansion (40–100%).
                 tween(
-                    durationMillis = AddHabitTransitionMs * 6 / 10,
-                    delayMillis = AddHabitTransitionMs * 4 / 10,
-                    easing = FastOutSlowInEasing,
+                    durationMillis = AddHabitContainerMs,
+                    delayMillis = AddHabitRotationMs,
+                    easing = FastOutSlowInEasing
                 )
             } else {
                 // Back nav: corner rounds back up during contraction (0–60%).
-                tween(
-                    durationMillis = AddHabitTransitionMs * 6 / 10,
-                    easing = FastOutSlowInEasing,
-                )
+                tween(durationMillis = AddHabitContainerMs, easing = FastOutSlowInEasing)
             }
         },
-        label = "add-habit-destination-corner",
+        label = "add-habit-destination-corner"
     ) { state ->
         if (state == EnterExitState.Visible) 0 else 50
     }
@@ -426,7 +443,7 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                             OnboardingRoute(
                                 viewModel = appComponent.onboardingViewModel,
                                 snackbarHostState = snackbarHostState,
-                                onFinished = {
+                                onFinished = dropUnlessResumed {
                                     backStack.clear()
                                     backStack.add(Today)
                                     appComponent.todayViewModel.loadTodayHabits()
@@ -436,27 +453,37 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
 
                         entry<Today> {
                             TodayScreen(
-                                onNavigateToHabitDetail = { backStack.add(HabitDetail(it)) },
-                                onNavigateToCreateHabit = { backStack.add(CreateHabit) },
-                                onEditHabit = { backStack.add(EditHabit(it)) }
+                                onNavigateToHabitDetail = dropUnlessResumed { instanceId ->
+                                    backStack.add(HabitDetail(instanceId))
+                                },
+                                onNavigateToCreateHabit = dropUnlessResumed {
+                                    backStack.add(CreateHabit)
+                                },
+                                onEditHabit = dropUnlessResumed { habitId ->
+                                    backStack.add(EditHabit(habitId))
+                                }
                             )
                         }
 
                         entry<Calendar> {
-                            CalendarScreen(onBackClick = backStack::removeLastOrNull)
+                            CalendarScreen(
+                                onBackClick = dropUnlessResumed { backStack.removeLastOrNull() }
+                            )
                         }
 
                         entry<Settings> {
                             SettingsScreen(
-                                onBackClick = backStack::removeLastOrNull,
-                                onArchivedHabitsClick = { backStack.add(ArchivedHabits) },
+                                onBackClick = dropUnlessResumed { backStack.removeLastOrNull() },
+                                onArchivedHabitsClick = dropUnlessResumed {
+                                    backStack.add(ArchivedHabits)
+                                },
                                 snackbarHostState = snackbarHostState
                             )
                         }
 
                         entry<ArchivedHabits> {
                             ArchivedHabitsScreen(
-                                onBackClick = backStack::removeLastOrNull,
+                                onBackClick = dropUnlessResumed { backStack.removeLastOrNull() },
                                 snackbarHostState = snackbarHostState
                             )
                         }
@@ -481,12 +508,12 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                             val todayViewModel = LocalAppComponent.current.todayViewModel
                             HabitFormScreen(
                                 habitIdToEdit = null,
-                                onNavigateBack = {
+                                onNavigateBack = dropUnlessResumed {
                                     backStack.removeLastOrNull()
                                     todayViewModel.loadTodayHabits()
                                 },
                                 snackbarHostState = snackbarHostState,
-                                useAddHabitTransition = true,
+                                useAddHabitTransition = true
                             )
                         }
 
@@ -494,7 +521,7 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                             val todayViewModel = LocalAppComponent.current.todayViewModel
                             HabitFormScreen(
                                 habitIdToEdit = route.habitId,
-                                onNavigateBack = {
+                                onNavigateBack = dropUnlessResumed {
                                     backStack.removeLastOrNull()
                                     todayViewModel.loadTodayHabits()
                                 },
@@ -506,11 +533,11 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                             val todayViewModel = LocalAppComponent.current.todayViewModel
                             HabitDetailRoute(
                                 instanceId = route.instanceId,
-                                onNavigateBack = {
+                                onNavigateBack = dropUnlessResumed {
                                     backStack.removeLastOrNull()
                                     todayViewModel.loadTodayHabits()
                                 },
-                                onEditHabit = { habitId ->
+                                onEditHabit = dropUnlessResumed { habitId ->
                                     backStack.add(EditHabit(habitId))
                                 }
                             )

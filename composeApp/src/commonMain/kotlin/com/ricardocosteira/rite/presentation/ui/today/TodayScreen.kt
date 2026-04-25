@@ -48,11 +48,12 @@ import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
 import com.ricardocosteira.rite.presentation.navigation.AddHabitBoundsTransform
+import com.ricardocosteira.rite.presentation.navigation.AddHabitContainerMs
 import com.ricardocosteira.rite.presentation.navigation.AddHabitFabEnter
 import com.ricardocosteira.rite.presentation.navigation.AddHabitFabExit
 import com.ricardocosteira.rite.presentation.navigation.AddHabitIconKey
+import com.ricardocosteira.rite.presentation.navigation.AddHabitRotationMs
 import com.ricardocosteira.rite.presentation.navigation.AddHabitSharedKey
-import com.ricardocosteira.rite.presentation.navigation.AddHabitTransitionMs
 import com.ricardocosteira.rite.presentation.navigation.LocalSharedTransitionScope
 import com.ricardocosteira.rite.presentation.navigation.animatedAddHabitSourceShape
 import com.ricardocosteira.rite.presentation.ui.components.toolbar.DynamicCollapsingToolbar
@@ -249,13 +250,13 @@ internal fun TodayScreen(
                                 EnterExitState.Visible
                             ) {
                                 tween(
-                                    durationMillis = AddHabitTransitionMs * 4 / 10,
-                                    delayMillis = AddHabitTransitionMs * 6 / 10,
+                                    durationMillis = AddHabitRotationMs,
+                                    delayMillis = AddHabitContainerMs,
                                     easing = FastOutSlowInEasing,
                                 )
                             } else {
                                 tween(
-                                    durationMillis = AddHabitTransitionMs * 4 / 10,
+                                    durationMillis = AddHabitRotationMs,
                                     easing = FastOutSlowInEasing,
                                 )
                             }
@@ -273,14 +274,14 @@ internal fun TodayScreen(
                             ) {
                                 // Back nav: color shifts with contraction (0–60%).
                                 tween(
-                                    durationMillis = AddHabitTransitionMs * 6 / 10,
+                                    durationMillis = AddHabitContainerMs,
                                     easing = FastOutSlowInEasing,
                                 )
                             } else {
                                 // Forward nav: color shifts with expansion (40–100%).
                                 tween(
-                                    durationMillis = AddHabitTransitionMs * 6 / 10,
-                                    delayMillis = AddHabitTransitionMs * 4 / 10,
+                                    durationMillis = AddHabitContainerMs,
+                                    delayMillis = AddHabitRotationMs,
                                     easing = FastOutSlowInEasing,
                                 )
                             }

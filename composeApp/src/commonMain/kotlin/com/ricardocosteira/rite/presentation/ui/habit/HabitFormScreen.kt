@@ -98,18 +98,19 @@ import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ReminderType
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.presentation.navigation.AddHabitBoundsTransform
+import com.ricardocosteira.rite.presentation.navigation.AddHabitContainerMs
 import com.ricardocosteira.rite.presentation.navigation.AddHabitFormEnter
 import com.ricardocosteira.rite.presentation.navigation.AddHabitFormExit
 import com.ricardocosteira.rite.presentation.navigation.AddHabitIconKey
+import com.ricardocosteira.rite.presentation.navigation.AddHabitRotationMs
 import com.ricardocosteira.rite.presentation.navigation.AddHabitSharedKey
-import com.ricardocosteira.rite.presentation.navigation.AddHabitTransitionMs
 import com.ricardocosteira.rite.presentation.navigation.LocalSharedTransitionScope
 import com.ricardocosteira.rite.presentation.navigation.animatedAddHabitDestinationShape
 import com.ricardocosteira.rite.presentation.navigation.animatedAddHabitFormContentAlpha
 import com.ricardocosteira.rite.presentation.ui.BackHandler
 import com.ricardocosteira.rite.presentation.ui.components.DetailRow
-import com.ricardocosteira.rite.presentation.ui.components.RiteButton
 import com.ricardocosteira.rite.presentation.ui.components.QuantityStepper
+import com.ricardocosteira.rite.presentation.ui.components.RiteButton
 import com.ricardocosteira.rite.presentation.ui.components.SchedulePicker
 import com.ricardocosteira.rite.presentation.ui.components.TypeToggle
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
@@ -421,14 +422,14 @@ internal fun HabitFormScreen(
                                     if (iconSpecDelayed) {
                                         tween(
                                             durationMillis =
-                                                AddHabitTransitionMs * 4 / 10,
-                                            delayMillis = AddHabitTransitionMs * 6 / 10,
+                                            AddHabitRotationMs,
+                                            delayMillis = AddHabitContainerMs,
                                             easing = FastOutSlowInEasing,
                                         )
                                     } else {
                                         tween(
                                             durationMillis =
-                                                AddHabitTransitionMs * 4 / 10,
+                                            AddHabitRotationMs,
                                             easing = FastOutSlowInEasing,
                                         )
                                     }
@@ -447,15 +448,15 @@ internal fun HabitFormScreen(
                                         // Back nav: color shifts during contraction.
                                         tween(
                                             durationMillis =
-                                                AddHabitTransitionMs * 6 / 10,
+                                            AddHabitContainerMs,
                                             easing = FastOutSlowInEasing,
                                         )
                                     } else {
                                         // Forward nav: color shifts during expansion.
                                         tween(
                                             durationMillis =
-                                                AddHabitTransitionMs * 6 / 10,
-                                            delayMillis = AddHabitTransitionMs * 4 / 10,
+                                            AddHabitContainerMs,
+                                            delayMillis = AddHabitRotationMs,
                                             easing = FastOutSlowInEasing,
                                         )
                                     }
