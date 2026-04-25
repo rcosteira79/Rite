@@ -35,9 +35,9 @@ class IsoWeekTest {
     }
 
     @Test
-    fun `formatWeekRange formats end to start`() {
+    fun `formatWeekRange formats start to end`() {
         val from = LocalDate(2026, 1, 26) // ISO week 5
         val to = LocalDate(2026, 4, 19) // ISO week 16
-        assertEquals("W16 — W05", formatWeekRange(from = from, to = to))
+        assertEquals("W05 — W16", formatWeekRange(from = from, to = to))
     }
 }

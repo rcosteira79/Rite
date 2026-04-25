@@ -25,5 +25,5 @@ fun formatWeekRange(from: LocalDate, to: LocalDate): String {
     val startWeek: Int = isoWeekNumber(from)
     val endWeek: Int = isoWeekNumber(to)
     fun pad(n: Int): String = n.toString().padStart(2, '0')
-    return "W${pad(endWeek)} — W${pad(startWeek)}"
+    return "W${pad(startWeek)} — W${pad(endWeek)}"
 }

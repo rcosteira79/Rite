@@ -42,7 +42,7 @@ class TapestryScreenshotTest {
             RiteThemeFallback(darkTheme = darkTheme) {
                 Tapestry(
                     heatmapData = data,
-                    weekRangeLabel = "W16 — W05",
+                    weekRangeLabel = "W05 — W16",
                     modifier = Modifier.padding(horizontal = 22.dp),
                 )
             }
