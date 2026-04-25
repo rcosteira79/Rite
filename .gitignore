@@ -22,3 +22,7 @@ node_modules/
 # Roborazzi comparison artifacts
 *_actual.png
 *_compare.png
+# Added by code-review-graph
+.code-review-graph/
+# Per-machine Claude Code config (settings, skills, worktree metadata)
+.claude/
