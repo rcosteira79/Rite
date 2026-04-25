@@ -50,7 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ricardocosteira.rite.domain.models.HabitType
-import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
+import com.ricardocosteira.rite.presentation.ui.components.RiteButton
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
@@ -513,11 +513,11 @@ private fun BinaryActions(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (habit.isResolved && (habit.isCompleted || habit.isSkipped)) {
-            PrimaryButton(onClick = onUndo) {
+            RiteButton(onClick = onUndo) {
                 Text(stringResource(Res.string.habit_detail_action_undo))
             }
         } else {
-            PrimaryButton(
+            RiteButton(
                 onClick = onComplete,
                 enabled = !habit.isResolved
             ) {
@@ -549,7 +549,7 @@ private fun QuantitativeActions(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (habit.isResolved && (habit.isCompleted || habit.isSkipped)) {
-            PrimaryButton(onClick = onUndo) {
+            RiteButton(onClick = onUndo) {
                 Text(stringResource(Res.string.habit_detail_action_undo))
             }
         } else {

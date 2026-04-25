@@ -16,7 +16,7 @@ import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 enum class RiteButtonVariant { Primary, Secondary, Ghost }
 
 @Composable
-fun PrimaryButton(
+fun RiteButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,

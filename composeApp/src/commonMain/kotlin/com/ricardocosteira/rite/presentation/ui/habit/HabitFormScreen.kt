@@ -89,7 +89,7 @@ import com.ricardocosteira.rite.domain.models.ReminderType
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.presentation.ui.BackHandler
 import com.ricardocosteira.rite.presentation.ui.components.DetailRow
-import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
+import com.ricardocosteira.rite.presentation.ui.components.RiteButton
 import com.ricardocosteira.rite.presentation.ui.components.QuantityStepper
 import com.ricardocosteira.rite.presentation.ui.components.SchedulePicker
 import com.ricardocosteira.rite.presentation.ui.components.TypeToggle
@@ -895,7 +895,7 @@ internal fun HabitFormScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             // Primary CTA
-            PrimaryButton(
+            RiteButton(
                 onClick = { onAction(HabitFormUiAction.SaveClicked) },
                 enabled = state.isValid && !state.isSaving
             ) {

@@ -19,7 +19,7 @@ import org.robolectric.annotation.GraphicsMode
     qualifiers = "w360dp-h800dp-420dpi",
     application = android.app.Application::class
 )
-class PrimaryButtonScreenshotTest {
+class RiteButtonScreenshotTest {
 
     @get:Rule
     val composeRule = createComposeRule()
@@ -45,7 +45,7 @@ class PrimaryButtonScreenshotTest {
     private fun render(variant: RiteButtonVariant, dark: Boolean) {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = dark) {
-                PrimaryButton(onClick = {}, variant = variant) {
+                RiteButton(onClick = {}, variant = variant) {
                     Text("Establish Habit")
                 }
             }

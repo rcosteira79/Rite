@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitType
-import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
+import com.ricardocosteira.rite.presentation.ui.components.RiteButton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -73,7 +73,7 @@ internal fun PhilosophyStepCta(
     reduceMotion: Boolean = false
 ) {
     CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
-        PrimaryButton(onClick = onAdvance) {
+        RiteButton(onClick = onAdvance) {
             Text(stringResource(Res.string.philosophy_cta_accept))
         }
     }
@@ -90,7 +90,7 @@ internal fun StrictnessStepCta(
         if (state.isApplyingPreset) {
             CircularProgressIndicator(modifier = Modifier.size(36.dp))
         } else {
-            PrimaryButton(onClick = onContinue) {
+            RiteButton(onClick = onContinue) {
                 Text(stringResource(Res.string.strictness_cta_continue))
             }
         }
@@ -113,7 +113,7 @@ internal fun FirstHabitStepCta(
         if (state.isCreatingHabit) {
             CircularProgressIndicator(modifier = Modifier.size(36.dp))
         } else {
-            PrimaryButton(onClick = onCreateHabit, enabled = isEnabled) {
+            RiteButton(onClick = onCreateHabit, enabled = isEnabled) {
                 Text(stringResource(Res.string.first_habit_button_create))
             }
         }
@@ -138,7 +138,7 @@ internal fun NotificationPermissionStepCta(
     reduceMotion: Boolean = false
 ) {
     CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
-        PrimaryButton(onClick = onEnableNotifications) {
+        RiteButton(onClick = onEnableNotifications) {
             Text(stringResource(Res.string.notifications_cta_enable))
         }
 

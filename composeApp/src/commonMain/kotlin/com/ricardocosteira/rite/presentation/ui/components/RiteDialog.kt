@@ -36,13 +36,13 @@ fun RiteDialog(
                     )
                 ) { Text(confirmLabel, style = RiteAppTheme.typography.labelLarge) }
             } else {
-                PrimaryButton(onClick = onConfirm, variant = RiteButtonVariant.Primary) {
+                RiteButton(onClick = onConfirm, variant = RiteButtonVariant.Primary) {
                     Text(confirmLabel)
                 }
             }
         },
         dismissButton = {
-            PrimaryButton(onClick = onDismiss, variant = RiteButtonVariant.Ghost) {
+            RiteButton(onClick = onDismiss, variant = RiteButtonVariant.Ghost) {
                 Text(dismissLabel)
             }
         }
