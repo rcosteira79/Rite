@@ -78,8 +78,6 @@ import rite.composeapp.generated.resources.today_section_met_count
 import rite.composeapp.generated.resources.today_section_weekly
 
 private val BOTTOM_CLEARANCE = 80.dp
-private val TOP_BREATHING_ROOM = 8.dp
-private val SECTION_GAP = 16.dp
 
 private val resolvedStatuses = setOf(
     HabitStatus.COMPLETED,
@@ -360,12 +358,12 @@ internal fun TodayScreen(
                         .fillMaxSize()
                         .nestedScroll(toolbarSpec.nestedScrollConnection),
                     contentPadding = PaddingValues(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = scaffoldPadding.calculateTopPadding() + TOP_BREATHING_ROOM,
+                        start = RiteAppTheme.spacing.gap4,
+                        end = RiteAppTheme.spacing.gap4,
+                        top = scaffoldPadding.calculateTopPadding() + RiteAppTheme.spacing.gap2,
                         bottom = scaffoldPadding.calculateBottomPadding() + BOTTOM_CLEARANCE
                     ),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(RiteAppTheme.spacing.gap3)
                 ) {
                     // TODAY'S FOCUS section
                     item(key = "daily_header") {
@@ -392,7 +390,7 @@ internal fun TodayScreen(
                     // WEEKLY GOALS section
                     if (state.weekly.isNotEmpty()) {
                         item(key = "weekly_spacer") {
-                            Spacer(modifier = Modifier.height(SECTION_GAP))
+                            Spacer(modifier = Modifier.height(RiteAppTheme.spacing.gap4))
                         }
 
                         item(key = "weekly_header") {

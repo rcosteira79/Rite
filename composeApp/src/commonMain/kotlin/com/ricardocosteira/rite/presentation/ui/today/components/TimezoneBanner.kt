@@ -104,7 +104,7 @@ fun TimezoneBanner(
                 onClick = onDismiss,
                 contentPadding = PaddingValues(
                     horizontal = RiteAppTheme.spacing.gap2,
-                    vertical = 4.dp
+                    vertical = RiteAppTheme.spacing.gap1
                 )
             ) {
                 Text(

@@ -67,7 +67,7 @@ internal fun SwipeBackground(
                 tint = iconTint.copy(alpha = alpha),
                 modifier = Modifier
                     .align(zone.alignment)
-                    .padding(horizontal = 24.dp)
+                    .padding(horizontal = RiteAppTheme.spacing.gap6)
             )
         }
     }

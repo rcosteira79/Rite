@@ -201,7 +201,10 @@ private fun SkipChip(onClick: () -> Unit, modifier: Modifier = Modifier) {
         Text(
             text = stringResource(Res.string.common_skip).uppercase(),
             style = RiteAppTheme.typography.eyebrow,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+            modifier = Modifier.padding(
+                horizontal = RiteAppTheme.spacing.gap3,
+                vertical = RiteAppTheme.spacing.gap2
+            )
         )
     }
 }
