@@ -14,7 +14,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
+import com.ricardocosteira.rite.presentation.ui.components.RiteButton
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
@@ -55,7 +55,7 @@ fun TodayEmptyState(onAddFirstHabit: () -> Unit, modifier: Modifier = Modifier,)
                 .padding(top = RiteAppTheme.spacing.gap2)
                 .widthIn(max = 320.dp),
         )
-        PrimaryButton(
+        RiteButton(
             onClick = onAddFirstHabit,
             modifier = Modifier
                 .padding(top = RiteAppTheme.spacing.gap6)

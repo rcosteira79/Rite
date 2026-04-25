@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.ricardocosteira.rite.presentation.ui.components.PrimaryButton
+import com.ricardocosteira.rite.presentation.ui.components.RiteButton
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
@@ -127,7 +127,7 @@ fun QuantitativeInputBottomSheet(
 
             Spacer(Modifier.height(RiteAppTheme.spacing.gap6))
 
-            PrimaryButton(
+            RiteButton(
                 onClick = { if (value > 0) onConfirm(value) },
                 enabled = value > 0
             ) {
