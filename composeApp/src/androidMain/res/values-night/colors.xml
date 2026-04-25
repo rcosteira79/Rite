@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="splash_background">#2D4F3F</color>
-    <color name="splash_icon_background">#2D4F3F</color>
+    <color name="splash_background">#1A201D</color>
+    <color name="seal_track">#2A352F</color>
+    <color name="seal_stroke">#C8D4C2</color>
 </resources>
