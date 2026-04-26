@@ -49,6 +49,15 @@ interface HabitInstanceRepository {
     ): List<HabitInstance>
 
     /**
+     * Observe instances in a date range. Re-emits whenever any instance in the
+     * range is inserted, updated, or deleted.
+     */
+    fun observeInstancesInDateRange(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): Flow<List<HabitInstance>>
+
+    /**
      * Create a new habit instance.
      */
     suspend fun createInstance(instance: HabitInstance)
