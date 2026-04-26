@@ -33,6 +33,7 @@ import com.ricardocosteira.rite.presentation.ui.onboarding.OnboardingViewModel
 import com.ricardocosteira.rite.presentation.ui.settings.SettingsViewModel
 import com.ricardocosteira.rite.presentation.ui.startup.StartupViewModel
 import com.ricardocosteira.rite.presentation.ui.today.TodayViewModel
+import kotlin.time.Clock
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,6 +69,11 @@ abstract class RiteAppComponent(
     @Provides
     fun provideAppCoroutineScope(defaultDispatcher: DefaultDispatcher): AppCoroutineScope =
         CoroutineScope(SupervisorJob() + defaultDispatcher)
+
+    // System clock — injected so tests can substitute a virtual clock
+    @AppScope
+    @Provides
+    fun provideClock(): Clock = Clock.System
 
     // Database (singleton)
     @AppScope
