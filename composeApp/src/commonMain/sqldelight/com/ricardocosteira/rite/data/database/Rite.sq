@@ -115,6 +115,9 @@ CREATE INDEX idx_leave_period_dates ON LeavePeriod(startDate, endDate);
 getUser:
 SELECT * FROM User LIMIT 1;
 
+observeUser:
+SELECT * FROM User LIMIT 1;
+
 insertUser:
 INSERT INTO User (id, timezone, previousTimezone, undoPolicy, maxSnoozeDurationMinutes, maxSnoozesPerHabitPerDay, maxConsecutiveSkips, onboardingCompleted, dailySummaryTime, createdAt)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
