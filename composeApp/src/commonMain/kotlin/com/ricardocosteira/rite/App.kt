@@ -31,14 +31,14 @@ fun App(appComponent: RiteAppComponent) {
 
         Crossfade(
             targetState = ready,
-            animationSpec = tween(durationMillis = 320, easing = FastOutSlowInEasing),
+            animationSpec = tween(durationMillis = 320, easing = FastOutSlowInEasing)
         ) { isReady ->
             if (!isReady) {
                 RiteSplashScreen(onAnimationComplete = { splashAnimationComplete = true })
             } else {
                 CompositionLocalProvider(LocalAppComponent provides appComponent) {
                     RiteNavigation(
-                        isOnboardingCompleted = readyState!!.isOnboardingCompleted,
+                        isOnboardingCompleted = readyState!!.isOnboardingCompleted
                     )
                 }
             }

@@ -36,15 +36,16 @@ import androidx.compose.ui.unit.sp
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import kotlin.math.pow
 
+// Splash background and seal colors are intentionally NOT theme tokens:
+// they must match the launcher icon and native splash drawable exactly so
+// the seal looks identical across launcher → native splash → Compose. The
+// theme's sage primary (#5E7F6C) is a different value than the icon's
+// bespoke moss (#4F6E5B) by design — only text colors come from the theme.
 private val LinenBg = Color(0xFFF4EFE7)
-private val LinenInk = Color(0xFF1F1E1B)
-private val LinenInkMuted = Color(0xFF5C5448)
 private val LinenSealTrack = Color(0xFFDCE3D8)
 private val LinenSealStroke = Color(0xFF4F6E5B)
 
 private val DarkBg = Color(0xFF1A201D)
-private val DarkInk = Color(0xFFEDE6D9)
-private val DarkInkMuted = Color(0xFF9A9283)
 private val DarkSealTrack = Color(0x29DCE3D8)
 private val DarkSealStroke = Color(0xFFC8D4C2)
 
@@ -63,8 +64,9 @@ fun RiteSplashScreen(modifier: Modifier = Modifier, onAnimationComplete: () -> U
     val bg = if (isDark) DarkBg else LinenBg
     val track = if (isDark) DarkSealTrack else LinenSealTrack
     val stroke = if (isDark) DarkSealStroke else LinenSealStroke
-    val ink = if (isDark) DarkInk else LinenInk
-    val mutedInk = if (isDark) DarkInkMuted else LinenInkMuted
+
+    val colors = RiteAppTheme.colors
+    val typography = RiteAppTheme.typography
 
     var progress by remember { mutableStateOf(0f) }
 
@@ -82,30 +84,29 @@ fun RiteSplashScreen(modifier: Modifier = Modifier, onAnimationComplete: () -> U
     val wordAlpha = easeOut(progress.segment(0.25f, 0.65f))
     val tagAlpha = easeOut(progress.segment(0.30f, 0.75f))
 
-    val typography = RiteAppTheme.typography
     val wordmarkStyle = typography.displayItalic.copy(
         fontSize = 38.sp,
         fontWeight = FontWeight.Light,
         letterSpacing = (-0.5f).sp,
-        color = ink,
+        color = colors.onSurface
     )
     val taglineStyle = typography.mono.copy(
         fontSize = 9.5f.sp,
         letterSpacing = 0.32f.em,
-        color = mutedInk,
+        color = colors.onSurfaceMuted
     )
 
     BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
-            .background(bg),
+            .background(bg)
     ) {
         val halfHeight = maxHeight / 2
 
         Canvas(
             modifier = Modifier
                 .align(Alignment.Center)
-                .size(SealCanvasSize),
+                .size(SealCanvasSize)
         ) {
             val ringRadius = SealRingRadius.toPx()
             val cx = size.width / 2f
@@ -120,7 +121,7 @@ fun RiteSplashScreen(modifier: Modifier = Modifier, onAnimationComplete: () -> U
                 color = track,
                 radius = ringRadius,
                 center = Offset(cx, cy),
-                style = Stroke(width = ringStroke),
+                style = Stroke(width = ringStroke)
             )
 
             drawArc(
@@ -130,7 +131,7 @@ fun RiteSplashScreen(modifier: Modifier = Modifier, onAnimationComplete: () -> U
                 useCenter = false,
                 topLeft = Offset(cx - ringRadius, cy - ringRadius),
                 size = Size(ringRadius * 2f, ringRadius * 2f),
-                style = Stroke(width = ringStroke, cap = StrokeCap.Butt),
+                style = Stroke(width = ringStroke, cap = StrokeCap.Butt)
             )
 
             // Dashed ritual ring — fades in while spiraling inward from the inner
@@ -154,9 +155,9 @@ fun RiteSplashScreen(modifier: Modifier = Modifier, onAnimationComplete: () -> U
                                     cycleArc * (9f / 22f),
                                     cycleArc * (13f / 22f)
                                 ),
-                                phase = 0f,
-                            ),
-                        ),
+                                phase = 0f
+                            )
+                        )
                     )
                 }
             }
@@ -164,13 +165,13 @@ fun RiteSplashScreen(modifier: Modifier = Modifier, onAnimationComplete: () -> U
             drawCircle(
                 color = stroke,
                 radius = markRadius,
-                center = Offset(cx, cy - ringRadius),
+                center = Offset(cx, cy - ringRadius)
             )
 
             drawCircle(
                 color = stroke,
                 radius = markRadius,
-                center = Offset(cx, cy),
+                center = Offset(cx, cy)
             )
         }
 
@@ -178,20 +179,20 @@ fun RiteSplashScreen(modifier: Modifier = Modifier, onAnimationComplete: () -> U
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = halfHeight + WordmarkTopFromCenter),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "rite",
                 style = wordmarkStyle,
                 modifier = Modifier
                     .alpha(wordAlpha)
-                    .offset(y = ((1f - wordAlpha) * 8f).dp),
+                    .offset(y = ((1f - wordAlpha) * 8f).dp)
             )
             Spacer(Modifier.height(10.dp))
             Text(
                 text = "show up · for yourself",
                 style = taglineStyle,
-                modifier = Modifier.alpha(tagAlpha),
+                modifier = Modifier.alpha(tagAlpha)
             )
         }
     }
