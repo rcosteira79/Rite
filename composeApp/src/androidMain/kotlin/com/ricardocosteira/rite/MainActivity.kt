@@ -12,9 +12,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val appComponent = application.riteApplication.appComponent
 
-        installSplashScreen().setKeepOnScreenCondition {
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition {
             appComponent.startupViewModel.state.value is StartupState.Loading
         }
+        // Skip the system's default exit animation (icon zoom + fade) — the Compose
+        // splash continues the seal seamlessly, so the system animation reads as a
+        // flicker against the static Compose seal underneath.
+        splashScreen.setOnExitAnimationListener { it.remove() }
 
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
