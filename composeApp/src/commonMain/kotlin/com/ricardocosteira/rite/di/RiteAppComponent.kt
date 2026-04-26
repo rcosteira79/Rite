@@ -34,8 +34,10 @@ import com.ricardocosteira.rite.presentation.ui.settings.SettingsViewModel
 import com.ricardocosteira.rite.presentation.ui.startup.StartupViewModel
 import com.ricardocosteira.rite.presentation.ui.today.TodayViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
@@ -60,6 +62,12 @@ abstract class RiteAppComponent(
     @AppScope
     @Provides
     fun provideDefaultDispatcher(): DefaultDispatcher = Dispatchers.Default
+
+    // Application-lifetime scope (singleton)
+    @AppScope
+    @Provides
+    fun provideAppCoroutineScope(defaultDispatcher: DefaultDispatcher): AppCoroutineScope =
+        CoroutineScope(SupervisorJob() + defaultDispatcher)
 
     // Database (singleton)
     @AppScope
