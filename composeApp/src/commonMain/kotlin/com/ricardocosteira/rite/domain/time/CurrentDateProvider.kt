@@ -72,7 +72,7 @@ class DefaultCurrentDateProvider(
                 MIN_TICK_DELAY_MS
             )
             delay(delayMs)
-            _today.value = computeToday()
+            _today.value = clock.todayIn(tz)
         }
     }
 
