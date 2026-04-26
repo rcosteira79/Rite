@@ -142,44 +142,16 @@ git commit -m "di: provide Clock for testability"
 
 ---
 
-### Task 4: Add `observeUser()` Flow query in SQLDelight
+### Task 4 (revised): Add regression test for existing `UserRepository.observeUser()`
+
+> **Note:** The original Task 4 added a duplicate `observeUser:` SQLDelight query that was reverted (commit `337a0a3` reverts `db17760`). Code review found that `observeUser()` already exists on the interface (`UserRepository.kt:15`) and impl (`UserRepositoryImpl.kt:28-33`), wired through the existing `getUser` query via `.asFlow().mapToOneOrNull(...)` — the project's idiomatic SQLDelight pattern (one query, two consumption strategies — same precedent as `observeInstancesForDate` in `HabitInstanceRepositoryImpl`). This revised task only adds missing test coverage for the existing implementation.
 
 **Files:**
-- Modify: `composeApp/src/commonMain/sqldelight/com/ricardocosteira/rite/data/database/Rite.sq`
+- Test: `composeApp/src/jvmTest/kotlin/com/ricardocosteira/rite/data/repositories/UserRepositoryObserveTest.kt`
 
-- [ ] **Step 1: Add the query**
+- [ ] **Step 1: Add the integration test**
 
-In `Rite.sq`, locate the existing `getUser:` query (around line 115) and the existing `getUser` query stays as-is for one-shot reads. Add a new query immediately below it (the SQL is identical; the name disambiguates Flow consumers):
-
-```sql
-observeUser:
-SELECT * FROM User LIMIT 1;
-```
-
-- [ ] **Step 2: Build to verify SQLDelight regenerates**
-
-Run: `./gradlew :composeApp:generateCommonMainRiteDatabaseInterface`
-Expected: BUILD SUCCESSFUL. The generated `RiteQueries` class will now expose `observeUser()`.
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add composeApp/src/commonMain/sqldelight/com/ricardocosteira/rite/data/database/Rite.sq
-git commit -m "data: add observeUser SQLDelight query"
-```
-
----
-
-### Task 5: Expose `observeUser()` Flow on `UserRepository`
-
-**Files:**
-- Modify: `composeApp/src/commonMain/kotlin/com/ricardocosteira/rite/domain/repositories/UserRepository.kt`
-- Modify: `composeApp/src/commonMain/kotlin/com/ricardocosteira/rite/data/repositories/UserRepositoryImpl.kt`
-- Test: `composeApp/src/jvmTest/kotlin/com/ricardocosteira/rite/data/repositories/UserRepositoryImplObserveTest.kt`
-
-- [ ] **Step 1: Write the failing test**
-
-Create `composeApp/src/jvmTest/kotlin/com/ricardocosteira/rite/data/repositories/UserRepositoryImplObserveTest.kt`:
+Create `composeApp/src/jvmTest/kotlin/com/ricardocosteira/rite/data/repositories/UserRepositoryObserveTest.kt`:
 
 ```kotlin
 package com.ricardocosteira.rite.data.repositories
@@ -190,14 +162,13 @@ import com.ricardocosteira.rite.data.database.RiteDatabase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class UserRepositoryImplObserveTest {
+class UserRepositoryObserveTest {
 
     @Test
     fun `observeUser emits null when no user exists, then emits user after insert`() = runTest {
@@ -219,95 +190,23 @@ class UserRepositoryImplObserveTest {
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 2: Run test, confirm it passes (no impl change needed)**
 
-Run: `./gradlew :composeApp:jvmTest --tests "com.ricardocosteira.rite.data.repositories.UserRepositoryImplObserveTest"`
-Expected: FAIL — `observeUser` does not exist on `UserRepositoryImpl`.
-
-- [ ] **Step 3: Add `observeUser()` to the interface**
-
-In `composeApp/src/commonMain/kotlin/com/ricardocosteira/rite/domain/repositories/UserRepository.kt`, add the import:
-
-```kotlin
-import kotlinx.coroutines.flow.Flow
-```
-
-Add the method to the interface (place it near the existing `getUser` declaration):
-
-```kotlin
-/**
- * Observe the current user. Emits null when no user exists, re-emits
- * whenever the User row is inserted, updated, or deleted.
- */
-fun observeUser(): Flow<User?>
-```
-
-- [ ] **Step 4: Implement in `UserRepositoryImpl`**
-
-In `UserRepositoryImpl.kt`, add the imports:
-
-```kotlin
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToOneOrNull
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-```
-
-Add the method (place near the existing `getUser` impl):
-
-```kotlin
-override fun observeUser(): Flow<User?> = queries
-    .observeUser()
-    .asFlow()
-    .mapToOneOrNull(ioDispatcher)
-    .map { row -> row?.toDomain() }
-```
-
-(Use the existing `toDomain()` mapper for User; if the mapper takes the SQLDelight row directly, the `?.toDomain()` works. If your mapper is `fun User.toDomain(): User`, adjust to match.)
-
-- [ ] **Step 5: Run test to verify it passes**
-
-Run: `./gradlew :composeApp:jvmTest --tests "com.ricardocosteira.rite.data.repositories.UserRepositoryImplObserveTest"`
-Expected: PASS.
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add composeApp/src/commonMain/kotlin/com/ricardocosteira/rite/domain/repositories/UserRepository.kt composeApp/src/commonMain/kotlin/com/ricardocosteira/rite/data/repositories/UserRepositoryImpl.kt composeApp/src/jvmTest/kotlin/com/ricardocosteira/rite/data/repositories/UserRepositoryImplObserveTest.kt
-git commit -m "data(user): add observeUser() Flow"
-```
-
----
-
-### Task 6: Add `observeInstancesInDateRange()` Flow query in SQLDelight
-
-**Files:**
-- Modify: `composeApp/src/commonMain/sqldelight/com/ricardocosteira/rite/data/database/Rite.sq`
-
-- [ ] **Step 1: Add the query**
-
-In `Rite.sq`, locate `getInstancesInDateRange:` (around line 255). Add a new query below it:
-
-```sql
-observeInstancesInDateRange:
-SELECT * FROM HabitInstance WHERE date >= ? AND date <= ?;
-```
-
-- [ ] **Step 2: Build to verify SQLDelight regenerates**
-
-Run: `./gradlew :composeApp:generateCommonMainRiteDatabaseInterface`
-Expected: BUILD SUCCESSFUL.
+Run: `./gradlew :composeApp:jvmTest --tests "com.ricardocosteira.rite.data.repositories.UserRepositoryObserveTest"`
+Expected: PASS — `observeUser()` is already implemented; this test just locks in the contract.
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add composeApp/src/commonMain/sqldelight/com/ricardocosteira/rite/data/database/Rite.sq
-git commit -m "data: add observeInstancesInDateRange SQLDelight query"
+git add composeApp/src/jvmTest/kotlin/com/ricardocosteira/rite/data/repositories/UserRepositoryObserveTest.kt
+git commit -m "test(user): add regression test for observeUser() emission contract"
 ```
 
 ---
 
-### Task 7: Expose `observeInstancesInDateRange()` Flow on `HabitInstanceRepository`
+### Task 5 (revised): Add `observeInstancesInDateRange()` to `HabitInstanceRepository`
+
+> **Note:** The original Tasks 6 and 7 split this work across "add a duplicate `observeInstancesInDateRange:` SQLDelight query" (Task 6) and "implement against the new query" (Task 7). Same anti-pattern as the reverted Task 4: project convention (see `observeInstancesForDate` in `HabitInstanceRepositoryImpl`) is to call `.asFlow()` directly on the existing one-shot query. This revised task is the consolidation: one task, no duplicate SQL.
 
 **Files:**
 - Modify: `composeApp/src/commonMain/kotlin/com/ricardocosteira/rite/domain/repositories/HabitInstanceRepository.kt`
@@ -411,7 +310,7 @@ Expected: FAIL — `observeInstancesInDateRange` does not exist.
 
 - [ ] **Step 3: Add to interface**
 
-In `composeApp/src/commonMain/kotlin/com/ricardocosteira/rite/domain/repositories/HabitInstanceRepository.kt`, add (near `getInstancesInDateRange`):
+In `composeApp/src/commonMain/kotlin/com/ricardocosteira/rite/domain/repositories/HabitInstanceRepository.kt`, add (near the existing `getInstancesInDateRange` declaration):
 
 ```kotlin
 /**
@@ -426,14 +325,16 @@ fun observeInstancesInDateRange(
 
 - [ ] **Step 4: Implement in `HabitInstanceRepositoryImpl`**
 
-In `HabitInstanceRepositoryImpl.kt`, add near the existing `observeInstancesForDate` method (around line 25):
+Important: use the existing `getInstancesInDateRange` SQLDelight query directly. NO new SQL query is added. This mirrors the existing `observeInstancesForDate` precedent at lines 25-29 of the same file.
+
+In `HabitInstanceRepositoryImpl.kt`, add the new method near the existing `observeInstancesForDate` method (around line 25):
 
 ```kotlin
 override fun observeInstancesInDateRange(
     startDate: LocalDate,
     endDate: LocalDate
 ): Flow<List<HabitInstance>> = queries
-    .observeInstancesInDateRange(startDate.toString(), endDate.toString())
+    .getInstancesInDateRange(startDate.toString(), endDate.toString())
     .asFlow()
     .mapToList(ioDispatcher)
     .map { list -> list.map { it.toDomain() } }
@@ -450,6 +351,12 @@ Expected: PASS.
 git add composeApp/src/commonMain/kotlin/com/ricardocosteira/rite/domain/repositories/HabitInstanceRepository.kt composeApp/src/commonMain/kotlin/com/ricardocosteira/rite/data/repositories/HabitInstanceRepositoryImpl.kt composeApp/src/jvmTest/kotlin/com/ricardocosteira/rite/data/repositories/HabitInstanceRepositoryObserveRangeTest.kt
 git commit -m "data(instances): add observeInstancesInDateRange() Flow"
 ```
+
+---
+
+### Tasks 6 and 7: ~~Add `observeInstancesInDateRange` SQLDelight query~~ / ~~Expose Flow on repository~~
+
+**Status: DELETED (consolidated into Task 5 above).** Project convention is to call `.asFlow()` on the existing one-shot query rather than duplicate the SQL. See the note on Task 5.
 
 ---
 
