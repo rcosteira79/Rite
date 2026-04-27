@@ -253,6 +253,11 @@ private class FakeHabitInstanceRepository : HabitInstanceRepository {
         endDate: LocalDate
     ): List<HabitInstance> = emptyList()
 
+    override fun observeInstancesInDateRange(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): Flow<List<HabitInstance>> = flowOf(emptyList())
+
     override suspend fun createInstance(instance: HabitInstance) = Unit
 
     override suspend fun updateInstanceStatus(
