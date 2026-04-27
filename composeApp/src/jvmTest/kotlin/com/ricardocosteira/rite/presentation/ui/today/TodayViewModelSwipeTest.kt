@@ -30,6 +30,7 @@ import kotlin.time.Clock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -64,6 +65,8 @@ class TodayViewModelSwipeTest {
             deps.seedHabitWithTodayInstance(habitId = inputHabitId, habitName = inputHabitName)
 
             val viewModel = buildViewModel(deps, testDispatcher)
+            // Keep a persistent subscriber so WhileSubscribed keeps the upstream alive.
+            backgroundScope.launch { viewModel.state.collect {} }
             advanceUntilIdle()
 
             assertTrue(
@@ -110,6 +113,8 @@ class TodayViewModelSwipeTest {
             deps.seedHabitWithTodayInstance(habitId = inputHabitId)
 
             val viewModel = buildViewModel(deps, testDispatcher)
+            // Keep a persistent subscriber so WhileSubscribed keeps the upstream alive.
+            backgroundScope.launch { viewModel.state.collect {} }
             advanceUntilIdle()
 
             // When — delete. Do NOT call advanceUntilIdle() — it would drain the 5s delay.
@@ -137,6 +142,8 @@ class TodayViewModelSwipeTest {
             deps.seedHabitWithTodayInstance(habitId = inputHabitId)
 
             val viewModel = buildViewModel(deps, testDispatcher)
+            // Keep a persistent subscriber so WhileSubscribed keeps the upstream alive.
+            backgroundScope.launch { viewModel.state.collect {} }
             advanceUntilIdle()
 
             // When — delete, then advance past the undo timeout (5 seconds)
@@ -170,6 +177,8 @@ class TodayViewModelSwipeTest {
             deps.seedHabitWithTodayInstance(habitId = inputHabitId)
 
             val viewModel = buildViewModel(deps, testDispatcher)
+            // Keep a persistent subscriber so WhileSubscribed keeps the upstream alive.
+            backgroundScope.launch { viewModel.state.collect {} }
             advanceUntilIdle()
 
             viewModel.deleteHabit(inputHabitId)
@@ -214,6 +223,8 @@ class TodayViewModelSwipeTest {
             deps.seedHabitWithTodayInstance(habitId = inputHabitId)
 
             val viewModel = buildViewModel(deps, testDispatcher)
+            // Keep a persistent subscriber so WhileSubscribed keeps the upstream alive.
+            backgroundScope.launch { viewModel.state.collect {} }
             advanceUntilIdle()
 
             viewModel.deleteHabit(inputHabitId)
@@ -254,6 +265,8 @@ class TodayViewModelSwipeTest {
                 )
 
                 val viewModel = buildViewModel(deps, testDispatcher)
+                // Keep a persistent subscriber so WhileSubscribed keeps the upstream alive.
+                backgroundScope.launch { viewModel.state.collect {} }
                 advanceUntilIdle()
 
                 assertTrue(

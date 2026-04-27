@@ -41,12 +41,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.DateTimeUnit
@@ -66,10 +66,12 @@ import me.tatarka.inject.annotations.Inject
  * when the database is updated by any actor (action handlers, workers, the
  * notification action receiver, the create/edit habit screen).
  *
- * The [_state] MutableStateFlow is the single source of truth exposed to the UI.
- * The reactive pipeline writes to it asynchronously on every date/DB change.
- * Delete operations also write to it synchronously (to allow immediate visual feedback
- * before the 5-second undo timeout commits the change to the DB).
+ * The reactive pipeline uses [SharingStarted.WhileSubscribed] so the DB observers
+ * are torn down when the UI stops collecting for more than 5 seconds, and restart
+ * when the UI re-subscribes. The side-effect collector (processEndOfDay +
+ * generateDailyHabits) runs continuously in [viewModelScope], independent of UI
+ * subscription, so the DB stays correct even if the user never opens the Today
+ * screen on a given day.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @AppScope
@@ -92,8 +94,13 @@ class TodayViewModel(
     private val _events = MutableSharedFlow<TodayEvent>()
     val events: SharedFlow<TodayEvent> = _events.asSharedFlow()
 
-    private val _state = MutableStateFlow(TodayState(isLoading = true))
-    val state: StateFlow<TodayState> = _state.asStateFlow()
+    val state: StateFlow<TodayState> = currentDateProvider.today
+        .flatMapLatest { today -> observeTodayState(today) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(STATE_SUBSCRIPTION_TIMEOUT_MS),
+            initialValue = TodayState(isLoading = true)
+        )
 
     private val _pendingDelete = MutableStateFlow<PendingDelete?>(null)
     private val _quantitativeInputFor = MutableStateFlow<String?>(null)
@@ -102,12 +109,6 @@ class TodayViewModel(
     private var undoJob: Job? = null
 
     init {
-        // Reactive pipeline: whenever the date changes, re-derive state from DB flows.
-        viewModelScope.launch {
-            currentDateProvider.today
-                .flatMapLatest { today -> observeTodayState(today) }
-                .collect { newState -> _state.value = newState }
-        }
         // Side effects: process previous-day failures and generate today's instances on
         // every date change. Both use cases are idempotent.
         viewModelScope.launch {
@@ -447,5 +448,6 @@ class TodayViewModel(
     private companion object {
         const val UNDO_TIMEOUT_MS: Long = 5_000L
         const val DAY_RANGE: Int = 6
+        const val STATE_SUBSCRIPTION_TIMEOUT_MS: Long = 5_000L
     }
 }

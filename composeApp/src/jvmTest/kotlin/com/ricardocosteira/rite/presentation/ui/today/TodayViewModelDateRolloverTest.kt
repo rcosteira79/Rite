@@ -29,6 +29,7 @@ import kotlin.time.Clock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -56,6 +57,8 @@ class TodayViewModelDateRolloverTest {
 
                 val dateProvider = FakeCurrentDateProvider(initial = yesterday)
                 val viewModel = deps.buildViewModel(dateProvider, testDispatcher)
+                // Keep a persistent subscriber so WhileSubscribed keeps the upstream alive.
+                backgroundScope.launch { viewModel.state.collect {} }
                 advanceUntilIdle()
 
                 // Sanity: yesterday's pending instance is shown.
