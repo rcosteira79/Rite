@@ -107,7 +107,6 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                         onFinished = {
                             backStack.clear()
                             backStack.add(Today)
-                            appComponent.todayViewModel.loadTodayHabits()
                         }
                     )
                 }
@@ -141,39 +140,25 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                 }
 
                 entry<CreateHabit> {
-                    // Capture todayViewModel inside the @Composable lambda — required because
-                    // LocalAppComponent.current cannot be called from a non-composable callback.
-                    val todayViewModel = LocalAppComponent.current.todayViewModel
                     HabitFormScreen(
                         habitIdToEdit = null,
-                        onNavigateBack = {
-                            backStack.removeLastOrNull()
-                            todayViewModel.loadTodayHabits()
-                        },
+                        onNavigateBack = { backStack.removeLastOrNull() },
                         snackbarHostState = snackbarHostState
                     )
                 }
 
                 entry<EditHabit> { route ->
-                    val todayViewModel = LocalAppComponent.current.todayViewModel
                     HabitFormScreen(
                         habitIdToEdit = route.habitId,
-                        onNavigateBack = {
-                            backStack.removeLastOrNull()
-                            todayViewModel.loadTodayHabits()
-                        },
+                        onNavigateBack = { backStack.removeLastOrNull() },
                         snackbarHostState = snackbarHostState
                     )
                 }
 
                 entry<HabitDetail> { route ->
-                    val todayViewModel = LocalAppComponent.current.todayViewModel
                     HabitDetailRoute(
                         instanceId = route.instanceId,
-                        onNavigateBack = {
-                            backStack.removeLastOrNull()
-                            todayViewModel.loadTodayHabits()
-                        },
+                        onNavigateBack = { backStack.removeLastOrNull() },
                         onEditHabit = { habitId ->
                             backStack.add(EditHabit(habitId))
                         }

@@ -28,6 +28,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Clock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -68,10 +69,13 @@ class TodayViewModelDateRolloverTest {
                 // and a fresh today instance has been created in DB by GenerateDailyHabits.
                 deps.seedTodayInstance(habitId = "h1", date = today, instanceId = "i-today")
                 dateProvider.setToday(today)
-                advanceUntilIdle()
 
-                // Then: state filters yesterday's daily instance out, shows today's instance instead.
-                val newState = viewModel.state.value
+                // Then: wait for the reactive pipeline to re-derive state for the new date.
+                // state.first subscribes and cooperatively runs test-dispatcher coroutines until
+                // the predicate matches, so no advanceUntilIdle needed.
+                val newState = viewModel.state.first { state ->
+                    state.pendingDaily.any { it.instanceId == "i-today" }
+                }
                 assertTrue(
                     newState.pendingDaily.none { it.instanceId == "i-yesterday" },
                     "Expected yesterday's daily instance to disappear after rollover"
