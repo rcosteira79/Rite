@@ -2,11 +2,11 @@ package com.ricardocosteira.rite.presentation.ui.today
 
 import com.ricardocosteira.rite.domain.models.StrictnessPreset
 import com.ricardocosteira.rite.presentation.models.TodayHabitUiModel
-import rite.composeapp.generated.resources.Res
-import rite.composeapp.generated.resources.today_error_skip_limit_reached
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.StringResource
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.today_error_skip_limit_reached
 
 data class PendingDelete(val habitId: String, val habitName: String)
 
@@ -22,7 +22,6 @@ data class TodayState(
     val isLoading: Boolean = true,
     val showTimezoneWarning: Boolean = false,
     val previousTimezone: String? = null,
-    val error: String? = null,
     val showQuantitativeInputFor: String? = null,
     val pendingCount: Int = 0,
     val dailyProgressDisplay: Int = 0,
