@@ -37,7 +37,7 @@ class StatTileRowScreenshotTest {
                     currentStreak = 14,
                     longestStreak = 42,
                     habitScore = 82,
-                    modifier = Modifier.padding(horizontal = 22.dp),
+                    modifier = Modifier.padding(horizontal = 22.dp)
                 )
             }
         }

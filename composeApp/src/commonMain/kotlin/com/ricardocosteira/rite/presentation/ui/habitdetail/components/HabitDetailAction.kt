@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.SkipNext
@@ -35,7 +34,6 @@ import rite.composeapp.generated.resources.habit_detail_action_custom
 import rite.composeapp.generated.resources.habit_detail_action_skip
 import rite.composeapp.generated.resources.habit_detail_action_undo
 
-private val CARD_CORNER = 16.dp
 private val STEPPER_BUTTON_SIZE = 48.dp
 
 /**
@@ -75,7 +73,7 @@ fun HabitDetailAction(
     onSkip: () -> Unit,
     onUndo: () -> Unit,
     onUndoIncrement: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val isCompleted: Boolean = status == HabitStatus.COMPLETED
     val isSkipped: Boolean = status == HabitStatus.SKIPPED
@@ -83,7 +81,7 @@ fun HabitDetailAction(
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (type == HabitType.BINARY) {
             BinaryBlock(
@@ -92,7 +90,7 @@ fun HabitDetailAction(
                 isSkipLocked = isSkipLocked,
                 onComplete = onComplete,
                 onUndo = onUndo,
-                onSkip = onSkip,
+                onSkip = onSkip
             )
         } else {
             QuantitativeBlock(
@@ -105,7 +103,7 @@ fun HabitDetailAction(
                 onUndoIncrement = onUndoIncrement,
                 onCustomProgress = onCustomProgress,
                 onUndo = onUndo,
-                onSkip = onSkip,
+                onSkip = onSkip
             )
         }
     }
@@ -119,11 +117,11 @@ private fun BinaryBlock(
     onComplete: () -> Unit,
     onUndo: () -> Unit,
     onSkip: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (isResolved && isCompletedOrSkipped) {
             RiteButton(onClick = onUndo) {
@@ -152,12 +150,12 @@ private fun QuantitativeBlock(
     onCustomProgress: () -> Unit,
     onUndo: () -> Unit,
     onSkip: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val hasProgress: Boolean = currentProgress > 0
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (isResolved && isCompletedOrSkipped) {
             RiteButton(onClick = onUndo) {
@@ -165,14 +163,14 @@ private fun QuantitativeBlock(
             }
         } else {
             Surface(
-                shape = RoundedCornerShape(CARD_CORNER),
+                shape = RiteAppTheme.shapes.xl,
                 color = RiteAppTheme.colors.surfaceContainerLow,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
                     modifier = Modifier.padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     StepperIconButton(text = "−", onClick = onUndoIncrement, enabled = hasProgress)
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -181,12 +179,12 @@ private fun QuantitativeBlock(
                             style = RiteAppTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.ExtraBold
                             ),
-                            color = RiteAppTheme.colors.onSurface,
+                            color = RiteAppTheme.colors.onSurface
                         )
                         Text(
                             text = unit?.uppercase() ?: "",
                             style = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 0.5.sp),
-                            color = RiteAppTheme.colors.onSurfaceVariant,
+                            color = RiteAppTheme.colors.onSurfaceVariant
                         )
                     }
                     StepperIconButton(text = "+", onClick = onIncrementProgress)
@@ -201,9 +199,9 @@ private fun QuantitativeBlock(
                     IconSurface(
                         onClick = onCustomProgress,
                         icon = Icons.Default.Edit,
-                        contentDescription = stringResource(Res.string.habit_detail_action_custom),
+                        contentDescription = stringResource(Res.string.habit_detail_action_custom)
                     )
-                },
+                }
             )
         }
     }
@@ -214,14 +212,14 @@ private fun StepperIconButton(
     text: String,
     onClick: () -> Unit,
     enabled: Boolean = true,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
+        shape = RiteAppTheme.shapes.lg,
         color = RiteAppTheme.colors.surface,
         enabled = enabled,
-        modifier = modifier.size(STEPPER_BUTTON_SIZE),
+        modifier = modifier.size(STEPPER_BUTTON_SIZE)
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
             Text(
@@ -233,7 +231,7 @@ private fun StepperIconButton(
                     RiteAppTheme.colors.onSurface.copy(
                         alpha = 0.38f
                     )
-                },
+                }
             )
         }
     }
@@ -244,20 +242,20 @@ private fun IconSurface(
     onClick: () -> Unit,
     icon: ImageVector,
     contentDescription: String,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
+        shape = RiteAppTheme.shapes.lg,
         color = RiteAppTheme.colors.surfaceContainerHigh,
-        modifier = modifier.size(STEPPER_BUTTON_SIZE),
+        modifier = modifier.size(STEPPER_BUTTON_SIZE)
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
             Icon(
                 imageVector = icon,
                 contentDescription = contentDescription,
                 modifier = Modifier.size(20.dp),
-                tint = RiteAppTheme.colors.onSurfaceVariant,
+                tint = RiteAppTheme.colors.onSurfaceVariant
             )
         }
     }
@@ -268,7 +266,7 @@ private fun SkipRow(
     onSkip: () -> Unit,
     isSkipLocked: Boolean,
     modifier: Modifier = Modifier,
-    trailingButton: (@Composable () -> Unit)? = null,
+    trailingButton: (@Composable () -> Unit)? = null
 ) {
     val contentColor = if (!isSkipLocked) {
         RiteAppTheme.colors.onSecondaryContainer
@@ -279,31 +277,31 @@ private fun SkipRow(
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Surface(
             onClick = onSkip,
-            shape = RoundedCornerShape(CARD_CORNER),
+            shape = RiteAppTheme.shapes.xl,
             color = RiteAppTheme.colors.secondaryContainer.copy(alpha = 0.4f),
             enabled = !isSkipLocked,
-            modifier = Modifier.weight(1f).height(STEPPER_BUTTON_SIZE),
+            modifier = Modifier.weight(1f).height(STEPPER_BUTTON_SIZE)
         ) {
             Row(
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Outlined.SkipNext,
                     contentDescription = null,
                     modifier = Modifier.size(18.dp),
-                    tint = contentColor,
+                    tint = contentColor
                 )
                 Spacer(Modifier.size(6.dp))
                 Text(
                     text = stringResource(Res.string.habit_detail_action_skip),
                     style = RiteAppTheme.typography.labelLarge,
-                    color = contentColor,
+                    color = contentColor
                 )
             }
         }

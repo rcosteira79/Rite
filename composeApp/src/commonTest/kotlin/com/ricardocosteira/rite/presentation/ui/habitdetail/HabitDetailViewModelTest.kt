@@ -56,7 +56,7 @@ private fun habitInstance(
     id: String,
     habitId: String = "h1",
     date: LocalDate,
-    status: HabitStatus = HabitStatus.PENDING,
+    status: HabitStatus = HabitStatus.PENDING
 ): HabitInstance = HabitInstance(
     id = id,
     habitId = habitId,
@@ -65,7 +65,7 @@ private fun habitInstance(
     completedValue = null,
     targetValue = null,
     consecutiveSkipsAtCreation = 0,
-    createdAt = BASE_INSTANT,
+    createdAt = BASE_INSTANT
 )
 
 private fun binaryHabit(id: String = "h1"): Habit = Habit(
@@ -84,7 +84,7 @@ private fun binaryHabit(id: String = "h1"): Habit = Habit(
     totalCompletions = 0,
     expectedCompletions = 0,
     createdAt = BASE_INSTANT,
-    archivedAt = null,
+    archivedAt = null
 )
 
 private fun balancedUser(): User = User(
@@ -97,7 +97,7 @@ private fun balancedUser(): User = User(
     maxConsecutiveSkips = 2,
     isOnboardingCompleted = true,
     dailySummaryTime = null,
-    createdAt = BASE_INSTANT,
+    createdAt = BASE_INSTANT
 )
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -142,7 +142,7 @@ private class FakeHabitRepository(private val habit: Habit? = binaryHabit()) : H
 
 private class FakeHabitInstanceRepository(
     private val instance: HabitInstance,
-    private val allInstances: List<HabitInstance> = listOf(instance),
+    private val allInstances: List<HabitInstance> = listOf(instance)
 ) : HabitInstanceRepository {
     override fun observeInstancesForDate(date: LocalDate): Flow<List<HabitInstance>> =
         flowOf(allInstances.filter { it.date == date })
@@ -167,7 +167,7 @@ private class FakeHabitInstanceRepository(
         instanceId: String,
         status: HabitStatus,
         completedValue: Int?,
-        completedAt: Instant?,
+        completedAt: Instant?
     ) = Unit
     override suspend fun updateInstanceCompletedValue(instanceId: String, completedValue: Int) =
         Unit
@@ -189,7 +189,7 @@ private class FakeUserRepository(private val user: User? = balancedUser()) : Use
 }
 
 private class FakeSnoozeRepository(
-    private val stateByInstance: Map<String, SnoozeState> = emptyMap(),
+    private val stateByInstance: Map<String, SnoozeState> = emptyMap()
 ) : SnoozeRepository {
     override suspend fun getSnoozeState(instanceId: String): SnoozeState? =
         stateByInstance[instanceId]
@@ -225,7 +225,7 @@ private fun buildViewModel(
     user: User? = balancedUser(),
     snoozeRepository: SnoozeRepository = FakeSnoozeRepository(),
     clock: Clock = FIXED_CLOCK,
-    instanceId: String,
+    instanceId: String
 ): HabitDetailViewModel {
     val resolvedUserRepository = userRepository ?: FakeUserRepository(user)
     val completionEventRepo = FakeCompletionEventRepository()
@@ -237,25 +237,25 @@ private fun buildViewModel(
         completeHabit = CompleteHabit(
             habitInstanceRepository = habitInstanceRepository,
             habitRepository = habitRepository,
-            habitCompletionEventRepository = completionEventRepo,
+            habitCompletionEventRepository = completionEventRepo
         ),
         skipHabit = SkipHabit(
             habitInstanceRepository = habitInstanceRepository,
-            userRepository = resolvedUserRepository,
+            userRepository = resolvedUserRepository
         ),
         undoHabit = UndoHabit(
             habitInstanceRepository = habitInstanceRepository,
             habitCompletionEventRepository = completionEventRepo,
             habitRepository = habitRepository,
-            userRepository = resolvedUserRepository,
+            userRepository = resolvedUserRepository
         ),
         undoLastIncrement = UndoLastIncrement(
             habitInstanceRepository = habitInstanceRepository,
             habitCompletionEventRepository = completionEventRepo,
-            habitRepository = habitRepository,
+            habitRepository = habitRepository
         ),
         clock = clock,
-        instanceId = instanceId,
+        instanceId = instanceId
     )
 }
 
@@ -274,7 +274,7 @@ class HabitDetailViewModelTest {
             val vm = buildViewModel(
                 habitInstanceRepository = FakeHabitInstanceRepository(instance),
                 userRepository = FakeUserRepository(balancedUser()),
-                instanceId = "i1",
+                instanceId = "i1"
             )
 
             vm.state.test {
@@ -299,14 +299,14 @@ class HabitDetailViewModelTest {
                     "i2" to SnoozeState(
                         habitInstanceId = "i2",
                         scheduledTime = FIXED_NOW,
-                        snoozeCount = 2,
+                        snoozeCount = 2
                     )
                 )
             )
             val vm = buildViewModel(
                 habitInstanceRepository = FakeHabitInstanceRepository(instance),
                 snoozeRepository = snoozeRepo,
-                instanceId = "i2",
+                instanceId = "i2"
             )
 
             vm.state.test {
@@ -324,7 +324,7 @@ class HabitDetailViewModelTest {
         val vm = buildViewModel(
             habitInstanceRepository = FakeHabitInstanceRepository(instance),
             snoozeRepository = FakeSnoozeRepository(emptyMap()),
-            instanceId = "i3",
+            instanceId = "i3"
         )
 
         vm.state.test {
@@ -364,16 +364,16 @@ class HabitDetailViewModelTest {
                     status = HabitStatus.SKIPPED
                 ), // Mon week 15
                 // target instance (PENDING)
-                targetInstance,
+                targetInstance
             )
 
             val vm = buildViewModel(
                 habitInstanceRepository = FakeHabitInstanceRepository(
                     instance = targetInstance,
-                    allInstances = allInstances,
+                    allInstances = allInstances
                 ),
                 clock = FIXED_CLOCK,
-                instanceId = "i4",
+                instanceId = "i4"
             )
 
             vm.state.test {
@@ -392,7 +392,7 @@ class HabitDetailViewModelTest {
             val vm = buildViewModel(
                 habitInstanceRepository = FakeHabitInstanceRepository(instance),
                 user = null,
-                instanceId = "i5",
+                instanceId = "i5"
             )
             vm.state.test {
                 val state = awaitItem()

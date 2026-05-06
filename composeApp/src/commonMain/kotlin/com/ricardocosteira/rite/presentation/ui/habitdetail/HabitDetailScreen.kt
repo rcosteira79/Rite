@@ -79,7 +79,7 @@ fun HabitDetailScreen(
     instanceId: String,
     onNavigateBack: () -> Unit,
     onEditHabit: (String) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val createViewModel = LocalAppComponent.current.createHabitDetailViewModel
     val viewModel: HabitDetailViewModel = viewModel { createViewModel(instanceId) }
@@ -106,7 +106,7 @@ fun HabitDetailScreen(
         onEditHabit = { state.habit?.habitId?.let(onEditHabit) },
         onArchiveHabit = viewModel::archiveHabit,
         onDeleteHabit = { isDeleteDialogVisible = true },
-        modifier = modifier,
+        modifier = modifier
     )
 
     if (isDeleteDialogVisible) {
@@ -122,14 +122,14 @@ fun HabitDetailScreen(
                     },
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = RiteAppTheme.colors.error
-                    ),
+                    )
                 ) { Text(stringResource(Res.string.habit_form_delete_dialog_confirm)) }
             },
             dismissButton = {
                 TextButton(onClick = { isDeleteDialogVisible = false }) {
                     Text(stringResource(Res.string.habit_form_delete_dialog_cancel))
                 }
-            },
+            }
         )
     }
 
@@ -145,7 +145,7 @@ fun HabitDetailScreen(
                 viewModel.addCustomProgress(value)
                 viewModel.dismissCustomInput()
             },
-            onDismiss = viewModel::dismissCustomInput,
+            onDismiss = viewModel::dismissCustomInput
         )
     }
 }
@@ -270,10 +270,10 @@ internal fun HabitDetailScreen(
                     style = RiteAppTheme.typography.displaySmall.copy(
                         fontSize = 34.sp,
                         lineHeight = 36.sp,
-                        letterSpacing = (-0.68).sp,
+                        letterSpacing = (-0.68).sp
                     ),
                     fontWeight = FontWeight.Normal,
-                    color = RiteAppTheme.colors.onSurface,
+                    color = RiteAppTheme.colors.onSurface
                 )
                 habit.description?.let { note ->
                     Spacer(Modifier.height(8.dp))
@@ -282,10 +282,10 @@ internal fun HabitDetailScreen(
                         style = RiteAppTheme.typography.titleLarge.copy(
                             fontStyle = FontStyle.Italic,
                             fontSize = 13.5.sp,
-                            lineHeight = 20.sp,
+                            lineHeight = 20.sp
                         ),
                         color = RiteAppTheme.colors.onSurfaceVariant,
-                        modifier = Modifier.widthIn(max = 300.dp),
+                        modifier = Modifier.widthIn(max = 300.dp)
                     )
                 }
                 Spacer(Modifier.height(24.dp))
@@ -293,7 +293,7 @@ internal fun HabitDetailScreen(
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     ProgressRing(
                         progress = habit.progressPercentage.coerceIn(0f, 1f),
-                        capLabel = null,
+                        capLabel = null
                     )
                 }
                 Spacer(Modifier.height(20.dp))
@@ -309,14 +309,14 @@ internal fun HabitDetailScreen(
                     onCustomProgress = onCustomProgress,
                     onSkip = onSkip,
                     onUndo = onUndo,
-                    onUndoIncrement = onUndoIncrement,
+                    onUndoIncrement = onUndoIncrement
                 )
                 Spacer(Modifier.height(24.dp))
 
                 StatTileRow(
                     currentStreak = habit.currentStreak,
                     longestStreak = habit.longestStreak,
-                    habitScore = habit.habitScore,
+                    habitScore = habit.habitScore
                 )
                 Spacer(Modifier.height(20.dp))
 
@@ -328,7 +328,7 @@ internal fun HabitDetailScreen(
 
                 Tapestry(
                     heatmapData = state.heatmapData,
-                    weekRangeLabel = weekRangeLabel,
+                    weekRangeLabel = weekRangeLabel
                 )
                 Spacer(Modifier.height(24.dp))
 
@@ -339,7 +339,7 @@ internal fun HabitDetailScreen(
                     maxSnoozesPerDay = habit.maxSnoozesPerDay,
                     skipsThisWeek = habit.skipsThisWeek,
                     currentConsecutiveSkips = habit.currentConsecutiveSkips,
-                    maxConsecutiveSkips = habit.maxConsecutiveSkips,
+                    maxConsecutiveSkips = habit.maxConsecutiveSkips
                 )
                 Spacer(Modifier.height(24.dp))
             }

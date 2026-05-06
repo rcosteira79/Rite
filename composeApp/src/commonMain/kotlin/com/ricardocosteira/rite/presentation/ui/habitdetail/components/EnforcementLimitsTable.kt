@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -67,119 +66,108 @@ fun EnforcementLimitsTable(
     skipsThisWeek: Int,
     currentConsecutiveSkips: Int,
     maxConsecutiveSkips: Int?,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val colors = RiteAppTheme.colors
     val ruleColor: Color = colors.outline
+    val shape = RiteAppTheme.shapes.sm
     val isLocked: Boolean =
         maxConsecutiveSkips != null && currentConsecutiveSkips >= maxConsecutiveSkips
-
-    val rows: List<EnforcementRow> = listOf(
-        EnforcementRow(
-            label = stringResource(Res.string.habit_detail_enf_row_strictness),
-            value = when (strictnessPreset) {
-                StrictnessPreset.FLEXIBLE -> stringResource(
-                    Res.string.habit_detail_enf_strictness_flexible
-                )
-
-                StrictnessPreset.BALANCED -> stringResource(
-                    Res.string.habit_detail_enf_strictness_balanced
-                )
-
-                StrictnessPreset.UNWAVERING -> stringResource(
-                    Res.string.habit_detail_enf_strictness_unwavering
-                )
-
-                null -> stringResource(Res.string.habit_detail_enf_strictness_custom)
-            },
-        ),
-        EnforcementRow(
-            label = stringResource(Res.string.habit_detail_enf_row_undo),
-            value = when (undoPolicy) {
-                UndoPolicy.ALL_HISTORY -> stringResource(
-                    Res.string.habit_detail_enf_undo_all_history
-                )
-
-                UndoPolicy.TODAY_ONLY -> stringResource(Res.string.habit_detail_enf_undo_today_only)
-
-                UndoPolicy.NONE -> stringResource(Res.string.habit_detail_enf_undo_disabled)
-            },
-        ),
-        EnforcementRow(
-            label = stringResource(Res.string.habit_detail_enf_row_snoozes),
-            value = when (val max: Int? = maxSnoozesPerDay) {
-                null -> stringResource(Res.string.habit_detail_enf_snoozes_unlimited)
-
-                else -> stringResource(
-                    Res.string.habit_detail_enf_snoozes_used,
-                    snoozesUsedToday,
-                    max
-                )
-            },
-        ),
-        EnforcementRow(
-            label = stringResource(Res.string.habit_detail_enf_row_skips),
-            value = stringResource(Res.string.habit_detail_enf_skips_this_week, skipsThisWeek),
-        ),
-        EnforcementRow(
-            label = stringResource(Res.string.habit_detail_enf_row_consecutive),
-            value = when (val max: Int? = maxConsecutiveSkips) {
-                null -> stringResource(Res.string.habit_detail_enf_consecutive_unlimited)
-
-                else -> stringResource(
-                    Res.string.habit_detail_enf_consecutive_of_max,
-                    currentConsecutiveSkips,
-                    max
-                )
-            },
-            valueColor = if (isLocked) colors.suspend else colors.onSurface,
-        ),
-    )
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .border(width = 1.dp, color = ruleColor, shape = RoundedCornerShape(4.dp))
-            .background(color = colors.surface, shape = RoundedCornerShape(4.dp)),
+            .border(width = 1.dp, color = ruleColor, shape = shape)
+            .background(color = colors.surface, shape = shape)
     ) {
-        rows.forEachIndexed { index, row ->
-            EnforcementRowLine(row = row)
-            if (index != rows.lastIndex) {
-                Spacer(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(ruleColor)
-                )
-            }
-        }
+        EnforcementRow(
+            label = stringResource(Res.string.habit_detail_enf_row_strictness),
+            value = strictnessLabel(strictnessPreset)
+        )
+        EnforcementDivider(ruleColor)
+        EnforcementRow(
+            label = stringResource(Res.string.habit_detail_enf_row_undo),
+            value = undoLabel(undoPolicy)
+        )
+        EnforcementDivider(ruleColor)
+        EnforcementRow(
+            label = stringResource(Res.string.habit_detail_enf_row_snoozes),
+            value = snoozesLabel(snoozesUsedToday, maxSnoozesPerDay)
+        )
+        EnforcementDivider(ruleColor)
+        EnforcementRow(
+            label = stringResource(Res.string.habit_detail_enf_row_skips),
+            value = stringResource(Res.string.habit_detail_enf_skips_this_week, skipsThisWeek)
+        )
+        EnforcementDivider(ruleColor)
+        EnforcementRow(
+            label = stringResource(Res.string.habit_detail_enf_row_consecutive),
+            value = consecutiveLabel(currentConsecutiveSkips, maxConsecutiveSkips),
+            valueColor = if (isLocked) colors.suspend else colors.onSurface
+        )
     }
 }
 
-private data class EnforcementRow(
-    val label: String,
-    val value: String,
-    val valueColor: Color? = null,
-)
+@Composable
+private fun strictnessLabel(preset: StrictnessPreset?): String = when (preset) {
+    StrictnessPreset.FLEXIBLE -> stringResource(Res.string.habit_detail_enf_strictness_flexible)
+    StrictnessPreset.BALANCED -> stringResource(Res.string.habit_detail_enf_strictness_balanced)
+    StrictnessPreset.UNWAVERING -> stringResource(Res.string.habit_detail_enf_strictness_unwavering)
+    null -> stringResource(Res.string.habit_detail_enf_strictness_custom)
+}
 
 @Composable
-private fun EnforcementRowLine(row: EnforcementRow, modifier: Modifier = Modifier) {
+private fun undoLabel(policy: UndoPolicy): String = when (policy) {
+    UndoPolicy.ALL_HISTORY -> stringResource(Res.string.habit_detail_enf_undo_all_history)
+    UndoPolicy.TODAY_ONLY -> stringResource(Res.string.habit_detail_enf_undo_today_only)
+    UndoPolicy.NONE -> stringResource(Res.string.habit_detail_enf_undo_disabled)
+}
+
+@Composable
+private fun snoozesLabel(used: Int, max: Int?): String = when (max) {
+    null -> stringResource(Res.string.habit_detail_enf_snoozes_unlimited)
+    else -> stringResource(Res.string.habit_detail_enf_snoozes_used, used, max)
+}
+
+@Composable
+private fun consecutiveLabel(current: Int, max: Int?): String = when (max) {
+    null -> stringResource(Res.string.habit_detail_enf_consecutive_unlimited)
+    else -> stringResource(Res.string.habit_detail_enf_consecutive_of_max, current, max)
+}
+
+@Composable
+private fun EnforcementRow(
+    label: String,
+    value: String,
+    valueColor: Color? = null,
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 14.dp, vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = row.label,
+            text = label,
             style = RiteAppTheme.typography.bodySmall,
-            color = RiteAppTheme.colors.onSurfaceMuted,
+            color = RiteAppTheme.colors.onSurfaceMuted
         )
         Text(
-            text = row.value,
+            text = value,
             style = RiteAppTheme.typography.titleMedium.copy(fontSize = 14.sp),
-            color = row.valueColor ?: RiteAppTheme.colors.onSurface,
+            color = valueColor ?: RiteAppTheme.colors.onSurface
         )
     }
+}
+
+@Composable
+private fun EnforcementDivider(color: Color) {
+    Spacer(
+        Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(color)
+    )
 }

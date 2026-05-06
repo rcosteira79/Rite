@@ -51,14 +51,14 @@ private val DAY_LABELS: List<Pair<DayOfWeek, String>> = listOf(
     DayOfWeek.THURSDAY to "",
     DayOfWeek.FRIDAY to "F",
     DayOfWeek.SATURDAY to "",
-    DayOfWeek.SUNDAY to "S",
+    DayOfWeek.SUNDAY to "S"
 )
 
 @Composable
 fun Tapestry(
     heatmapData: List<HeatmapDay>,
     weekRangeLabel: String,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
     val startDate: LocalDate = today.minus(DatePeriod(days = 90))
@@ -79,17 +79,17 @@ fun Tapestry(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom,
+                verticalAlignment = Alignment.Bottom
             ) {
                 Text(
                     text = stringResource(Res.string.habit_detail_heatmap_title),
                     style = RiteAppTheme.typography.eyebrow,
-                    color = RiteAppTheme.colors.onSurfaceMuted,
+                    color = RiteAppTheme.colors.onSurfaceMuted
                 )
                 Text(
                     text = weekRangeLabel,
                     style = RiteAppTheme.typography.eyebrow,
-                    color = RiteAppTheme.colors.onSurfaceSubtle,
+                    color = RiteAppTheme.colors.onSurfaceSubtle
                 )
             }
 
@@ -101,13 +101,13 @@ fun Tapestry(
                     DAY_LABELS.forEach { (_, label) ->
                         Box(
                             modifier = Modifier.size(width = DAY_LABEL_WIDTH, height = cellSize),
-                            contentAlignment = Alignment.CenterStart,
+                            contentAlignment = Alignment.CenterStart
                         ) {
                             if (label.isNotEmpty()) {
                                 Text(
                                     text = label,
                                     style = RiteAppTheme.typography.labelSmall,
-                                    color = RiteAppTheme.colors.onSurfaceVariant,
+                                    color = RiteAppTheme.colors.onSurfaceVariant
                                 )
                             }
                         }
@@ -126,7 +126,7 @@ fun Tapestry(
                                 } else {
                                     TapestryCell(
                                         day = dataByDate[date.toString()],
-                                        size = cellSize,
+                                        size = cellSize
                                     )
                                 }
                             }
@@ -159,7 +159,7 @@ private fun TapestryCell(day: HeatmapDay?, size: Dp, modifier: Modifier = Modifi
     Box(
         modifier = modifier
             .size(size)
-            .background(color = color, shape = RoundedCornerShape(CELL_CORNER)),
+            .background(color = color, shape = RoundedCornerShape(CELL_CORNER))
     )
 }
 
@@ -169,32 +169,32 @@ private fun TapestryLegend(cellSize: Dp, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         TapestryLegendItem(
             color = colorScheme.dayPerfect,
             label = stringResource(Res.string.habit_detail_heatmap_perfect),
-            size = cellSize,
+            size = cellSize
         )
         TapestryLegendItem(
             color = colorScheme.dayBestEffort,
             label = stringResource(Res.string.habit_detail_heatmap_best_effort),
-            size = cellSize,
+            size = cellSize
         )
         TapestryLegendItem(
             color = colorScheme.dayPartial,
             label = stringResource(Res.string.habit_detail_heatmap_partial),
-            size = cellSize,
+            size = cellSize
         )
         TapestryLegendItem(
             color = colorScheme.dayFailed,
             label = stringResource(Res.string.habit_detail_heatmap_failed),
-            size = cellSize,
+            size = cellSize
         )
         TapestryLegendItem(
             color = colorScheme.daySkipped,
             label = stringResource(Res.string.habit_detail_heatmap_skipped),
-            size = cellSize,
+            size = cellSize
         )
     }
 }
@@ -204,22 +204,22 @@ private fun TapestryLegendItem(
     color: androidx.compose.ui.graphics.Color,
     label: String,
     size: Dp,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Box(
             modifier = Modifier
                 .size(size)
-                .background(color = color, shape = RoundedCornerShape(CELL_CORNER)),
+                .background(color = color, shape = RoundedCornerShape(CELL_CORNER))
         )
         Text(
             text = label,
             style = RiteAppTheme.typography.labelSmall,
-            color = RiteAppTheme.colors.onSurfaceVariant,
+            color = RiteAppTheme.colors.onSurfaceVariant
         )
     }
 }

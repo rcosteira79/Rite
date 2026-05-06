@@ -28,7 +28,7 @@ data class HabitDetailUiModel(
     val undoPolicy: UndoPolicy,
     val snoozesUsedToday: Int,
     val maxSnoozesPerDay: Int?,
-    val skipsThisWeek: Int,
+    val skipsThisWeek: Int
 ) {
     val skipsRemaining: Int? = maxConsecutiveSkips?.let { max ->
         (max - currentConsecutiveSkips).coerceAtLeast(0)

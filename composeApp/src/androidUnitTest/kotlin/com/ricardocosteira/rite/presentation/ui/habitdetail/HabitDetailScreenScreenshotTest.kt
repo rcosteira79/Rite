@@ -58,18 +58,18 @@ class HabitDetailScreenScreenshotTest {
         undoPolicy = UndoPolicy.TODAY_ONLY,
         snoozesUsedToday = 1,
         maxSnoozesPerDay = 3,
-        skipsThisWeek = 2,
+        skipsThisWeek = 2
     )
 
     private val binaryCompleted = binaryPending.copy(
         status = HabitStatus.COMPLETED,
         progressPercentage = 1f,
-        completedValue = 1,
+        completedValue = 1
     )
 
     private val binaryFailed = binaryPending.copy(
         status = HabitStatus.FAILED,
-        progressPercentage = 0f,
+        progressPercentage = 0f
     )
 
     private val quantInProgress = HabitDetailUiModel(
@@ -95,7 +95,7 @@ class HabitDetailScreenScreenshotTest {
         undoPolicy = UndoPolicy.TODAY_ONLY,
         snoozesUsedToday = 0,
         maxSnoozesPerDay = 3,
-        skipsThisWeek = 1,
+        skipsThisWeek = 1
     )
 
     private val quantGoalReached = quantInProgress.copy(
@@ -103,14 +103,14 @@ class HabitDetailScreenScreenshotTest {
         completedValue = 2000,
         progressPercentage = 1f,
         isQuantitativeComplete = true,
-        status = HabitStatus.PENDING,
+        status = HabitStatus.PENDING
     )
 
     private val quantSkipLocked = quantInProgress.copy(
         currentConsecutiveSkips = 2,
         maxConsecutiveSkips = 2,
         strictnessPreset = StrictnessPreset.BALANCED,
-        status = HabitStatus.PENDING,
+        status = HabitStatus.PENDING
     )
 
     // ─── Sample heatmap (90 days, deterministic pattern) ─────────────────────
@@ -126,7 +126,7 @@ class HabitDetailScreenScreenshotTest {
                     state = HabitDetailState(
                         habit = habit,
                         heatmapData = sampleHeatmap,
-                        isLoading = false,
+                        isLoading = false
                     ),
                     onBackClick = {},
                     onComplete = {},
@@ -137,7 +137,7 @@ class HabitDetailScreenScreenshotTest {
                     onUndoIncrement = {},
                     onEditHabit = {},
                     onArchiveHabit = {},
-                    onDeleteHabit = {},
+                    onDeleteHabit = {}
                 )
             }
         }

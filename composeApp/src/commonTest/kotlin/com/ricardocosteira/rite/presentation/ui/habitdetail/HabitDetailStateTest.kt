@@ -36,7 +36,7 @@ class HabitDetailStateTest {
         undoPolicy = UndoPolicy.TODAY_ONLY,
         snoozesUsedToday = 0,
         maxSnoozesPerDay = 3,
-        skipsThisWeek = 0,
+        skipsThisWeek = 0
     )
 
     @Test
@@ -130,7 +130,7 @@ class HabitDetailStateTest {
             undoPolicy = UndoPolicy.TODAY_ONLY,
             snoozesUsedToday = 1,
             maxSnoozesPerDay = 3,
-            skipsThisWeek = 2,
+            skipsThisWeek = 2
         )
         assertEquals(StrictnessPreset.BALANCED, model.strictnessPreset)
         assertEquals(UndoPolicy.TODAY_ONLY, model.undoPolicy)

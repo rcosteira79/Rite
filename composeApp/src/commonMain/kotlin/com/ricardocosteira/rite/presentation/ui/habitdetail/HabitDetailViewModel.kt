@@ -50,7 +50,7 @@ class HabitDetailViewModel(
     private val undoHabit: UndoHabit,
     private val undoLastIncrement: UndoLastIncrement,
     private val clock: Clock = Clock.System,
-    @Assisted private val instanceId: String,
+    @Assisted private val instanceId: String
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HabitDetailState())
@@ -111,7 +111,7 @@ class HabitDetailViewModel(
                     undoPolicy = user.undoPolicy,
                     maxSnoozesPerHabitPerDay = user.maxSnoozesPerHabitPerDay,
                     maxConsecutiveSkips = user.maxConsecutiveSkips,
-                    maxSnoozeDurationMinutes = user.maxSnoozeDurationMinutes,
+                    maxSnoozeDurationMinutes = user.maxSnoozeDurationMinutes
                 )
             )
             val snoozesUsedToday: Int =
@@ -141,7 +141,7 @@ class HabitDetailViewModel(
                 undoPolicy = user.undoPolicy,
                 snoozesUsedToday = snoozesUsedToday,
                 maxSnoozesPerDay = user.maxSnoozesPerHabitPerDay,
-                skipsThisWeek = skipsThisWeek,
+                skipsThisWeek = skipsThisWeek
             )
 
             _state.update {

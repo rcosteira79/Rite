@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -42,11 +44,10 @@ fun StatTileRow(
     currentStreak: Int,
     longestStreak: Int,
     habitScore: Int,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val ruleColor = RiteAppTheme.colors.outline
-    val ruleThicknessPx: Float =
-        with(androidx.compose.ui.platform.LocalDensity.current) { 1.dp.toPx() }
+    val ruleThicknessPx: Float = with(LocalDensity.current) { 1.dp.toPx() }
 
     Row(
         modifier = modifier
@@ -55,12 +56,12 @@ fun StatTileRow(
                 drawRect(
                     color = ruleColor,
                     topLeft = Offset(0f, 0f),
-                    size = androidx.compose.ui.geometry.Size(size.width, ruleThicknessPx),
+                    size = Size(size.width, ruleThicknessPx)
                 )
                 drawRect(
                     color = ruleColor,
                     topLeft = Offset(0f, size.height - ruleThicknessPx),
-                    size = androidx.compose.ui.geometry.Size(size.width, ruleThicknessPx),
+                    size = Size(size.width, ruleThicknessPx)
                 )
             }
     ) {
@@ -74,9 +75,9 @@ fun StatTileRow(
                     drawRect(
                         color = ruleColor,
                         topLeft = Offset(size.width - ruleThicknessPx, 0f),
-                        size = androidx.compose.ui.geometry.Size(ruleThicknessPx, size.height),
+                        size = Size(ruleThicknessPx, size.height)
                     )
-                },
+                }
         )
         StatTile(
             label = stringResource(Res.string.habit_detail_stat_longest_streak),
@@ -88,26 +89,26 @@ fun StatTileRow(
                     drawRect(
                         color = ruleColor,
                         topLeft = Offset(size.width - ruleThicknessPx, 0f),
-                        size = androidx.compose.ui.geometry.Size(ruleThicknessPx, size.height),
+                        size = Size(ruleThicknessPx, size.height)
                     )
-                },
+                }
         )
         StatTile(
             label = stringResource(Res.string.habit_detail_stat_habit_score),
             value = habitScore.toString(),
             unit = "/100",
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f)
         )
     }
 }
 
 @Composable
-private fun StatTile(label: String, value: String, unit: String, modifier: Modifier = Modifier,) {
+private fun StatTile(label: String, value: String, unit: String, modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(horizontal = 14.dp, vertical = 14.dp)) {
         Text(
             text = label.uppercase(),
             style = RiteAppTheme.typography.eyebrow,
-            color = RiteAppTheme.colors.onSurfaceMuted,
+            color = RiteAppTheme.colors.onSurfaceMuted
         )
         Spacer(Modifier.height(6.dp))
         Text(
@@ -117,7 +118,7 @@ private fun StatTile(label: String, value: String, unit: String, modifier: Modif
                     SpanStyle(
                         fontFamily = RiteAppTheme.typography.mono.fontFamily,
                         fontSize = 11.sp,
-                        color = RiteAppTheme.colors.onSurfaceMuted,
+                        color = RiteAppTheme.colors.onSurfaceMuted
                     )
                 ) {
                     append(" ")
@@ -127,9 +128,9 @@ private fun StatTile(label: String, value: String, unit: String, modifier: Modif
             style = RiteAppTheme.typography.displaySmall.copy(
                 fontSize = 30.sp,
                 lineHeight = 30.sp,
-                letterSpacing = (-0.6).sp,
+                letterSpacing = (-0.6).sp
             ),
-            color = RiteAppTheme.colors.onSurface,
+            color = RiteAppTheme.colors.onSurface
         )
     }
 }

@@ -48,13 +48,13 @@ class HabitDetailActionScreenshotTest {
     @Test fun quant_pending_goal_reached() = render(
         HabitType.QUANTITATIVE,
         HabitStatus.PENDING,
-        currentProgress = 2000,
+        currentProgress = 2000
     )
 
     @Test fun quant_completed() = render(
         HabitType.QUANTITATIVE,
         HabitStatus.COMPLETED,
-        currentProgress = 2000,
+        currentProgress = 2000
     )
 
     @Test fun quant_skipped() = render(HabitType.QUANTITATIVE, HabitStatus.SKIPPED)
@@ -69,7 +69,7 @@ class HabitDetailActionScreenshotTest {
         type: HabitType,
         status: HabitStatus,
         currentProgress: Int = 0,
-        skipLocked: Boolean = false,
+        skipLocked: Boolean = false
     ) {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = false) {
@@ -81,7 +81,7 @@ class HabitDetailActionScreenshotTest {
                     isSkipLocked = skipLocked,
                     onComplete = {}, onIncrementProgress = {}, onCustomProgress = {},
                     onSkip = {}, onUndo = {}, onUndoIncrement = {},
-                    modifier = Modifier.padding(horizontal = 22.dp),
+                    modifier = Modifier.padding(horizontal = 22.dp)
                 )
             }
         }

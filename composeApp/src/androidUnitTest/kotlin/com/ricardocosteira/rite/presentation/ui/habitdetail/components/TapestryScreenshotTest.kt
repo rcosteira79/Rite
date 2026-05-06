@@ -43,7 +43,7 @@ class TapestryScreenshotTest {
                 Tapestry(
                     heatmapData = data,
                     weekRangeLabel = "W05 — W16",
-                    modifier = Modifier.padding(horizontal = 22.dp),
+                    modifier = Modifier.padding(horizontal = 22.dp)
                 )
             }
         }

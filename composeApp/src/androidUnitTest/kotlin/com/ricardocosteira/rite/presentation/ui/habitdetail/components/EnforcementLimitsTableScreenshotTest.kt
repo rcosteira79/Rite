@@ -73,7 +73,7 @@ class EnforcementLimitsTableScreenshotTest {
         skipsWeek: Int,
         consecUsed: Int,
         consecMax: Int?,
-        darkTheme: Boolean,
+        darkTheme: Boolean
     ) {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = darkTheme) {
@@ -85,7 +85,7 @@ class EnforcementLimitsTableScreenshotTest {
                     skipsThisWeek = skipsWeek,
                     currentConsecutiveSkips = consecUsed,
                     maxConsecutiveSkips = consecMax,
-                    modifier = Modifier.padding(horizontal = 22.dp),
+                    modifier = Modifier.padding(horizontal = 22.dp)
                 )
             }
         }

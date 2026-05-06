@@ -11,7 +11,7 @@ import rite.composeapp.generated.resources.habit_detail_category_binary
 import rite.composeapp.generated.resources.habit_detail_category_quantitative
 
 @Composable
-fun CategoryEyebrow(type: HabitType, modifier: Modifier = Modifier,) {
+fun CategoryEyebrow(type: HabitType, modifier: Modifier = Modifier) {
     val text: String = when (type) {
         HabitType.BINARY -> stringResource(Res.string.habit_detail_category_binary)
         HabitType.QUANTITATIVE -> stringResource(Res.string.habit_detail_category_quantitative)
@@ -20,6 +20,6 @@ fun CategoryEyebrow(type: HabitType, modifier: Modifier = Modifier,) {
         text = text,
         style = RiteAppTheme.typography.eyebrow,
         color = RiteAppTheme.colors.onSurfaceMuted,
-        modifier = modifier,
+        modifier = modifier
     )
 }
