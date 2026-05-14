@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.components.RiteButton
+import com.ricardocosteira.rite.presentation.ui.components.StepperButton
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
@@ -172,7 +173,7 @@ private fun QuantitativeBlock(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    StepperIconButton(text = "−", onClick = onUndoIncrement, enabled = hasProgress)
+                    StepperButton(text = "−", onClick = onUndoIncrement, enabled = hasProgress)
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "$currentProgress",
@@ -187,7 +188,7 @@ private fun QuantitativeBlock(
                             color = RiteAppTheme.colors.onSurfaceVariant
                         )
                     }
-                    StepperIconButton(text = "+", onClick = onIncrementProgress)
+                    StepperButton(text = "+", onClick = onIncrementProgress)
                 }
             }
         }
@@ -200,36 +201,6 @@ private fun QuantitativeBlock(
                         onClick = onCustomProgress,
                         icon = Icons.Default.Edit,
                         contentDescription = stringResource(Res.string.habit_detail_action_custom)
-                    )
-                }
-            )
-        }
-    }
-}
-
-@Composable
-private fun StepperIconButton(
-    text: String,
-    onClick: () -> Unit,
-    enabled: Boolean = true,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        onClick = onClick,
-        shape = RiteAppTheme.shapes.lg,
-        color = RiteAppTheme.colors.surface,
-        enabled = enabled,
-        modifier = modifier.size(STEPPER_BUTTON_SIZE)
-    ) {
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-            Text(
-                text = text,
-                style = RiteAppTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                color = if (enabled) {
-                    RiteAppTheme.colors.onSurface
-                } else {
-                    RiteAppTheme.colors.onSurface.copy(
-                        alpha = 0.38f
                     )
                 }
             )

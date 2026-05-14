@@ -31,10 +31,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 
-private val MainButtonSize = 48.dp
 private val FineButtonSize = 32.dp
 private val CardCorner = 16.dp
-private val MainButtonCorner = 12.dp
 private val FineButtonCorner = 8.dp
 private const val MIN_VALUE = 1
 private const val DISABLED_CONTENT_ALPHA = 0.38f
@@ -125,43 +123,6 @@ fun QuantityStepper(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun StepperButton(
-    text: String,
-    onClick: () -> Unit,
-    enabled: Boolean = true,
-    modifier: Modifier = Modifier
-) {
-    val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
-    val isPressed: Boolean by interactionSource.collectIsPressedAsState()
-    val elevation: Dp by animateDpAsState(
-        targetValue = if (isPressed) 6.dp else 2.dp,
-        label = "stepperButtonElevation"
-    )
-
-    Surface(
-        onClick = onClick,
-        shape = RoundedCornerShape(MainButtonCorner),
-        color = RiteAppTheme.colors.surface,
-        shadowElevation = elevation,
-        enabled = enabled,
-        interactionSource = interactionSource,
-        modifier = modifier.size(MainButtonSize)
-    ) {
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-            Text(
-                text = text,
-                style = RiteAppTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                color = if (enabled) {
-                    RiteAppTheme.colors.onSurface
-                } else {
-                    RiteAppTheme.colors.onSurface.copy(alpha = DISABLED_CONTENT_ALPHA)
-                }
-            )
         }
     }
 }
