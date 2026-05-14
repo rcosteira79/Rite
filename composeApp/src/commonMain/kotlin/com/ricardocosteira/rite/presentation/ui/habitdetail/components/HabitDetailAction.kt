@@ -1,5 +1,12 @@
 package com.ricardocosteira.rite.presentation.ui.habitdetail.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -120,21 +127,32 @@ private fun BinaryBlock(
     onSkip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        if (isResolved && isCompletedOrSkipped) {
-            RiteButton(onClick = onUndo) {
-                Text(stringResource(Res.string.habit_detail_action_undo))
-            }
-        } else {
-            RiteButton(onClick = onComplete, enabled = !isResolved) {
-                Text(stringResource(Res.string.habit_detail_action_complete))
+    Column(modifier = modifier.fillMaxWidth()) {
+        AnimatedContent(
+            targetState = isResolved && isCompletedOrSkipped,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            modifier = Modifier.fillMaxWidth(),
+            label = "binaryMainAction"
+        ) { showUndo ->
+            if (showUndo) {
+                RiteButton(onClick = onUndo) {
+                    Text(stringResource(Res.string.habit_detail_action_undo))
+                }
+            } else {
+                RiteButton(onClick = onComplete, enabled = !isResolved) {
+                    Text(stringResource(Res.string.habit_detail_action_complete))
+                }
             }
         }
-        if (!isResolved) {
-            SkipRow(onSkip = onSkip, isSkipLocked = isSkipLocked)
+        AnimatedVisibility(
+            visible = !isResolved,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            Column {
+                Spacer(Modifier.height(8.dp))
+                SkipRow(onSkip = onSkip, isSkipLocked = isSkipLocked)
+            }
         }
     }
 }
@@ -154,56 +172,71 @@ private fun QuantitativeBlock(
     modifier: Modifier = Modifier
 ) {
     val hasProgress: Boolean = currentProgress > 0
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        if (isResolved && isCompletedOrSkipped) {
-            RiteButton(onClick = onUndo) {
-                Text(stringResource(Res.string.habit_detail_action_undo))
-            }
-        } else {
-            Surface(
-                shape = RiteAppTheme.shapes.xl,
-                color = RiteAppTheme.colors.surfaceContainerLow,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+    Column(modifier = modifier.fillMaxWidth()) {
+        AnimatedContent(
+            targetState = isResolved && isCompletedOrSkipped,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            modifier = Modifier.fillMaxWidth(),
+            label = "quantMainAction"
+        ) { showUndo ->
+            if (showUndo) {
+                RiteButton(onClick = onUndo) {
+                    Text(stringResource(Res.string.habit_detail_action_undo))
+                }
+            } else {
+                Surface(
+                    shape = RiteAppTheme.shapes.xl,
+                    color = RiteAppTheme.colors.surfaceContainerLow,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    StepperButton(text = "−", onClick = onUndoIncrement, enabled = hasProgress)
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "$currentProgress",
-                            style = RiteAppTheme.typography.headlineMedium.copy(
-                                fontWeight = FontWeight.ExtraBold
-                            ),
-                            color = RiteAppTheme.colors.onSurface
-                        )
-                        Text(
-                            text = unit?.uppercase() ?: "",
-                            style = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 0.5.sp),
-                            color = RiteAppTheme.colors.onSurfaceVariant
-                        )
+                    Row(
+                        modifier = Modifier.padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        StepperButton(text = "−", onClick = onUndoIncrement, enabled = hasProgress)
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "$currentProgress",
+                                style = RiteAppTheme.typography.headlineMedium.copy(
+                                    fontWeight = FontWeight.ExtraBold
+                                ),
+                                color = RiteAppTheme.colors.onSurface
+                            )
+                            Text(
+                                text = unit?.uppercase() ?: "",
+                                style = RiteAppTheme.typography.labelSmall.copy(
+                                    letterSpacing = 0.5.sp
+                                ),
+                                color = RiteAppTheme.colors.onSurfaceVariant
+                            )
+                        }
+                        StepperButton(text = "+", onClick = onIncrementProgress)
                     }
-                    StepperButton(text = "+", onClick = onIncrementProgress)
                 }
             }
         }
-        if (!isResolved) {
-            SkipRow(
-                onSkip = onSkip,
-                isSkipLocked = isSkipLocked,
-                trailingButton = {
-                    IconSurface(
-                        onClick = onCustomProgress,
-                        icon = Icons.Default.Edit,
-                        contentDescription = stringResource(Res.string.habit_detail_action_custom)
-                    )
-                }
-            )
+        AnimatedVisibility(
+            visible = !isResolved,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            Column {
+                Spacer(Modifier.height(8.dp))
+                SkipRow(
+                    onSkip = onSkip,
+                    isSkipLocked = isSkipLocked,
+                    trailingButton = {
+                        IconSurface(
+                            onClick = onCustomProgress,
+                            icon = Icons.Default.Edit,
+                            contentDescription = stringResource(
+                                Res.string.habit_detail_action_custom
+                            )
+                        )
+                    }
+                )
+            }
         }
     }
 }
