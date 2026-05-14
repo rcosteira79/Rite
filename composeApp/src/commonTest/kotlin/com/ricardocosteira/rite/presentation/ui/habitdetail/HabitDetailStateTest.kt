@@ -2,6 +2,9 @@ package com.ricardocosteira.rite.presentation.ui.habitdetail
 
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
+import com.ricardocosteira.rite.domain.models.StrictnessPreset
+import com.ricardocosteira.rite.domain.models.UndoPolicy
+import com.ricardocosteira.rite.presentation.ui.habitdetail.models.HabitDetailUiModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -28,7 +31,12 @@ class HabitDetailStateTest {
         longestStreak = 10,
         habitScore = 80,
         maxConsecutiveSkips = null,
-        currentConsecutiveSkips = 0
+        currentConsecutiveSkips = 0,
+        strictnessPreset = StrictnessPreset.BALANCED,
+        undoPolicy = UndoPolicy.TODAY_ONLY,
+        snoozesUsedToday = 0,
+        maxSnoozesPerDay = 3,
+        skipsThisWeek = 0
     )
 
     @Test
@@ -95,5 +103,39 @@ class HabitDetailStateTest {
 
         assertTrue(model.isFailed)
         assertTrue(model.isResolved)
+    }
+
+    @Test
+    fun `balanced user model exposes strictness preset and weekly skip count`() {
+        val model = HabitDetailUiModel(
+            habitId = "h1",
+            instanceId = "i1",
+            name = "Read",
+            description = null,
+            type = HabitType.BINARY,
+            unit = null,
+            defaultIncrement = 1,
+            status = HabitStatus.PENDING,
+            currentProgress = 0,
+            targetValue = null,
+            completedValue = null,
+            progressPercentage = 0f,
+            isQuantitativeComplete = false,
+            currentStreak = 5,
+            longestStreak = 10,
+            habitScore = 80,
+            maxConsecutiveSkips = null,
+            currentConsecutiveSkips = 0,
+            strictnessPreset = StrictnessPreset.BALANCED,
+            undoPolicy = UndoPolicy.TODAY_ONLY,
+            snoozesUsedToday = 1,
+            maxSnoozesPerDay = 3,
+            skipsThisWeek = 2
+        )
+        assertEquals(StrictnessPreset.BALANCED, model.strictnessPreset)
+        assertEquals(UndoPolicy.TODAY_ONLY, model.undoPolicy)
+        assertEquals(1, model.snoozesUsedToday)
+        assertEquals(3, model.maxSnoozesPerDay)
+        assertEquals(2, model.skipsThisWeek)
     }
 }

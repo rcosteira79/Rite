@@ -6,14 +6,18 @@ import com.ricardocosteira.rite.domain.models.CompletionSource
 import com.ricardocosteira.rite.domain.models.HabitInstance
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
+import com.ricardocosteira.rite.domain.models.StrictnessPreset
+import com.ricardocosteira.rite.domain.models.UserStrictnessSettings
 import com.ricardocosteira.rite.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.rite.domain.repositories.HabitRepository
+import com.ricardocosteira.rite.domain.repositories.SnoozeRepository
 import com.ricardocosteira.rite.domain.repositories.UserRepository
 import com.ricardocosteira.rite.domain.usecases.CompleteHabit
 import com.ricardocosteira.rite.domain.usecases.SkipHabit
 import com.ricardocosteira.rite.domain.usecases.UndoHabit
 import com.ricardocosteira.rite.domain.usecases.UndoLastIncrement
-import com.ricardocosteira.rite.util.todayIn
+import com.ricardocosteira.rite.presentation.ui.habitdetail.models.HabitDetailUiModel
+import com.ricardocosteira.rite.presentation.ui.habitdetail.models.HeatmapDay
 import kotlin.time.Clock
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,6 +32,8 @@ import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
@@ -38,10 +44,12 @@ class HabitDetailViewModel(
     private val habitRepository: HabitRepository,
     private val habitInstanceRepository: HabitInstanceRepository,
     private val userRepository: UserRepository,
+    private val snoozeRepository: SnoozeRepository,
     private val completeHabit: CompleteHabit,
     private val skipHabit: SkipHabit,
     private val undoHabit: UndoHabit,
     private val undoLastIncrement: UndoLastIncrement,
+    private val clock: Clock = Clock.System,
     @Assisted private val instanceId: String
 ) : ViewModel() {
 
@@ -73,9 +81,14 @@ class HabitDetailViewModel(
                 return@launch
             }
             val user = userRepository.getUser()
-            val maxSkips: Int? = user?.maxConsecutiveSkips
+            if (user == null) {
+                _state.update { it.copy(isLoading = false) }
+                return@launch
+            }
+            val maxSkips: Int? = user.maxConsecutiveSkips
 
-            val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
+            val timezone: TimeZone = user.timezone
+            val today: LocalDate = clock.now().toLocalDateTime(timezone).date
             val startDate: LocalDate = today.minus(DatePeriod(days = HEATMAP_DAYS))
             val allInstances: List<HabitInstance> =
                 habitInstanceRepository.getInstancesForHabit(instance.habitId)
@@ -92,6 +105,18 @@ class HabitDetailViewModel(
                 .toImmutableList()
 
             val consecutiveSkips: Int = calculateConsecutiveSkips(allInstances)
+
+            val strictnessPreset: StrictnessPreset? = StrictnessPreset.fromSettings(
+                UserStrictnessSettings(
+                    undoPolicy = user.undoPolicy,
+                    maxSnoozesPerHabitPerDay = user.maxSnoozesPerHabitPerDay,
+                    maxConsecutiveSkips = user.maxConsecutiveSkips,
+                    maxSnoozeDurationMinutes = user.maxSnoozeDurationMinutes
+                )
+            )
+            val snoozesUsedToday: Int =
+                snoozeRepository.getSnoozeState(instanceId)?.snoozeCount ?: 0
+            val skipsThisWeek: Int = countSkipsInIsoWeek(allInstances, today)
 
             val uiModel = HabitDetailUiModel(
                 habitId = habit.id,
@@ -111,7 +136,12 @@ class HabitDetailViewModel(
                 longestStreak = habit.longestStreak,
                 habitScore = habit.calculateScore().percentage,
                 maxConsecutiveSkips = maxSkips,
-                currentConsecutiveSkips = consecutiveSkips
+                currentConsecutiveSkips = consecutiveSkips,
+                strictnessPreset = strictnessPreset,
+                undoPolicy = user.undoPolicy,
+                snoozesUsedToday = snoozesUsedToday,
+                maxSnoozesPerDay = user.maxSnoozesPerHabitPerDay,
+                skipsThisWeek = skipsThisWeek
             )
 
             _state.update {
@@ -211,5 +241,13 @@ class HabitDetailViewModel(
             }
         }
         return count
+    }
+
+    private fun countSkipsInIsoWeek(instances: List<HabitInstance>, today: LocalDate): Int {
+        // MONDAY=0 in kotlinx-datetime DayOfWeek ordinal
+        val mondayOffset: Int = today.dayOfWeek.ordinal
+        val monday: LocalDate = today.minus(DatePeriod(days = mondayOffset))
+        val sunday: LocalDate = monday.plus(DatePeriod(days = 6))
+        return instances.count { it.status == HabitStatus.SKIPPED && it.date in monday..sunday }
     }
 }
