@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="philosophy_heading">Show up\nfor yourself.</string>
-    <string name="philosophy_body">Turn your goals into daily rituals — even on the hard days.\n\nYou set the standard. Rite helps you hold it.</string>
+    <string name="philosophy_strap_label">Philosophy</string>
+    <string name="philosophy_heading_first">Show up for</string>
+    <string name="philosophy_heading_accent">yourself.</string>
+    <string name="philosophy_body_intro">Rite is a habit tracker reframed as a quiet instrument. No streaks to guilt you, no badges to collect, no feeds to scroll — only the habits you choose, held to the standard you set.</string>
+    <string name="philosophy_body_close">You decide how strict it should be. Rite holds you to it.</string>
+
+    <string name="philosophy_promise_local_title">Local-only</string>
+    <string name="philosophy_promise_local_subtitle">Your data stays on this device.</string>
+    <string name="philosophy_promise_undistracted_title">Undistracted</string>
+    <string name="philosophy_promise_undistracted_subtitle">No social layer, no accounts, no sync-by-default.</string>
+    <string name="philosophy_promise_open_title">Open-source</string>
+    <string name="philosophy_promise_open_subtitle">Free, transparent, and yours, forever.</string>
+
     <string name="philosophy_cta_accept">I'm Ready</string>
 </resources>
