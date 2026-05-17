@@ -62,11 +62,11 @@ fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Bool
             modifier = Modifier.semantics { heading() }
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(22.dp))
 
         Text(
             text = stringResource(Res.string.notifications_body),
-            style = RiteAppTheme.typography.bodyMedium,
+            style = RiteAppTheme.typography.bodyLarge,
             color = RiteAppTheme.colors.onSurfaceVariant
         )
 

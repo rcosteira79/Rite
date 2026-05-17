@@ -75,11 +75,11 @@ fun StrictnessStep(
             modifier = Modifier.semantics { heading() }
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(22.dp))
 
         Text(
             text = stringResource(Res.string.strictness_subtext),
-            style = RiteAppTheme.typography.bodyMedium,
+            style = RiteAppTheme.typography.bodyLarge,
             color = RiteAppTheme.colors.onSurfaceVariant
         )
 

@@ -90,11 +90,11 @@ fun FirstHabitStep(
             modifier = Modifier.semantics { heading() }
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(22.dp))
 
         Text(
             text = stringResource(Res.string.first_habit_subtext),
-            style = RiteAppTheme.typography.bodyMedium,
+            style = RiteAppTheme.typography.bodyLarge,
             color = RiteAppTheme.colors.onSurfaceVariant
         )
 
