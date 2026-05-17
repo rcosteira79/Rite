@@ -1,7 +1,8 @@
 package com.ricardocosteira.rite.presentation.ui.onboarding
 
 import com.ricardocosteira.rite.domain.models.HabitType
-import kotlinx.datetime.DayOfWeek
+
+enum class OnboardingScheduleKind { DAILY, WEEKLY }
 
 /** State for the onboarding flow. */
 data class OnboardingState(
@@ -10,7 +11,7 @@ data class OnboardingState(
     val habitType: HabitType = HabitType.BINARY,
     val targetValue: String = "",
     val unit: String = "",
-    val selectedDays: Set<DayOfWeek> = DayOfWeek.entries.toSet(),
+    val scheduleKind: OnboardingScheduleKind = OnboardingScheduleKind.DAILY,
     val isCreatingHabit: Boolean = false,
     val isApplyingPreset: Boolean = false,
     val error: String? = null,

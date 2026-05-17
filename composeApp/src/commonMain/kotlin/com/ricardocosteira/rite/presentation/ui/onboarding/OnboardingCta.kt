@@ -135,8 +135,7 @@ internal fun FirstHabitStepCta(
     reduceMotion: Boolean = false
 ) {
     val isEnabled = state.habitName.isNotBlank() &&
-        (state.habitType == HabitType.BINARY || state.targetValue.isNotBlank()) &&
-        state.selectedDays.isNotEmpty()
+        (state.habitType == HabitType.BINARY || state.targetValue.isNotBlank())
 
     CtaContainer(
         step = step,

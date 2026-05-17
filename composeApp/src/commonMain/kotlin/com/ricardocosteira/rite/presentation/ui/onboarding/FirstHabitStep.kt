@@ -5,71 +5,60 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.ShowChart
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitType
-import com.ricardocosteira.rite.presentation.ui.components.SchedulePicker
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
+import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
-import rite.composeapp.generated.resources.common_placeholder_habit_name
-import rite.composeapp.generated.resources.common_quantitative
-import rite.composeapp.generated.resources.first_habit_heading
+import rite.composeapp.generated.resources.first_habit_heading_accent
+import rite.composeapp.generated.resources.first_habit_heading_first
 import rite.composeapp.generated.resources.first_habit_label_name
+import rite.composeapp.generated.resources.first_habit_label_schedule
 import rite.composeapp.generated.resources.first_habit_label_target_value
+import rite.composeapp.generated.resources.first_habit_label_type
 import rite.composeapp.generated.resources.first_habit_label_unit
 import rite.composeapp.generated.resources.first_habit_placeholder_unit
+import rite.composeapp.generated.resources.first_habit_schedule_daily
+import rite.composeapp.generated.resources.first_habit_schedule_weekly
+import rite.composeapp.generated.resources.first_habit_strap_label
 import rite.composeapp.generated.resources.first_habit_subtext
 import rite.composeapp.generated.resources.first_habit_type_binary
 import rite.composeapp.generated.resources.first_habit_type_binary_description
+import rite.composeapp.generated.resources.first_habit_type_quantitative
 import rite.composeapp.generated.resources.first_habit_type_quantitative_description
-import kotlinx.datetime.DayOfWeek
-import org.jetbrains.compose.resources.stringResource
-
-private val OnboardingTextFieldShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
-
-private val HabitTypeCardIconSize = 26.dp
-
-@Composable
-private fun onboardingTextFieldColors(): TextFieldColors = TextFieldDefaults.colors(
-    focusedContainerColor = RiteAppTheme.colors.surfaceContainerHighest,
-    unfocusedContainerColor = RiteAppTheme.colors.surfaceContainerHighest,
-    focusedIndicatorColor = Color.Transparent,
-    unfocusedIndicatorColor = Color.Transparent,
-    disabledIndicatorColor = Color.Transparent
-)
 
 @Composable
 fun FirstHabitStep(
@@ -77,179 +66,240 @@ fun FirstHabitStep(
     habitType: HabitType,
     targetValue: String,
     unit: String,
-    selectedDays: Set<DayOfWeek>,
+    scheduleKind: OnboardingScheduleKind,
     onHabitNameChange: (String) -> Unit,
     onHabitTypeChange: (HabitType) -> Unit,
     onTargetValueChange: (String) -> Unit,
     onUnitChange: (String) -> Unit,
-    onSelectedDaysChange: (Set<DayOfWeek>) -> Unit,
+    onScheduleKindChange: (OnboardingScheduleKind) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isQuantitative = habitType == HabitType.QUANTITATIVE
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .padding(horizontal = 24.dp, vertical = 10.dp)
     ) {
-        Text(
-            text = stringResource(Res.string.first_habit_heading),
-            style = RiteAppTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold),
-            color = RiteAppTheme.colors.onSurface,
-            modifier = Modifier.semantics { heading() }
+        OnboardingStepStrap(
+            step = 3,
+            totalSteps = 4,
+            stepName = stringResource(Res.string.first_habit_strap_label)
         )
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        Box(
-            modifier = Modifier
-                .width(36.dp)
-                .height(3.dp)
-                .background(
-                    color = RiteAppTheme.colors.primary,
-                    shape = RoundedCornerShape(2.dp)
-                )
+        Text(
+            text = headingAnnotated(),
+            style = RiteAppTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Normal),
+            color = RiteAppTheme.colors.onSurface,
+            modifier = Modifier.semantics { heading() }
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         Text(
             text = stringResource(Res.string.first_habit_subtext),
-            style = RiteAppTheme.typography.bodyLarge,
-            color = RiteAppTheme.colors.onSurfaceVariant
+            style = RiteAppTheme.typography.bodySmall,
+            color = RiteAppTheme.colors.outline
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(18.dp))
 
-        TextField(
-            value = habitName,
-            onValueChange = onHabitNameChange,
-            label = { Text(stringResource(Res.string.first_habit_label_name)) },
-            placeholder = { Text(stringResource(Res.string.common_placeholder_habit_name)) },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-            modifier = Modifier.fillMaxWidth(),
-            shape = OnboardingTextFieldShape,
-            colors = onboardingTextFieldColors()
-        )
+        FieldGroup(label = stringResource(Res.string.first_habit_label_name)) {
+            TextField(
+                value = habitName,
+                onValueChange = onHabitNameChange,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(4.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = RiteAppTheme.colors.surface,
+                    unfocusedContainerColor = RiteAppTheme.colors.surface,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                )
+            )
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(18.dp))
 
-        HabitTypeCard(
-            icon = Icons.Outlined.CheckCircle,
-            label = stringResource(Res.string.first_habit_type_binary),
-            description = stringResource(Res.string.first_habit_type_binary_description),
-            isSelected = habitType == HabitType.BINARY,
-            onClick = { onHabitTypeChange(HabitType.BINARY) },
-            expandedContent = null
-        )
+        FieldGroup(label = stringResource(Res.string.first_habit_label_type)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                TypeCard(
+                    label = stringResource(Res.string.first_habit_type_binary),
+                    description = stringResource(Res.string.first_habit_type_binary_description),
+                    isSelected = !isQuantitative,
+                    onClick = { onHabitTypeChange(HabitType.BINARY) },
+                    modifier = Modifier.weight(1f)
+                )
+                TypeCard(
+                    label = stringResource(Res.string.first_habit_type_quantitative),
+                    description = stringResource(
+                        Res.string.first_habit_type_quantitative_description
+                    ),
+                    isSelected = isQuantitative,
+                    onClick = { onHabitTypeChange(HabitType.QUANTITATIVE) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        HabitTypeCard(
-            icon = Icons.Outlined.ShowChart,
-            label = stringResource(Res.string.common_quantitative),
-            description = stringResource(Res.string.first_habit_type_quantitative_description),
-            isSelected = habitType == HabitType.QUANTITATIVE,
-            onClick = { onHabitTypeChange(HabitType.QUANTITATIVE) },
-            expandedContent = {
-                Column(modifier = Modifier.padding(top = 12.dp)) {
-                    TextField(
-                        value = targetValue,
-                        onValueChange = onTargetValueChange,
-                        label = { Text(stringResource(Res.string.first_habit_label_target_value)) },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = OnboardingTextFieldShape,
-                        colors = onboardingTextFieldColors()
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    TextField(
-                        value = unit,
-                        onValueChange = onUnitChange,
-                        label = { Text(stringResource(Res.string.first_habit_label_unit)) },
-                        placeholder = {
-                            Text(stringResource(Res.string.first_habit_placeholder_unit))
-                        },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = OnboardingTextFieldShape,
-                        colors = onboardingTextFieldColors()
-                    )
+        AnimatedVisibility(
+            visible = isQuantitative,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            Column {
+                Spacer(modifier = Modifier.height(18.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    FieldGroup(
+                        label = stringResource(Res.string.first_habit_label_target_value),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        TextField(
+                            value = targetValue,
+                            onValueChange = onTargetValueChange,
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(4.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = RiteAppTheme.colors.surface,
+                                unfocusedContainerColor = RiteAppTheme.colors.surface,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
+                            )
+                        )
+                    }
+                    FieldGroup(
+                        label = stringResource(Res.string.first_habit_label_unit),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        TextField(
+                            value = unit,
+                            onValueChange = onUnitChange,
+                            placeholder = {
+                                Text(stringResource(Res.string.first_habit_placeholder_unit))
+                            },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(4.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = RiteAppTheme.colors.surface,
+                                unfocusedContainerColor = RiteAppTheme.colors.surface,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
+                            )
+                        )
+                    }
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.height(18.dp))
+
+        FieldGroup(label = stringResource(Res.string.first_habit_label_schedule)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                ScheduleChip(
+                    label = stringResource(Res.string.first_habit_schedule_daily),
+                    isSelected = scheduleKind == OnboardingScheduleKind.DAILY,
+                    onClick = { onScheduleKindChange(OnboardingScheduleKind.DAILY) }
+                )
+                ScheduleChip(
+                    label = stringResource(Res.string.first_habit_schedule_weekly),
+                    isSelected = scheduleKind == OnboardingScheduleKind.WEEKLY,
+                    onClick = { onScheduleKindChange(OnboardingScheduleKind.WEEKLY) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun headingAnnotated(): AnnotatedString = buildAnnotatedString {
+    append(stringResource(Res.string.first_habit_heading_first))
+    append(" ")
+    withStyle(
+        SpanStyle(fontStyle = FontStyle.Italic, color = RiteAppTheme.colors.onSurfaceVariant)
+    ) {
+        append(stringResource(Res.string.first_habit_heading_accent))
+    }
+}
+
+@Composable
+private fun FieldGroup(
+    label: String,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = label.uppercase(),
+            style = RiteAppTheme.typography.labelSmall,
+            color = RiteAppTheme.colors.outline,
+            modifier = Modifier.padding(bottom = 6.dp)
         )
+        content()
+    }
+}
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        SchedulePicker(
-            selectedDays = selectedDays,
-            onSelectedDaysChange = onSelectedDaysChange,
-            modifier = Modifier.fillMaxWidth()
+@Composable
+private fun TypeCard(
+    label: String,
+    description: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(4.dp))
+            .border(
+                width = 1.dp,
+                color = if (isSelected) RiteAppTheme.colors.onSurface else RiteAppTheme.colors.outline,
+                shape = RoundedCornerShape(4.dp)
+            )
+            .background(if (isSelected) RiteAppTheme.colors.surface else Color.Transparent)
+            .clickable { onClick() }
+            .padding(horizontal = 12.dp, vertical = 14.dp)
+    ) {
+        Text(
+            text = label,
+            style = RiteAppTheme.typography.titleSmall,
+            color = RiteAppTheme.colors.onSurface
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = description,
+            style = RiteAppTheme.typography.bodySmall,
+            color = RiteAppTheme.colors.outline
         )
     }
 }
 
 @Composable
-private fun HabitTypeCard(
-    icon: ImageVector,
-    label: String,
-    description: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    expandedContent: (@Composable () -> Unit)?,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        border = if (isSelected) {
-            BorderStroke(2.dp, RiteAppTheme.colors.primaryContainer)
-        } else {
-            BorderStroke(2.dp, Color.Transparent)
-        },
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) {
-                RiteAppTheme.colors.surfaceContainerHighest
-            } else {
-                RiteAppTheme.colors.surfaceContainerLow
-            }
-        )
+private fun ScheduleChip(label: String, isSelected: Boolean, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(50))
+            .border(
+                width = 1.dp,
+                color = if (isSelected) RiteAppTheme.colors.onSurface else RiteAppTheme.colors.outline,
+                shape = RoundedCornerShape(50)
+            )
+            .background(if (isSelected) RiteAppTheme.colors.onSurface else Color.Transparent)
+            .clickable { onClick() }
+            .padding(horizontal = 14.dp, vertical = 8.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(HabitTypeCardIconSize),
-                tint = if (isSelected) {
-                    RiteAppTheme.colors.primary
-                } else {
-                    RiteAppTheme.colors.onSurfaceVariant
-                }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = label,
-                style = RiteAppTheme.typography.titleSmall,
-                color = RiteAppTheme.colors.onSurface,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = description,
-                style = RiteAppTheme.typography.bodySmall,
-                color = RiteAppTheme.colors.onSurfaceVariant
-            )
-            if (expandedContent != null) {
-                AnimatedVisibility(
-                    visible = isSelected,
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut()
-                ) {
-                    expandedContent()
-                }
-            }
-        }
+        Text(
+            text = label,
+            style = RiteAppTheme.typography.labelLarge,
+            color = if (isSelected) RiteAppTheme.colors.surface else RiteAppTheme.colors.onSurface
+        )
     }
 }

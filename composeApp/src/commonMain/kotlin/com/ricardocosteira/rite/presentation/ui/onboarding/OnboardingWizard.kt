@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.BackHandler
-import kotlinx.datetime.DayOfWeek
 
 private const val ENTER_DURATION_MS = 300
 private const val EXIT_DURATION_MS = 200
@@ -45,7 +44,7 @@ fun OnboardingWizard(
     onHabitTypeChange: (HabitType) -> Unit,
     onTargetValueChange: (String) -> Unit,
     onUnitChange: (String) -> Unit,
-    onSelectedDaysChange: (Set<DayOfWeek>) -> Unit,
+    onScheduleKindChange: (OnboardingScheduleKind) -> Unit,
     reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {
@@ -116,12 +115,12 @@ fun OnboardingWizard(
                                         habitType = state.habitType,
                                         targetValue = state.targetValue,
                                         unit = state.unit,
-                                        selectedDays = state.selectedDays,
+                                        scheduleKind = state.scheduleKind,
                                         onHabitNameChange = onHabitNameChange,
                                         onHabitTypeChange = onHabitTypeChange,
                                         onTargetValueChange = onTargetValueChange,
                                         onUnitChange = onUnitChange,
-                                        onSelectedDaysChange = onSelectedDaysChange,
+                                        onScheduleKindChange = onScheduleKindChange,
                                         modifier = Modifier.weight(1f).fillMaxWidth()
                                     )
                                     FirstHabitStepCta(
@@ -213,12 +212,12 @@ fun OnboardingWizard(
                                         habitType = state.habitType,
                                         targetValue = state.targetValue,
                                         unit = state.unit,
-                                        selectedDays = state.selectedDays,
+                                        scheduleKind = state.scheduleKind,
                                         onHabitNameChange = onHabitNameChange,
                                         onHabitTypeChange = onHabitTypeChange,
                                         onTargetValueChange = onTargetValueChange,
                                         onUnitChange = onUnitChange,
-                                        onSelectedDaysChange = onSelectedDaysChange,
+                                        onScheduleKindChange = onScheduleKindChange,
                                         modifier = Modifier.weight(1f).fillMaxWidth()
                                     )
                                     FirstHabitStepCta(

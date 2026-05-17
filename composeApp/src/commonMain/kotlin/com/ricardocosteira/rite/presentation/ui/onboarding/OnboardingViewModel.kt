@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ricardocosteira.rite.di.AppScope
 import com.ricardocosteira.rite.domain.models.HabitType
+import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.domain.models.StrictnessPreset
 import com.ricardocosteira.rite.domain.repositories.UserRepository
 import com.ricardocosteira.rite.domain.usecases.ApplyStrictnessPreset
@@ -19,7 +20,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.TimeZone
 import me.tatarka.inject.annotations.Inject
 
@@ -68,8 +68,8 @@ class OnboardingViewModel(
         _state.update { it.copy(unit = unit) }
     }
 
-    fun updateSelectedDays(days: Set<DayOfWeek>) {
-        _state.update { it.copy(selectedDays = days) }
+    fun updateScheduleKind(kind: OnboardingScheduleKind) {
+        _state.update { it.copy(scheduleKind = kind) }
     }
 
     fun skipToToday() {
@@ -148,13 +148,9 @@ class OnboardingViewModel(
                 null
             }
 
-            val selectedDays = _state.value.selectedDays
-            val specificDays: Set<DayOfWeek>? = if (selectedDays.size ==
-                DayOfWeek.entries.size
-            ) {
-                null
-            } else {
-                selectedDays
+            val scheduleType: ScheduleType = when (_state.value.scheduleKind) {
+                OnboardingScheduleKind.DAILY -> ScheduleType.DAILY
+                OnboardingScheduleKind.WEEKLY -> ScheduleType.FLEXIBLE_WEEKLY
             }
 
             val result = createHabit.execute(
@@ -164,7 +160,9 @@ class OnboardingViewModel(
                     type = habitType,
                     targetValue = targetValue,
                     unit = unit,
-                    specificDays = specificDays,
+                    scheduleType = scheduleType,
+                    quota = 1,
+                    specificDays = null,
                     reminder = null
                 ),
                 startDate = today

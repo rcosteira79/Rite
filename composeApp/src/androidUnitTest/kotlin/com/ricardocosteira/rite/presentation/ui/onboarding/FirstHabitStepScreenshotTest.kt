@@ -5,7 +5,6 @@ import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
-import kotlinx.datetime.DayOfWeek
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,7 +14,11 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [33], qualifiers = "w360dp-h800dp-420dpi", application = android.app.Application::class)
+@Config(
+    sdk = [33],
+    qualifiers = "w360dp-h800dp-420dpi",
+    application = android.app.Application::class
+)
 class FirstHabitStepScreenshotTest {
     @get:Rule
     val composeRule = createComposeRule()
@@ -23,7 +26,7 @@ class FirstHabitStepScreenshotTest {
     // --- Light theme ---
 
     @Test
-    fun firstHabitStep_binary_daily_lightTheme() {
+    fun firstHabitStep_empty_lightTheme() {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = false) {
                 FirstHabitStep(
@@ -31,12 +34,12 @@ class FirstHabitStepScreenshotTest {
                     habitType = HabitType.BINARY,
                     targetValue = "",
                     unit = "",
-                    selectedDays = DayOfWeek.entries.toSet(),
+                    scheduleKind = OnboardingScheduleKind.DAILY,
                     onHabitNameChange = {},
                     onHabitTypeChange = {},
                     onTargetValueChange = {},
                     onUnitChange = {},
-                    onSelectedDaysChange = {},
+                    onScheduleKindChange = {}
                 )
             }
         }
@@ -44,35 +47,7 @@ class FirstHabitStepScreenshotTest {
     }
 
     @Test
-    fun firstHabitStep_quantitative_weekdays_lightTheme() {
-        composeRule.setContent {
-            RiteThemeFallback(darkTheme = false) {
-                FirstHabitStep(
-                    habitName = "Run",
-                    habitType = HabitType.QUANTITATIVE,
-                    targetValue = "5",
-                    unit = "km",
-                    selectedDays =
-                        setOf(
-                            DayOfWeek.MONDAY,
-                            DayOfWeek.TUESDAY,
-                            DayOfWeek.WEDNESDAY,
-                            DayOfWeek.THURSDAY,
-                            DayOfWeek.FRIDAY,
-                        ),
-                    onHabitNameChange = {},
-                    onHabitTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onSelectedDaysChange = {},
-                )
-            }
-        }
-        composeRule.onRoot().captureRoboImage()
-    }
-
-    @Test
-    fun firstHabitStep_customDays_lightTheme() {
+    fun firstHabitStep_filledBinary_lightTheme() {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = false) {
                 FirstHabitStep(
@@ -80,12 +55,33 @@ class FirstHabitStepScreenshotTest {
                     habitType = HabitType.BINARY,
                     targetValue = "",
                     unit = "",
-                    selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
+                    scheduleKind = OnboardingScheduleKind.WEEKLY,
                     onHabitNameChange = {},
                     onHabitTypeChange = {},
                     onTargetValueChange = {},
                     onUnitChange = {},
-                    onSelectedDaysChange = {},
+                    onScheduleKindChange = {}
+                )
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun firstHabitStep_filledQuantitative_lightTheme() {
+        composeRule.setContent {
+            RiteThemeFallback(darkTheme = false) {
+                FirstHabitStep(
+                    habitName = "Run",
+                    habitType = HabitType.QUANTITATIVE,
+                    targetValue = "5",
+                    unit = "km",
+                    scheduleKind = OnboardingScheduleKind.DAILY,
+                    onHabitNameChange = {},
+                    onHabitTypeChange = {},
+                    onTargetValueChange = {},
+                    onUnitChange = {},
+                    onScheduleKindChange = {}
                 )
             }
         }
@@ -95,7 +91,7 @@ class FirstHabitStepScreenshotTest {
     // --- Dark theme ---
 
     @Test
-    fun firstHabitStep_binary_daily_darkTheme() {
+    fun firstHabitStep_empty_darkTheme() {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = true) {
                 FirstHabitStep(
@@ -103,12 +99,12 @@ class FirstHabitStepScreenshotTest {
                     habitType = HabitType.BINARY,
                     targetValue = "",
                     unit = "",
-                    selectedDays = DayOfWeek.entries.toSet(),
+                    scheduleKind = OnboardingScheduleKind.DAILY,
                     onHabitNameChange = {},
                     onHabitTypeChange = {},
                     onTargetValueChange = {},
                     onUnitChange = {},
-                    onSelectedDaysChange = {},
+                    onScheduleKindChange = {}
                 )
             }
         }
@@ -116,35 +112,7 @@ class FirstHabitStepScreenshotTest {
     }
 
     @Test
-    fun firstHabitStep_quantitative_weekdays_darkTheme() {
-        composeRule.setContent {
-            RiteThemeFallback(darkTheme = true) {
-                FirstHabitStep(
-                    habitName = "Run",
-                    habitType = HabitType.QUANTITATIVE,
-                    targetValue = "5",
-                    unit = "km",
-                    selectedDays =
-                        setOf(
-                            DayOfWeek.MONDAY,
-                            DayOfWeek.TUESDAY,
-                            DayOfWeek.WEDNESDAY,
-                            DayOfWeek.THURSDAY,
-                            DayOfWeek.FRIDAY,
-                        ),
-                    onHabitNameChange = {},
-                    onHabitTypeChange = {},
-                    onTargetValueChange = {},
-                    onUnitChange = {},
-                    onSelectedDaysChange = {},
-                )
-            }
-        }
-        composeRule.onRoot().captureRoboImage()
-    }
-
-    @Test
-    fun firstHabitStep_customDays_darkTheme() {
+    fun firstHabitStep_filledBinary_darkTheme() {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = true) {
                 FirstHabitStep(
@@ -152,12 +120,33 @@ class FirstHabitStepScreenshotTest {
                     habitType = HabitType.BINARY,
                     targetValue = "",
                     unit = "",
-                    selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
+                    scheduleKind = OnboardingScheduleKind.WEEKLY,
                     onHabitNameChange = {},
                     onHabitTypeChange = {},
                     onTargetValueChange = {},
                     onUnitChange = {},
-                    onSelectedDaysChange = {},
+                    onScheduleKindChange = {}
+                )
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun firstHabitStep_filledQuantitative_darkTheme() {
+        composeRule.setContent {
+            RiteThemeFallback(darkTheme = true) {
+                FirstHabitStep(
+                    habitName = "Run",
+                    habitType = HabitType.QUANTITATIVE,
+                    targetValue = "5",
+                    unit = "km",
+                    scheduleKind = OnboardingScheduleKind.DAILY,
+                    onHabitNameChange = {},
+                    onHabitTypeChange = {},
+                    onTargetValueChange = {},
+                    onUnitChange = {},
+                    onScheduleKindChange = {}
                 )
             }
         }
