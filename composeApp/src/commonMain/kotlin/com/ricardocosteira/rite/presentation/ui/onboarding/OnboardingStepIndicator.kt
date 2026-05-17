@@ -43,7 +43,7 @@ fun OnboardingStepIndicator(step: Int, totalSteps: Int, modifier: Modifier = Mod
         Text(
             text = "$step / $totalSteps",
             style = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 1.8.sp),
-            color = RiteAppTheme.colors.outline
+            color = RiteAppTheme.colors.onSurfaceVariant
         )
     }
 }

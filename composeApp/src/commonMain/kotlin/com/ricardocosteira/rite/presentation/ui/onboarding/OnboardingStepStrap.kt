@@ -16,7 +16,7 @@ fun OnboardingStepStrap(
     Text(
         text = "STEP $step OF $totalSteps · ${stepName.uppercase()}",
         style = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 2.2.sp),
-        color = RiteAppTheme.colors.outline,
+        color = RiteAppTheme.colors.onSurfaceVariant,
         modifier = modifier
     )
 }

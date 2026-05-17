@@ -140,7 +140,7 @@ private fun PromiseRow(title: String, subtitle: String, modifier: Modifier = Mod
             Text(
                 text = subtitle,
                 style = RiteAppTheme.typography.bodySmall,
-                color = RiteAppTheme.colors.outline
+                color = RiteAppTheme.colors.onSurfaceVariant
             )
         }
     }

@@ -102,7 +102,7 @@ fun FirstHabitStep(
         Text(
             text = stringResource(Res.string.first_habit_subtext),
             style = RiteAppTheme.typography.bodySmall,
-            color = RiteAppTheme.colors.outline
+            color = RiteAppTheme.colors.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(18.dp))
@@ -241,7 +241,7 @@ private fun FieldGroup(
         Text(
             text = label.uppercase(),
             style = RiteAppTheme.typography.labelSmall,
-            color = RiteAppTheme.colors.outline,
+            color = RiteAppTheme.colors.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 6.dp)
         )
         content()
@@ -277,7 +277,7 @@ private fun TypeCard(
         Text(
             text = description,
             style = RiteAppTheme.typography.bodySmall,
-            color = RiteAppTheme.colors.outline
+            color = RiteAppTheme.colors.onSurfaceVariant
         )
     }
 }

@@ -86,7 +86,7 @@ fun StrictnessStep(
         Text(
             text = stringResource(Res.string.strictness_subtext),
             style = RiteAppTheme.typography.bodySmall,
-            color = RiteAppTheme.colors.outline
+            color = RiteAppTheme.colors.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(22.dp))
