@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ExpandLess
 import androidx.compose.material.icons.outlined.ExpandMore
@@ -64,6 +66,7 @@ fun StrictnessStep(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp, vertical = 10.dp)
     ) {
         OnboardingStepStrap(
@@ -182,7 +185,7 @@ private fun PresetAccordionCard(
             Column(modifier = Modifier.padding(start = 28.dp, top = 12.dp)) {
                 Text(
                     text = preset.description,
-                    style = RiteAppTheme.typography.bodySmall.copy(lineHeight = 18.sp),
+                    style = RiteAppTheme.typography.bodyMedium.copy(lineHeight = 20.sp),
                     color = RiteAppTheme.colors.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(14.dp))
@@ -198,7 +201,7 @@ private fun PresetAccordionCard(
                         Spacer(modifier = Modifier.size(10.dp))
                         Text(
                             text = rule,
-                            style = RiteAppTheme.typography.bodySmall.copy(lineHeight = 18.sp),
+                            style = RiteAppTheme.typography.bodyMedium.copy(lineHeight = 20.sp),
                             color = RiteAppTheme.colors.onSurface
                         )
                     }

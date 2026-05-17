@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.NotificationsActive
@@ -51,6 +53,7 @@ fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Bool
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp, vertical = 10.dp)
     ) {
         OnboardingStepStrap(
@@ -157,7 +160,7 @@ private fun NotificationFeatureRow(
             )
             Text(
                 text = subtitle,
-                style = RiteAppTheme.typography.bodySmall,
+                style = RiteAppTheme.typography.bodyMedium,
                 color = RiteAppTheme.colors.onSurfaceVariant
             )
         }
