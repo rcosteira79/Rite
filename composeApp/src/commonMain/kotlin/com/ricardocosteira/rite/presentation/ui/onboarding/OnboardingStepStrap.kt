@@ -15,6 +15,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
@@ -25,10 +27,9 @@ private const val BAR_COLOR_MS = 320
 /**
  * Combined step header: `[STEP NAME mono] ━━━━━━━ [N / total mono]`.
  *
- * Lives at the wizard level (not inside each step composable) so it persists
- * across step transitions. The step name and the `N / total` text cross-fade;
- * each bar's color animates between filled and unfilled, so the progress fills
- * or empties in place when navigating forward or back.
+ * Both side slots reserve fixed width by stacking invisible reference Texts for
+ * every possible label, so the bar's start/end positions stay put as the step
+ * name and counter change during navigation.
  */
 @Composable
 fun OnboardingStepStrap(
@@ -36,8 +37,11 @@ fun OnboardingStepStrap(
     totalSteps: Int,
     stepName: String,
     modifier: Modifier = Modifier,
-    reduceMotion: Boolean = false
+    reduceMotion: Boolean = false,
+    allStepNames: List<String> = listOf(stepName)
 ) {
+    val nameStyle = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 2.2.sp)
+    val countStyle = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 1.8.sp)
     val nameSpec = if (reduceMotion) snap<Float>() else tween<Float>(CROSSFADE_MS)
     val barSpec = if (reduceMotion) snap<Color>() else tween<Color>(BAR_COLOR_MS)
 
@@ -46,12 +50,22 @@ fun OnboardingStepStrap(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Crossfade(targetState = stepName, animationSpec = nameSpec, label = "stepName") { name ->
-            Text(
-                text = name.uppercase(),
-                style = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 2.2.sp),
-                color = RiteAppTheme.colors.onSurfaceVariant
-            )
+        FixedSlot(
+            candidates = allStepNames.map { it.uppercase() },
+            style = nameStyle,
+            alignment = Alignment.CenterStart
+        ) {
+            Crossfade(
+                targetState = stepName,
+                animationSpec = nameSpec,
+                label = "stepName"
+            ) { name ->
+                Text(
+                    text = name.uppercase(),
+                    style = nameStyle,
+                    color = RiteAppTheme.colors.onSurfaceVariant
+                )
+            }
         }
 
         Row(
@@ -78,16 +92,42 @@ fun OnboardingStepStrap(
             }
         }
 
-        Crossfade(
-            targetState = "$step / $totalSteps",
-            animationSpec = nameSpec,
-            label = "stepCount"
-        ) { count ->
+        FixedSlot(
+            candidates = (1..totalSteps).map { "$it / $totalSteps" },
+            style = countStyle,
+            alignment = Alignment.CenterEnd
+        ) {
+            Crossfade(
+                targetState = "$step / $totalSteps",
+                animationSpec = nameSpec,
+                label = "stepCount"
+            ) { count ->
+                Text(
+                    text = count,
+                    style = countStyle,
+                    color = RiteAppTheme.colors.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun FixedSlot(
+    candidates: List<String>,
+    style: TextStyle,
+    alignment: Alignment,
+    content: @Composable () -> Unit
+) {
+    Box(contentAlignment = alignment) {
+        candidates.forEach { candidate ->
             Text(
-                text = count,
-                style = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 1.8.sp),
-                color = RiteAppTheme.colors.onSurfaceVariant
+                text = candidate,
+                style = style,
+                color = Color.Transparent,
+                modifier = Modifier.clearAndSetSemantics { }
             )
         }
+        content()
     }
 }

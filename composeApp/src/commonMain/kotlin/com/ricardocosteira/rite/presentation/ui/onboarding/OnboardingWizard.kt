@@ -58,6 +58,17 @@ fun OnboardingWizard(
 ) {
     BackHandler(enabled = currentStep > 0) { onStepChange(currentStep - 1) }
 
+    val philosophyLabel = stringResource(Res.string.philosophy_strap_label)
+    val strictnessLabel = stringResource(Res.string.strictness_strap_label)
+    val firstHabitLabel = stringResource(Res.string.first_habit_strap_label)
+    val notificationsLabel = stringResource(Res.string.notifications_strap_label)
+    val candidateStepNames = buildList {
+        add(philosophyLabel)
+        add(strictnessLabel)
+        add(firstHabitLabel)
+        if (state.showNotificationStep) add(notificationsLabel)
+    }
+
     Scaffold(modifier = modifier.fillMaxSize(), snackbarHost = {
         SnackbarHost(snackbarHostState)
     }) { innerPadding ->
@@ -66,6 +77,7 @@ fun OnboardingWizard(
                 step = currentStep + 1,
                 totalSteps = state.totalSteps,
                 stepName = stepNameForStep(currentStep, state),
+                allStepNames = candidateStepNames,
                 reduceMotion = reduceMotion,
                 modifier = Modifier
                     .fillMaxWidth()

@@ -24,6 +24,8 @@ import org.robolectric.annotation.GraphicsMode
 class OnboardingStepStrapScreenshotTest {
     @get:Rule val composeRule = createComposeRule()
 
+    private val allLabels = listOf("Philosophy", "Strictness", "First habit", "Notifications")
+
     @Test fun philosophy_step_lightTheme() {
         composeRule.setContent {
             RiteThemeFallback(darkTheme = false) {
@@ -31,6 +33,7 @@ class OnboardingStepStrapScreenshotTest {
                     step = 1,
                     totalSteps = 4,
                     stepName = "Philosophy",
+                    allStepNames = allLabels,
                     modifier = Modifier.padding(24.dp)
                 )
             }
@@ -45,6 +48,7 @@ class OnboardingStepStrapScreenshotTest {
                     step = 3,
                     totalSteps = 4,
                     stepName = "First habit",
+                    allStepNames = allLabels,
                     modifier = Modifier.padding(24.dp)
                 )
             }
