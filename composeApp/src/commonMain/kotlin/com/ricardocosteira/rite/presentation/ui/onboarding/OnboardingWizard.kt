@@ -35,7 +35,6 @@ fun OnboardingWizard(
     currentStep: Int,
     snackbarHostState: SnackbarHostState,
     onStepChange: (Int) -> Unit,
-    onSkip: () -> Unit,
     onContinueFromNotificationPermission: () -> Unit,
     onEnableNotifications: () -> Unit,
     onContinueFromStrictness: () -> Unit,
@@ -56,13 +55,6 @@ fun OnboardingWizard(
         SnackbarHost(snackbarHostState)
     }) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-            OnboardingTopChrome(
-                currentStep = currentStep,
-                totalSteps = state.totalSteps,
-                onSkip = onSkip,
-                modifier = Modifier.fillMaxWidth()
-            )
-
             if (reduceMotion) {
                 Crossfade(
                     targetState = currentStep,
@@ -77,6 +69,8 @@ fun OnboardingWizard(
                                     reduceMotion = true
                                 )
                                 PhilosophyStepCta(
+                                    step = currentStep + 1,
+                                    totalSteps = state.totalSteps,
                                     onAdvance = { onStepChange(step + 1) },
                                     modifier = Modifier.fillMaxWidth(),
                                     reduceMotion = true
@@ -91,6 +85,8 @@ fun OnboardingWizard(
                                     modifier = Modifier.weight(1f).fillMaxWidth()
                                 )
                                 StrictnessStepCta(
+                                    step = currentStep + 1,
+                                    totalSteps = state.totalSteps,
                                     state = state,
                                     onContinue = onContinueFromStrictness,
                                     modifier = Modifier.fillMaxWidth(),
@@ -105,6 +101,8 @@ fun OnboardingWizard(
                                         reduceMotion = reduceMotion
                                     )
                                     NotificationPermissionStepCta(
+                                        step = currentStep + 1,
+                                        totalSteps = state.totalSteps,
                                         onEnableNotifications = onEnableNotifications,
                                         onMaybeLater = onContinueFromNotificationPermission,
                                         modifier = Modifier.fillMaxWidth(),
@@ -127,6 +125,8 @@ fun OnboardingWizard(
                                         modifier = Modifier.weight(1f).fillMaxWidth()
                                     )
                                     FirstHabitStepCta(
+                                        step = currentStep + 1,
+                                        totalSteps = state.totalSteps,
                                         state = state,
                                         onCreateHabit = onCreateHabit,
                                         onSkip = onSkipFirstHabit,
@@ -166,6 +166,8 @@ fun OnboardingWizard(
                                     reduceMotion = reduceMotion
                                 )
                                 PhilosophyStepCta(
+                                    step = currentStep + 1,
+                                    totalSteps = state.totalSteps,
                                     onAdvance = { onStepChange(step + 1) },
                                     modifier = Modifier.fillMaxWidth(),
                                     reduceMotion = reduceMotion
@@ -180,6 +182,8 @@ fun OnboardingWizard(
                                     modifier = Modifier.weight(1f).fillMaxWidth()
                                 )
                                 StrictnessStepCta(
+                                    step = currentStep + 1,
+                                    totalSteps = state.totalSteps,
                                     state = state,
                                     onContinue = onContinueFromStrictness,
                                     modifier = Modifier.fillMaxWidth(),
@@ -194,6 +198,8 @@ fun OnboardingWizard(
                                         reduceMotion = reduceMotion
                                     )
                                     NotificationPermissionStepCta(
+                                        step = currentStep + 1,
+                                        totalSteps = state.totalSteps,
                                         onEnableNotifications = onEnableNotifications,
                                         onMaybeLater = onContinueFromNotificationPermission,
                                         modifier = Modifier.fillMaxWidth(),
@@ -216,6 +222,8 @@ fun OnboardingWizard(
                                         modifier = Modifier.weight(1f).fillMaxWidth()
                                     )
                                     FirstHabitStepCta(
+                                        step = currentStep + 1,
+                                        totalSteps = state.totalSteps,
                                         state = state,
                                         onCreateHabit = onCreateHabit,
                                         onSkip = onSkipFirstHabit,

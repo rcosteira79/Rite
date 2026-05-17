@@ -62,7 +62,6 @@ fun OnboardingRoute(
         currentStep = state.currentStep,
         snackbarHostState = snackbarHostState,
         onStepChange = viewModel::setCurrentStep,
-        onSkip = viewModel::skipToToday,
         reduceMotion = reduceMotion,
         onContinueFromStrictness = viewModel::continueFromStrictness,
         onContinueFromNotificationPermission = viewModel::continueFromNotificationPermission,
