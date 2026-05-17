@@ -5,6 +5,7 @@ import com.ricardocosteira.rite.di.AppScope
 import com.ricardocosteira.rite.domain.repositories.UserRepository
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,22 +58,40 @@ class DefaultCurrentDateProvider(
     }
 
     private suspend fun observeForegroundChanges() {
-        foregroundObserver.onForeground.collect {
-            _today.value = computeToday()
+        while (coroutineContext.isActive) {
+            try {
+                foregroundObserver.onForeground.collect {
+                    _today.value = computeToday()
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Throwable) {
+                // Don't let a single throw kill the collector for the rest of the
+                // process lifetime; back off briefly and resubscribe.
+                delay(MIN_TICK_DELAY_MS)
+            }
         }
     }
 
     private suspend fun tickAtMidnight() {
         while (coroutineContext.isActive) {
-            val tz = currentTimezone()
-            val current = clock.todayIn(tz)
-            val nextMidnight = current.plus(1, DateTimeUnit.DAY).atStartOfDayIn(tz)
-            val nowMs = clock.now().toEpochMilliseconds()
-            val delayMs = (nextMidnight.toEpochMilliseconds() - nowMs).coerceAtLeast(
-                MIN_TICK_DELAY_MS
-            )
-            delay(delayMs)
-            _today.value = clock.todayIn(tz)
+            try {
+                val tz = currentTimezone()
+                val current = clock.todayIn(tz)
+                val nextMidnight = current.plus(1, DateTimeUnit.DAY).atStartOfDayIn(tz)
+                val nowMs = clock.now().toEpochMilliseconds()
+                val delayMs = (nextMidnight.toEpochMilliseconds() - nowMs).coerceAtLeast(
+                    MIN_TICK_DELAY_MS
+                )
+                delay(delayMs)
+                _today.value = clock.todayIn(tz)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Throwable) {
+                // Don't let a single throw kill the loop. Back off and retry; the
+                // next iteration recomputes the next-midnight delay from scratch.
+                delay(MIN_TICK_DELAY_MS)
+            }
         }
     }
 
