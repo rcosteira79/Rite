@@ -3,7 +3,7 @@
     <string name="philosophy_strap_label">Philosophy</string>
     <string name="philosophy_heading_first">Show up for</string>
     <string name="philosophy_heading_accent">yourself.</string>
-    <string name="philosophy_body_intro">Rite is a habit tracker reframed as a quiet instrument. No streaks to guilt you, no badges to collect, no feeds to scroll — only the habits you choose, held to the standard you set.</string>
+    <string name="philosophy_body_intro">Rite is a habit tracker reframed as a quiet instrument. Streaks you set, not streaks that scold; no badges to collect, no feeds to scroll — only the habits you choose, held to the standard you set.</string>
     <string name="philosophy_body_close">You decide how strict it should be. Rite holds you to it.</string>
 
     <string name="philosophy_promise_local_title">Local-only</string>
