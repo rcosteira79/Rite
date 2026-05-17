@@ -1,7 +1,10 @@
 package com.ricardocosteira.rite.presentation.ui.onboarding
 
 import com.ricardocosteira.rite.domain.models.HabitType
-import kotlinx.datetime.DayOfWeek
+
+enum class OnboardingScheduleKind { DAILY, WEEKLY }
+
+enum class OnboardingStep { PHILOSOPHY, STRICTNESS, FIRST_HABIT, NOTIFICATIONS }
 
 /** State for the onboarding flow. */
 data class OnboardingState(
@@ -10,18 +13,14 @@ data class OnboardingState(
     val habitType: HabitType = HabitType.BINARY,
     val targetValue: String = "",
     val unit: String = "",
-    val selectedDays: Set<DayOfWeek> = DayOfWeek.entries.toSet(),
+    val scheduleKind: OnboardingScheduleKind = OnboardingScheduleKind.DAILY,
     val isCreatingHabit: Boolean = false,
     val isApplyingPreset: Boolean = false,
     val error: String? = null,
-    val currentStep: Int = 0,
+    val currentStep: OnboardingStep = OnboardingStep.PHILOSOPHY,
     val showNotificationStep: Boolean = false
 ) {
     val totalSteps: Int get() = if (showNotificationStep) 4 else 3
-
-    val firstHabitStepIndex: Int get() = if (showNotificationStep) 3 else 2
-
-    val notificationStepIndex: Int get() = 2
 }
 
 /** Events from the onboarding flow. */

@@ -85,3 +85,4 @@
 - [ ] Update app icon
 - [ ] Fix flaky TodayViewModelSwipeTest — inject test dispatchers into repositories instead of using real Dispatchers.IO
 - [ ] Inject Clock into ProcessEndOfDay so tests can control "today" — needed for proper assertions on WEEKLY/FLEXIBLE_WEEKLY evaluation timing
+- [ ] Custom preset spawned from tinkering — user adjustments to a built-in preset become a saved "Custom" preset
