@@ -53,7 +53,6 @@ import rite.composeapp.generated.resources.first_habit_label_unit
 import rite.composeapp.generated.resources.first_habit_placeholder_unit
 import rite.composeapp.generated.resources.first_habit_schedule_daily
 import rite.composeapp.generated.resources.first_habit_schedule_weekly
-import rite.composeapp.generated.resources.first_habit_strap_label
 import rite.composeapp.generated.resources.first_habit_subtext
 import rite.composeapp.generated.resources.first_habit_type_binary
 import rite.composeapp.generated.resources.first_habit_type_binary_description
@@ -67,7 +66,6 @@ fun FirstHabitStep(
     targetValue: String,
     unit: String,
     scheduleKind: OnboardingScheduleKind,
-    totalSteps: Int = 4,
     onHabitNameChange: (String) -> Unit,
     onHabitTypeChange: (HabitType) -> Unit,
     onTargetValueChange: (String) -> Unit,
@@ -83,14 +81,6 @@ fun FirstHabitStep(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp, vertical = 10.dp)
     ) {
-        OnboardingStepStrap(
-            step = 3,
-            totalSteps = totalSteps,
-            stepName = stringResource(Res.string.first_habit_strap_label)
-        )
-
-        Spacer(modifier = Modifier.height(14.dp))
-
         Text(
             text = headingAnnotated(),
             style = RiteAppTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Normal),

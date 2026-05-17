@@ -46,28 +46,15 @@ import rite.composeapp.generated.resources.notifications_card_warnings_subtitle
 import rite.composeapp.generated.resources.notifications_card_warnings_title
 import rite.composeapp.generated.resources.notifications_heading_accent
 import rite.composeapp.generated.resources.notifications_heading_first
-import rite.composeapp.generated.resources.notifications_strap_label
 
 @Composable
-fun NotificationPermissionStep(
-    totalSteps: Int = 4,
-    modifier: Modifier = Modifier,
-    reduceMotion: Boolean = false
-) {
+fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp, vertical = 10.dp)
     ) {
-        OnboardingStepStrap(
-            step = 4,
-            totalSteps = totalSteps,
-            stepName = stringResource(Res.string.notifications_strap_label)
-        )
-
-        Spacer(modifier = Modifier.height(14.dp))
-
         Text(
             text = headingAnnotated(),
             style = RiteAppTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Normal),

@@ -10,6 +10,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,8 +19,15 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.BackHandler
+import org.jetbrains.compose.resources.stringResource
+import rite.composeapp.generated.resources.Res
+import rite.composeapp.generated.resources.first_habit_strap_label
+import rite.composeapp.generated.resources.notifications_strap_label
+import rite.composeapp.generated.resources.philosophy_strap_label
+import rite.composeapp.generated.resources.strictness_strap_label
 
 private const val ENTER_DURATION_MS = 300
 private const val EXIT_DURATION_MS = 200
@@ -54,6 +62,16 @@ fun OnboardingWizard(
         SnackbarHost(snackbarHostState)
     }) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+            OnboardingStepStrap(
+                step = currentStep + 1,
+                totalSteps = state.totalSteps,
+                stepName = stepNameForStep(currentStep, state),
+                reduceMotion = reduceMotion,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, end = 24.dp, top = 10.dp, bottom = 4.dp)
+            )
+
             if (reduceMotion) {
                 Crossfade(
                     targetState = currentStep,
@@ -61,76 +79,23 @@ fun OnboardingWizard(
                     label = "onboarding_step"
                 ) { step ->
                     Column(modifier = Modifier.fillMaxSize()) {
-                        when (step) {
-                            0 -> {
-                                PhilosophyStep(
-                                    totalSteps = state.totalSteps,
-                                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                                    reduceMotion = true
-                                )
-                                PhilosophyStepCta(
-                                    onAdvance = { onStepChange(step + 1) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    reduceMotion = true
-                                )
-                            }
-
-                            1 -> {
-                                StrictnessStep(
-                                    selectedPreset = state.selectedPreset,
-                                    onPresetSelected = onPresetSelected,
-                                    totalSteps = state.totalSteps,
-                                    reduceMotion = true,
-                                    modifier = Modifier.weight(1f).fillMaxWidth()
-                                )
-                                StrictnessStepCta(
-                                    state = state,
-                                    onContinue = onContinueFromStrictness,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    reduceMotion = true
-                                )
-                            }
-
-                            else -> when {
-                                step == state.notificationStepIndex && state.showNotificationStep -> {
-                                    NotificationPermissionStep(
-                                        totalSteps = state.totalSteps,
-                                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                                        reduceMotion = reduceMotion
-                                    )
-                                    NotificationPermissionStepCta(
-                                        onEnableNotifications = onEnableNotifications,
-                                        onMaybeLater = onContinueFromNotificationPermission,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        reduceMotion = reduceMotion
-                                    )
-                                }
-
-                                step == state.firstHabitStepIndex -> {
-                                    FirstHabitStep(
-                                        habitName = state.habitName,
-                                        habitType = state.habitType,
-                                        targetValue = state.targetValue,
-                                        unit = state.unit,
-                                        scheduleKind = state.scheduleKind,
-                                        totalSteps = state.totalSteps,
-                                        onHabitNameChange = onHabitNameChange,
-                                        onHabitTypeChange = onHabitTypeChange,
-                                        onTargetValueChange = onTargetValueChange,
-                                        onUnitChange = onUnitChange,
-                                        onScheduleKindChange = onScheduleKindChange,
-                                        modifier = Modifier.weight(1f).fillMaxWidth()
-                                    )
-                                    FirstHabitStepCta(
-                                        state = state,
-                                        onCreateHabit = onCreateHabit,
-                                        onSkip = onSkipFirstHabit,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        reduceMotion = reduceMotion
-                                    )
-                                }
-                            }
-                        }
+                        StepContent(
+                            step = step,
+                            state = state,
+                            onStepChange = onStepChange,
+                            onContinueFromNotificationPermission = onContinueFromNotificationPermission,
+                            onEnableNotifications = onEnableNotifications,
+                            onContinueFromStrictness = onContinueFromStrictness,
+                            onCreateHabit = onCreateHabit,
+                            onSkipFirstHabit = onSkipFirstHabit,
+                            onPresetSelected = onPresetSelected,
+                            onHabitNameChange = onHabitNameChange,
+                            onHabitTypeChange = onHabitTypeChange,
+                            onTargetValueChange = onTargetValueChange,
+                            onUnitChange = onUnitChange,
+                            onScheduleKindChange = onScheduleKindChange,
+                            reduceMotion = true
+                        )
                     }
                 }
             } else {
@@ -154,79 +119,121 @@ fun OnboardingWizard(
                     label = "onboarding_step"
                 ) { step ->
                     Column(modifier = Modifier.fillMaxSize()) {
-                        when (step) {
-                            0 -> {
-                                PhilosophyStep(
-                                    totalSteps = state.totalSteps,
-                                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                                    reduceMotion = reduceMotion
-                                )
-                                PhilosophyStepCta(
-                                    onAdvance = { onStepChange(step + 1) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    reduceMotion = reduceMotion
-                                )
-                            }
-
-                            1 -> {
-                                StrictnessStep(
-                                    selectedPreset = state.selectedPreset,
-                                    onPresetSelected = onPresetSelected,
-                                    totalSteps = state.totalSteps,
-                                    reduceMotion = reduceMotion,
-                                    modifier = Modifier.weight(1f).fillMaxWidth()
-                                )
-                                StrictnessStepCta(
-                                    state = state,
-                                    onContinue = onContinueFromStrictness,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    reduceMotion = reduceMotion
-                                )
-                            }
-
-                            else -> when {
-                                step == state.notificationStepIndex && state.showNotificationStep -> {
-                                    NotificationPermissionStep(
-                                        totalSteps = state.totalSteps,
-                                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                                        reduceMotion = reduceMotion
-                                    )
-                                    NotificationPermissionStepCta(
-                                        onEnableNotifications = onEnableNotifications,
-                                        onMaybeLater = onContinueFromNotificationPermission,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        reduceMotion = reduceMotion
-                                    )
-                                }
-
-                                step == state.firstHabitStepIndex -> {
-                                    FirstHabitStep(
-                                        habitName = state.habitName,
-                                        habitType = state.habitType,
-                                        targetValue = state.targetValue,
-                                        unit = state.unit,
-                                        scheduleKind = state.scheduleKind,
-                                        totalSteps = state.totalSteps,
-                                        onHabitNameChange = onHabitNameChange,
-                                        onHabitTypeChange = onHabitTypeChange,
-                                        onTargetValueChange = onTargetValueChange,
-                                        onUnitChange = onUnitChange,
-                                        onScheduleKindChange = onScheduleKindChange,
-                                        modifier = Modifier.weight(1f).fillMaxWidth()
-                                    )
-                                    FirstHabitStepCta(
-                                        state = state,
-                                        onCreateHabit = onCreateHabit,
-                                        onSkip = onSkipFirstHabit,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        reduceMotion = reduceMotion
-                                    )
-                                }
-                            }
-                        }
+                        StepContent(
+                            step = step,
+                            state = state,
+                            onStepChange = onStepChange,
+                            onContinueFromNotificationPermission = onContinueFromNotificationPermission,
+                            onEnableNotifications = onEnableNotifications,
+                            onContinueFromStrictness = onContinueFromStrictness,
+                            onCreateHabit = onCreateHabit,
+                            onSkipFirstHabit = onSkipFirstHabit,
+                            onPresetSelected = onPresetSelected,
+                            onHabitNameChange = onHabitNameChange,
+                            onHabitTypeChange = onHabitTypeChange,
+                            onTargetValueChange = onTargetValueChange,
+                            onUnitChange = onUnitChange,
+                            onScheduleKindChange = onScheduleKindChange,
+                            reduceMotion = reduceMotion
+                        )
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun ColumnScope.StepContent(
+    step: Int,
+    state: OnboardingState,
+    onStepChange: (Int) -> Unit,
+    onContinueFromNotificationPermission: () -> Unit,
+    onEnableNotifications: () -> Unit,
+    onContinueFromStrictness: () -> Unit,
+    onCreateHabit: () -> Unit,
+    onSkipFirstHabit: () -> Unit,
+    onPresetSelected: (OnboardingStrictnessPreset) -> Unit,
+    onHabitNameChange: (String) -> Unit,
+    onHabitTypeChange: (HabitType) -> Unit,
+    onTargetValueChange: (String) -> Unit,
+    onUnitChange: (String) -> Unit,
+    onScheduleKindChange: (OnboardingScheduleKind) -> Unit,
+    reduceMotion: Boolean
+) {
+    when (step) {
+        0 -> {
+            PhilosophyStep(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                reduceMotion = reduceMotion
+            )
+            PhilosophyStepCta(
+                onAdvance = { onStepChange(step + 1) },
+                modifier = Modifier.fillMaxWidth(),
+                reduceMotion = reduceMotion
+            )
+        }
+
+        1 -> {
+            StrictnessStep(
+                selectedPreset = state.selectedPreset,
+                onPresetSelected = onPresetSelected,
+                reduceMotion = reduceMotion,
+                modifier = Modifier.weight(1f).fillMaxWidth()
+            )
+            StrictnessStepCta(
+                state = state,
+                onContinue = onContinueFromStrictness,
+                modifier = Modifier.fillMaxWidth(),
+                reduceMotion = reduceMotion
+            )
+        }
+
+        else -> when {
+            step == state.firstHabitStepIndex -> {
+                FirstHabitStep(
+                    habitName = state.habitName,
+                    habitType = state.habitType,
+                    targetValue = state.targetValue,
+                    unit = state.unit,
+                    scheduleKind = state.scheduleKind,
+                    onHabitNameChange = onHabitNameChange,
+                    onHabitTypeChange = onHabitTypeChange,
+                    onTargetValueChange = onTargetValueChange,
+                    onUnitChange = onUnitChange,
+                    onScheduleKindChange = onScheduleKindChange,
+                    modifier = Modifier.weight(1f).fillMaxWidth()
+                )
+                FirstHabitStepCta(
+                    state = state,
+                    onCreateHabit = onCreateHabit,
+                    onSkip = onSkipFirstHabit,
+                    modifier = Modifier.fillMaxWidth(),
+                    reduceMotion = reduceMotion
+                )
+            }
+
+            step == state.notificationStepIndex && state.showNotificationStep -> {
+                NotificationPermissionStep(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    reduceMotion = reduceMotion
+                )
+                NotificationPermissionStepCta(
+                    onEnableNotifications = onEnableNotifications,
+                    onMaybeLater = onContinueFromNotificationPermission,
+                    modifier = Modifier.fillMaxWidth(),
+                    reduceMotion = reduceMotion
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun stepNameForStep(currentStep: Int, state: OnboardingState): String = when (currentStep) {
+    0 -> stringResource(Res.string.philosophy_strap_label)
+    1 -> stringResource(Res.string.strictness_strap_label)
+    state.firstHabitStepIndex -> stringResource(Res.string.first_habit_strap_label)
+    state.notificationStepIndex -> stringResource(Res.string.notifications_strap_label)
+    else -> ""
 }

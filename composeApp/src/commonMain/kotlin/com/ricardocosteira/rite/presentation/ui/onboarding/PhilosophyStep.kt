@@ -41,28 +41,15 @@ import rite.composeapp.generated.resources.philosophy_promise_open_subtitle
 import rite.composeapp.generated.resources.philosophy_promise_open_title
 import rite.composeapp.generated.resources.philosophy_promise_undistracted_subtitle
 import rite.composeapp.generated.resources.philosophy_promise_undistracted_title
-import rite.composeapp.generated.resources.philosophy_strap_label
 
 @Composable
-fun PhilosophyStep(
-    totalSteps: Int = 4,
-    modifier: Modifier = Modifier,
-    reduceMotion: Boolean = false
-) {
+fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp, vertical = 10.dp)
     ) {
-        OnboardingStepStrap(
-            step = 1,
-            totalSteps = totalSteps,
-            stepName = stringResource(Res.string.philosophy_strap_label)
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
         Text(
             text = headingAnnotated(),
             style = RiteAppTheme.typography.displayMedium.copy(fontWeight = FontWeight.Normal),

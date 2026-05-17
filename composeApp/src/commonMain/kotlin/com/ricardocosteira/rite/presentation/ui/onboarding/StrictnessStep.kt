@@ -53,14 +53,12 @@ import rite.composeapp.generated.resources.strictness_heading_first
 import rite.composeapp.generated.resources.strictness_heading_tail
 import rite.composeapp.generated.resources.strictness_preset_cd_not_selected
 import rite.composeapp.generated.resources.strictness_preset_cd_selected
-import rite.composeapp.generated.resources.strictness_strap_label
 import rite.composeapp.generated.resources.strictness_subtext
 
 @Composable
 fun StrictnessStep(
     selectedPreset: OnboardingStrictnessPreset,
     onPresetSelected: (OnboardingStrictnessPreset) -> Unit,
-    totalSteps: Int = 4,
     reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {
@@ -70,14 +68,6 @@ fun StrictnessStep(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp, vertical = 10.dp)
     ) {
-        OnboardingStepStrap(
-            step = 2,
-            totalSteps = totalSteps,
-            stepName = stringResource(Res.string.strictness_strap_label)
-        )
-
-        Spacer(modifier = Modifier.height(14.dp))
-
         Text(
             text = headingAnnotated(),
             style = RiteAppTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Normal),
