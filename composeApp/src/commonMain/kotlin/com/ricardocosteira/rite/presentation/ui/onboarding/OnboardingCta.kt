@@ -35,8 +35,6 @@ import rite.composeapp.generated.resources.strictness_cta_continue_with_preset
 
 @Composable
 private fun CtaContainer(
-    step: Int,
-    totalSteps: Int,
     modifier: Modifier = Modifier,
     reduceMotion: Boolean = false,
     content: @Composable ColumnScope.() -> Unit
@@ -63,31 +61,18 @@ private fun CtaContainer(
                 alpha = alphaAnim.value
                 translationY = translateYAnim.value.dp.toPx()
             },
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        OnboardingStepIndicator(
-            step = step,
-            totalSteps = totalSteps,
-            modifier = Modifier.fillMaxWidth().padding(bottom = 22.dp)
-        )
-        content()
-    }
+        horizontalAlignment = Alignment.CenterHorizontally,
+        content = content
+    )
 }
 
 @Composable
 internal fun PhilosophyStepCta(
-    step: Int,
-    totalSteps: Int,
     onAdvance: () -> Unit,
     modifier: Modifier = Modifier,
     reduceMotion: Boolean = false
 ) {
-    CtaContainer(
-        step = step,
-        totalSteps = totalSteps,
-        modifier = modifier,
-        reduceMotion = reduceMotion
-    ) {
+    CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
         RiteButton(onClick = onAdvance) {
             Text(stringResource(Res.string.philosophy_cta_accept))
         }
@@ -96,19 +81,12 @@ internal fun PhilosophyStepCta(
 
 @Composable
 internal fun StrictnessStepCta(
-    step: Int,
-    totalSteps: Int,
     state: OnboardingState,
     onContinue: () -> Unit,
     modifier: Modifier = Modifier,
     reduceMotion: Boolean = false
 ) {
-    CtaContainer(
-        step = step,
-        totalSteps = totalSteps,
-        modifier = modifier,
-        reduceMotion = reduceMotion
-    ) {
+    CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
         if (state.isApplyingPreset) {
             CircularProgressIndicator(modifier = Modifier.size(36.dp))
         } else {
@@ -126,8 +104,6 @@ internal fun StrictnessStepCta(
 
 @Composable
 internal fun FirstHabitStepCta(
-    step: Int,
-    totalSteps: Int,
     state: OnboardingState,
     onCreateHabit: () -> Unit,
     onSkip: () -> Unit,
@@ -137,12 +113,7 @@ internal fun FirstHabitStepCta(
     val isEnabled = state.habitName.isNotBlank() &&
         (state.habitType == HabitType.BINARY || state.targetValue.isNotBlank())
 
-    CtaContainer(
-        step = step,
-        totalSteps = totalSteps,
-        modifier = modifier,
-        reduceMotion = reduceMotion
-    ) {
+    CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
         if (state.isCreatingHabit) {
             CircularProgressIndicator(modifier = Modifier.size(36.dp))
         } else {
@@ -165,19 +136,12 @@ internal fun FirstHabitStepCta(
 
 @Composable
 internal fun NotificationPermissionStepCta(
-    step: Int,
-    totalSteps: Int,
     onEnableNotifications: () -> Unit,
     onMaybeLater: () -> Unit,
     modifier: Modifier = Modifier,
     reduceMotion: Boolean = false
 ) {
-    CtaContainer(
-        step = step,
-        totalSteps = totalSteps,
-        modifier = modifier,
-        reduceMotion = reduceMotion
-    ) {
+    CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
         RiteButton(onClick = onEnableNotifications) {
             Text(stringResource(Res.string.notifications_cta_enable))
         }
