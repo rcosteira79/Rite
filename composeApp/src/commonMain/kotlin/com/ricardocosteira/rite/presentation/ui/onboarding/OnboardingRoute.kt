@@ -30,8 +30,7 @@ fun OnboardingRoute(
 
     // Auto-advance when user grants permission from system settings and returns
     LaunchedEffect(permissionState.isGranted, state.currentStep) {
-        val isOnNotificationStep: Boolean = state.showNotificationStep &&
-            state.currentStep == state.notificationStepIndex
+        val isOnNotificationStep = state.currentStep == OnboardingStep.NOTIFICATIONS
         if (permissionState.isGranted && isOnNotificationStep) {
             viewModel.continueFromNotificationPermission()
         }

@@ -48,7 +48,7 @@ class OnboardingViewModel(
         _state.update { it.copy(selectedPreset = preset) }
     }
 
-    fun setCurrentStep(step: Int) {
+    fun setCurrentStep(step: OnboardingStep) {
         _state.update { it.copy(currentStep = step) }
     }
 
@@ -89,7 +89,7 @@ class OnboardingViewModel(
             result.fold(
                 onSuccess = {
                     _state.update {
-                        it.copy(isApplyingPreset = false, currentStep = it.firstHabitStepIndex)
+                        it.copy(isApplyingPreset = false, currentStep = OnboardingStep.FIRST_HABIT)
                     }
                 },
                 onFailure = { error ->
@@ -183,7 +183,7 @@ class OnboardingViewModel(
     private suspend fun advancePastFirstHabit() {
         if (_state.value.showNotificationStep) {
             _state.update {
-                it.copy(isCreatingHabit = false, currentStep = it.notificationStepIndex)
+                it.copy(isCreatingHabit = false, currentStep = OnboardingStep.NOTIFICATIONS)
             }
         } else {
             completeOnboarding()

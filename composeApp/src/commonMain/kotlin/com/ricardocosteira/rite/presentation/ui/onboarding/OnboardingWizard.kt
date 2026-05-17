@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.BackHandler
 import kotlinx.collections.immutable.toImmutableList
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.first_habit_strap_label
@@ -40,9 +41,9 @@ private val EmphasizedAccelerate = CubicBezierEasing(0.3f, 0.0f, 0.8f, 0.15f)
 @Composable
 fun OnboardingWizard(
     state: OnboardingState,
-    currentStep: Int,
+    currentStep: OnboardingStep,
     snackbarHostState: SnackbarHostState,
-    onStepChange: (Int) -> Unit,
+    onStepChange: (OnboardingStep) -> Unit,
     onContinueFromNotificationPermission: () -> Unit,
     onEnableNotifications: () -> Unit,
     onContinueFromStrictness: () -> Unit,
@@ -57,17 +58,15 @@ fun OnboardingWizard(
     reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    BackHandler(enabled = currentStep > 0) { onStepChange(currentStep - 1) }
+    BackHandler(enabled = currentStep.ordinal > 0) {
+        onStepChange(OnboardingStep.entries[currentStep.ordinal - 1])
+    }
 
-    val philosophyLabel = stringResource(Res.string.philosophy_strap_label)
-    val strictnessLabel = stringResource(Res.string.strictness_strap_label)
-    val firstHabitLabel = stringResource(Res.string.first_habit_strap_label)
-    val notificationsLabel = stringResource(Res.string.notifications_strap_label)
     val candidateStepNames = buildList {
-        add(philosophyLabel)
-        add(strictnessLabel)
-        add(firstHabitLabel)
-        if (state.showNotificationStep) add(notificationsLabel)
+        add(stringResource(OnboardingStep.PHILOSOPHY.strapLabel))
+        add(stringResource(OnboardingStep.STRICTNESS.strapLabel))
+        add(stringResource(OnboardingStep.FIRST_HABIT.strapLabel))
+        if (state.showNotificationStep) add(stringResource(OnboardingStep.NOTIFICATIONS.strapLabel))
     }.toImmutableList()
 
     Scaffold(modifier = modifier.fillMaxSize(), snackbarHost = {
@@ -75,9 +74,9 @@ fun OnboardingWizard(
     }) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             OnboardingStepStrap(
-                step = currentStep + 1,
+                step = currentStep.ordinal + 1,
                 totalSteps = state.totalSteps,
-                stepName = stepNameForStep(currentStep, state),
+                stepName = stringResource(currentStep.strapLabel),
                 allStepNames = candidateStepNames,
                 reduceMotion = reduceMotion,
                 modifier = Modifier
@@ -115,7 +114,7 @@ fun OnboardingWizard(
                 AnimatedContent(
                     targetState = currentStep,
                     transitionSpec = {
-                        val isForward = targetState > initialState
+                        val isForward = targetState.ordinal > initialState.ordinal
                         val enterSlide = slideInHorizontally(
                             tween(ENTER_DURATION_MS, easing = EmphasizedDecelerate)
                         ) {
@@ -158,9 +157,9 @@ fun OnboardingWizard(
 
 @Composable
 private fun ColumnScope.StepContent(
-    step: Int,
+    step: OnboardingStep,
     state: OnboardingState,
-    onStepChange: (Int) -> Unit,
+    onStepChange: (OnboardingStep) -> Unit,
     onContinueFromNotificationPermission: () -> Unit,
     onEnableNotifications: () -> Unit,
     onContinueFromStrictness: () -> Unit,
@@ -175,19 +174,19 @@ private fun ColumnScope.StepContent(
     reduceMotion: Boolean
 ) {
     when (step) {
-        0 -> {
+        OnboardingStep.PHILOSOPHY -> {
             PhilosophyStep(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 reduceMotion = reduceMotion
             )
             PhilosophyStepCta(
-                onAdvance = { onStepChange(step + 1) },
+                onAdvance = { onStepChange(OnboardingStep.STRICTNESS) },
                 modifier = Modifier.fillMaxWidth(),
                 reduceMotion = reduceMotion
             )
         }
 
-        1 -> {
+        OnboardingStep.STRICTNESS -> {
             StrictnessStep(
                 selectedPreset = state.selectedPreset,
                 onPresetSelected = onPresetSelected,
@@ -202,51 +201,48 @@ private fun ColumnScope.StepContent(
             )
         }
 
-        else -> when {
-            step == state.firstHabitStepIndex -> {
-                FirstHabitStep(
-                    habitName = state.habitName,
-                    habitType = state.habitType,
-                    targetValue = state.targetValue,
-                    unit = state.unit,
-                    scheduleKind = state.scheduleKind,
-                    onHabitNameChange = onHabitNameChange,
-                    onHabitTypeChange = onHabitTypeChange,
-                    onTargetValueChange = onTargetValueChange,
-                    onUnitChange = onUnitChange,
-                    onScheduleKindChange = onScheduleKindChange,
-                    modifier = Modifier.weight(1f).fillMaxWidth()
-                )
-                FirstHabitStepCta(
-                    state = state,
-                    onCreateHabit = onCreateHabit,
-                    onSkip = onSkipFirstHabit,
-                    modifier = Modifier.fillMaxWidth(),
-                    reduceMotion = reduceMotion
-                )
-            }
+        OnboardingStep.FIRST_HABIT -> {
+            FirstHabitStep(
+                habitName = state.habitName,
+                habitType = state.habitType,
+                targetValue = state.targetValue,
+                unit = state.unit,
+                scheduleKind = state.scheduleKind,
+                onHabitNameChange = onHabitNameChange,
+                onHabitTypeChange = onHabitTypeChange,
+                onTargetValueChange = onTargetValueChange,
+                onUnitChange = onUnitChange,
+                onScheduleKindChange = onScheduleKindChange,
+                modifier = Modifier.weight(1f).fillMaxWidth()
+            )
+            FirstHabitStepCta(
+                state = state,
+                onCreateHabit = onCreateHabit,
+                onSkip = onSkipFirstHabit,
+                modifier = Modifier.fillMaxWidth(),
+                reduceMotion = reduceMotion
+            )
+        }
 
-            step == state.notificationStepIndex && state.showNotificationStep -> {
-                NotificationPermissionStep(
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                    reduceMotion = reduceMotion
-                )
-                NotificationPermissionStepCta(
-                    onEnableNotifications = onEnableNotifications,
-                    onMaybeLater = onContinueFromNotificationPermission,
-                    modifier = Modifier.fillMaxWidth(),
-                    reduceMotion = reduceMotion
-                )
-            }
+        OnboardingStep.NOTIFICATIONS -> {
+            NotificationPermissionStep(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                reduceMotion = reduceMotion
+            )
+            NotificationPermissionStepCta(
+                onEnableNotifications = onEnableNotifications,
+                onMaybeLater = onContinueFromNotificationPermission,
+                modifier = Modifier.fillMaxWidth(),
+                reduceMotion = reduceMotion
+            )
         }
     }
 }
 
-@Composable
-private fun stepNameForStep(currentStep: Int, state: OnboardingState): String = when (currentStep) {
-    0 -> stringResource(Res.string.philosophy_strap_label)
-    1 -> stringResource(Res.string.strictness_strap_label)
-    state.firstHabitStepIndex -> stringResource(Res.string.first_habit_strap_label)
-    state.notificationStepIndex -> stringResource(Res.string.notifications_strap_label)
-    else -> ""
-}
+private val OnboardingStep.strapLabel: StringResource
+    get() = when (this) {
+        OnboardingStep.PHILOSOPHY -> Res.string.philosophy_strap_label
+        OnboardingStep.STRICTNESS -> Res.string.strictness_strap_label
+        OnboardingStep.FIRST_HABIT -> Res.string.first_habit_strap_label
+        OnboardingStep.NOTIFICATIONS -> Res.string.notifications_strap_label
+    }

@@ -94,7 +94,7 @@ internal fun StrictnessStepCta(
                 Text(
                     stringResource(
                         Res.string.strictness_cta_continue_with_preset,
-                        state.selectedPreset.label
+                        stringResource(state.selectedPreset.labelRes)
                     )
                 )
             }

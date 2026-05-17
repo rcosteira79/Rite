@@ -118,8 +118,8 @@ private fun PresetAccordionCard(
     reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    val selectedDesc = stringResource(Res.string.strictness_preset_cd_selected)
-    val notSelectedDesc = stringResource(Res.string.strictness_preset_cd_not_selected)
+    val selectedDescription = stringResource(Res.string.strictness_preset_cd_selected)
+    val notSelectedDescription = stringResource(Res.string.strictness_preset_cd_not_selected)
 
     Column(
         modifier = modifier
@@ -135,7 +135,7 @@ private fun PresetAccordionCard(
             .semantics {
                 role = Role.RadioButton
                 selected = isOpen
-                stateDescription = if (isOpen) selectedDesc else notSelectedDesc
+                stateDescription = if (isOpen) selectedDescription else notSelectedDescription
             }
             .padding(horizontal = 18.dp, vertical = if (isOpen) 18.dp else 14.dp)
     ) {
@@ -143,7 +143,7 @@ private fun PresetAccordionCard(
             RadioDot(isOpen = isOpen)
             Spacer(modifier = Modifier.size(10.dp))
             Text(
-                text = preset.label,
+                text = stringResource(preset.labelRes),
                 style = RiteAppTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Normal,
                     fontSize = 22.sp,
@@ -175,12 +175,12 @@ private fun PresetAccordionCard(
         ) {
             Column(modifier = Modifier.padding(start = 28.dp, top = 12.dp)) {
                 Text(
-                    text = preset.description,
+                    text = stringResource(preset.descriptionRes),
                     style = RiteAppTheme.typography.bodyMedium.copy(lineHeight = 20.sp),
                     color = RiteAppTheme.colors.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(14.dp))
-                preset.rules.forEach { rule ->
+                preset.ruleResources.forEach { ruleRes ->
                     Row(verticalAlignment = Alignment.Top) {
                         Box(
                             modifier = Modifier
@@ -191,7 +191,7 @@ private fun PresetAccordionCard(
                         )
                         Spacer(modifier = Modifier.size(10.dp))
                         Text(
-                            text = rule,
+                            text = stringResource(ruleRes),
                             style = RiteAppTheme.typography.bodyMedium.copy(lineHeight = 20.sp),
                             color = RiteAppTheme.colors.onSurface
                         )

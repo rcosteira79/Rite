@@ -4,6 +4,8 @@ import com.ricardocosteira.rite.domain.models.HabitType
 
 enum class OnboardingScheduleKind { DAILY, WEEKLY }
 
+enum class OnboardingStep { PHILOSOPHY, STRICTNESS, FIRST_HABIT, NOTIFICATIONS }
+
 /** State for the onboarding flow. */
 data class OnboardingState(
     val selectedPreset: OnboardingStrictnessPreset = OnboardingStrictnessPreset.BALANCED,
@@ -15,15 +17,10 @@ data class OnboardingState(
     val isCreatingHabit: Boolean = false,
     val isApplyingPreset: Boolean = false,
     val error: String? = null,
-    val currentStep: Int = 0,
+    val currentStep: OnboardingStep = OnboardingStep.PHILOSOPHY,
     val showNotificationStep: Boolean = false
 ) {
     val totalSteps: Int get() = if (showNotificationStep) 4 else 3
-
-    val firstHabitStepIndex: Int get() = 2
-
-    /** Only valid when [showNotificationStep] is true. */
-    val notificationStepIndex: Int get() = 3
 }
 
 /** Events from the onboarding flow. */
