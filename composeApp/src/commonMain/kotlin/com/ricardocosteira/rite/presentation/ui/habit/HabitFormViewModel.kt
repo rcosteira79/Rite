@@ -12,6 +12,7 @@ import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.rite.domain.repositories.HabitRepository
 import com.ricardocosteira.rite.domain.usecases.CreateHabit
+import com.ricardocosteira.rite.domain.usecases.GenerateInstanceForHabit
 import com.ricardocosteira.rite.domain.usecases.UuidProvider
 import com.ricardocosteira.rite.notifications.HabitNotification
 import com.ricardocosteira.rite.util.toLocalDate
@@ -38,6 +39,7 @@ class HabitFormViewModel(
     private val habitRepository: HabitRepository,
     private val habitInstanceRepository: HabitInstanceRepository,
     private val createHabit: CreateHabit,
+    private val generateInstanceForHabit: GenerateInstanceForHabit,
     private val uuidProvider: UuidProvider,
     private val habitNotification: HabitNotification,
     @Assisted private val habitIdToEdit: String? = null
@@ -340,33 +342,31 @@ class HabitFormViewModel(
             ScheduleType.FLEXIBLE_WEEKLY -> null
         }
         val existingSchedule = habitRepository.getScheduleForHabit(habitId)
+        val today: LocalDate = Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
 
-        if (existingSchedule != null) {
-            habitRepository.updateSchedule(
-                existingSchedule.copy(
-                    scheduleType = state.scheduleType,
-                    quota = state.quota.toIntOrNull() ?: 1,
-                    specificDays = specificDays
-                )
-            )
+        val finalSchedule: HabitSchedule = if (existingSchedule != null) {
+            existingSchedule.copy(
+                scheduleType = state.scheduleType,
+                quota = state.quota.toIntOrNull() ?: 1,
+                specificDays = specificDays
+            ).also { habitRepository.updateSchedule(it) }
         } else {
-            val today = Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
-            habitRepository.createScheduleForHabit(
-                HabitSchedule(
-                    id = uuidProvider.generate(),
-                    habitId = habitId,
-                    scheduleType = state.scheduleType,
-                    startDate = today,
-                    endDate = null,
-                    quota = state.quota.toIntOrNull() ?: 1,
-                    specificDays = specificDays
-                )
-            )
+            HabitSchedule(
+                id = uuidProvider.generate(),
+                habitId = habitId,
+                scheduleType = state.scheduleType,
+                startDate = today,
+                endDate = null,
+                quota = state.quota.toIntOrNull() ?: 1,
+                specificDays = specificDays
+            ).also { habitRepository.createScheduleForHabit(it) }
         }
 
+        // Ensure today's instance exists for the updated schedule (e.g. when the
+        // schedule now covers today but didn't before).
+        generateInstanceForHabit.execute(updatedHabit, finalSchedule, today)
+
         val existingReminders: List<HabitReminder> = habitRepository.getRemindersForHabit(habitId)
-        val today: LocalDate =
-            Clock.System.now().toLocalDate(TimeZone.currentSystemDefault())
         val todayInstance: HabitInstance? =
             habitInstanceRepository.getInstanceForHabitAndDate(habitId, today)
 

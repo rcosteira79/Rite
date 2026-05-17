@@ -7,6 +7,7 @@ import com.ricardocosteira.rite.di.RiteAppComponent
 import com.ricardocosteira.rite.di.createAppComponent
 import com.ricardocosteira.rite.notifications.HabitNotification
 import com.ricardocosteira.rite.notifications.NotificationChannels
+import com.ricardocosteira.rite.time.AndroidAppForegroundObserver
 import com.ricardocosteira.rite.workers.WorkManagerInitializer
 
 /**
@@ -25,7 +26,8 @@ class RiteApplication : Application() {
         super.onCreate()
         val driverFactory = DatabaseDriverFactory(this)
         val habitNotification = HabitNotification(this)
-        appComponent = createAppComponent(driverFactory, habitNotification)
+        val appForegroundObserver = AndroidAppForegroundObserver()
+        appComponent = createAppComponent(driverFactory, habitNotification, appForegroundObserver)
         NotificationChannels.createChannels(this)
         WorkManagerInitializer.initialize(this)
     }

@@ -1,6 +1,7 @@
 package com.ricardocosteira.rite.di
 
 import com.ricardocosteira.rite.data.DatabaseDriverFactory
+import com.ricardocosteira.rite.domain.time.AppForegroundObserver
 import com.ricardocosteira.rite.notifications.HabitNotification
 
 /**
@@ -9,5 +10,6 @@ import com.ricardocosteira.rite.notifications.HabitNotification
  */
 expect fun createAppComponent(
     driverFactory: DatabaseDriverFactory,
-    habitNotification: HabitNotification
+    habitNotification: HabitNotification,
+    appForegroundObserver: AppForegroundObserver
 ): RiteAppComponent

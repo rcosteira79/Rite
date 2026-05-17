@@ -15,6 +15,7 @@ import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.domain.usecases.CompleteHabit
 import com.ricardocosteira.rite.domain.usecases.GenerateDailyHabits
+import com.ricardocosteira.rite.domain.usecases.GenerateInstanceForHabit
 import com.ricardocosteira.rite.domain.usecases.ProcessEndOfDay
 import com.ricardocosteira.rite.domain.usecases.SkipHabit
 import com.ricardocosteira.rite.domain.usecases.UndoHabit
@@ -29,6 +30,8 @@ import kotlin.test.assertTrue
 import kotlin.time.Clock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -63,6 +66,8 @@ class TodayViewModelSwipeTest {
             deps.seedHabitWithTodayInstance(habitId = inputHabitId, habitName = inputHabitName)
 
             val viewModel = buildViewModel(deps, testDispatcher)
+            // Keep a persistent subscriber so WhileSubscribed keeps the upstream alive.
+            backgroundScope.launch { viewModel.state.collect {} }
             advanceUntilIdle()
 
             assertTrue(
@@ -70,13 +75,15 @@ class TodayViewModelSwipeTest {
                 "Expected habit to be in pendingDaily before delete"
             )
 
-            // When — deleteHabit is synchronous: state updates happen immediately before returning
+            // When — deleteHabit sets _pendingDelete; the reactive pipeline re-emits.
             viewModel.deleteHabit(inputHabitId)
-            // Do NOT call advanceUntilIdle() here — it would advance virtual time past the
-            // 5-second undo timeout, committing the delete and resetting pendingDelete.
 
-            // Then
-            val actualState = viewModel.state.value
+            // Then — wait for the reactive pipeline to emit a state where the habit is gone
+            // and pendingDelete is set. state.first suspends until the predicate matches,
+            // cooperatively running the test dispatcher coroutines.
+            val actualState = viewModel.state.first { state ->
+                state.pendingDelete?.habitId == inputHabitId
+            }
             assertTrue(
                 actualState.pendingDaily.none { it.habitId == inputHabitId },
                 "Expected habit to be removed from pendingDaily after delete"
@@ -107,6 +114,8 @@ class TodayViewModelSwipeTest {
             deps.seedHabitWithTodayInstance(habitId = inputHabitId)
 
             val viewModel = buildViewModel(deps, testDispatcher)
+            // Keep a persistent subscriber so WhileSubscribed keeps the upstream alive.
+            backgroundScope.launch { viewModel.state.collect {} }
             advanceUntilIdle()
 
             // When — delete. Do NOT call advanceUntilIdle() — it would drain the 5s delay.
@@ -134,6 +143,8 @@ class TodayViewModelSwipeTest {
             deps.seedHabitWithTodayInstance(habitId = inputHabitId)
 
             val viewModel = buildViewModel(deps, testDispatcher)
+            // Keep a persistent subscriber so WhileSubscribed keeps the upstream alive.
+            backgroundScope.launch { viewModel.state.collect {} }
             advanceUntilIdle()
 
             // When — delete, then advance past the undo timeout (5 seconds)
@@ -167,26 +178,28 @@ class TodayViewModelSwipeTest {
             deps.seedHabitWithTodayInstance(habitId = inputHabitId)
 
             val viewModel = buildViewModel(deps, testDispatcher)
+            // Keep a persistent subscriber so WhileSubscribed keeps the upstream alive.
+            backgroundScope.launch { viewModel.state.collect {} }
             advanceUntilIdle()
 
             viewModel.deleteHabit(inputHabitId)
-            // Verify habit was removed from state synchronously
-            assertTrue(
-                viewModel.state.value.pendingDaily.none { it.habitId == inputHabitId },
-                "Expected habit to be removed from state after deleteHabit"
-            )
+            // Wait for the reactive pipeline to reflect the deletion before checking undo.
+            viewModel.state.first { it.pendingDelete?.habitId == inputHabitId }
 
             // When — undo before timeout
             viewModel.undoDelete()
-            advanceUntilIdle()
 
-            // Then
+            // Then — wait for the reactive pipeline to restore the habit (pendingDelete cleared,
+            // habit back in pendingDaily because _pendingDelete = null re-runs the combine filter).
+            val actualState = viewModel.state.first { state ->
+                state.pendingDelete == null && state.pendingDaily.any { it.habitId == inputHabitId }
+            }
             assertNull(
-                viewModel.state.value.pendingDelete,
+                actualState.pendingDelete,
                 "Expected pendingDelete to be null after undoDelete"
             )
             assertTrue(
-                viewModel.state.value.pendingDaily.any { it.habitId == inputHabitId },
+                actualState.pendingDaily.any { it.habitId == inputHabitId },
                 "Expected habit to be restored to pendingDaily after undoDelete"
             )
             // Habit still exists in repository (delete was cancelled)
@@ -211,6 +224,8 @@ class TodayViewModelSwipeTest {
             deps.seedHabitWithTodayInstance(habitId = inputHabitId)
 
             val viewModel = buildViewModel(deps, testDispatcher)
+            // Keep a persistent subscriber so WhileSubscribed keeps the upstream alive.
+            backgroundScope.launch { viewModel.state.collect {} }
             advanceUntilIdle()
 
             viewModel.deleteHabit(inputHabitId)
@@ -251,6 +266,8 @@ class TodayViewModelSwipeTest {
                 )
 
                 val viewModel = buildViewModel(deps, testDispatcher)
+                // Keep a persistent subscriber so WhileSubscribed keeps the upstream alive.
+                backgroundScope.launch { viewModel.state.collect {} }
                 advanceUntilIdle()
 
                 assertTrue(
@@ -262,10 +279,12 @@ class TodayViewModelSwipeTest {
                 // When — delete first, then delete second (cancels first undo job)
                 viewModel.deleteHabit(inputFirstHabitId)
                 viewModel.deleteHabit(inputSecondHabitId)
-                // Do NOT advanceUntilIdle — second undo job is still pending
 
-                // Then — second habit is in pending delete state
-                val actualState = viewModel.state.value
+                // Then — wait for the reactive pipeline to reflect the second deletion.
+                // state.first cooperatively runs test-dispatcher coroutines until the predicate matches.
+                val actualState = viewModel.state.first { state ->
+                    state.pendingDelete?.habitId == inputSecondHabitId
+                }
                 assertTrue(
                     actualState.pendingDaily.none { it.habitId == inputSecondHabitId },
                     "Expected second habit to be removed from state"
@@ -314,19 +333,26 @@ class TodayViewModelSwipeTest {
     private fun buildViewModel(
         deps: TestDependencies,
         testDispatcher: kotlinx.coroutines.CoroutineDispatcher
-    ): TodayViewModel = TodayViewModel(
-        userRepository = deps.userRepository,
-        habitRepository = deps.habitRepository,
-        habitInstanceRepository = deps.habitInstanceRepository,
-        generateDailyHabits = deps.generateDailyHabits,
-        processEndOfDay = deps.processEndOfDay,
-        completeHabit = deps.completeHabit,
-        skipHabit = deps.skipHabit,
-        undoHabit = deps.undoHabit,
-        undoLastIncrement = deps.undoLastIncrement,
-        habitNotification = HabitNotification(),
-        defaultDispatcher = testDispatcher
-    )
+    ): TodayViewModel {
+        val today: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.UTC).date
+        val dateProvider = com.ricardocosteira.rite.domain.time.FakeCurrentDateProvider(
+            initial = today
+        )
+        return TodayViewModel(
+            userRepository = deps.userRepository,
+            habitRepository = deps.habitRepository,
+            habitInstanceRepository = deps.habitInstanceRepository,
+            generateDailyHabits = deps.generateDailyHabits,
+            processEndOfDay = deps.processEndOfDay,
+            completeHabit = deps.completeHabit,
+            skipHabit = deps.skipHabit,
+            undoHabit = deps.undoHabit,
+            undoLastIncrement = deps.undoLastIncrement,
+            habitNotification = HabitNotification(),
+            currentDateProvider = dateProvider,
+            defaultDispatcher = testDispatcher
+        )
+    }
 
     inner class TestDependencies(testDispatcher: kotlinx.coroutines.CoroutineDispatcher) {
 
@@ -358,9 +384,12 @@ class TodayViewModelSwipeTest {
         val generateDailyHabits: GenerateDailyHabits = GenerateDailyHabits(
             userRepository = userRepository,
             habitRepository = habitRepository,
-            habitInstanceRepository = habitInstanceRepository,
-            leavePeriodRepository = leavePeriodRepository,
-            uuidProvider = uuidProvider
+            generateInstanceForHabit = GenerateInstanceForHabit(
+                habitRepository = habitRepository,
+                habitInstanceRepository = habitInstanceRepository,
+                leavePeriodRepository = leavePeriodRepository,
+                uuidProvider = uuidProvider
+            )
         )
         val processEndOfDay: ProcessEndOfDay = ProcessEndOfDay(
             userRepository = userRepository,

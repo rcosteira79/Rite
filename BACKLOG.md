@@ -47,12 +47,29 @@
 - [ ] Add deep linking support to Routes for notification tap-to-screen
 - [ ] Use date-range query in HabitDetailViewModel instead of fetching all instances then filtering
 
+## Code Quality — from reactive Today refactor (2026-04-26)
+
+### Important
+- [x] Wrap `tickAtMidnight` and `observeForegroundChanges` in `DefaultCurrentDateProvider` with try/catch + log + retry-on-delay-floor. Currently a single throw kills the loop for the rest of the process lifetime.
+- [ ] Wire `Intent.ACTION_TIMEZONE_CHANGED` (Android) / `NSSystemTimeZoneDidChangeNotification` (iOS) into `CurrentDateProvider` so a mid-flow TZ change recomputes `today` immediately. Right now the user has to background+foreground for the new TZ to take effect.
+
+### Medium
+- [ ] Cache `(habit, schedule)` lookups in `TodayViewModel.buildState` keyed on instance.id between emissions of the instances flow — avoids ~2N DB hits per state tick. Becomes visible at ~100 habits.
+- [ ] Move `refreshTrackingNotification` out of `buildState` — currently re-fires on every UI-only state change (`_pendingDelete`, `_quantitativeInputFor`, `_timezoneWarningDismissed` toggles). Should be in its own collector watching the instances flow.
+- [ ] Drop `generateDailyHabits.execute()` from `OnboardingViewModel.completeOnboarding` — `TodayViewModel.init` now covers it on the first navigation to Today.
+
+### Low
+- [ ] Add "user update re-emits" test to `UserRepositoryObserveTest` (timezone change, onboarding flag flip).
+- [ ] Add "instance update/delete re-emits" test to `HabitInstanceRepositoryObserveRangeTest` (currently only insert).
+- [ ] Add minimal `println` (or future logger) in `DefaultCurrentDateProvider` on midnight-tick startup + delay duration — needed for "Today still shows yesterday" debugging.
+
 ## Future Features
 
 - [ ] Weekly Reflection / insights card (exploring on-device Gemma 4 E2B for natural language summaries)
 - [x] Periodic reminder scheduling (interval-based within a time window)
 - [ ] Create/edit habit UI for custom increment values
 - [ ] Active vs silent tracking notification toggle in Settings
+- [ ] Settings option to define start of week (Sunday vs Monday)
 - [ ] iOS activation
 - [ ] Comprehensive unit test coverage
 - [ ] Ascension mode — visual treatment for quantitative habits that go beyond 100% (ring colour shift, celebratory UI)

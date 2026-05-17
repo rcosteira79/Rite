@@ -19,11 +19,22 @@ data class User(
     val dailySummaryTime: LocalTime?,
     val createdAt: Instant
 ) {
+    /**
+     * Returns the [StrictnessPreset] matching this user's stored strictness fields,
+     * or null if the values don't match any preset (custom settings).
+     */
+    fun toStrictnessPreset(): StrictnessPreset? = StrictnessPreset.fromSettings(
+        UserStrictnessSettings(
+            undoPolicy = undoPolicy,
+            maxSnoozesPerHabitPerDay = maxSnoozesPerHabitPerDay,
+            maxConsecutiveSkips = maxConsecutiveSkips,
+            maxSnoozeDurationMinutes = maxSnoozeDurationMinutes
+        )
+    )
+
     companion object {
         const val DEFAULT_MAX_SNOOZE_DURATION_MINUTES: Int = 30
         const val DEFAULT_MAX_SNOOZES_PER_HABIT_PER_DAY: Int = 3
         const val DEFAULT_MAX_CONSECUTIVE_SKIPS: Int = 2
     }
 }
-
-
