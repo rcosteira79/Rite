@@ -85,7 +85,7 @@ fun StrictnessStep(
 
         Text(
             text = stringResource(Res.string.strictness_subtext),
-            style = RiteAppTheme.typography.bodySmall,
+            style = RiteAppTheme.typography.bodyMedium,
             color = RiteAppTheme.colors.onSurfaceVariant
         )
 

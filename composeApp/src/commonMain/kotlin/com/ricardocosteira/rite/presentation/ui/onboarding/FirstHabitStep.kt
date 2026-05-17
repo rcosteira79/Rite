@@ -101,7 +101,7 @@ fun FirstHabitStep(
 
         Text(
             text = stringResource(Res.string.first_habit_subtext),
-            style = RiteAppTheme.typography.bodySmall,
+            style = RiteAppTheme.typography.bodyMedium,
             color = RiteAppTheme.colors.onSurfaceVariant
         )
 

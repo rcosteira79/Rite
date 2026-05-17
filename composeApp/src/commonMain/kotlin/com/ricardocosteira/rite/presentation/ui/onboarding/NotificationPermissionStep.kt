@@ -72,7 +72,7 @@ fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Bool
 
         Text(
             text = stringResource(Res.string.notifications_body),
-            style = RiteAppTheme.typography.bodySmall,
+            style = RiteAppTheme.typography.bodyMedium,
             color = RiteAppTheme.colors.onSurfaceVariant
         )
 
