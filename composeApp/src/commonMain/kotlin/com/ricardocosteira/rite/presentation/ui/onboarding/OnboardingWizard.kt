@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.BackHandler
+import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.first_habit_strap_label
@@ -67,7 +68,7 @@ fun OnboardingWizard(
         add(strictnessLabel)
         add(firstHabitLabel)
         if (state.showNotificationStep) add(notificationsLabel)
-    }
+    }.toImmutableList()
 
     Scaffold(modifier = modifier.fillMaxSize(), snackbarHost = {
         SnackbarHost(snackbarHostState)

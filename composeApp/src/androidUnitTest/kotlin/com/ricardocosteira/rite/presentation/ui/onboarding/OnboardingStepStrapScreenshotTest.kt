@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
+import kotlinx.collections.immutable.persistentListOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,7 +25,8 @@ import org.robolectric.annotation.GraphicsMode
 class OnboardingStepStrapScreenshotTest {
     @get:Rule val composeRule = createComposeRule()
 
-    private val allLabels = listOf("Philosophy", "Strictness", "First habit", "Notifications")
+    private val allLabels =
+        persistentListOf("Philosophy", "Strictness", "First habit", "Notifications")
 
     @Test fun philosophy_step_lightTheme() {
         composeRule.setContent {

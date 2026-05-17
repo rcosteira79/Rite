@@ -22,6 +22,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 private const val CROSSFADE_MS = 220
 private const val BAR_FILL_MS = 320
@@ -40,7 +43,7 @@ fun OnboardingStepStrap(
     stepName: String,
     modifier: Modifier = Modifier,
     reduceMotion: Boolean = false,
-    allStepNames: List<String> = listOf(stepName)
+    allStepNames: ImmutableList<String> = persistentListOf(stepName)
 ) {
     val nameStyle = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 2.2.sp)
     val countStyle = RiteAppTheme.typography.labelSmall.copy(
@@ -56,7 +59,7 @@ fun OnboardingStepStrap(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         FixedSlot(
-            candidates = allStepNames.map { it.uppercase() },
+            candidates = allStepNames.map { it.uppercase() }.toImmutableList(),
             style = nameStyle,
             alignment = Alignment.CenterStart
         ) {
@@ -122,7 +125,7 @@ fun OnboardingStepStrap(
 
 @Composable
 private fun FixedSlot(
-    candidates: List<String>,
+    candidates: ImmutableList<String>,
     style: TextStyle,
     alignment: Alignment,
     content: @Composable () -> Unit
