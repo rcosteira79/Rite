@@ -41,7 +41,10 @@ fun OnboardingStepStrap(
     allStepNames: List<String> = listOf(stepName)
 ) {
     val nameStyle = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 2.2.sp)
-    val countStyle = RiteAppTheme.typography.labelSmall.copy(letterSpacing = 1.8.sp)
+    val countStyle = RiteAppTheme.typography.labelSmall.copy(
+        letterSpacing = 1.8.sp,
+        fontFeatureSettings = "tnum"
+    )
     val nameSpec = if (reduceMotion) snap<Float>() else tween<Float>(CROSSFADE_MS)
     val barSpec = if (reduceMotion) snap<Color>() else tween<Color>(BAR_COLOR_MS)
 
