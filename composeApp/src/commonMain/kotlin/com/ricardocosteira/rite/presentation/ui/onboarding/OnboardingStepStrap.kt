@@ -1,13 +1,15 @@
 package com.ricardocosteira.rite.presentation.ui.onboarding
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 
 private const val CROSSFADE_MS = 220
-private const val BAR_COLOR_MS = 320
+private const val BAR_FILL_MS = 320
 
 /**
  * Combined step header: `[STEP NAME mono] ━━━━━━━ [N / total mono]`.
@@ -46,7 +48,7 @@ fun OnboardingStepStrap(
         fontFeatureSettings = "tnum"
     )
     val nameSpec = if (reduceMotion) snap<Float>() else tween<Float>(CROSSFADE_MS)
-    val barSpec = if (reduceMotion) snap<Color>() else tween<Color>(BAR_COLOR_MS)
+    val barSpec = if (reduceMotion) snap<Float>() else tween<Float>(BAR_FILL_MS)
 
     Row(
         modifier = modifier,
@@ -76,22 +78,24 @@ fun OnboardingStepStrap(
             horizontalArrangement = Arrangement.spacedBy(3.dp)
         ) {
             repeat(totalSteps) { index ->
-                val target = if (index < step) {
-                    RiteAppTheme.colors.onSurface
-                } else {
-                    RiteAppTheme.colors.outline
-                }
-                val color by animateColorAsState(
-                    targetValue = target,
+                val fillFraction by animateFloatAsState(
+                    targetValue = if (index < step) 1f else 0f,
                     animationSpec = barSpec,
-                    label = "bar$index"
+                    label = "barFill$index"
                 )
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .height(2.dp)
-                        .background(color)
-                )
+                        .background(RiteAppTheme.colors.outline)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth(fillFraction)
+                            .background(RiteAppTheme.colors.onSurface)
+                    )
+                }
             }
         }
 
