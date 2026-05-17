@@ -21,9 +21,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +50,8 @@ import rite.composeapp.generated.resources.first_habit_label_schedule
 import rite.composeapp.generated.resources.first_habit_label_target_value
 import rite.composeapp.generated.resources.first_habit_label_type
 import rite.composeapp.generated.resources.first_habit_label_unit
+import rite.composeapp.generated.resources.first_habit_placeholder_name
+import rite.composeapp.generated.resources.first_habit_placeholder_target
 import rite.composeapp.generated.resources.first_habit_placeholder_unit
 import rite.composeapp.generated.resources.first_habit_schedule_daily
 import rite.composeapp.generated.resources.first_habit_schedule_weekly
@@ -99,21 +101,19 @@ fun FirstHabitStep(
         Spacer(modifier = Modifier.height(18.dp))
 
         FieldGroup(label = stringResource(Res.string.first_habit_label_name)) {
-            TextField(
+            OutlinedTextField(
                 value = habitName,
                 onValueChange = onHabitNameChange,
+                placeholder = {
+                    ItalicPlaceholder(stringResource(Res.string.first_habit_placeholder_name))
+                },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Sentences
                 ),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(4.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = RiteAppTheme.colors.surface,
-                    unfocusedContainerColor = RiteAppTheme.colors.surface,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                )
+                colors = ritualTextFieldColors()
             )
         }
 
@@ -152,40 +152,37 @@ fun FirstHabitStep(
                         label = stringResource(Res.string.first_habit_label_target_value),
                         modifier = Modifier.weight(1f)
                     ) {
-                        TextField(
+                        OutlinedTextField(
                             value = targetValue,
                             onValueChange = onTargetValueChange,
+                            placeholder = {
+                                ItalicPlaceholder(
+                                    stringResource(Res.string.first_habit_placeholder_target)
+                                )
+                            },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(4.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = RiteAppTheme.colors.surface,
-                                unfocusedContainerColor = RiteAppTheme.colors.surface,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
-                            )
+                            colors = ritualTextFieldColors()
                         )
                     }
                     FieldGroup(
                         label = stringResource(Res.string.first_habit_label_unit),
                         modifier = Modifier.weight(1f)
                     ) {
-                        TextField(
+                        OutlinedTextField(
                             value = unit,
                             onValueChange = onUnitChange,
                             placeholder = {
-                                Text(stringResource(Res.string.first_habit_placeholder_unit))
+                                ItalicPlaceholder(
+                                    stringResource(Res.string.first_habit_placeholder_unit)
+                                )
                             },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(4.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = RiteAppTheme.colors.surface,
-                                unfocusedContainerColor = RiteAppTheme.colors.surface,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
-                            )
+                            colors = ritualTextFieldColors()
                         )
                     }
                 }
@@ -272,6 +269,26 @@ private fun TypeCard(
         )
     }
 }
+
+@Composable
+private fun ItalicPlaceholder(text: String) {
+    Text(
+        text = text,
+        style = RiteAppTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic),
+        color = RiteAppTheme.colors.onSurfaceVariant
+    )
+}
+
+@Composable
+private fun ritualTextFieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = RiteAppTheme.colors.onSurface,
+    unfocusedTextColor = RiteAppTheme.colors.onSurface,
+    focusedContainerColor = RiteAppTheme.colors.surface,
+    unfocusedContainerColor = RiteAppTheme.colors.surface,
+    focusedBorderColor = RiteAppTheme.colors.onSurface,
+    unfocusedBorderColor = RiteAppTheme.colors.outline,
+    cursorColor = RiteAppTheme.colors.onSurface
+)
 
 @Composable
 private fun ScheduleChip(label: String, isSelected: Boolean, onClick: () -> Unit) {

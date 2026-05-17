@@ -13,6 +13,8 @@
     <string name="first_habit_type_quantitative_description">Count toward a target.</string>
     <string name="first_habit_label_target_value">Target</string>
     <string name="first_habit_label_unit">Unit</string>
+    <string name="first_habit_placeholder_name">E.g. Drink water</string>
+    <string name="first_habit_placeholder_target">E.g. 30</string>
     <string name="first_habit_placeholder_unit">E.g. ml, pages, minutes</string>
 
     <string name="first_habit_label_schedule">Schedule</string>
