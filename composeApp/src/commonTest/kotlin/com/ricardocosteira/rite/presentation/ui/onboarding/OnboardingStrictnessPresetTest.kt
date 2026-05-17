@@ -2,55 +2,10 @@ package com.ricardocosteira.rite.presentation.ui.onboarding
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class OnboardingStrictnessPresetTest {
-
-    @Test
-    fun `FLEXIBLE has correct collapsed summary`() {
-        assertEquals(
-            expected = "Undo: Unlimited · Snoozes: Unlimited",
-            actual = OnboardingStrictnessPreset.FLEXIBLE.collapsedSummary
-        )
-    }
-
-    @Test
-    fun `BALANCED has correct collapsed summary`() {
-        assertEquals(
-            expected = "Undo: Within 5 min · Snoozes: 1/day",
-            actual = OnboardingStrictnessPreset.BALANCED.collapsedSummary
-        )
-    }
-
-    @Test
-    fun `LOCKED has correct collapsed summary`() {
-        assertEquals(
-            expected = "No undo · Skips capped",
-            actual = OnboardingStrictnessPreset.UNWAVERING.collapsedSummary
-        )
-    }
-
-    @Test
-    fun `BALANCED rules contain key-value pairs for Undo, Snoozes, Skips`() {
-        val actualKeys = OnboardingStrictnessPreset.BALANCED.rules.map { it.key }
-        assertEquals(expected = listOf("Undo", "Snoozes", "Skips"), actual = actualKeys)
-    }
-
-    @Test
-    fun `BALANCED rules have correct values`() {
-        val rules = OnboardingStrictnessPreset.BALANCED.rules
-        assertEquals(expected = "Within 5 min", actual = rules[0].value)
-        assertEquals(expected = "1 / day",       actual = rules[1].value)
-        assertEquals(expected = "2 / month",     actual = rules[2].value)
-    }
-
-    @Test
-    fun `FLEXIBLE rules all have value Unlimited`() {
-        val rules = OnboardingStrictnessPreset.FLEXIBLE.rules
-        assertTrue(rules.isNotEmpty())
-        assertTrue(rules.all { it.value == "Unlimited" })
-    }
 
     @Test
     fun `BALANCED is recommended, others are not`() {
@@ -60,11 +15,71 @@ class OnboardingStrictnessPresetTest {
     }
 
     @Test
-    fun `LOCKED rules contain key-value pairs for Undo, Snoozes, Skips`() {
+    fun `FLEXIBLE has correct label`() {
+        assertEquals(expected = "Flexible", actual = OnboardingStrictnessPreset.FLEXIBLE.label)
+    }
+
+    @Test
+    fun `BALANCED has correct label`() {
+        assertEquals(expected = "Balanced", actual = OnboardingStrictnessPreset.BALANCED.label)
+    }
+
+    @Test
+    fun `UNWAVERING has correct label`() {
+        assertEquals(expected = "Unwavering", actual = OnboardingStrictnessPreset.UNWAVERING.label)
+    }
+
+    @Test
+    fun `each preset has a non-blank description`() {
+        OnboardingStrictnessPreset.entries.forEach { preset ->
+            assertTrue(
+                preset.description.isNotBlank(),
+                "Expected non-blank description for $preset"
+            )
+        }
+    }
+
+    @Test
+    fun `each preset has exactly four rules`() {
+        OnboardingStrictnessPreset.entries.forEach { preset ->
+            assertEquals(
+                expected = 4,
+                actual = preset.rules.size,
+                message = "Expected 4 rules for $preset"
+            )
+        }
+    }
+
+    @Test
+    fun `each preset rule is non-blank`() {
+        OnboardingStrictnessPreset.entries.forEach { preset ->
+            preset.rules.forEach { rule ->
+                assertTrue(rule.isNotBlank(), "Expected non-blank rule in $preset")
+            }
+        }
+    }
+
+    @Test
+    fun `FLEXIBLE rules mention undo, snoozes, skips`() {
+        val rules = OnboardingStrictnessPreset.FLEXIBLE.rules
+        assertTrue(rules.any { it.startsWith("Undo:") })
+        assertTrue(rules.any { it.startsWith("Snoozes:") })
+        assertTrue(rules.any { it.startsWith("Skips:") })
+    }
+
+    @Test
+    fun `BALANCED rules mention undo, snoozes, skips`() {
+        val rules = OnboardingStrictnessPreset.BALANCED.rules
+        assertTrue(rules.any { it.startsWith("Undo:") })
+        assertTrue(rules.any { it.startsWith("Snoozes:") })
+        assertTrue(rules.any { it.startsWith("Skips:") })
+    }
+
+    @Test
+    fun `UNWAVERING rules mention undo, snoozes, skips`() {
         val rules = OnboardingStrictnessPreset.UNWAVERING.rules
-        assertEquals(expected = listOf("Undo", "Snoozes", "Skips"), actual = rules.map { it.key })
-        assertEquals(expected = "None",   actual = rules[0].value)
-        assertEquals(expected = "Capped", actual = rules[1].value)
-        assertEquals(expected = "Capped", actual = rules[2].value)
+        assertTrue(rules.any { it.startsWith("Undo:") })
+        assertTrue(rules.any { it.startsWith("Snoozes:") })
+        assertTrue(rules.any { it.startsWith("Skips:") })
     }
 }

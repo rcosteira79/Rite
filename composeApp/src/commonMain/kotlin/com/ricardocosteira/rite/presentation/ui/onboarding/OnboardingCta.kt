@@ -31,7 +31,7 @@ import rite.composeapp.generated.resources.first_habit_button_skip
 import rite.composeapp.generated.resources.notifications_cta_enable
 import rite.composeapp.generated.resources.notifications_cta_later
 import rite.composeapp.generated.resources.philosophy_cta_accept
-import rite.composeapp.generated.resources.strictness_cta_continue
+import rite.composeapp.generated.resources.strictness_cta_continue_with_preset
 
 @Composable
 private fun CtaContainer(
@@ -113,7 +113,12 @@ internal fun StrictnessStepCta(
             CircularProgressIndicator(modifier = Modifier.size(36.dp))
         } else {
             RiteButton(onClick = onContinue) {
-                Text(stringResource(Res.string.strictness_cta_continue))
+                Text(
+                    stringResource(
+                        Res.string.strictness_cta_continue_with_preset,
+                        state.selectedPreset.label
+                    )
+                )
             }
         }
     }

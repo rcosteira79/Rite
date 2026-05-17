@@ -1,14 +1,14 @@
 package com.ricardocosteira.rite.presentation.ui.onboarding
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.snap
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,48 +18,41 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Balance
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.outlined.EditNote
+import androidx.compose.material.icons.outlined.ExpandLess
 import androidx.compose.material.icons.outlined.ExpandMore
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
+import org.jetbrains.compose.resources.stringResource
 import rite.composeapp.generated.resources.Res
 import rite.composeapp.generated.resources.strictness_badge_recommended
-import rite.composeapp.generated.resources.strictness_heading
+import rite.composeapp.generated.resources.strictness_heading_accent
+import rite.composeapp.generated.resources.strictness_heading_first
+import rite.composeapp.generated.resources.strictness_heading_tail
 import rite.composeapp.generated.resources.strictness_preset_cd_not_selected
 import rite.composeapp.generated.resources.strictness_preset_cd_selected
+import rite.composeapp.generated.resources.strictness_strap_label
 import rite.composeapp.generated.resources.strictness_subtext
-import org.jetbrains.compose.resources.stringResource
-
-private fun OnboardingStrictnessPreset.icon(): ImageVector = when (this) {
-    OnboardingStrictnessPreset.FLEXIBLE -> Icons.Outlined.EditNote
-    OnboardingStrictnessPreset.BALANCED -> Icons.Filled.Balance
-    OnboardingStrictnessPreset.UNWAVERING -> Icons.Filled.Lock
-}
 
 @Composable
 fun StrictnessStep(
@@ -71,43 +64,37 @@ fun StrictnessStep(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp)
+            .padding(horizontal = 24.dp, vertical = 10.dp)
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = stringResource(Res.string.strictness_heading),
-            style = RiteAppTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold),
-            color = RiteAppTheme.colors.onSurface,
-            modifier = Modifier.semantics { heading() }
+        OnboardingStepStrap(
+            step = 2,
+            totalSteps = 4,
+            stepName = stringResource(Res.string.strictness_strap_label)
         )
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        Box(
-            modifier = Modifier
-                .width(36.dp)
-                .height(3.dp)
-                .background(
-                    color = RiteAppTheme.colors.primary,
-                    shape = RoundedCornerShape(2.dp)
-                )
+        Text(
+            text = headingAnnotated(),
+            style = RiteAppTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Normal),
+            color = RiteAppTheme.colors.onSurface,
+            modifier = Modifier.semantics { heading() }
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Text(
             text = stringResource(Res.string.strictness_subtext),
-            style = RiteAppTheme.typography.bodyMedium,
-            color = RiteAppTheme.colors.onSurfaceVariant
+            style = RiteAppTheme.typography.bodySmall,
+            color = RiteAppTheme.colors.outline
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(22.dp))
 
         OnboardingStrictnessPreset.entries.forEach { preset ->
-            PresetCard(
+            PresetAccordionCard(
                 preset = preset,
-                isSelected = preset == selectedPreset,
+                isOpen = preset == selectedPreset,
                 onClick = { onPresetSelected(preset) },
                 reduceMotion = reduceMotion
             )
@@ -117,187 +104,154 @@ fun StrictnessStep(
 }
 
 @Composable
-private fun PresetCard(
+private fun headingAnnotated(): AnnotatedString = buildAnnotatedString {
+    append(stringResource(Res.string.strictness_heading_first))
+    append(" ")
+    withStyle(
+        SpanStyle(fontStyle = FontStyle.Italic, color = RiteAppTheme.colors.onSurfaceVariant)
+    ) {
+        append(stringResource(Res.string.strictness_heading_accent))
+    }
+    append(" ")
+    append(stringResource(Res.string.strictness_heading_tail))
+}
+
+@Composable
+private fun PresetAccordionCard(
     preset: OnboardingStrictnessPreset,
-    isSelected: Boolean,
+    isOpen: Boolean,
     onClick: () -> Unit,
     reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) {
-            RiteAppTheme.colors.primaryContainer
-        } else {
-            RiteAppTheme.colors.surfaceContainerLow
-        },
-        animationSpec = if (reduceMotion) snap() else tween(200),
-        label = "presetCardBackground"
-    )
-
-    val selectedStateDescription = stringResource(Res.string.strictness_preset_cd_selected)
-    val notSelectedStateDescription = stringResource(Res.string.strictness_preset_cd_not_selected)
-
-    val cornerRadius by animateDpAsState(
-        targetValue = if (isSelected) 24.dp else 16.dp,
-        animationSpec = if (reduceMotion) snap() else tween(200),
-        label = "presetCardCornerRadius"
-    )
+    val selectedDesc = stringResource(Res.string.strictness_preset_cd_selected)
+    val notSelectedDesc = stringResource(Res.string.strictness_preset_cd_not_selected)
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .then(
-                if (isSelected) {
-                    Modifier.shadow(
-                        elevation = 8.dp,
-                        shape = RoundedCornerShape(cornerRadius)
-                    )
-                } else {
-                    Modifier
-                }
-            ).clip(RoundedCornerShape(cornerRadius))
+            .clip(RoundedCornerShape(4.dp))
             .border(
                 width = 1.dp,
-                color = if (isSelected) {
-                    RiteAppTheme.colors.onPrimaryContainer.copy(alpha = 0.15f)
-                } else {
-                    RiteAppTheme.colors.outlineVariant.copy(alpha = 0.3f)
-                },
-                shape = RoundedCornerShape(cornerRadius)
-            ).background(backgroundColor)
-            .then(
-                if (isSelected) {
-                    Modifier.background(
-                        Brush.verticalGradient(
-                            listOf(Color.Transparent, Color.Black.copy(alpha = 0.25f))
-                        )
-                    )
-                } else {
-                    Modifier
-                }
-            ).animateContentSize(animationSpec = tween(200))
+                color = if (isOpen) RiteAppTheme.colors.onSurface else RiteAppTheme.colors.outline,
+                shape = RoundedCornerShape(4.dp)
+            )
+            .background(if (isOpen) RiteAppTheme.colors.surface else RiteAppTheme.colors.background)
             .clickable { onClick() }
             .semantics {
                 role = Role.RadioButton
-                selected = isSelected
-                stateDescription =
-                    if (isSelected) selectedStateDescription else notSelectedStateDescription
-            }.padding(16.dp)
-    ) {
-        if (isSelected) {
-            // onPrimaryContainer: Forest Discipline #FFFFFF / Stoic Night #E5E2DF
-            val cardContent = RiteAppTheme.colors.onPrimaryContainer
-            // === SELECTED STATE ===
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Icon(
-                    imageVector = preset.icon(),
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp),
-                    tint = cardContent
-                )
-                if (preset.isRecommended) {
-                    Box(
-                        modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = cardContent.copy(alpha = 0.5f),
-                                shape = RoundedCornerShape(percent = 50)
-                            ).padding(horizontal = 12.dp, vertical = 3.dp)
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.strictness_badge_recommended),
-                            style = RiteAppTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 0.12.sp
-                            ),
-                            color = cardContent.copy(alpha = 0.8f)
-                        )
-                    }
-                }
+                selected = isOpen
+                stateDescription = if (isOpen) selectedDesc else notSelectedDesc
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            .padding(horizontal = 18.dp, vertical = if (isOpen) 18.dp else 14.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            RadioDot(isOpen = isOpen)
+            Spacer(modifier = Modifier.size(10.dp))
             Text(
                 text = preset.label,
-                style = RiteAppTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = cardContent
+                style = RiteAppTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 22.sp,
+                    letterSpacing = (-0.1).sp
+                ),
+                color = RiteAppTheme.colors.onSurface
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = preset.description,
-                style = RiteAppTheme.typography.bodySmall,
-                color = cardContent.copy(alpha = 0.8f)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider(color = cardContent.copy(alpha = 0.1f))
-            Spacer(modifier = Modifier.height(12.dp))
-            preset.rules.forEachIndexed { index, rule ->
-                if (index > 0) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        color = cardContent.copy(alpha = 0.07f)
-                    )
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = rule.key,
-                        style = RiteAppTheme.typography.labelSmall,
-                        color = cardContent.copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = rule.value,
-                        style = RiteAppTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.SemiBold
-                        ),
-                        color = cardContent
-                    )
-                }
+            if (preset.isRecommended) {
+                Spacer(modifier = Modifier.size(8.dp))
+                RecommendedBadge()
             }
-        } else {
-            // === COLLAPSED (UNSELECTED) STATE ===
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                val iconTint = if (preset == OnboardingStrictnessPreset.UNWAVERING) {
-                    RiteAppTheme.colors.error
-                } else {
-                    RiteAppTheme.colors.onSurfaceVariant
-                }
-                Icon(
-                    imageVector = preset.icon(),
-                    contentDescription = null,
-                    modifier = Modifier.size(22.dp),
-                    tint = iconTint
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = if (isOpen) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                contentDescription = null,
+                tint = RiteAppTheme.colors.outline,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+
+        AnimatedVisibility(
+            visible = isOpen,
+            enter =
+                expandVertically(tween(if (reduceMotion) 0 else 180)) +
+                    fadeIn(tween(if (reduceMotion) 0 else 180)),
+            exit =
+                shrinkVertically(tween(if (reduceMotion) 0 else 180)) +
+                    fadeOut(tween(if (reduceMotion) 0 else 180))
+        ) {
+            Column(modifier = Modifier.padding(start = 28.dp, top = 12.dp)) {
+                Text(
+                    text = preset.description,
+                    style = RiteAppTheme.typography.bodySmall.copy(lineHeight = 18.sp),
+                    color = RiteAppTheme.colors.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.width(14.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = preset.label,
-                        style = RiteAppTheme.typography.titleSmall.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = RiteAppTheme.colors.onSurface
-                    )
-                    Text(
-                        text = preset.collapsedSummary,
-                        style = RiteAppTheme.typography.labelSmall,
-                        color = RiteAppTheme.colors.onSurfaceVariant
-                    )
+                Spacer(modifier = Modifier.height(14.dp))
+                preset.rules.forEach { rule ->
+                    Row(verticalAlignment = Alignment.Top) {
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 9.dp)
+                                .size(4.dp)
+                                .clip(RoundedCornerShape(50))
+                                .background(RiteAppTheme.colors.onSurface)
+                        )
+                        Spacer(modifier = Modifier.size(10.dp))
+                        Text(
+                            text = rule,
+                            style = RiteAppTheme.typography.bodySmall.copy(lineHeight = 18.sp),
+                            color = RiteAppTheme.colors.onSurface
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
-                Icon(
-                    imageVector = Icons.Outlined.ExpandMore,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = RiteAppTheme.colors.outlineVariant
-                )
             }
         }
+    }
+}
+
+@Composable
+private fun RadioDot(isOpen: Boolean) {
+    Box(
+        modifier = Modifier
+            .size(18.dp)
+            .clip(RoundedCornerShape(50))
+            .border(
+                width = 1.5.dp,
+                color = if (isOpen) RiteAppTheme.colors.onSurface else RiteAppTheme.colors.outline,
+                shape = RoundedCornerShape(50)
+            )
+            .background(
+                if (isOpen) RiteAppTheme.colors.onSurface else RiteAppTheme.colors.background
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        if (isOpen) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(RiteAppTheme.colors.background)
+            )
+        }
+    }
+}
+
+@Composable
+private fun RecommendedBadge() {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(2.dp))
+            .background(RiteAppTheme.colors.onSurface)
+            .padding(horizontal = 6.dp, vertical = 3.dp)
+    ) {
+        Text(
+            text = stringResource(Res.string.strictness_badge_recommended),
+            style = RiteAppTheme.typography.labelSmall.copy(
+                fontSize = 9.sp,
+                letterSpacing = 2.sp,
+                fontWeight = FontWeight.SemiBold
+            ),
+            color = RiteAppTheme.colors.background
+        )
     }
 }
