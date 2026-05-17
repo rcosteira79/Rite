@@ -9,11 +9,9 @@ import com.ricardocosteira.rite.domain.models.Habit
 import com.ricardocosteira.rite.domain.models.HabitInstance
 import com.ricardocosteira.rite.domain.models.HabitReminder
 import com.ricardocosteira.rite.domain.models.HabitStatus
-import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.domain.models.StrictnessPreset
 import com.ricardocosteira.rite.domain.models.User
-import com.ricardocosteira.rite.domain.models.UserStrictnessSettings
 import com.ricardocosteira.rite.domain.models.motivationalTitleIndexForDate
 import com.ricardocosteira.rite.domain.repositories.HabitInstanceRepository
 import com.ricardocosteira.rite.domain.repositories.HabitRepository
@@ -152,16 +150,7 @@ class TodayViewModel(
         timezoneWarningDismissed: Boolean
     ): TodayState {
         val userTimezone: TimeZone = user?.timezone ?: TimeZone.currentSystemDefault()
-        val strictnessPreset: StrictnessPreset? = user?.let {
-            StrictnessPreset.fromSettings(
-                UserStrictnessSettings(
-                    undoPolicy = it.undoPolicy,
-                    maxSnoozesPerHabitPerDay = it.maxSnoozesPerHabitPerDay,
-                    maxConsecutiveSkips = it.maxConsecutiveSkips,
-                    maxSnoozeDurationMinutes = it.maxSnoozeDurationMinutes
-                )
-            )
-        }
+        val strictnessPreset: StrictnessPreset? = user?.toStrictnessPreset()
 
         val motivationalTitleRes = motivationalTitleResource(
             motivationalTitleIndexForDate(today)
@@ -242,10 +231,6 @@ class TodayViewModel(
     fun completeHabit(instanceId: String) {
         viewModelScope.launch {
             val habit = state.value.habits.find { it.instanceId == instanceId } ?: return@launch
-            if (habit.type == HabitType.QUANTITATIVE) {
-                _quantitativeInputFor.value = instanceId
-                return@launch
-            }
             completeHabit.executeBinary(instanceId, CompletionSource.IN_APP)
                 .onSuccess { cancelReminderForHabit(instanceId, habit.habitId) }
                 .onFailure {
