@@ -446,7 +446,6 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                                 onFinished = dropUnlessResumed {
                                     backStack.clear()
                                     backStack.add(Today)
-                                    appComponent.todayViewModel.loadTodayHabits()
                                 }
                             )
                         }
@@ -503,14 +502,10 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                                     fadeOut(tween(AddHabitTransitionMs))
                             }
                         ) {
-                            // Capture todayViewModel inside the @Composable lambda — required because
-                            // LocalAppComponent.current cannot be called from a non-composable callback.
-                            val todayViewModel = LocalAppComponent.current.todayViewModel
                             HabitFormScreen(
                                 habitIdToEdit = null,
                                 onNavigateBack = dropUnlessResumed {
                                     backStack.removeLastOrNull()
-                                    todayViewModel.loadTodayHabits()
                                 },
                                 snackbarHostState = snackbarHostState,
                                 useAddHabitTransition = true
@@ -518,24 +513,20 @@ fun RiteNavigation(isOnboardingCompleted: Boolean) {
                         }
 
                         entry<EditHabit> { route ->
-                            val todayViewModel = LocalAppComponent.current.todayViewModel
                             HabitFormScreen(
                                 habitIdToEdit = route.habitId,
                                 onNavigateBack = dropUnlessResumed {
                                     backStack.removeLastOrNull()
-                                    todayViewModel.loadTodayHabits()
                                 },
                                 snackbarHostState = snackbarHostState
                             )
                         }
 
                         entry<HabitDetail> { route ->
-                            val todayViewModel = LocalAppComponent.current.todayViewModel
                             HabitDetailScreen(
                                 instanceId = route.instanceId,
                                 onNavigateBack = dropUnlessResumed {
                                     backStack.removeLastOrNull()
-                                    todayViewModel.loadTodayHabits()
                                 },
                                 onEditHabit = dropUnlessResumed { habitId ->
                                     backStack.add(EditHabit(habitId))

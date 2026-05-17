@@ -17,6 +17,7 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class CreateHabit(
     private val habitRepository: HabitRepository,
+    private val generateInstanceForHabit: GenerateInstanceForHabit,
     private val uuidProvider: UuidProvider
 ) {
     data class CreateHabitParams(
@@ -90,6 +91,7 @@ class CreateHabit(
         )
 
         habitRepository.createHabit(habit, schedule, reminder)
+        generateInstanceForHabit.execute(habit, schedule, startDate)
 
         return Result.success(habit)
     }

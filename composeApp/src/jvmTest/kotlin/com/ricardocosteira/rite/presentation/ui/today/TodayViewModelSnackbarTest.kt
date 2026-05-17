@@ -14,8 +14,10 @@ import com.ricardocosteira.rite.domain.models.HabitSchedule
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
+import com.ricardocosteira.rite.domain.time.FakeCurrentDateProvider
 import com.ricardocosteira.rite.domain.usecases.CompleteHabit
 import com.ricardocosteira.rite.domain.usecases.GenerateDailyHabits
+import com.ricardocosteira.rite.domain.usecases.GenerateInstanceForHabit
 import com.ricardocosteira.rite.domain.usecases.ProcessEndOfDay
 import com.ricardocosteira.rite.domain.usecases.SkipHabit
 import com.ricardocosteira.rite.domain.usecases.UndoHabit
@@ -28,6 +30,8 @@ import kotlin.test.assertTrue
 import kotlin.time.Clock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -51,7 +55,11 @@ class TodayViewModelSnackbarTest {
             deps.seedBinaryPending(habitId, habitName, "instance-3")
 
             val vm = buildViewModel(deps, testDispatcher)
+            // Keep a subscriber alive so the reactive state pipeline produces habits;
+            // deleteHabit reads from state.value.habits.
+            backgroundScope.launch { vm.state.collect {} }
             advanceUntilIdle()
+            vm.state.first { it.habits.any { habit -> habit.habitId == habitId } }
 
             vm.feedbackEvents.test {
                 vm.deleteHabit(habitId)
@@ -79,6 +87,9 @@ class TodayViewModelSnackbarTest {
         undoHabit = deps.undoHabit,
         undoLastIncrement = deps.undoLastIncrement,
         habitNotification = HabitNotification(),
+        currentDateProvider = FakeCurrentDateProvider(
+            initial = Clock.System.now().toLocalDateTime(TimeZone.UTC).date
+        ),
         defaultDispatcher = testDispatcher
     )
 
@@ -112,9 +123,12 @@ class TodayViewModelSnackbarTest {
         val generateDailyHabits: GenerateDailyHabits = GenerateDailyHabits(
             userRepository = userRepository,
             habitRepository = habitRepository,
-            habitInstanceRepository = habitInstanceRepository,
-            leavePeriodRepository = leavePeriodRepository,
-            uuidProvider = uuidProvider
+            generateInstanceForHabit = GenerateInstanceForHabit(
+                habitRepository = habitRepository,
+                habitInstanceRepository = habitInstanceRepository,
+                leavePeriodRepository = leavePeriodRepository,
+                uuidProvider = uuidProvider
+            )
         )
         val processEndOfDay: ProcessEndOfDay = ProcessEndOfDay(
             userRepository = userRepository,

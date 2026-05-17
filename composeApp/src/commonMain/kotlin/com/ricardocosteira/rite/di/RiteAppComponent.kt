@@ -14,6 +14,9 @@ import com.ricardocosteira.rite.domain.repositories.HabitRepository
 import com.ricardocosteira.rite.domain.repositories.LeavePeriodRepository
 import com.ricardocosteira.rite.domain.repositories.SnoozeRepository
 import com.ricardocosteira.rite.domain.repositories.UserRepository
+import com.ricardocosteira.rite.domain.time.AppForegroundObserver
+import com.ricardocosteira.rite.domain.time.CurrentDateProvider
+import com.ricardocosteira.rite.domain.time.DefaultCurrentDateProvider
 import com.ricardocosteira.rite.domain.usecases.CompleteHabit
 import com.ricardocosteira.rite.domain.usecases.CreateHabit
 import com.ricardocosteira.rite.domain.usecases.GenerateDailyHabits
@@ -33,9 +36,12 @@ import com.ricardocosteira.rite.presentation.ui.onboarding.OnboardingViewModel
 import com.ricardocosteira.rite.presentation.ui.settings.SettingsViewModel
 import com.ricardocosteira.rite.presentation.ui.startup.StartupViewModel
 import com.ricardocosteira.rite.presentation.ui.today.TodayViewModel
+import kotlin.time.Clock
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
@@ -49,7 +55,8 @@ import me.tatarka.inject.annotations.Provides
 @AppScope
 abstract class RiteAppComponent(
     @get:Provides val databaseDriverFactory: DatabaseDriverFactory,
-    @get:Provides val habitNotification: HabitNotification
+    @get:Provides val habitNotification: HabitNotification,
+    @get:Provides val appForegroundObserver: AppForegroundObserver
 ) {
     // IO Dispatcher (singleton)
     @AppScope
@@ -60,6 +67,17 @@ abstract class RiteAppComponent(
     @AppScope
     @Provides
     fun provideDefaultDispatcher(): DefaultDispatcher = Dispatchers.Default
+
+    // Application-lifetime scope (singleton)
+    @AppScope
+    @Provides
+    fun provideAppCoroutineScope(defaultDispatcher: DefaultDispatcher): AppCoroutineScope =
+        CoroutineScope(SupervisorJob() + defaultDispatcher)
+
+    // System clock — injected so tests can substitute a virtual clock
+    @AppScope
+    @Provides
+    fun provideClock(): Clock = Clock.System
 
     // Database (singleton)
     @AppScope
@@ -102,6 +120,10 @@ abstract class RiteAppComponent(
     @Provides
     fun provideSnoozeRepository(impl: SnoozeRepositoryImpl): SnoozeRepository = impl
 
+    @AppScope
+    @Provides
+    fun provideCurrentDateProvider(impl: DefaultCurrentDateProvider): CurrentDateProvider = impl
+
     // Public accessors for App initialization
     abstract val startupViewModel: StartupViewModel
     abstract val userRepository: UserRepository
@@ -123,6 +145,7 @@ abstract class RiteAppComponent(
     abstract val skipHabit: SkipHabit
     abstract val undoLastIncrement: UndoLastIncrement
     abstract val habitNotificationAccessor: HabitNotification
+    abstract val currentDateProvider: CurrentDateProvider
 
     companion object
 }

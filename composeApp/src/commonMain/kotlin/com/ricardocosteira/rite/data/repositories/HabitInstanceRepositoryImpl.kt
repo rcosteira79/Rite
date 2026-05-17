@@ -28,6 +28,15 @@ class HabitInstanceRepositoryImpl(
         .mapToList(ioDispatcher)
         .map { list -> list.map { it.toDomain() } }
 
+    override fun observeInstancesInDateRange(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): Flow<List<HabitInstance>> = queries
+        .getInstancesInDateRange(startDate.toString(), endDate.toString())
+        .asFlow()
+        .mapToList(ioDispatcher)
+        .map { list -> list.map { it.toDomain() } }
+
     override suspend fun getInstancesForDate(date: LocalDate): List<HabitInstance> =
         withContext(ioDispatcher) {
             queries.getInstancesForDate(date.toString()).executeAsList().map { it.toDomain() }
