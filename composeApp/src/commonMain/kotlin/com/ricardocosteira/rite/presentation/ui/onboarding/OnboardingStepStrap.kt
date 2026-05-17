@@ -95,22 +95,23 @@ fun OnboardingStepStrap(
             }
         }
 
-        FixedSlot(
-            candidates = (1..totalSteps).map { "$it / $totalSteps" },
-            style = countStyle,
-            alignment = Alignment.CenterEnd
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Crossfade(
-                targetState = "$step / $totalSteps",
+                targetState = step,
                 animationSpec = nameSpec,
-                label = "stepCount"
-            ) { count ->
+                label = "stepDigit"
+            ) { stepNum ->
                 Text(
-                    text = count,
+                    text = stepNum.toString(),
                     style = countStyle,
                     color = RiteAppTheme.colors.onSurfaceVariant
                 )
             }
+            Text(
+                text = " / $totalSteps",
+                style = countStyle,
+                color = RiteAppTheme.colors.onSurfaceVariant
+            )
         }
     }
 }
