@@ -50,7 +50,7 @@
 ## Code Quality — from reactive Today refactor (2026-04-26)
 
 ### Important
-- [ ] Wrap `tickAtMidnight` and `observeForegroundChanges` in `DefaultCurrentDateProvider` with try/catch + log + retry-on-delay-floor. Currently a single throw kills the loop for the rest of the process lifetime.
+- [x] Wrap `tickAtMidnight` and `observeForegroundChanges` in `DefaultCurrentDateProvider` with try/catch + log + retry-on-delay-floor. Currently a single throw kills the loop for the rest of the process lifetime.
 - [ ] Wire `Intent.ACTION_TIMEZONE_CHANGED` (Android) / `NSSystemTimeZoneDidChangeNotification` (iOS) into `CurrentDateProvider` so a mid-flow TZ change recomputes `today` immediately. Right now the user has to background+foreground for the new TZ to take effect.
 
 ### Medium
@@ -69,6 +69,7 @@
 - [x] Periodic reminder scheduling (interval-based within a time window)
 - [ ] Create/edit habit UI for custom increment values
 - [ ] Active vs silent tracking notification toggle in Settings
+- [ ] Settings option to define start of week (Sunday vs Monday)
 - [ ] iOS activation
 - [ ] Comprehensive unit test coverage
 - [ ] Ascension mode — visual treatment for quantitative habits that go beyond 100% (ring colour shift, celebratory UI)
