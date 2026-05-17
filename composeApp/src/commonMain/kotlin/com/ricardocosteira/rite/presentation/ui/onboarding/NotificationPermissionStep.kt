@@ -49,7 +49,11 @@ import rite.composeapp.generated.resources.notifications_heading_first
 import rite.composeapp.generated.resources.notifications_strap_label
 
 @Composable
-fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false) {
+fun NotificationPermissionStep(
+    totalSteps: Int = 4,
+    modifier: Modifier = Modifier,
+    reduceMotion: Boolean = false
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -58,7 +62,7 @@ fun NotificationPermissionStep(modifier: Modifier = Modifier, reduceMotion: Bool
     ) {
         OnboardingStepStrap(
             step = 4,
-            totalSteps = 4,
+            totalSteps = totalSteps,
             stepName = stringResource(Res.string.notifications_strap_label)
         )
 

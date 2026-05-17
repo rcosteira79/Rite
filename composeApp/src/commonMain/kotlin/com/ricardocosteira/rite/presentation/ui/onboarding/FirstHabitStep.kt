@@ -67,6 +67,7 @@ fun FirstHabitStep(
     targetValue: String,
     unit: String,
     scheduleKind: OnboardingScheduleKind,
+    totalSteps: Int = 4,
     onHabitNameChange: (String) -> Unit,
     onHabitTypeChange: (HabitType) -> Unit,
     onTargetValueChange: (String) -> Unit,
@@ -84,7 +85,7 @@ fun FirstHabitStep(
     ) {
         OnboardingStepStrap(
             step = 3,
-            totalSteps = 4,
+            totalSteps = totalSteps,
             stepName = stringResource(Res.string.first_habit_strap_label)
         )
 

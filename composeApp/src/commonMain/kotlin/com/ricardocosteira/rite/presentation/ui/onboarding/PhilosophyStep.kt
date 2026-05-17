@@ -44,7 +44,11 @@ import rite.composeapp.generated.resources.philosophy_promise_undistracted_title
 import rite.composeapp.generated.resources.philosophy_strap_label
 
 @Composable
-fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false) {
+fun PhilosophyStep(
+    totalSteps: Int = 4,
+    modifier: Modifier = Modifier,
+    reduceMotion: Boolean = false
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -53,7 +57,7 @@ fun PhilosophyStep(modifier: Modifier = Modifier, reduceMotion: Boolean = false)
     ) {
         OnboardingStepStrap(
             step = 1,
-            totalSteps = 4,
+            totalSteps = totalSteps,
             stepName = stringResource(Res.string.philosophy_strap_label)
         )
 

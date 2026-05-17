@@ -20,9 +20,10 @@ data class OnboardingState(
 ) {
     val totalSteps: Int get() = if (showNotificationStep) 4 else 3
 
-    val firstHabitStepIndex: Int get() = if (showNotificationStep) 3 else 2
+    val firstHabitStepIndex: Int get() = 2
 
-    val notificationStepIndex: Int get() = 2
+    /** Only valid when [showNotificationStep] is true. */
+    val notificationStepIndex: Int get() = 3
 }
 
 /** Events from the onboarding flow. */

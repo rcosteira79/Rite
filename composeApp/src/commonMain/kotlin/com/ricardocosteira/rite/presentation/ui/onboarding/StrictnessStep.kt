@@ -60,6 +60,7 @@ import rite.composeapp.generated.resources.strictness_subtext
 fun StrictnessStep(
     selectedPreset: OnboardingStrictnessPreset,
     onPresetSelected: (OnboardingStrictnessPreset) -> Unit,
+    totalSteps: Int = 4,
     reduceMotion: Boolean = false,
     modifier: Modifier = Modifier
 ) {
@@ -71,7 +72,7 @@ fun StrictnessStep(
     ) {
         OnboardingStepStrap(
             step = 2,
-            totalSteps = 4,
+            totalSteps = totalSteps,
             stepName = stringResource(Res.string.strictness_strap_label)
         )
 

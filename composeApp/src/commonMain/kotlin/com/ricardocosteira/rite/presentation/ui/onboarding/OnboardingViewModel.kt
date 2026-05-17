@@ -89,12 +89,7 @@ class OnboardingViewModel(
             result.fold(
                 onSuccess = {
                     _state.update {
-                        val nextStep: Int = if (it.showNotificationStep) {
-                            it.notificationStepIndex
-                        } else {
-                            it.firstHabitStepIndex
-                        }
-                        it.copy(isApplyingPreset = false, currentStep = nextStep)
+                        it.copy(isApplyingPreset = false, currentStep = it.firstHabitStepIndex)
                     }
                 },
                 onFailure = { error ->
@@ -105,7 +100,7 @@ class OnboardingViewModel(
     }
 
     fun continueFromNotificationPermission() {
-        _state.update { it.copy(currentStep = it.firstHabitStepIndex) }
+        viewModelScope.launch { completeOnboarding() }
     }
 
     fun createFirstHabit() {
@@ -172,7 +167,7 @@ class OnboardingViewModel(
                 onSuccess = {
                     // Generate habit instance for today
                     generateDailyHabits.execute()
-                    completeOnboarding()
+                    advancePastFirstHabit()
                 },
                 onFailure = { error ->
                     _state.update { it.copy(isCreatingHabit = false, error = error.message) }
@@ -182,7 +177,17 @@ class OnboardingViewModel(
     }
 
     fun skipFirstHabit() {
-        viewModelScope.launch { completeOnboarding() }
+        viewModelScope.launch { advancePastFirstHabit() }
+    }
+
+    private suspend fun advancePastFirstHabit() {
+        if (_state.value.showNotificationStep) {
+            _state.update {
+                it.copy(isCreatingHabit = false, currentStep = it.notificationStepIndex)
+            }
+        } else {
+            completeOnboarding()
+        }
     }
 
     private suspend fun applyPresetAndComplete(preset: StrictnessPreset) {

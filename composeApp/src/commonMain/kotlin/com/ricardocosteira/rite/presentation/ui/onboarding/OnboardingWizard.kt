@@ -64,6 +64,7 @@ fun OnboardingWizard(
                         when (step) {
                             0 -> {
                                 PhilosophyStep(
+                                    totalSteps = state.totalSteps,
                                     modifier = Modifier.weight(1f).fillMaxWidth(),
                                     reduceMotion = true
                                 )
@@ -80,6 +81,7 @@ fun OnboardingWizard(
                                 StrictnessStep(
                                     selectedPreset = state.selectedPreset,
                                     onPresetSelected = onPresetSelected,
+                                    totalSteps = state.totalSteps,
                                     reduceMotion = true,
                                     modifier = Modifier.weight(1f).fillMaxWidth()
                                 )
@@ -96,6 +98,7 @@ fun OnboardingWizard(
                             else -> when {
                                 step == state.notificationStepIndex && state.showNotificationStep -> {
                                     NotificationPermissionStep(
+                                        totalSteps = state.totalSteps,
                                         modifier = Modifier.weight(1f).fillMaxWidth(),
                                         reduceMotion = reduceMotion
                                     )
@@ -116,6 +119,7 @@ fun OnboardingWizard(
                                         targetValue = state.targetValue,
                                         unit = state.unit,
                                         scheduleKind = state.scheduleKind,
+                                        totalSteps = state.totalSteps,
                                         onHabitNameChange = onHabitNameChange,
                                         onHabitTypeChange = onHabitTypeChange,
                                         onTargetValueChange = onTargetValueChange,
@@ -161,6 +165,7 @@ fun OnboardingWizard(
                         when (step) {
                             0 -> {
                                 PhilosophyStep(
+                                    totalSteps = state.totalSteps,
                                     modifier = Modifier.weight(1f).fillMaxWidth(),
                                     reduceMotion = reduceMotion
                                 )
@@ -177,6 +182,7 @@ fun OnboardingWizard(
                                 StrictnessStep(
                                     selectedPreset = state.selectedPreset,
                                     onPresetSelected = onPresetSelected,
+                                    totalSteps = state.totalSteps,
                                     reduceMotion = reduceMotion,
                                     modifier = Modifier.weight(1f).fillMaxWidth()
                                 )
@@ -193,6 +199,7 @@ fun OnboardingWizard(
                             else -> when {
                                 step == state.notificationStepIndex && state.showNotificationStep -> {
                                     NotificationPermissionStep(
+                                        totalSteps = state.totalSteps,
                                         modifier = Modifier.weight(1f).fillMaxWidth(),
                                         reduceMotion = reduceMotion
                                     )
@@ -213,6 +220,7 @@ fun OnboardingWizard(
                                         targetValue = state.targetValue,
                                         unit = state.unit,
                                         scheduleKind = state.scheduleKind,
+                                        totalSteps = state.totalSteps,
                                         onHabitNameChange = onHabitNameChange,
                                         onHabitTypeChange = onHabitTypeChange,
                                         onTargetValueChange = onTargetValueChange,

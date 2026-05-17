@@ -18,20 +18,14 @@ class OnboardingStateTest {
     }
 
     @Test
-    fun `given showNotificationStep is false, firstHabitStepIndex returns 2`() {
-        val state = OnboardingState(showNotificationStep = false)
-        assertEquals(2, state.firstHabitStepIndex)
+    fun `firstHabitStepIndex is always 2 (third step) regardless of notification step`() {
+        assertEquals(2, OnboardingState(showNotificationStep = false).firstHabitStepIndex)
+        assertEquals(2, OnboardingState(showNotificationStep = true).firstHabitStepIndex)
     }
 
     @Test
-    fun `given showNotificationStep is true, firstHabitStepIndex returns 3`() {
+    fun `given showNotificationStep is true, notificationStepIndex returns 3 (fourth step)`() {
         val state = OnboardingState(showNotificationStep = true)
-        assertEquals(3, state.firstHabitStepIndex)
-    }
-
-    @Test
-    fun `given showNotificationStep is true, notificationStepIndex returns 2`() {
-        val state = OnboardingState(showNotificationStep = true)
-        assertEquals(2, state.notificationStepIndex)
+        assertEquals(3, state.notificationStepIndex)
     }
 }
