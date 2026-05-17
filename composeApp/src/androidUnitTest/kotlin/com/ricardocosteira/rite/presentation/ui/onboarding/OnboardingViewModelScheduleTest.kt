@@ -15,6 +15,7 @@ import com.ricardocosteira.rite.domain.repositories.UserRepository
 import com.ricardocosteira.rite.domain.usecases.ApplyStrictnessPreset
 import com.ricardocosteira.rite.domain.usecases.CreateHabit
 import com.ricardocosteira.rite.domain.usecases.GenerateDailyHabits
+import com.ricardocosteira.rite.domain.usecases.GenerateInstanceForHabit
 import com.ricardocosteira.rite.domain.usecases.UuidProvider
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -54,14 +55,22 @@ class OnboardingViewModelScheduleTest {
     private val fakeLeavePeriodRepository = FakeLeavePeriodRepository()
     private val fakeUuidProvider = FakeUuidProvider()
 
-    private val createHabit = CreateHabit(fakeHabitRepository, fakeUuidProvider)
-    private val applyStrictnessPreset = ApplyStrictnessPreset(fakeUserRepository)
-    private val generateDailyHabits = GenerateDailyHabits(
-        fakeUserRepository,
+    private val generateInstanceForHabit = GenerateInstanceForHabit(
         fakeHabitRepository,
         fakeHabitInstanceRepository,
         fakeLeavePeriodRepository,
         fakeUuidProvider
+    )
+    private val createHabit = CreateHabit(
+        fakeHabitRepository,
+        generateInstanceForHabit,
+        fakeUuidProvider
+    )
+    private val applyStrictnessPreset = ApplyStrictnessPreset(fakeUserRepository)
+    private val generateDailyHabits = GenerateDailyHabits(
+        fakeUserRepository,
+        fakeHabitRepository,
+        generateInstanceForHabit
     )
 
     private fun buildViewModel(): OnboardingViewModel = OnboardingViewModel(

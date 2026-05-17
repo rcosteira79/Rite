@@ -15,6 +15,7 @@ import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.domain.usecases.CompleteHabit
 import com.ricardocosteira.rite.domain.usecases.GenerateDailyHabits
+import com.ricardocosteira.rite.domain.usecases.GenerateInstanceForHabit
 import com.ricardocosteira.rite.domain.usecases.ProcessEndOfDay
 import com.ricardocosteira.rite.domain.usecases.SkipHabit
 import com.ricardocosteira.rite.domain.usecases.UndoHabit
@@ -383,9 +384,12 @@ class TodayViewModelSwipeTest {
         val generateDailyHabits: GenerateDailyHabits = GenerateDailyHabits(
             userRepository = userRepository,
             habitRepository = habitRepository,
-            habitInstanceRepository = habitInstanceRepository,
-            leavePeriodRepository = leavePeriodRepository,
-            uuidProvider = uuidProvider
+            generateInstanceForHabit = GenerateInstanceForHabit(
+                habitRepository = habitRepository,
+                habitInstanceRepository = habitInstanceRepository,
+                leavePeriodRepository = leavePeriodRepository,
+                uuidProvider = uuidProvider
+            )
         )
         val processEndOfDay: ProcessEndOfDay = ProcessEndOfDay(
             userRepository = userRepository,
