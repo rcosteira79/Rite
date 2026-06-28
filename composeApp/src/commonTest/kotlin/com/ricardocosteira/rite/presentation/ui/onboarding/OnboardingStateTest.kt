@@ -18,20 +18,15 @@ class OnboardingStateTest {
     }
 
     @Test
-    fun `given showNotificationStep is false, firstHabitStepIndex returns 2`() {
-        val state = OnboardingState(showNotificationStep = false)
-        assertEquals(2, state.firstHabitStepIndex)
-    }
-
-    @Test
-    fun `given showNotificationStep is true, firstHabitStepIndex returns 3`() {
-        val state = OnboardingState(showNotificationStep = true)
-        assertEquals(3, state.firstHabitStepIndex)
-    }
-
-    @Test
-    fun `given showNotificationStep is true, notificationStepIndex returns 2`() {
-        val state = OnboardingState(showNotificationStep = true)
-        assertEquals(2, state.notificationStepIndex)
+    fun `OnboardingStep order matches the wizard navigation sequence`() {
+        assertEquals(
+            listOf(
+                OnboardingStep.PHILOSOPHY,
+                OnboardingStep.STRICTNESS,
+                OnboardingStep.FIRST_HABIT,
+                OnboardingStep.NOTIFICATIONS
+            ),
+            OnboardingStep.entries
+        )
     }
 }

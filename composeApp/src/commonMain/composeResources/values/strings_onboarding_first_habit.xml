@@ -1,20 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="first_habit_heading">Start your first rite</string>
-    <string name="first_habit_subtext">Start small. One habit is enough to begin.</string>
+    <string name="first_habit_strap_label">First habit</string>
+    <string name="first_habit_heading_first">Your first</string>
+    <string name="first_habit_heading_accent">ritual.</string>
+    <string name="first_habit_subtext">One habit is enough. Name it; commit to it; add more later.</string>
+
     <string name="first_habit_label_name">Habit name</string>
+    <string name="first_habit_label_type">Type</string>
     <string name="first_habit_type_binary">Binary</string>
-    <string name="first_habit_label_target_value">Target value</string>
-    <string name="first_habit_label_unit">Unit (optional)</string>
-    <string name="first_habit_placeholder_unit">E.g. glasses, pages, minutes</string>
+    <string name="first_habit_type_binary_description">Did it · didn't.</string>
+    <string name="first_habit_type_quantitative">Quantitative</string>
+    <string name="first_habit_type_quantitative_description">Count toward a target.</string>
+    <string name="first_habit_label_target_value">Target</string>
+    <string name="first_habit_label_unit">Unit</string>
+    <string name="first_habit_placeholder_name">E.g. Drink water</string>
+    <string name="first_habit_placeholder_target">E.g. 30</string>
+    <string name="first_habit_placeholder_unit">E.g. ml, pages, minutes</string>
+
+    <string name="first_habit_label_schedule">Schedule</string>
+    <string name="first_habit_schedule_daily">Daily</string>
+    <string name="first_habit_schedule_weekly">Weekly</string>
+
     <string name="first_habit_button_create">Create habit</string>
     <string name="first_habit_button_skip">Skip for now</string>
+
     <string name="first_habit_error_empty_name">Please enter a habit name</string>
     <string name="first_habit_error_missing_target_value">Please enter a target value for quantitative habit</string>
     <string name="first_habit_error_invalid_target_value">Target value must be a positive number</string>
-
-    <!-- Type card descriptions -->
-    <string name="first_habit_type_binary_description">Simple "Yes" or "No" completion. Perfect for streaks.</string>
-    <string name="first_habit_type_quantitative_description">Track units like "Minutes" or "Pages". Focus on volume.</string>
-
 </resources>

@@ -6,6 +6,7 @@ import com.ricardocosteira.rite.domain.models.HabitReminder
 import com.ricardocosteira.rite.domain.models.HabitSchedule
 import com.ricardocosteira.rite.domain.models.HabitStatus
 import com.ricardocosteira.rite.domain.models.LeavePeriod
+import com.ricardocosteira.rite.domain.models.ScheduleType
 import com.ricardocosteira.rite.domain.models.UndoPolicy
 import com.ricardocosteira.rite.domain.models.User
 import com.ricardocosteira.rite.domain.repositories.HabitInstanceRepository
@@ -19,7 +20,6 @@ import com.ricardocosteira.rite.domain.usecases.GenerateInstanceForHabit
 import com.ricardocosteira.rite.domain.usecases.UuidProvider
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,6 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import org.junit.After
@@ -81,68 +80,35 @@ class OnboardingViewModelScheduleTest {
     )
 
     @Test
-    fun `given all seven days selected when creating habit then specificDays is null`() = runTest {
-        // Given — default state is all 7 days
+    fun `given DAILY scheduleKind when creating habit then schedule type is DAILY`() = runTest {
+        // Given — default scheduleKind is DAILY
         val viewModel = buildViewModel()
         viewModel.updateHabitName("Run")
+        viewModel.updateScheduleKind(OnboardingScheduleKind.DAILY)
 
         // When
         viewModel.createFirstHabit()
 
         // Then
-        assertNull(fakeHabitRepository.capturedSchedule?.specificDays)
+        assertEquals(ScheduleType.DAILY, fakeHabitRepository.capturedSchedule?.scheduleType)
     }
 
     @Test
-    fun `given weekdays selected when creating habit then specificDays is mon to fri`() = runTest {
-        // Given
-        val viewModel = buildViewModel()
-        viewModel.updateHabitName("Run")
-        val inputDays = setOf(
-            DayOfWeek.MONDAY,
-            DayOfWeek.TUESDAY,
-            DayOfWeek.WEDNESDAY,
-            DayOfWeek.THURSDAY,
-            DayOfWeek.FRIDAY
-        )
-        viewModel.updateSelectedDays(inputDays)
-
-        // When
-        viewModel.createFirstHabit()
-
-        // Then
-        assertEquals(inputDays, fakeHabitRepository.capturedSchedule?.specificDays)
-    }
-
-    @Test
-    fun `given weekends selected when creating habit then specificDays is sat and sun`() = runTest {
-        // Given
-        val viewModel = buildViewModel()
-        viewModel.updateHabitName("Rest")
-        val inputDays = setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
-        viewModel.updateSelectedDays(inputDays)
-
-        // When
-        viewModel.createFirstHabit()
-
-        // Then
-        assertEquals(inputDays, fakeHabitRepository.capturedSchedule?.specificDays)
-    }
-
-    @Test
-    fun `given custom days selected when creating habit then specificDays matches selection`() =
+    fun `given WEEKLY scheduleKind when creating habit then schedule type is FLEXIBLE_WEEKLY`() =
         runTest {
             // Given
             val viewModel = buildViewModel()
-            viewModel.updateHabitName("Yoga")
-            val inputDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
-            viewModel.updateSelectedDays(inputDays)
+            viewModel.updateHabitName("Rest")
+            viewModel.updateScheduleKind(OnboardingScheduleKind.WEEKLY)
 
             // When
             viewModel.createFirstHabit()
 
             // Then
-            assertEquals(inputDays, fakeHabitRepository.capturedSchedule?.specificDays)
+            assertEquals(
+                ScheduleType.FLEXIBLE_WEEKLY,
+                fakeHabitRepository.capturedSchedule?.scheduleType
+            )
         }
 }
 

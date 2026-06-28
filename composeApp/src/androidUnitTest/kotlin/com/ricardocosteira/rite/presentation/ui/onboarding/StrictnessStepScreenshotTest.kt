@@ -1,7 +1,10 @@
 package com.ricardocosteira.rite.presentation.ui.onboarding
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.ricardocosteira.rite.presentation.ui.theme.RiteThemeFallback
 import org.junit.Rule
@@ -13,89 +16,47 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [33], qualifiers = "w360dp-h800dp-420dpi", application = android.app.Application::class)
+@Config(
+    sdk = [33],
+    qualifiers = "w360dp-h800dp-420dpi",
+    application = android.app.Application::class
+)
 class StrictnessStepScreenshotTest {
     @get:Rule
     val composeRule = createComposeRule()
 
     @Test
-    fun strictnessStep_flexible_lightTheme() {
-        composeRule.setContent {
-            RiteThemeFallback(darkTheme = false) {
-                StrictnessStep(
-                    selectedPreset = OnboardingStrictnessPreset.FLEXIBLE,
-                    onPresetSelected = {},
-                    reduceMotion = true,
-                )
-            }
-        }
-        composeRule.onRoot().captureRoboImage()
-    }
+    fun balanced_open_lightTheme() =
+        render(preset = OnboardingStrictnessPreset.BALANCED, dark = false)
 
     @Test
-    fun strictnessStep_balanced_lightTheme() {
-        composeRule.setContent {
-            RiteThemeFallback(darkTheme = false) {
-                StrictnessStep(
-                    selectedPreset = OnboardingStrictnessPreset.BALANCED,
-                    onPresetSelected = {},
-                    reduceMotion = true,
-                )
-            }
-        }
-        composeRule.onRoot().captureRoboImage()
-    }
+    fun balanced_open_darkTheme() =
+        render(preset = OnboardingStrictnessPreset.BALANCED, dark = true)
 
     @Test
-    fun strictnessStep_locked_lightTheme() {
-        composeRule.setContent {
-            RiteThemeFallback(darkTheme = false) {
-                StrictnessStep(
-                    selectedPreset = OnboardingStrictnessPreset.UNWAVERING,
-                    onPresetSelected = {},
-                    reduceMotion = true,
-                )
-            }
-        }
-        composeRule.onRoot().captureRoboImage()
-    }
+    fun flexible_open_lightTheme() =
+        render(preset = OnboardingStrictnessPreset.FLEXIBLE, dark = false)
 
     @Test
-    fun strictnessStep_flexible_darkTheme() {
-        composeRule.setContent {
-            RiteThemeFallback(darkTheme = true) {
-                StrictnessStep(
-                    selectedPreset = OnboardingStrictnessPreset.FLEXIBLE,
-                    onPresetSelected = {},
-                    reduceMotion = true,
-                )
-            }
-        }
-        composeRule.onRoot().captureRoboImage()
-    }
+    fun flexible_open_darkTheme() =
+        render(preset = OnboardingStrictnessPreset.FLEXIBLE, dark = true)
 
     @Test
-    fun strictnessStep_balanced_darkTheme() {
-        composeRule.setContent {
-            RiteThemeFallback(darkTheme = true) {
-                StrictnessStep(
-                    selectedPreset = OnboardingStrictnessPreset.BALANCED,
-                    onPresetSelected = {},
-                    reduceMotion = true,
-                )
-            }
-        }
-        composeRule.onRoot().captureRoboImage()
-    }
+    fun unwavering_open_lightTheme() =
+        render(preset = OnboardingStrictnessPreset.UNWAVERING, dark = false)
 
     @Test
-    fun strictnessStep_locked_darkTheme() {
+    fun unwavering_open_darkTheme() =
+        render(preset = OnboardingStrictnessPreset.UNWAVERING, dark = true)
+
+    private fun render(preset: OnboardingStrictnessPreset, dark: Boolean) {
         composeRule.setContent {
-            RiteThemeFallback(darkTheme = true) {
+            RiteThemeFallback(darkTheme = dark) {
                 StrictnessStep(
-                    selectedPreset = OnboardingStrictnessPreset.UNWAVERING,
+                    selectedPreset = preset,
                     onPresetSelected = {},
                     reduceMotion = true,
+                    modifier = Modifier.padding(0.dp)
                 )
             }
         }

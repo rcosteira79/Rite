@@ -30,8 +30,7 @@ fun OnboardingRoute(
 
     // Auto-advance when user grants permission from system settings and returns
     LaunchedEffect(permissionState.isGranted, state.currentStep) {
-        val isOnNotificationStep: Boolean = state.showNotificationStep &&
-            state.currentStep == state.notificationStepIndex
+        val isOnNotificationStep = state.currentStep == OnboardingStep.NOTIFICATIONS
         if (permissionState.isGranted && isOnNotificationStep) {
             viewModel.continueFromNotificationPermission()
         }
@@ -62,7 +61,6 @@ fun OnboardingRoute(
         currentStep = state.currentStep,
         snackbarHostState = snackbarHostState,
         onStepChange = viewModel::setCurrentStep,
-        onSkip = viewModel::skipToToday,
         reduceMotion = reduceMotion,
         onContinueFromStrictness = viewModel::continueFromStrictness,
         onContinueFromNotificationPermission = viewModel::continueFromNotificationPermission,
@@ -80,7 +78,7 @@ fun OnboardingRoute(
         onHabitTypeChange = viewModel::updateHabitType,
         onTargetValueChange = viewModel::updateTargetValue,
         onUnitChange = viewModel::updateUnit,
-        onSelectedDaysChange = viewModel::updateSelectedDays,
+        onScheduleKindChange = viewModel::updateScheduleKind,
         modifier = modifier
     )
 }

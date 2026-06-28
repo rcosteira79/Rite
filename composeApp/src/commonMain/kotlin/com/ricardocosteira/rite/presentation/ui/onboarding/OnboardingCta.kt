@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
-import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,6 +21,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.ricardocosteira.rite.domain.models.HabitType
 import com.ricardocosteira.rite.presentation.ui.components.RiteButton
+import com.ricardocosteira.rite.presentation.ui.theme.RiteAppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -31,7 +31,7 @@ import rite.composeapp.generated.resources.first_habit_button_skip
 import rite.composeapp.generated.resources.notifications_cta_enable
 import rite.composeapp.generated.resources.notifications_cta_later
 import rite.composeapp.generated.resources.philosophy_cta_accept
-import rite.composeapp.generated.resources.strictness_cta_continue
+import rite.composeapp.generated.resources.strictness_cta_continue_with_preset
 
 @Composable
 private fun CtaContainer(
@@ -91,7 +91,12 @@ internal fun StrictnessStepCta(
             CircularProgressIndicator(modifier = Modifier.size(36.dp))
         } else {
             RiteButton(onClick = onContinue) {
-                Text(stringResource(Res.string.strictness_cta_continue))
+                Text(
+                    stringResource(
+                        Res.string.strictness_cta_continue_with_preset,
+                        stringResource(state.selectedPreset.labelRes)
+                    )
+                )
             }
         }
     }
@@ -106,8 +111,7 @@ internal fun FirstHabitStepCta(
     reduceMotion: Boolean = false
 ) {
     val isEnabled = state.habitName.isNotBlank() &&
-        (state.habitType == HabitType.BINARY || state.targetValue.isNotBlank()) &&
-        state.selectedDays.isNotEmpty()
+        (state.habitType == HabitType.BINARY || state.targetValue.isNotBlank())
 
     CtaContainer(modifier = modifier, reduceMotion = reduceMotion) {
         if (state.isCreatingHabit) {

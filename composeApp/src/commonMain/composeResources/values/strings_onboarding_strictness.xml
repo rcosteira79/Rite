@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="strictness_heading">How strict\nshould it be?</string>
-    <string name="strictness_subtext">You're always in control. Change this anytime.</string>
+    <string name="strictness_strap_label">Strictness</string>
+    <string name="strictness_heading_first">How strict should</string>
+    <string name="strictness_heading_accent">Rite</string>
+    <string name="strictness_heading_tail">be?</string>
+    <string name="strictness_subtext">This is the rule engine. You can change it later — but try not to. That defeats the point.</string>
+
     <string name="strictness_flexible_label">Flexible</string>
-    <string name="strictness_flexible_description">Gentle support with maximum forgiveness.</string>
-    <string name="strictness_flexible_rule_1">• Unlimited undo</string>
-    <string name="strictness_flexible_rule_2">• Unlimited snoozes</string>
-    <string name="strictness_flexible_rule_3">• Skips allowed without limits</string>
-    <string name="strictness_flexible_rule_4">• Missed habits are tracked, but lightly enforced</string>
+    <string name="strictness_flexible_description">For habits still finding their shape. Generous with undos and skips — the point is to build the daily motion first.</string>
+    <string name="strictness_flexible_rule_1">Undo: unlimited, across all history</string>
+    <string name="strictness_flexible_rule_2">Snoozes: unlimited · 60-min duration</string>
+    <string name="strictness_flexible_rule_3">Skips: unlimited</string>
+    <string name="strictness_flexible_rule_4">Consecutive skips: no cap</string>
+
     <string name="strictness_balanced_label">Balanced</string>
-    <string name="strictness_balanced_description">Structure with room for real life.</string>
-    <string name="strictness_balanced_rule_1">• Undo allowed for today only</string>
-    <string name="strictness_balanced_rule_2">• Snoozes are limited</string>
-    <string name="strictness_balanced_rule_3">• Skips are limited</string>
-    <string name="strictness_balanced_rule_4">• Missed habits fail at the end of the day</string>
+    <string name="strictness_balanced_description">The default for most adults. Small safety net for life, firm enough to build consistency.</string>
+    <string name="strictness_balanced_rule_1">Undo: today only</string>
+    <string name="strictness_balanced_rule_2">Snoozes: 3 per habit per day · 30-min duration</string>
+    <string name="strictness_balanced_rule_3">Skips: allowed</string>
+    <string name="strictness_balanced_rule_4">Consecutive skips: max 2</string>
+
     <string name="strictness_locked_label">Unwavering</string>
-    <string name="strictness_locked_description">No excuses. Show up every time.</string>
-    <string name="strictness_locked_rule_1">• No undo</string>
-    <string name="strictness_locked_rule_2">• Snoozes are capped</string>
-    <string name="strictness_locked_rule_3">• Skips are capped</string>
-    <string name="strictness_locked_rule_4">• Missed habits always fail</string>
+    <string name="strictness_locked_description">For habits you've already decided are non-negotiable. No soft landings, no retroactive edits.</string>
+    <string name="strictness_locked_rule_1">Undo: disabled</string>
+    <string name="strictness_locked_rule_2">Snoozes: 1 per habit per day · 15-min duration</string>
+    <string name="strictness_locked_rule_3">Skips: not permitted</string>
+    <string name="strictness_locked_rule_4">Consecutive skips: zero</string>
+
     <string name="strictness_badge_recommended">RECOMMENDED</string>
     <string name="strictness_preset_cd_selected">Selected</string>
     <string name="strictness_preset_cd_not_selected">Not selected</string>
-    <string name="strictness_cta_continue">Continue</string>
+
+    <string name="strictness_cta_continue_with_preset">Continue with %1$s</string>
 </resources>
