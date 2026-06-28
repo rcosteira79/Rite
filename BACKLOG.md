@@ -24,6 +24,9 @@
 - [ ] Animate complete button and metrics in habit detail screen
 - [ ] Rethink Habit Score — should reach 100% after completing daily for the recommended habit-forming period (~66 days?). Currently overshoots well past 100%. Research and redesign the formula
 - [ ] Wrap HabitDetailViewModel repository dependencies behind use cases returning Result
+- [ ] Off-screen slide-dismissal animation for swipe-deleted habit cards (currently relies on LazyColumn item animation)
+- [ ] Update the Today progress counter immediately on optimistic swipe-removal (currently stale for ~5s until the undo timeout)
+- [ ] Fix onboarding "Skip" button snapping upward — the bottom nav shows while onboarding is still visible
 
 ## Code Quality — from assessment (2026-04-08)
 
@@ -86,3 +89,5 @@
 - [ ] Fix flaky TodayViewModelSwipeTest — inject test dispatchers into repositories instead of using real Dispatchers.IO
 - [ ] Inject Clock into ProcessEndOfDay so tests can control "today" — needed for proper assertions on WEEKLY/FLEXIBLE_WEEKLY evaluation timing
 - [ ] Custom preset spawned from tinkering — user adjustments to a built-in preset become a saved "Custom" preset
+- [ ] Daily recap screen — on next-day open, show completed-habit congratulations + stats and a failed-habits section where users note why they failed (needs brainstorming)
+- [ ] Strictness cooldown — after changing the strictness preset, block further changes for 24h (prevents gaming by switching to Flexible to skip, then back)
